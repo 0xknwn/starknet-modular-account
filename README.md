@@ -51,10 +51,40 @@ We would like to explore solutions like:
 - [Porting the Plugin Account](https://github.com/argentlabs/starknet-plugin-account)
   if that is still feasible
 - [EIP-7579 Minimal Modular Smart Accounts](https://eips.ethereum.org/EIPS/eip-7579).
-- [EIP-6900: Modular Smart Contract Accounts and Plugins](https://eips.ethereum.org/EIPS/eip-6900) 
+- [EIP-6900: Modular Smart Contract Accounts and Plugins](https://eips.ethereum.org/EIPS/eip-6900)
+  including the Smart Account implementations by Circle and Alchemy.
+- Study bespoke solutions, from the
+  [Safe Module system](https://docs.safe.global/smart-account-modules) to the
+  [Safe{} Protocol](https://forum.safe.global/t/safe-core-protocol-whitepaper/3949)
+  and to all the current smart account extension abilities, like SimpleAccount,
+  Argent, Alchemy, Kernel...
+
+> Notes:
+> - a nice feature is to be able to activate module offchain so that you pay for
+>   the fees only if an event occurs.
+> - another nice feature of module is the ability to compose them together. The
+>   requirement to execute a module by calling it with execTransaction seems to
+>   prevent that behaviour. We need to study it in both the context of EIP-6900
+>   that is probably preventing it and Safe{Core} Protocol.
+> - the way module stores data when enabled can be a concern for upgrades. We
+>   should look at this in the context of plugin account
+> - the use of a standardized plugin protocol also opens the door to the
+>   integration of the shipping of client-side SDK and UI components to ease 
+>   and help the use to interact with the plugin in the context of a service.
+>   This would help provide installation/blocking and also standardize
+>   behaviours on the dapp or in the signer.
+> - the concerns we have identified sofar are that:
+>   - if somehow we need to reverse transactions and some fees are taken, we 
+>     could end-up in a situation when someone fails transaction on purpose.
+>   - if the plugin stores data in the account, for instance to check for an
+>     allowance how can we guarranty that there is no collision overtime,
+>     including on purpose. How can we also guarranty those data are not lost
+>     with a plugin upgrade
+>   - how to we check for security when modules are combined because, it is
+>     great, except that it could very well be that together module are dangerous
+>     when used standalone, they are actually fine
+
 - [EIP-6963 Multi Injected Provider Discovery Using window events to announce injected Wallet Providers](https://eips.ethereum.org/EIPS/eip-6963)
-- Study bespoke solutions, from the Safe legacy plugin system to all the current
-  smart account extension ability, like SimpleAccount, Argent, Alchemy, Kernel...
 
 ## What for
 
@@ -78,9 +108,13 @@ If you want to dig deeper into some of the many scenarios associated with Module
 we recommand you have a look at existing implementations like:
 - [Safe Modules](https://github.com/safe-global/safe-modules)
 - [Zodiac Modules](https://github.com/gnosisguild/zodiac)
+- [A list of modules and resources by Rhinestone](https://github.com/rhinestonewtf/awesome-modular-accounts)
 
-The Hackathons and ideas poping around include:
+Hackathons and ideas popping around include:
 
+- The Ability to activate a module Offchain from a session key, see
+  [Why we are building Kernel on ERC-7579](https://docs.zerodev.app/blog/why-7579-over-6900)
+  in the Zerodev.app.
 - A Module Store, i.e a Market Place that whitelist/block and easy the addition
   and moneytizations of modules
 - The use of ZK Verifier to only use if something is proven. I'm wondering if
