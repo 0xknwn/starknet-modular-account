@@ -84,8 +84,6 @@ We would like to explore solutions like:
 >     great, except that it could very well be that together module are dangerous
 >     when used standalone, they are actually fine
 
-- [EIP-6963 Multi Injected Provider Discovery Using window events to announce injected Wallet Providers](https://eips.ethereum.org/EIPS/eip-6963)
-
 ## What for
 
 Modules help to address advanced scenarios. Ethereum existing solutions comes
@@ -165,7 +163,7 @@ Android Keystore or Yubikey. Starknet supports with v0.12.3 secp256r1 as part of
 [Starknet OS](https://community.starknet.io/t/starknet-next-versions-v0-12-3-v0-13-0-and-sepolia-testnet-migration/106529)
 
 You can find an implementation of an account that provides support for passkeys
-in the [https://github.com/cartridge-gg/cairo-webauthn](Cartridge Controller)
+in the [Cartridge Controller](https://github.com/cartridge-gg/cairo-webauthn)
 and you can even test the flow on their
 [connection page](https://x.cartridge.gg/login)... That is for sure something
 that can easily be reproduced for other use cases with the help of the
