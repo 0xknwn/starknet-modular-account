@@ -47,10 +47,9 @@ use snforge_std::errors::{SyscallResultStringErrorTrait, PanicDataOrString};
 
 #[cfg(test)]
 mod tests {
-    use smartr::counter::ICounterDispatcherTrait;
     use snforge_std::cheatcodes::contract_class::ContractClassTrait;
     use snforge_std::{declare};
-    use super::{ICounterDispatcher, ICounter};
+    use super::{ICounterDispatcher, ICounterDispatcherTrait};
     use snforge_std::{start_prank, CheatTarget};
     use starknet::{ContractAddress};
 
