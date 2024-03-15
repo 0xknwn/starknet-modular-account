@@ -1,5 +1,5 @@
 import fs from "fs";
-import { RpcProvider, Account, Contract } from "starknet";
+import { RpcProvider, Account, Contract, Call } from "starknet";
 import { ABI as ERC20 } from "./abi/ERC20";
 import { ethAddress, strkAddress } from "./addresses";
 
@@ -12,7 +12,7 @@ type AccountConfig = {
 type Config = {
   providerURL: string;
   chainID: string;
-  account: AccountConfig;
+  accounts: AccountConfig[];
 };
 
 export const config = (env: string = "devnet"): Config => {
@@ -27,10 +27,10 @@ export const provider = (env: string = "devnet") => {
   return new RpcProvider({ nodeUrl: c.providerURL });
 };
 
-export const account = (env: string = "devnet"): Account => {
+export const account = (id: number = 0, env: string = "devnet"): Account => {
   const c = config(env);
   const p = provider(env);
-  return new Account(p, c.account.address, c.account.privateKey);
+  return new Account(p, c.accounts[id].address, c.accounts[id].privateKey);
 };
 
 export const ethBalance = async (account: string, env: string = "devnet") => {
@@ -47,4 +47,22 @@ export const strkBalance = async (account: string, env: string = "devnet") => {
   const contract = new Contract(ERC20, eth, p).typedv2(ERC20);
   const amount = await contract.balanceOf(account);
   return amount;
+};
+
+export const ethTransfer = async (
+  srcNumber: number,
+  destNumber: number,
+  amount: bigint,
+  env: string = "devnet"
+) => {
+  const c = config(env);
+  const eth = ethAddress(env);
+  const a = account(srcNumber, env);
+  const contract = new Contract(ERC20, eth, a).typedv2(ERC20);
+  const transferCall: Call = contract.populate("transfer", {
+    recipient: c.accounts[destNumber].address,
+    amount,
+  });
+  const { transaction_hash: transferTxHash } = await a.execute(transferCall);
+  return await a.waitForTransaction(transferTxHash);
 };
