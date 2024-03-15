@@ -1,2 +1,5 @@
 target
 .snfoundry_cache/
+/node_modules
+/build
+/.env.devnet.json
