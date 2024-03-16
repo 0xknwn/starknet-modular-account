@@ -20,7 +20,8 @@ more resources and document them if needed:
   starknet devnet. It is not completed yet but can be used in a number of cases
 - [katana](https://book.dojoengine.org/toolchain/katana/overview) is another
   rust version of a devnet and might also be used to run tests locally
-- [abi-wan-kanabi](./resources/abi-wan-kanabi.md) is a 
+- [abi-wan-kanabi](./resources/abi-wan-kanabi.md) is a javascript package that
+  extract the ABI from a built contract and generates the associated typescript
 
 - scarb
 - starknet foundry with snforge et sncast
@@ -33,6 +34,43 @@ more resources and document them if needed:
 
 Also note that Starkware provides nice workshops and learning resources
 including the [Abstract Account development](https://github.com/starknet-edu/aa-workshop)
+
+## Testing the project
+
+In order to test the project, you need to run the `starknet-devnet` with the
+`--seed=0` option and add a `.env.devnet.json` with 3 accounts:
+- 2 accounts that are used to deploy the counter contract and run some tests
+- the target account that should be used to deploy our own account and test it
+  with the `counter` contract.
+
+The `.env.template.json` provides the current values. You should be able to
+simply copy it into `.env.devnet.json` like below:
+
+```shell
+cd smartr_account
+cp .env.template.json .env.devnet.json
+```
+
+Once done, make sure `scarb` and `starknet foundry` are installed and build the
+project:
+
+```shell
+cd smartr_account
+scarb build
+scarb run test
+```
+
+The you should be able to run tests like below:
+
+```shell
+npm install
+npm run test -- utils.test.ts
+npm run test -- counter.test.ts
+npm run test -- account.test.ts
+```
+
+> Note: for the account test to work, the `counter.test.ts` must have been run
+> as it deploys the Counter contract.
 
 ## Other considerations
 
