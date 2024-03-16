@@ -65,8 +65,8 @@ export const deployContract = async (): Promise<Contract> => {
   return new Contract(CounterABI, deployResponse.contract_address, a);
 };
 
-export const increment = async () => {
-  const a = account();
+export const increment = async (id: number = 0, env: string = "devnet") => {
+  const a = account(id, env);
   const contract = new Contract(CounterABI, CounterContractAddress, a).typedv2(
     CounterABI
   );
@@ -85,8 +85,8 @@ export const reset = async (id: number = 0, env: string = "devnet") => {
   return await a.waitForTransaction(transferTxHash);
 };
 
-export const get = async () => {
-  const a = account();
+export const get = async (id: number = 0, env: string = "devnet") => {
+  const a = account(id, env);
   const contract = new Contract(CounterABI, CounterContractAddress, a).typedv2(
     CounterABI
   );
