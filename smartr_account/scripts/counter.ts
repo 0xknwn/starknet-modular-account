@@ -1,5 +1,5 @@
 import { account } from "./utils";
-import { json, type CompiledSierra, Contract } from "starknet";
+import { json, type CompiledSierra, Contract, Call } from "starknet";
 import { ABI as CounterABI } from "./abi/Counter";
 
 import fs from "fs";
@@ -63,4 +63,32 @@ export const deployContract = async (): Promise<Contract> => {
   });
   await a.waitForTransaction(deployResponse.transaction_hash);
   return new Contract(CounterABI, deployResponse.contract_address, a);
+};
+
+export const increment = async () => {
+  const a = account();
+  const contract = new Contract(CounterABI, CounterContractAddress, a).typedv2(
+    CounterABI
+  );
+  const transferCall: Call = contract.populate("increment", {});
+  const { transaction_hash: transferTxHash } = await a.execute(transferCall);
+  return await a.waitForTransaction(transferTxHash);
+};
+
+export const reset = async (id: number = 0, env: string = "devnet") => {
+  const a = account(id, env);
+  const contract = new Contract(CounterABI, CounterContractAddress, a).typedv2(
+    CounterABI
+  );
+  const transferCall: Call = contract.populate("reset", {});
+  const { transaction_hash: transferTxHash } = await a.execute(transferCall);
+  return await a.waitForTransaction(transferTxHash);
+};
+
+export const get = async () => {
+  const a = account();
+  const contract = new Contract(CounterABI, CounterContractAddress, a).typedv2(
+    CounterABI
+  );
+  return await contract.get();
 };
