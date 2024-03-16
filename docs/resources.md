@@ -22,14 +22,13 @@ more resources and document them if needed:
   rust version of a devnet and might also be used to run tests locally
 - [abi-wan-kanabi](./resources/abi-wan-kanabi.md) is a javascript package that
   extract the ABI from a built contract and generates the associated typescript
+- [scarb](./resources/scarb.md) provides a compiler and the dependency manager
+  for cairo
+- [starkli](./resources/starkli.md) is a CLI to interact with starknet
 
-- scarb
 - starknet foundry with snforge et sncast
 - Vscode Cairo 1.0 Extension and Scarb Language Server
-- starkli vs cairo-lang
 - starknet.js https://github.com/starknet-io/starknet.js
-- https://github.com/PhilippeR26/starknet.js-workshop-typescript
-- https://www.starknetjs.com/docs/guides/intro
 - https://walnut.dev/
 
 Also note that Starkware provides nice workshops and learning resources
