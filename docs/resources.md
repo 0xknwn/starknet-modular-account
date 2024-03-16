@@ -78,4 +78,3 @@ npm run test -- account.test.ts
   - there is a [Faucet on blast.io](https://blastapi.io/faucets/starknet-sepolia-eth)
   - the starknet book explains how to
     [bridge ETH with Starknet](https://book.starknet.io/ch02-05-01-start-with-sepolia.html)
-
