@@ -10,8 +10,8 @@ import {
 
 import fs from "fs";
 
-const AccountClassHash =
-  "0x487826eee874f97e2e0bb46af10cf81ebefae27f41eff9c70b76c801e6139c4";
+export const AccountClassHash =
+  "0x4b0842449ea4afa6eb97247ecf613d09347fd5344755c66d3469a1b634d17b0";
 
 export const deployClass = async () => {
   const a = account();
@@ -68,10 +68,7 @@ export const deployAccount = async () => {
   const p = provider();
   try {
     const classHash = await p.getClassHashAt(c.accounts[2].address);
-    if (
-      classHash ==
-      "0x487826eee874f97e2e0bb46af10cf81ebefae27f41eff9c70b76c801e6139c4"
-    ) {
+    if (classHash == AccountClassHash) {
       return {
         contract_address: c.accounts[2].address,
       };
@@ -81,8 +78,7 @@ export const deployAccount = async () => {
   const starkKeyPub = ec.starkCurve.getStarkKey(c.accounts[0].privateKey);
   const calldata = CallData.compile({ publicKey: starkKeyPub });
   const { transaction_hash, contract_address } = await a.deployAccount({
-    classHash:
-      "0x487826eee874f97e2e0bb46af10cf81ebefae27f41eff9c70b76c801e6139c4",
+    classHash: AccountClassHash,
     constructorCalldata: calldata,
     addressSalt: starkKeyPub,
   });

@@ -1,34 +1,36 @@
-import { deployClass, computeAccountAddress, deployAccount } from "./account";
+import {
+  deployClass,
+  computeAccountAddress,
+  deployAccount,
+  AccountClassHash,
+} from "./account";
 import { config, ethBalance, ethTransfer } from "./utils";
 import { increment, get, reset } from "./counter";
 
 test("deploy account class", async () => {
   const c = await deployClass();
-  expect(c.classHash).toEqual(
-    "0x487826eee874f97e2e0bb46af10cf81ebefae27f41eff9c70b76c801e6139c4"
-  );
+  expect(c.classHash).toEqual(AccountClassHash);
 }, 20000);
 
 test("compute account address", async () => {
   const c = computeAccountAddress();
   expect(c).toEqual(
-    "0x3ebf0c708588669e87399e149f1b7caae4c880e3be5a1f01740015edfffa85"
+    "0x187534c4e136a87b60c4dd7e03ba8330c95b847cd39b2acbb176b565c64e368"
   );
 });
 
 test("transfer eth to new account", async () => {
   const c = config();
-  const initialAmount = (await ethBalance(c.accounts[0].address)) as bigint;
   const receipt = await ethTransfer(0, 2, 10n ** 16n);
   expect(receipt.execution_status).toBe("SUCCEEDED");
-  const finalAmount = (await ethBalance(c.accounts[0].address)) as bigint;
-  expect(initialAmount - finalAmount).toBeGreaterThanOrEqual(10n ** 16n);
+  const finalAmount = (await ethBalance(c.accounts[2].address)) as bigint;
+  expect(finalAmount).toBeGreaterThanOrEqual(10n ** 16n);
 }, 20000);
 
 test("deploy account contract", async () => {
   const c = await deployAccount();
   expect(c.contract_address).toEqual(
-    "0x3ebf0c708588669e87399e149f1b7caae4c880e3be5a1f01740015edfffa85"
+    "0x187534c4e136a87b60c4dd7e03ba8330c95b847cd39b2acbb176b565c64e368"
   );
 }, 120000);
 
