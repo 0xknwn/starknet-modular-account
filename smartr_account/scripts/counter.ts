@@ -5,9 +5,9 @@ import { ABI as CounterABI } from "./abi/Counter";
 import fs from "fs";
 
 const CounterClassHash =
-  "0x6bb84ab149988a8aaec07001d5b81acf2a1ad8b8d001ef76d240a929949f4f9";
+  "0xce25b8d2421fc99d0db1df808ae9e072a3e09774418d090c1dc31970458378";
 const CounterContractAddress =
-  "0x05399bea17614cfbaf83c9bc194335e1f24af7e4ba0588bebc3ad237ab5ad7d0";
+  "0x4dfe918fec4be71295ab9d004d2289703d4393a65c2c07f6a9c1609032f59a4";
 
 export const deployClass = async () => {
   const a = account();

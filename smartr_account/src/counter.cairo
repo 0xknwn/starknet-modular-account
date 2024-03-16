@@ -7,49 +7,60 @@ trait ICounter<TContractState> {
 
 #[starknet::contract]
 mod Counter {
+    use openzeppelin::access::ownable::OwnableComponent;
+
     use starknet::{ContractAddress, get_caller_address};
+
+    component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
+
+    #[abi(embed_v0)]
+    impl OwnableImpl = OwnableComponent::OwnableImpl<ContractState>;
+
+    impl OwnableInternalImpl = OwnableComponent::InternalImpl<ContractState>;
 
     #[storage]
     struct Storage {
-        contract_owner: ContractAddress,
         counter: u64,
+        #[substorage(v0)]
+        ownable: OwnableComponent::Storage
+    }
+
+    #[event]
+    #[derive(Drop, starknet::Event)]
+    enum Event {
+        #[flat]
+        OwnableEvent: OwnableComponent::Event,
     }
 
     #[constructor]
     fn constructor(ref self: ContractState, owner: ContractAddress) {
-        self.contract_owner.write(owner);
-        self.counter.write(0);
+        self.ownable.initializer(owner);
     }
 
     #[abi(embed_v0)]
     impl CounterImpl of super::ICounter<ContractState> {
-        // Increases the balance by the given amount.
         fn increment(ref self: ContractState) {
             self.counter.write(self.counter.read() + 1);
         }
 
-        // Gets the balance.
         fn get(self: @ContractState) -> u64 {
             self.counter.read()
         }
 
-        // Resets the balance to 0.
         fn reset(ref self: ContractState) {
-            let caller = get_caller_address();
-            assert(caller == self.contract_owner.read(), 'reset() requires owner');
+            self.ownable.assert_only_owner();
             self.counter.write(0);
         }
     }
 }
 
-
 use snforge_std::errors::{SyscallResultStringErrorTrait, PanicDataOrString};
-
 #[cfg(test)]
 mod tests {
     use snforge_std::cheatcodes::contract_class::ContractClassTrait;
     use snforge_std::{declare};
     use super::{ICounterDispatcher, ICounterDispatcherTrait};
+    use openzeppelin::access::ownable::interface::{IOwnable, IOwnableCamelOnly};
     use snforge_std::{start_prank, CheatTarget};
     use starknet::{ContractAddress};
 
@@ -79,9 +90,8 @@ mod tests {
         let counter = dispatcher.get();
         assert_eq!(counter, 0, "counter should be 0");
     }
-
     #[test]
-    #[should_panic(expected: ('reset() requires owner',))]
+    #[should_panic(expected: ('Caller is not the owner',))]
     fn test_fail_reset() {
         let contract = declare("Counter");
         let owner: felt252 = 1;
