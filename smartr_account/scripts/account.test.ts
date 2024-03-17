@@ -13,10 +13,9 @@ test("deploy account class", async () => {
 }, 20000);
 
 test("compute account address", async () => {
+  const conf = config();
   const c = computeAccountAddress();
-  expect(c).toEqual(
-    "0x187534c4e136a87b60c4dd7e03ba8330c95b847cd39b2acbb176b565c64e368"
-  );
+  expect(c).toEqual(conf.accounts[2].address);
 });
 
 test("transfer eth to new account", async () => {
@@ -28,10 +27,9 @@ test("transfer eth to new account", async () => {
 }, 20000);
 
 test("deploy account contract", async () => {
+  const conf = config();
   const c = await deployAccount();
-  expect(c.contract_address).toEqual(
-    "0x187534c4e136a87b60c4dd7e03ba8330c95b847cd39b2acbb176b565c64e368"
-  );
+  expect(c.contract_address).toEqual(conf.accounts[2].address);
 }, 120000);
 
 test("reset counter", async () => {

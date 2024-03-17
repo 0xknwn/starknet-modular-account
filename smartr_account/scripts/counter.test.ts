@@ -1,17 +1,21 @@
-import { deployClass, deployContract, increment, get, reset } from "./counter";
+import {
+  deployClass,
+  deployContract,
+  increment,
+  get,
+  reset,
+  CounterClassHash,
+  CounterContractAddress,
+} from "./counter";
 
 test("deploy counter class", async () => {
   const c = await deployClass();
-  expect(c.classHash).toEqual(
-    "0xce25b8d2421fc99d0db1df808ae9e072a3e09774418d090c1dc31970458378"
-  );
+  expect(c.classHash).toEqual(CounterClassHash);
 }, 20000);
 
 test("deploy counter contract", async () => {
   const c = await deployContract();
-  expect(c.address).toEqual(
-    "0x4dfe918fec4be71295ab9d004d2289703d4393a65c2c07f6a9c1609032f59a4"
-  );
+  expect(c.address).toEqual(CounterContractAddress);
 }, 120000);
 
 test("increment counter", async () => {

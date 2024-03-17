@@ -11,7 +11,7 @@ import {
 import fs from "fs";
 
 export const AccountClassHash =
-  "0x4b0842449ea4afa6eb97247ecf613d09347fd5344755c66d3469a1b634d17b0";
+  "0x43d8390f93540f97ee8c9adbf435cbd52fb8b74cbfd09642ff4acb83f6318c5";
 
 export const deployClass = async () => {
   const a = account();
