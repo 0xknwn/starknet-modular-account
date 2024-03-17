@@ -25,7 +25,8 @@ more resources and document them if needed:
 - [scarb](./resources/scarb.md) provides a compiler and the dependency manager
   for cairo
 - [starkli](./resources/starkli.md) is a CLI to interact with starknet
-
+- [mitmproxy](./resources/mitmproxy.md) is a proxy and reverse proxy that can be used to
+  capture payload and help better understand how they work
 - starknet foundry with snforge et sncast
 - Vscode Cairo 1.0 Extension and Scarb Language Server
 - starknet.js https://github.com/starknet-io/starknet.js
