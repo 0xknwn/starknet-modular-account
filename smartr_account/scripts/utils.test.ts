@@ -1,5 +1,6 @@
 import {
   config,
+  account,
   provider,
   ethBalance,
   strkBalance,
@@ -33,8 +34,10 @@ test("strkBalance", async () => {
 
 test("ethTransfer", async () => {
   const c = config();
+  const a = account();
+  const destAddress = c.accounts[1].address;
   const initialAmount = (await ethBalance(c.accounts[0].address)) as bigint;
-  const receipt = await ethTransfer(0, 1, 10n ** 16n);
+  const receipt = await ethTransfer(a, destAddress, 10n ** 16n);
   expect(receipt.execution_status).toBe("SUCCEEDED");
   const finalAmount = (await ethBalance(c.accounts[0].address)) as bigint;
   expect(initialAmount - finalAmount).toBeGreaterThanOrEqual(
