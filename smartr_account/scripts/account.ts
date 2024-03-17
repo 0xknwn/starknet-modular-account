@@ -1,5 +1,6 @@
 import { account, config, classHash, provider, ethTransfer } from "./utils";
-import { ec, CallData, hash, Account } from "starknet";
+import { ec, Call, CallData, hash, Account, Contract } from "starknet";
+import { ABI as AccountABI } from "./abi/Account";
 
 // accountAddress compute the account address from the account public key.
 export const accountAddress = (name: string = "Account"): string => {
@@ -29,7 +30,7 @@ export const deployAccount = async (name: string = "Account") => {
     }
     return AccountAddress;
   } catch (e) {}
-  const tx = await ethTransfer(a, AccountAddress, 10n ** 16n);
+  const tx = await ethTransfer(a, AccountAddress, 10n ** 17n);
   if (tx.execution_status !== "SUCCEEDED") {
     throw new Error(
       `Failed to transfer eth to account: ${tx.execution_status}`
@@ -51,4 +52,19 @@ export const deployAccount = async (name: string = "Account") => {
     throw new Error(`Failed to deploy account: ${txReceipt.execution_status}`);
   }
   return AccountAddress;
+};
+
+export const upgrade = async (
+  a: Account,
+  classHash: string,
+  env: string = "devnet"
+) => {
+  const conf = config(env);
+
+  const contract = new Contract(AccountABI, a.address, a).typedv2(AccountABI);
+  const upgradeCall: Call = contract.populate("upgrade", {
+    new_class_hash: classHash,
+  });
+  const { transaction_hash: transferTxHash } = await a.execute(upgradeCall);
+  return await a.waitForTransaction(transferTxHash);
 };
