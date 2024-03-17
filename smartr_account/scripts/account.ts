@@ -1,57 +1,9 @@
-import { account, config, provider } from "./utils";
-import {
-  json,
-  type CompiledSierra,
-  ec,
-  CallData,
-  hash,
-  Account,
-} from "starknet";
+import { account, config, classHash, provider, ethTransfer } from "./utils";
+import { ec, CallData, hash, Account } from "starknet";
 
-import fs from "fs";
-
-export const AccountClassHash =
-  "0x43d8390f93540f97ee8c9adbf435cbd52fb8b74cbfd09642ff4acb83f6318c5";
-
-export const deployClass = async () => {
-  const a = account();
-
-  try {
-    const cl = (await a.getClass(AccountClassHash)) as Omit<
-      CompiledSierra,
-      "sierra_program_debug_info"
-    >;
-    return {
-      classHash: AccountClassHash,
-    };
-  } catch (e) {}
-
-  const compiledTestSierra = json.parse(
-    fs
-      .readFileSync("./target/dev/smartr_Account.contract_class.json")
-      .toString("ascii")
-  );
-  const compiledTestCasm = json.parse(
-    fs
-      .readFileSync("./target/dev/smartr_Account.compiled_contract_class.json")
-      .toString("ascii")
-  );
-  try {
-    const declareResponse = await a.declare({
-      contract: compiledTestSierra,
-      casm: compiledTestCasm,
-    });
-    return {
-      ...(await a.waitForTransaction(declareResponse.transaction_hash)),
-      classHash: declareResponse.class_hash,
-    };
-  } catch (e) {}
-  return {
-    classHash: "0x0",
-  };
-};
-
-export const computeAccountAddress = () => {
+// accountAddress compute the account address from the account public key.
+export const accountAddress = (name: string = "Account"): string => {
+  const AccountClassHash = classHash(name);
   const c = config();
   const starkKeyPub = ec.starkCurve.getStarkKey(c.accounts[0].privateKey);
   const calldata = CallData.compile({ publicKey: starkKeyPub });
@@ -63,27 +15,40 @@ export const computeAccountAddress = () => {
   );
 };
 
-export const deployAccount = async () => {
+export const deployAccount = async (name: string = "Account") => {
+  const computedClassHash = classHash(name);
+  const AccountAddress = accountAddress(name);
   const c = config();
-  const p = provider();
+  const a = account();
   try {
-    const classHash = await p.getClassHashAt(c.accounts[2].address);
-    if (classHash == AccountClassHash) {
-      return {
-        contract_address: c.accounts[2].address,
-      };
+    const deployedClassHash = await a.getClassHashAt(AccountAddress);
+    if (deployedClassHash !== computedClassHash) {
+      throw new Error(
+        `Class mismatch: expect ${computedClassHash}, got ${deployedClassHash}`
+      );
     }
+    return AccountAddress;
   } catch (e) {}
-  const a = new Account(p, c.accounts[2].address, c.accounts[2].privateKey);
+  const tx = await ethTransfer(a, AccountAddress, 10n ** 16n);
+  if (tx.execution_status !== "SUCCEEDED") {
+    throw new Error(
+      `Failed to transfer eth to account: ${tx.execution_status}`
+    );
+  }
+  const p = provider();
+  const newAccount = new Account(p, AccountAddress, c.accounts[0].privateKey);
   const starkKeyPub = ec.starkCurve.getStarkKey(c.accounts[0].privateKey);
   const calldata = CallData.compile({ publicKey: starkKeyPub });
-  const { transaction_hash, contract_address } = await a.deployAccount({
-    classHash: AccountClassHash,
-    constructorCalldata: calldata,
-    addressSalt: starkKeyPub,
-  });
-  return {
-    ...(await p.waitForTransaction(transaction_hash)),
-    contract_address,
-  };
+  const { transaction_hash, contract_address } = await newAccount.deployAccount(
+    {
+      classHash: computedClassHash,
+      constructorCalldata: calldata,
+      addressSalt: starkKeyPub,
+    }
+  );
+  const txReceipt = await p.waitForTransaction(transaction_hash);
+  if (txReceipt.execution_status !== "SUCCEEDED") {
+    throw new Error(`Failed to deploy account: ${txReceipt.execution_status}`);
+  }
+  return AccountAddress;
 };
