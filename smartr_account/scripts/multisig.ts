@@ -120,7 +120,6 @@ export class MultisigAccount extends Account {
     // ));
     // altSignature = signatureToHexArray(altSignature);
 
-    console.log("signature", signature);
     const signatures = signature.concat(altSignature);
 
     const calldata = transaction.getExecuteCalldata(
