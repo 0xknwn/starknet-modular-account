@@ -40,13 +40,11 @@ export const deployAccount = async (name: string = "Account") => {
   const newAccount = new Account(p, AccountAddress, c.accounts[0].privateKey);
   const starkKeyPub = ec.starkCurve.getStarkKey(c.accounts[0].privateKey);
   const calldata = CallData.compile({ publicKey: starkKeyPub });
-  const { transaction_hash, contract_address } = await newAccount.deployAccount(
-    {
-      classHash: computedClassHash,
-      constructorCalldata: calldata,
-      addressSalt: starkKeyPub,
-    }
-  );
+  const { transaction_hash } = await newAccount.deployAccount({
+    classHash: computedClassHash,
+    constructorCalldata: calldata,
+    addressSalt: starkKeyPub,
+  });
   const txReceipt = await p.waitForTransaction(transaction_hash);
   if (txReceipt.execution_status !== "SUCCEEDED") {
     throw new Error(`Failed to deploy account: ${txReceipt.execution_status}`);
@@ -59,8 +57,6 @@ export const upgrade = async (
   classHash: string,
   env: string = "devnet"
 ) => {
-  const conf = config(env);
-
   const contract = new Contract(AccountABI, a.address, a).typedv2(AccountABI);
   const upgradeCall: Call = contract.populate("upgrade", {
     new_class_hash: classHash,

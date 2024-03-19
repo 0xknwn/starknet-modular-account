@@ -11,6 +11,7 @@ import {
 import { ABI as ERC20 } from "./abi/ERC20";
 import { ethAddress, strkAddress } from "./addresses";
 import { execSync } from "child_process";
+import { MultisigAccount } from "./multisig";
 
 type AccountConfig = {
   address: string;
@@ -39,7 +40,16 @@ export const provider = (env: string = "devnet") => {
 export const account = (id: number = 0, env: string = "devnet"): Account => {
   const c = config(env);
   const p = provider(env);
-  return new Account(p, c.accounts[id].address, c.accounts[id].privateKey);
+  let altId = 0;
+  if (id === 0) {
+    altId = 1;
+  }
+  return new MultisigAccount(
+    p,
+    c.accounts[id].address,
+    c.accounts[id].privateKey,
+    c.accounts[altId].privateKey
+  );
 };
 
 export const ethBalance = async (account: string, env: string = "devnet") => {
