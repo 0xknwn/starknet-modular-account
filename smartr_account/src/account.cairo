@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 
+use super::components;
+
 #[starknet::contract(account)]
 mod Account {
-    use openzeppelin::account::AccountComponent;
+    use super::components::account::AccountComponent;
     use openzeppelin::introspection::src5::SRC5Component;
     use openzeppelin::upgrades::UpgradeableComponent;
     use openzeppelin::upgrades::interface::IUpgradeable;

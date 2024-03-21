@@ -18,3 +18,6 @@ scarb add openzeppelin \
 ```
 
 It actually adds the library to the `Scarb.toml` file.
+
+curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh
+scarb --version

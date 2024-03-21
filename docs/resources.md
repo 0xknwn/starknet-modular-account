@@ -4,12 +4,17 @@ references what you should learn and what tools you should use.
 ## Learning
 
 To learn, a good starting point is
-- [starklings-cairo1](https://github.com/shramee/starklings-cairo1.git)
-- [starknet book](https://book.starknet.io/)
-- [cairo book](https://book.cairo-lang.org/)
-- [starknet developer portal](https://www.starknet.io/en/developers), the
-- [starknet documentation](https://docs.starknet.io/documentation/) and the
-- [starknet community portal](https://community.starknet.io/).
+- [Awesome Starknet](https://github.com/keep-starknet-strange/awesome-starknet)
+- [Cairo Compiler](https://github.com/starkware-libs/cairo)
+- [Cairo Book](https://book.cairo-lang.org/)
+- [Cairo By Example](https://cairo-by-example.com/)
+- [Starknet Documentation](https://docs.starknet.io/documentation/) and the
+- [Starknet Developer Portal](https://www.starknet.io/en/developers), the
+- [Starknet Community Portal](https://community.starknet.io/).
+- [Starknet Book](https://book.starknet.io/)
+- [Starknet Improvement Proposals](https://github.com/starknet-io/SNIPs)
+- [Starknet By Example](https://github.com/NethermindEth/StarknetByExample)
+- [Starklings Cairo](https://github.com/shramee/starklings-cairo1.git)
 
 ## Developing
 

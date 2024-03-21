@@ -10,9 +10,6 @@
   "keywords": [],
   "author": "0xknwn",
   "license": "MIT",
-  "dependencies": {
-    "starknet": "^6.4.2"
-  },
   "devDependencies": {
     "@types/jest": "^29.5.12",
     "@types/node": "^20.11.27",
