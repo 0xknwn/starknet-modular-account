@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 
+use super::components;
+
 #[starknet::contract(account)]
 mod Account {
-    use openzeppelin::account::AccountComponent;
+    use super::components::account::AccountComponent;
     use openzeppelin::introspection::src5::SRC5Component;
     use openzeppelin::upgrades::UpgradeableComponent;
     use openzeppelin::upgrades::interface::IUpgradeable;
@@ -52,8 +54,8 @@ mod Account {
     }
 
     #[constructor]
-    fn constructor(ref self: ContractState, public_key: felt252) {
-        self.account.initializer(public_key);
+    fn constructor(ref self: ContractState, public_keys: Span<felt252>) {
+        self.account.initializer(public_keys);
     }
 
     #[abi(embed_v0)]

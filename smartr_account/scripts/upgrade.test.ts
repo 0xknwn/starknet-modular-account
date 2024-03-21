@@ -55,6 +55,9 @@ test("check account classHash", async () => {
   expect(deployedClass).toEqual(classHash("SimpleAccount"));
 }, 120000);
 
+// todo: downgrade should have failed because of the public key is not in
+// the same variable name as the previous class!
+
 test("downgrade account", async () => {
   const c = config();
   const p = provider();
