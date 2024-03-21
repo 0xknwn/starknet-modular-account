@@ -23,7 +23,9 @@ pub mod AccountComponent {
 
     #[storage]
     struct Storage {
-        Account_public_key: felt252
+        Account_public_keys: LegacyMap::<u32, felt252>,
+        Account_count_keys: u32,
+        Account_threshhold: u32,
     }
 
     #[event]
@@ -150,8 +152,15 @@ pub mod AccountComponent {
         +Drop<TContractState>
     > of interface::IPublicKey<ComponentState<TContractState>> {
         /// Returns the current public key of the account.
-        fn get_public_key(self: @ComponentState<TContractState>) -> felt252 {
-            self.Account_public_key.read()
+        fn get_public_keys(self: @ComponentState<TContractState>) -> Span<felt252> {
+            let key_counter = self.Account_count_keys.read();
+            let mut counter = 0_u32;
+            let mut public_keys = ArrayTrait::new();
+            while counter < key_counter {
+                public_keys.append(self.Account_public_keys.read(counter));
+                counter += 1;
+            };
+            public_keys.span()
         }
 
         /// Sets the public key of the account to `new_public_key`.
@@ -161,10 +170,12 @@ pub mod AccountComponent {
         /// - The caller must be the contract itself.
         ///
         /// Emits an `OwnerRemoved` event.
-        fn set_public_key(ref self: ComponentState<TContractState>, new_public_key: felt252) {
+        fn set_public_keys(
+            ref self: ComponentState<TContractState>, new_public_keys: Span<felt252>
+        ) {
             self.assert_only_self();
-            self.emit(OwnerRemoved { removed_owner_guid: self.Account_public_key.read() });
-            self._set_public_key(new_public_key);
+            self.emit(OwnerRemoved { removed_owner_guid: self.Account_public_keys.read(0) });
+            self._set_public_keys(new_public_keys);
         }
     }
 
@@ -191,12 +202,19 @@ pub mod AccountComponent {
         +SRC5Component::HasComponent<TContractState>,
         +Drop<TContractState>
     > of interface::IPublicKeyCamel<ComponentState<TContractState>> {
-        fn getPublicKey(self: @ComponentState<TContractState>) -> felt252 {
-            self.Account_public_key.read()
+        fn getPublicKeys(self: @ComponentState<TContractState>) -> Span<felt252> {
+            let key_counter = self.Account_count_keys.read();
+            let mut counter = 0_u32;
+            let mut public_keys = ArrayTrait::new();
+            while counter < key_counter {
+                public_keys.append(self.Account_public_keys.read(counter));
+                counter += 1;
+            };
+            public_keys.span()
         }
 
-        fn setPublicKey(ref self: ComponentState<TContractState>, newPublicKey: felt252) {
-            PublicKey::set_public_key(ref self, newPublicKey);
+        fn setPublicKeys(ref self: ComponentState<TContractState>, newPublicKeys: Span<felt252>) {
+            PublicKey::set_public_keys(ref self, newPublicKeys);
         }
     }
 
@@ -209,10 +227,10 @@ pub mod AccountComponent {
     > of InternalTrait<TContractState> {
         /// Initializes the account by setting the initial public key
         /// and registering the ISRC6 interface Id.
-        fn initializer(ref self: ComponentState<TContractState>, public_key: felt252) {
+        fn initializer(ref self: ComponentState<TContractState>, public_keys: Span<felt252>) {
             let mut src5_component = get_dep_component_mut!(ref self, SRC5);
             src5_component.register_interface(interface::ISRC6_ID);
-            self._set_public_key(public_key);
+            self._set_public_keys(public_keys);
         }
 
         /// Validates that the caller is the account itself. Otherwise it reverts.
@@ -231,14 +249,22 @@ pub mod AccountComponent {
             assert(self._is_valid_signature(tx_hash, signature), Errors::INVALID_SIGNATURE);
             starknet::VALIDATED
         }
-
         /// Sets the public key without validating the caller.
         /// The usage of this method outside the `set_public_key` function is discouraged.
         ///
         /// Emits an `OwnerAdded` event.
-        fn _set_public_key(ref self: ComponentState<TContractState>, new_public_key: felt252) {
-            self.Account_public_key.write(new_public_key);
-            self.emit(OwnerAdded { new_owner_guid: new_public_key });
+        fn _set_public_keys(
+            ref self: ComponentState<TContractState>, new_public_keys: Span<felt252>
+        ) {
+            let key_counter: u32 = new_public_keys.len();
+            let mut counter = 0_u32;
+            while counter < key_counter {
+                let new_public_key = *new_public_keys[counter];
+                self.Account_public_keys.write(counter, new_public_key);
+                self.emit(OwnerAdded { new_owner_guid: new_public_key });
+                counter += 1;
+            };
+            self.Account_threshhold.write(1_u32);
         }
 
         /// Returns whether the given signature is valid for the given hash
@@ -246,11 +272,46 @@ pub mod AccountComponent {
         fn _is_valid_signature(
             self: @ComponentState<TContractState>, hash: felt252, signature: Span<felt252>
         ) -> bool {
-            let public_key = self.Account_public_key.read();
-            is_valid_stark_signature(hash, public_key, signature)
+            let signature_len = signature.len();
+            let mut counter = 1;
+            let threshhold = self.Account_threshhold.read();
+            let mut found = 0_u32;
+            while counter < signature_len {
+                let mut sig = ArrayTrait::new();
+                let r = *signature[counter - 1];
+                let s = *signature[counter];
+                sig.append(r);
+                sig.append(s);
+                let mut key_counter = 0_u32;
+                let mut is_valid = false;
+                while key_counter < threshhold {
+                    let public_key = self.Account_public_keys.read(key_counter);
+                    if is_valid_stark_signature(hash, public_key, sig.span()) {
+                        is_valid = true;
+                        found += 1;
+                    }
+                    key_counter += 1;
+                };
+                if is_valid {
+                    /// does not account the signature if it has already been found
+                    let mut prev_counter = 1;
+                    while prev_counter < signature_len {
+                        let prev_s = *signature[prev_counter];
+                        if (s == prev_s) {
+                            found -= 1;
+                        }
+                        prev_counter += 2;
+                    };
+                }
+                counter += 2;
+            };
+            if (found >= threshhold) {
+                true
+            } else {
+                false
+            }
         }
     }
-
     #[embeddable_as(AccountMixinImpl)]
     impl AccountMixin<
         TContractState,
@@ -300,21 +361,22 @@ pub mod AccountComponent {
         }
 
         // IPublicKey
-        fn get_public_key(self: @ComponentState<TContractState>) -> felt252 {
-            PublicKey::get_public_key(self)
+        fn get_public_keys(self: @ComponentState<TContractState>) -> Span<felt252> {
+            PublicKey::get_public_keys(self)
         }
 
-        fn set_public_key(ref self: ComponentState<TContractState>, new_public_key: felt252) {
-            PublicKey::set_public_key(ref self, new_public_key);
+        fn set_public_keys(
+            ref self: ComponentState<TContractState>, new_public_keys: Span<felt252>
+        ) {
+            PublicKey::set_public_keys(ref self, new_public_keys);
         }
-
         // IPublicKeyCamel
-        fn getPublicKey(self: @ComponentState<TContractState>) -> felt252 {
-            PublicKeyCamel::getPublicKey(self)
+        fn getPublicKeys(self: @ComponentState<TContractState>) -> Span<felt252> {
+            PublicKeyCamel::getPublicKeys(self)
         }
 
-        fn setPublicKey(ref self: ComponentState<TContractState>, newPublicKey: felt252) {
-            PublicKeyCamel::setPublicKey(ref self, newPublicKey);
+        fn setPublicKeys(ref self: ComponentState<TContractState>, newPublicKeys: Span<felt252>) {
+            PublicKeyCamel::setPublicKeys(ref self, newPublicKeys);
         }
 
         // ISRC5

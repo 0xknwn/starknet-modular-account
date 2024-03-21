@@ -54,8 +54,8 @@ mod Account {
     }
 
     #[constructor]
-    fn constructor(ref self: ContractState, public_key: felt252) {
-        self.account.initializer(public_key);
+    fn constructor(ref self: ContractState, public_keys: Span<felt252>) {
+        self.account.initializer(public_keys);
     }
 
     #[abi(embed_v0)]
