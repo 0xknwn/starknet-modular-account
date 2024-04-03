@@ -6,10 +6,12 @@
 /// The Account component enables contracts to behave as accounts.
 
 use super::interface;
+use super::storage;
 
 #[starknet::component]
 pub mod AccountComponent {
     use super::interface;
+    use super::storage::StoreFelt252Array;
     use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
     use openzeppelin::account::utils::{execute_calls, is_valid_stark_signature};
     use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SRC5InternalTrait;
@@ -23,7 +25,8 @@ pub mod AccountComponent {
 
     #[storage]
     struct Storage {
-        Account_public_key: felt252
+        Account_public_key: felt252,
+        Account_public_keys: Array<felt252>,
     }
 
     #[event]
@@ -168,6 +171,19 @@ pub mod AccountComponent {
         }
     }
 
+    #[embeddable_as(PublicKeysImpl)]
+    pub impl PublicKeys<
+        TContractState,
+        +HasComponent<TContractState>,
+        +SRC5Component::HasComponent<TContractState>,
+        +Drop<TContractState>
+    > of interface::IPublicKeys<ComponentState<TContractState>> {
+        /// Returns the current public key of the account.
+        fn get_public_keys(self: @ComponentState<TContractState>) -> Array<felt252> {
+            self.Account_public_keys.read()
+        }
+    }
+
     /// Adds camelCase support for `ISRC6`.
     #[embeddable_as(SRC6CamelOnlyImpl)]
     impl SRC6CamelOnly<
@@ -238,6 +254,9 @@ pub mod AccountComponent {
         /// Emits an `OwnerAdded` event.
         fn _set_public_key(ref self: ComponentState<TContractState>, new_public_key: felt252) {
             self.Account_public_key.write(new_public_key);
+            let mut new_public_keys = ArrayTrait::<felt252>::new();
+            new_public_keys.append(new_public_key);
+            self.Account_public_keys.write(new_public_keys);
             self.emit(OwnerAdded { new_owner_guid: new_public_key });
         }
 
@@ -306,6 +325,11 @@ pub mod AccountComponent {
 
         fn set_public_key(ref self: ComponentState<TContractState>, new_public_key: felt252) {
             PublicKey::set_public_key(ref self, new_public_key);
+        }
+
+        // IPublicKeys
+        fn get_public_keys(self: @ComponentState<TContractState>) -> Array<felt252> {
+            PublicKeys::get_public_keys(self)
         }
 
         // IPublicKeyCamel

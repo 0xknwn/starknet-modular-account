@@ -37,6 +37,11 @@ pub trait IPublicKey<TState> {
 }
 
 #[starknet::interface]
+pub trait IPublicKeys<TState> {
+    fn get_public_keys(self: @TState) -> Array<felt252>;
+}
+
+#[starknet::interface]
 pub trait ISRC6CamelOnly<TState> {
     fn isValidSignature(self: @TState, hash: felt252, signature: Array<felt252>) -> felt252;
 }
@@ -72,6 +77,9 @@ pub trait AccountABI<TState> {
     // IPublicKey
     fn get_public_key(self: @TState) -> felt252;
     fn set_public_key(ref self: TState, new_public_key: felt252);
+
+    // IPublicKeys
+    fn get_public_keys(self: @TState) -> Array<felt252>;
 
     // ISRC6CamelOnly
     fn isValidSignature(self: @TState, hash: felt252, signature: Array<felt252>) -> felt252;

@@ -1,5 +1,10 @@
 import { deployClass } from "./class";
-import { accountAddress, deployAccount } from "./account";
+import {
+  accountAddress,
+  deployAccount,
+  get_public_key,
+  get_public_keys,
+} from "./account";
 import { config, account, classHash, provider } from "./utils";
 import {
   reset,
@@ -29,6 +34,22 @@ test("deploy account", async () => {
   const conf = config();
   const c = await deployAccount("Account");
   expect(c).toEqual(accountAddress("Account"));
+}, 120000);
+
+test("account public key", async () => {
+  const conf = config();
+  const a = account();
+  const c = await get_public_key(a);
+  expect(`0x${c.toString(16)}`).toEqual(conf.accounts[0].publicKey);
+}, 120000);
+
+test("account public keys", async () => {
+  const conf = config();
+  const a = account();
+  const c = await get_public_keys(a);
+  expect(Array.isArray(c)).toBe(true);
+  expect(c.length).toEqual(1);
+  expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
 }, 120000);
 
 test("reset counter with owner", async () => {

@@ -66,3 +66,17 @@ export const upgrade = async (
   const { transaction_hash: transferTxHash } = await a.execute(upgradeCall);
   return await a.waitForTransaction(transferTxHash);
 };
+
+export const get_public_key = async (a: Account, env: string = "devnet") => {
+  const contract = new Contract(AccountABI, accountAddress(), a).typedv2(
+    AccountABI
+  );
+  return await contract.get_public_key();
+};
+
+export const get_public_keys = async (a: Account, env: string = "devnet") => {
+  const contract = new Contract(AccountABI, accountAddress(), a).typedv2(
+    AccountABI
+  );
+  return await contract.get_public_keys();
+};
