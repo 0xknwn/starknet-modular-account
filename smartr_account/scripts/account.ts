@@ -31,10 +31,8 @@ export const deployAccount = async (name: string = "Account") => {
     return AccountAddress;
   } catch (e) {}
   const tx = await ethTransfer(a, AccountAddress, 10n ** 17n);
-  if (tx.execution_status !== "SUCCEEDED") {
-    throw new Error(
-      `Failed to transfer eth to account: ${tx.execution_status}`
-    );
+  if (!tx.isSuccess()) {
+    throw new Error(`Failed to transfer eth to account: ${tx.statusReceipt}`);
   }
   const p = provider();
   const newAccount = new Account(p, AccountAddress, c.accounts[0].privateKey);
@@ -48,8 +46,8 @@ export const deployAccount = async (name: string = "Account") => {
     }
   );
   const txReceipt = await p.waitForTransaction(transaction_hash);
-  if (txReceipt.execution_status !== "SUCCEEDED") {
-    throw new Error(`Failed to deploy account: ${txReceipt.execution_status}`);
+  if (!txReceipt.isSuccess()) {
+    throw new Error(`Failed to deploy account: ${txReceipt.status}`);
   }
   return AccountAddress;
 };
