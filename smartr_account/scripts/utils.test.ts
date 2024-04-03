@@ -38,7 +38,7 @@ test("ethTransfer", async () => {
   const destAddress = c.accounts[1].address;
   const initialAmount = (await ethBalance(c.accounts[0].address)) as bigint;
   const receipt = await ethTransfer(a, destAddress, 10n ** 16n);
-  expect(receipt.execution_status).toBe("SUCCEEDED");
+  expect(receipt.isSuccess()).toBe(true);
   const finalAmount = (await ethBalance(c.accounts[0].address)) as bigint;
   expect(initialAmount - finalAmount).toBeGreaterThanOrEqual(
     10000000000000000n

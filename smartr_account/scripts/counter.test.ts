@@ -21,7 +21,7 @@ test("check counter address", async () => {
 test("increment counter", async () => {
   const a = account();
   const c = await increment(a);
-  expect(c.execution_status).toEqual("SUCCEEDED");
+  expect(c.isSuccess()).toEqual(true);
 }, 120000);
 
 test("read counter", async () => {
@@ -33,7 +33,7 @@ test("read counter", async () => {
 test("reset counter", async () => {
   const a = account();
   const c = await reset(a);
-  expect(c.execution_status).toEqual("SUCCEEDED");
+  expect(c.isSuccess()).toEqual(true);
 }, 120000);
 
 test("read counter", async () => {
@@ -45,7 +45,7 @@ test("read counter", async () => {
 test("increment counter", async () => {
   const a = account();
   const c = await increment(a);
-  expect(c.execution_status).toEqual("SUCCEEDED");
+  expect(c.isSuccess()).toEqual(true);
 }, 120000);
 
 test("read counter", async () => {

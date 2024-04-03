@@ -40,7 +40,7 @@ test("upgrade account", async () => {
     c.accounts[0].privateKey
   );
   const txReceipt = await upgrade(a2, classHash("SimpleAccount"));
-  expect(txReceipt.execution_status).toEqual("SUCCEEDED");
+  expect(txReceipt.isSuccess()).toEqual(true);
 }, 120000);
 
 test("check account classHash", async () => {
@@ -67,7 +67,7 @@ test("downgrade account", async () => {
     c.accounts[0].privateKey
   );
   const txReceipt = await upgrade(a2, classHash("Account"));
-  expect(txReceipt.execution_status).toEqual("SUCCEEDED");
+  expect(txReceipt.isSuccess()).toEqual(true);
 }, 120000);
 
 test("check account classHash", async () => {

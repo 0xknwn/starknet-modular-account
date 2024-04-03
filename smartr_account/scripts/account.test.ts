@@ -51,7 +51,7 @@ test("increment counter", async () => {
     conf.accounts[0].privateKey
   );
   const c = await increment(a);
-  expect(c.execution_status).toEqual("SUCCEEDED");
+  expect(c.isSuccess()).toEqual(true);
 }, 120000);
 
 test("read counter", async () => {
