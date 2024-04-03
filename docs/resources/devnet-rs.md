@@ -13,10 +13,10 @@ To install `starknet-devnet-rs`:
 
 ```shell
 cargo --version
-cargo 1.76.0 (c84b36747 2024-01-18)
+cargo 1.77.1 (e52e36006 2024-03-26)
 
 rustc --version
-rustc 1.76.0 (07dca489a 2024-02-04)
+rustc 1.77.1 (7cf61ebde 2024-03-27)
 ```
 
 Install the project from crates.io

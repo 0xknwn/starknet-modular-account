@@ -7,7 +7,7 @@ export const accountAddress = (name: string = "Account"): string => {
   const AccountClassHash = classHash(name);
   const c = config();
   const starkKeyPub = ec.starkCurve.getStarkKey(c.accounts[0].privateKey);
-  const calldata = CallData.compile({ publicKey: starkKeyPub });
+  const calldata = CallData.compile({ public_keys: starkKeyPub });
   return hash.calculateContractAddressFromHash(
     starkKeyPub,
     AccountClassHash,
@@ -39,7 +39,7 @@ export const deployAccount = async (name: string = "Account") => {
   const p = provider();
   const newAccount = new Account(p, AccountAddress, c.accounts[0].privateKey);
   const starkKeyPub = ec.starkCurve.getStarkKey(c.accounts[0].privateKey);
-  const calldata = CallData.compile({ publicKey: starkKeyPub });
+  const calldata = CallData.compile({ public_keys: starkKeyPub });
   const { transaction_hash, contract_address } = await newAccount.deployAccount(
     {
       classHash: computedClassHash,

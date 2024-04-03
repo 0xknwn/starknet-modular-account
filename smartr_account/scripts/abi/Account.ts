@@ -25,7 +25,7 @@ export const ABI = [
   {
     "type": "impl",
     "name": "SRC6Impl",
-    "interface_name": "openzeppelin::account::interface::ISRC6"
+    "interface_name": "smartr::components::interface::ISRC6"
   },
   {
     "type": "struct",
@@ -57,7 +57,7 @@ export const ABI = [
   },
   {
     "type": "interface",
-    "name": "openzeppelin::account::interface::ISRC6",
+    "name": "smartr::components::interface::ISRC6",
     "items": [
       {
         "type": "function",
@@ -116,11 +116,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "DeclarerImpl",
-    "interface_name": "openzeppelin::account::interface::IDeclarer"
+    "interface_name": "smartr::components::interface::IDeclarer"
   },
   {
     "type": "interface",
-    "name": "openzeppelin::account::interface::IDeclarer",
+    "name": "smartr::components::interface::IDeclarer",
     "items": [
       {
         "type": "function",
@@ -143,11 +143,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "DeployableImpl",
-    "interface_name": "openzeppelin::account::interface::IDeployable"
+    "interface_name": "smartr::components::interface::IDeployable"
   },
   {
     "type": "interface",
-    "name": "openzeppelin::account::interface::IDeployable",
+    "name": "smartr::components::interface::IDeployable",
     "items": [
       {
         "type": "function",
@@ -178,11 +178,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "PublicKeyImpl",
-    "interface_name": "openzeppelin::account::interface::IPublicKey"
+    "interface_name": "smartr::components::interface::IPublicKey"
   },
   {
     "type": "interface",
-    "name": "openzeppelin::account::interface::IPublicKey",
+    "name": "smartr::components::interface::IPublicKey",
     "items": [
       {
         "type": "function",
@@ -212,11 +212,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "SRC6CamelOnlyImpl",
-    "interface_name": "openzeppelin::account::interface::ISRC6CamelOnly"
+    "interface_name": "smartr::components::interface::ISRC6CamelOnly"
   },
   {
     "type": "interface",
-    "name": "openzeppelin::account::interface::ISRC6CamelOnly",
+    "name": "smartr::components::interface::ISRC6CamelOnly",
     "items": [
       {
         "type": "function",
@@ -243,11 +243,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "PublicKeyCamelImpl",
-    "interface_name": "openzeppelin::account::interface::IPublicKeyCamel"
+    "interface_name": "smartr::components::interface::IPublicKeyCamel"
   },
   {
     "type": "interface",
-    "name": "openzeppelin::account::interface::IPublicKeyCamel",
+    "name": "smartr::components::interface::IPublicKeyCamel",
     "items": [
       {
         "type": "function",
@@ -327,7 +327,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::account::account::AccountComponent::OwnerAdded",
+    "name": "smartr::components::account::AccountComponent::OwnerAdded",
     "kind": "struct",
     "members": [
       {
@@ -339,7 +339,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::account::account::AccountComponent::OwnerRemoved",
+    "name": "smartr::components::account::AccountComponent::OwnerRemoved",
     "kind": "struct",
     "members": [
       {
@@ -351,17 +351,17 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::account::account::AccountComponent::Event",
+    "name": "smartr::components::account::AccountComponent::Event",
     "kind": "enum",
     "variants": [
       {
         "name": "OwnerAdded",
-        "type": "openzeppelin::account::account::AccountComponent::OwnerAdded",
+        "type": "smartr::components::account::AccountComponent::OwnerAdded",
         "kind": "nested"
       },
       {
         "name": "OwnerRemoved",
-        "type": "openzeppelin::account::account::AccountComponent::OwnerRemoved",
+        "type": "smartr::components::account::AccountComponent::OwnerRemoved",
         "kind": "nested"
       }
     ]
@@ -403,7 +403,7 @@ export const ABI = [
     "variants": [
       {
         "name": "AccountEvent",
-        "type": "openzeppelin::account::account::AccountComponent::Event",
+        "type": "smartr::components::account::AccountComponent::Event",
         "kind": "flat"
       },
       {
