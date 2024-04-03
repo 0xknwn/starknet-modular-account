@@ -7,6 +7,16 @@ install it. You should also refer to the
 [documentation](https://docs.swmansion.com/scarb/docs) to understand what are
 the various options and how to use the tool. 
 
+### How to install and upgrade scarb
+
+The procedure to install and upgrade scarb is the same, run the script below:
+
+```shell
+curl --proto '=https' --tlsv1.2 \
+  -sSf https://docs.swmansion.com/scarb/install.sh | sh
+scarb --version
+```
+
 ### How to add openzeppelin to the project
 
 The command below adds openzeppelin to the project:
@@ -18,6 +28,3 @@ scarb add openzeppelin \
 ```
 
 It actually adds the library to the `Scarb.toml` file.
-
-curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh
-scarb --version
