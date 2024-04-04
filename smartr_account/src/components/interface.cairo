@@ -43,9 +43,3 @@ pub trait IPublicKeys<TState> {
 pub trait ISRC6CamelOnly<TState> {
     fn isValidSignature(self: @TState, hash: felt252, signature: Array<felt252>) -> felt252;
 }
-
-#[starknet::interface]
-pub trait IPublicKeyCamel<TState> {
-    fn getPublicKey(self: @TState) -> felt252;
-    fn setPublicKey(ref self: TState, newPublicKey: felt252);
-}
