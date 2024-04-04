@@ -29,6 +29,7 @@ pub mod AccountComponent {
         // Openzeppelin account. It should *NOT* be used for any other purpose.
         Account_public_key: felt252,
         Account_public_keys: Array<felt252>,
+        Account_threshold: u8,
     }
 
     #[event]
@@ -54,6 +55,8 @@ pub mod AccountComponent {
         pub const INVALID_CALLER: felt252 = 'Account: invalid caller';
         pub const INVALID_SIGNATURE: felt252 = 'Account: invalid signature';
         pub const INVALID_TX_VERSION: felt252 = 'Account: invalid tx version';
+        pub const INVALID_THRESHOLD: felt252 = 'Account: invalid threshold';
+        pub const UNSUPPORTED_THRESHOLD: felt252 = 'Account: unsupported threshold';
         pub const UNAUTHORIZED: felt252 = 'Account: unauthorized';
     }
 
@@ -155,17 +158,27 @@ pub mod AccountComponent {
         +Drop<TContractState>
     > of interface::IPublicKeys<ComponentState<TContractState>> {
         /// Returns the current public key of the account.
+        fn add_public_key(ref self: ComponentState<TContractState>, new_public_key: felt252) {
+            self.assert_only_self();
+        }
+
         fn get_public_keys(self: @ComponentState<TContractState>) -> Array<felt252> {
             self.Account_public_keys.read()
         }
 
-        fn add_public_key(ref self: ComponentState<TContractState>, new_public_key: felt252) {
-            self.assert_only_self();
+        fn get_threshold(self: @ComponentState<TContractState>) -> u8 {
+            self.Account_threshold.read()
         }
 
         fn remove_public_key(ref self: ComponentState<TContractState>, old_public_key: felt252) {
             self.assert_only_self();
             self.emit(OwnerRemoved { removed_owner_guid: self.Account_public_key.read() });
+        }
+
+        fn set_threshold(ref self: ComponentState<TContractState>, new_threshold: u8) {
+            self.assert_only_self();
+            assert(new_threshold == 1, Errors::UNSUPPORTED_THRESHOLD);
+            self.Account_threshold.write(new_threshold);
         }
     }
 
@@ -224,6 +237,7 @@ pub mod AccountComponent {
             let mut new_public_keys = ArrayTrait::<felt252>::new();
             new_public_keys.append(new_public_key);
             self.Account_public_keys.write(new_public_keys);
+            self.Account_threshold.write(1);
             self.emit(OwnerAdded { new_owner_guid: new_public_key });
         }
 
@@ -232,6 +246,8 @@ pub mod AccountComponent {
         fn _is_valid_signature(
             self: @ComponentState<TContractState>, hash: felt252, signature: Span<felt252>
         ) -> bool {
+            let threshold: u8 = self.Account_threshold.read();
+            assert(threshold == 1_u8, Errors::INVALID_THRESHOLD);
             let public_keys: Array<felt252> = self.Account_public_keys.read();
             assert(!public_keys.is_empty(), Errors::INVALID_SIGNATURE);
             let public_key = *public_keys.at(0);

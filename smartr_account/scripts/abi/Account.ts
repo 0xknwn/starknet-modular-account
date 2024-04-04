@@ -186,17 +186,6 @@ export const ABI = [
     "items": [
       {
         "type": "function",
-        "name": "get_public_keys",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::array::Array::<core::felt252>"
-          }
-        ],
-        "state_mutability": "view"
-      },
-      {
-        "type": "function",
         "name": "add_public_key",
         "inputs": [
           {
@@ -209,11 +198,45 @@ export const ABI = [
       },
       {
         "type": "function",
+        "name": "get_public_keys",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::array::Array::<core::felt252>"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_threshold",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u8"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
         "name": "remove_public_key",
         "inputs": [
           {
             "name": "old_public_key",
             "type": "core::felt252"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "set_threshold",
+        "inputs": [
+          {
+            "name": "new_threshold",
+            "type": "core::integer::u8"
           }
         ],
         "outputs": [],
