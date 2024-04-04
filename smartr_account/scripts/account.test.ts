@@ -2,6 +2,7 @@ import { deployClass } from "./class";
 import {
   accountAddress,
   deployAccount,
+  get_threshold,
   get_public_keys,
 } from "./account";
 import { config, account, classHash, provider } from "./utils";
@@ -42,6 +43,12 @@ test("account public keys", async () => {
   expect(Array.isArray(c)).toBe(true);
   expect(c.length).toEqual(1);
   expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
+}, 120000);
+
+test("account threshold", async () => {
+  const a = account();
+  const c = await get_threshold(a);
+  expect(c).toEqual(1n);
 }, 120000);
 
 test("reset counter with owner", async () => {

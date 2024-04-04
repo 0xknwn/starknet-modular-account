@@ -73,3 +73,10 @@ export const get_public_keys = async (a: Account, env: string = "devnet") => {
   );
   return await contract.get_public_keys();
 };
+
+export const get_threshold = async (a: Account, env: string = "devnet") => {
+  const contract = new Contract(AccountABI, accountAddress(), a).typedv2(
+    AccountABI
+  );
+  return await contract.get_threshold();
+};
