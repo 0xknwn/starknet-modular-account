@@ -189,6 +189,8 @@ pub mod AccountComponent {
         /// Remove a key from the current public keys of the account.
         fn remove_public_key(ref self: ComponentState<TContractState>, old_public_key: felt252) {
             self.assert_only_self();
+            /// @todo: make sure the key to be removed is not used as part of
+            // the signature otherwise the account could be locked.
             let mut public_keys = ArrayTrait::<felt252>::new();
             let mut is_found = false;
             let previous_public_keys = self.Account_public_keys.read();

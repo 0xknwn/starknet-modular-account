@@ -4,6 +4,8 @@ import {
   deployAccount,
   get_threshold,
   get_public_keys,
+  add_public_key,
+  remove_public_key,
 } from "./account";
 import { config, account, classHash, provider } from "./utils";
 import {
@@ -101,4 +103,125 @@ test("read counter", async () => {
   const a = account();
   const c = await get(a);
   expect(c).toBe(2n);
+}, 120000);
+
+test("add/check a new public key", async () => {
+  const conf = config();
+  const p = provider();
+  const a = new Account(
+    p,
+    accountAddress("Account"),
+    conf.accounts[0].privateKey
+  );
+  await add_public_key(a, conf.accounts[1].publicKey);
+  const c = await get_public_keys(a);
+  expect(Array.isArray(c)).toBe(true);
+  expect(c.length).toEqual(2);
+  expect(`0x${c[1].toString(16)}`).toEqual(conf.accounts[1].publicKey);
+}, 120000);
+
+test("reset and increment counter", async () => {
+  const acc = account();
+  await reset(acc);
+  const conf = config();
+  const p = provider();
+  const a = new Account(
+    p,
+    accountAddress("Account"),
+    conf.accounts[1].privateKey
+  );
+  const c1 = await increment(a);
+  expect(c1.isSuccess()).toEqual(true);
+  const c2 = await get(a);
+  expect(c2).toBe(1n);
+}, 120000);
+
+test("same public key throws exception", async () => {
+  const conf = config();
+  const p = provider();
+  const a = new Account(
+    p,
+    accountAddress("Account"),
+    conf.accounts[0].privateKey
+  );
+  try {
+    await add_public_key(a, conf.accounts[1].publicKey);
+    expect(true).toBe(false);
+  } catch (e) {
+    expect(e).toBeDefined();
+  }
+  const c = await get_public_keys(a);
+  expect(Array.isArray(c)).toBe(true);
+  expect(c.length).toEqual(2);
+  expect(`0x${c[1].toString(16)}`).toEqual(conf.accounts[1].publicKey);
+}, 120000);
+
+test("remove a key from the account", async () => {
+  const conf = config();
+  const p = provider();
+  const a = new Account(
+    p,
+    accountAddress("Account"),
+    conf.accounts[0].privateKey
+  );
+  await remove_public_key(a, conf.accounts[1].publicKey);
+  const c = await get_public_keys(a);
+  expect(Array.isArray(c)).toBe(true);
+  expect(c.length).toEqual(1);
+  expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
+}, 120000);
+
+test("remove non-registered key throws exception", async () => {
+  const conf = config();
+  const p = provider();
+  const a = new Account(
+    p,
+    accountAddress("Account"),
+    conf.accounts[0].privateKey
+  );
+  try {
+    await remove_public_key(a, "0x2");
+    expect(true).toBe(false);
+  } catch (e) {
+    expect(e).toBeDefined();
+  }
+}, 120000);
+
+test("old key cannot be used anymore", async () => {
+  const conf = config();
+  const p = provider();
+  const a = new Account(
+    p,
+    accountAddress("Account"),
+    conf.accounts[1].privateKey
+  );
+  try {
+    await increment(a);
+    expect(true).toBe(false);
+  } catch (e) {
+    expect(e).toBeDefined();
+  }
+  const acc = account();
+  const c2 = await get(acc);
+  expect(c2).toBe(1n);
+}, 120000);
+
+test("remove last key throws exception", async () => {
+  const conf = config();
+  const p = provider();
+  const a = new Account(
+    p,
+    accountAddress("Account"),
+    conf.accounts[0].privateKey
+  );
+  try {
+    await remove_public_key(a, conf.accounts[0].privateKey);
+    expect(true).toBe(false);
+  } catch (e) {
+    expect(e).toBeDefined();
+  }
+  const c = await get_public_keys(a);
+  expect(Array.isArray(c)).toBe(true);
+  expect(c.length).toEqual(1);
+  expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
 }, 120000);
