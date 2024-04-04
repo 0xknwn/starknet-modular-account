@@ -35,5 +35,9 @@ jobs:
       - name: untar-starkli
         run: tar -C /usr/local/bin -zxvf starkli-x86_64-unknown-linux-gnu.tar.gz
       - run: cd smartr_account && npm ci --ignore-scripts
+      - name: scarb-install
+        run: curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh
+      - name: scarb-build
+        run: cd smartr_account && scarb build
       - run: cd smartr_account && cp .env.template.json .env.devnet.json
       - run: cd smartr_account && npm run test
