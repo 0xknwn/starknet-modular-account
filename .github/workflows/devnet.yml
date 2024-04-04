@@ -33,7 +33,7 @@ jobs:
       - name: download-starkli
         run: curl -sL -o starkli-x86_64-unknown-linux-gnu.tar.gz https://github.com/xJonathanLEI/starkli/releases/download/v0.2.8/starkli-x86_64-unknown-linux-gnu.tar.gz
       - name: untar-starkli
-        run: tar -ztvf starkli-x86_64-unknown-linux-gnu.tar.gz
+        run: tar -C /usr/local/bin -zxvf starkli-x86_64-unknown-linux-gnu.tar.gz
       - run: cd smartr_account && npm ci --ignore-scripts
       - run: cd smartr_account && cp .env.template.json .env.devnet.json
       - run: cd smartr_account && npm run test
