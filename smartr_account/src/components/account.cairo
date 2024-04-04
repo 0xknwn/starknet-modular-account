@@ -60,6 +60,7 @@ pub mod AccountComponent {
         pub const INVALID_TX_VERSION: felt252 = 'Account: invalid tx version';
         pub const INVALID_THRESHOLD: felt252 = 'Account: invalid threshold';
         pub const UNSUPPORTED_THRESHOLD: felt252 = 'Account: unsupported threshold';
+        pub const THRESHOLD_TOO_BIG: felt252 = 'Account: threshold too big';
         pub const UNAUTHORIZED: felt252 = 'Account: unauthorized';
     }
 
@@ -214,7 +215,10 @@ pub mod AccountComponent {
 
         fn set_threshold(ref self: ComponentState<TContractState>, new_threshold: u8) {
             self.assert_only_self();
-            assert(new_threshold == 1, Errors::UNSUPPORTED_THRESHOLD);
+            let public_keys = self.Account_public_keys.read();
+            let len = public_keys.len();
+            let threshold: u32 = new_threshold.into();
+            assert(threshold <= len, Errors::THRESHOLD_TOO_BIG);
             self.Account_threshold.write(new_threshold);
         }
     }
@@ -283,22 +287,32 @@ pub mod AccountComponent {
         fn _is_valid_signature(
             self: @ComponentState<TContractState>, hash: felt252, signature: Span<felt252>
         ) -> bool {
-            let threshold: u8 = self.Account_threshold.read();
-            assert(threshold == 1_u8, Errors::INVALID_THRESHOLD);
+            let threshold: u32 = self.Account_threshold.read().into();
+            assert(threshold >= 1, Errors::INVALID_THRESHOLD);
+            let signature_len = signature.len();
+            assert(signature_len == 2 * threshold, Errors::INVALID_SIGNATURE);
             let public_keys: Array<felt252> = self.Account_public_keys.read();
-            assert(!public_keys.is_empty(), Errors::INVALID_SIGNATURE);
-            let mut i: usize = 0;
-            let mut is_valid = false;
-            let len = public_keys.len();
-            while i < len {
-                let public_key = *public_keys.at(i);
-                if is_valid_stark_signature(hash, public_key, signature) {
-                    is_valid = true;
-                    break;
-                }
-                i += 1;
+            let public_keys_snapshot = @public_keys;
+            let mut matching_signature = 0;
+            let mut j: usize = 0;
+            while j < (signature_len - 1) {
+                let mut sig: Array<felt252> = ArrayTrait::<felt252>::new();
+                sig.append(*signature.at(j));
+                sig.append(*signature.at(j+1));
+                let mut i: usize = 0;
+                let len = public_keys_snapshot.len();
+                while i < len {
+                    let public_key = *public_keys_snapshot.at(i);
+                    if is_valid_stark_signature(hash, public_key, sig.span()) {
+                        matching_signature += 1;
+                        break;
+                    }
+                    i += 1;
+                };
+                j += 2;
             };
-            is_valid
+            assert(matching_signature >= threshold, Errors::INVALID_SIGNATURE);
+            true
         }
     }
 }
