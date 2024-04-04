@@ -265,7 +265,9 @@ pub mod AccountComponent {
         fn _is_valid_signature(
             self: @ComponentState<TContractState>, hash: felt252, signature: Span<felt252>
         ) -> bool {
-            let public_key = self.Account_public_key.read();
+            let public_keys: Array<felt252> = self.Account_public_keys.read();
+            assert(!public_keys.is_empty(), Errors::INVALID_SIGNATURE);
+            let public_key = *public_keys.at(0);
             is_valid_stark_signature(hash, public_key, signature)
         }
     }

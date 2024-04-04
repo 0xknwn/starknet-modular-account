@@ -2,7 +2,6 @@ import { deployClass } from "./class";
 import {
   accountAddress,
   deployAccount,
-  get_public_key,
   get_public_keys,
 } from "./account";
 import { config, account, classHash, provider } from "./utils";
@@ -34,13 +33,6 @@ test("deploy account", async () => {
   const conf = config();
   const c = await deployAccount("Account");
   expect(c).toEqual(accountAddress("Account"));
-}, 120000);
-
-test("account public key", async () => {
-  const conf = config();
-  const a = account();
-  const c = await get_public_key(a);
-  expect(`0x${c.toString(16)}`).toEqual(conf.accounts[0].publicKey);
 }, 120000);
 
 test("account public keys", async () => {
