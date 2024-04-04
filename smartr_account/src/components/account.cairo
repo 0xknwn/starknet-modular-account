@@ -250,8 +250,18 @@ pub mod AccountComponent {
             assert(threshold == 1_u8, Errors::INVALID_THRESHOLD);
             let public_keys: Array<felt252> = self.Account_public_keys.read();
             assert(!public_keys.is_empty(), Errors::INVALID_SIGNATURE);
-            let public_key = *public_keys.at(0);
-            is_valid_stark_signature(hash, public_key, signature)
+            let mut i: usize = 0;
+            let mut is_valid = false;
+            let len = public_keys.len();
+            while i < len {
+                let public_key = *public_keys.at(i);
+                if is_valid_stark_signature(hash, public_key, signature) {
+                    is_valid = true;
+                    break;
+                }
+                i += 1;
+            };
+            is_valid
         }
     }
 }
