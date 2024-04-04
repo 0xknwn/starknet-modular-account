@@ -1,15 +1,19 @@
 name: run tests on devnet
 on:
   pull_request:
+    branches:
+      - '**'
     paths:
-      - 'smartr_account/**'
+      - '**'
   push:
+    branches:
+      - '**'
     paths:
-      - 'smartr_account/**'
+      - '**'
 
 jobs:
   test:
-    name: Run tests
+    name: run tests on devnet
     runs-on: ubuntu-latest
 
     services:
