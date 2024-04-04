@@ -110,3 +110,18 @@ export const remove_public_key = async (
   const { transaction_hash: transferTxHash } = await a.execute(transferCall);
   return await a.waitForTransaction(transferTxHash);
 };
+
+export const set_threshold = async (
+  a: Account,
+  new_threshold: bigint,
+  env: string = "devnet"
+) => {
+  const contract = new Contract(AccountABI, accountAddress(), a).typedv2(
+    AccountABI
+  );
+  const transferCall: Call = contract.populate("set_threshold", {
+    new_threshold: new_threshold,
+  });
+  const { transaction_hash: transferTxHash } = await a.execute(transferCall);
+  return await a.waitForTransaction(transferTxHash);
+};
