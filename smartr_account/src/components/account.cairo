@@ -25,6 +25,8 @@ pub mod AccountComponent {
 
     #[storage]
     struct Storage {
+        // Account_public_key is maintained only to allow upgrading to the
+        // Openzeppelin account. It should *NOT* be used for any other purpose.
         Account_public_key: felt252,
         Account_public_keys: Array<felt252>,
     }
@@ -145,32 +147,6 @@ pub mod AccountComponent {
         }
     }
 
-    #[embeddable_as(PublicKeyImpl)]
-    pub impl PublicKey<
-        TContractState,
-        +HasComponent<TContractState>,
-        +SRC5Component::HasComponent<TContractState>,
-        +Drop<TContractState>
-    > of interface::IPublicKey<ComponentState<TContractState>> {
-        /// Returns the current public key of the account.
-        fn get_public_key(self: @ComponentState<TContractState>) -> felt252 {
-            self.Account_public_key.read()
-        }
-
-        /// Sets the public key of the account to `new_public_key`.
-        ///
-        /// Requirements:
-        ///
-        /// - The caller must be the contract itself.
-        ///
-        /// Emits an `OwnerRemoved` event.
-        fn set_public_key(ref self: ComponentState<TContractState>, new_public_key: felt252) {
-            self.assert_only_self();
-            self.emit(OwnerRemoved { removed_owner_guid: self.Account_public_key.read() });
-            self._set_public_key(new_public_key);
-        }
-    }
-
     #[embeddable_as(PublicKeysImpl)]
     pub impl PublicKeys<
         TContractState,
@@ -181,6 +157,15 @@ pub mod AccountComponent {
         /// Returns the current public key of the account.
         fn get_public_keys(self: @ComponentState<TContractState>) -> Array<felt252> {
             self.Account_public_keys.read()
+        }
+
+        fn add_public_key(ref self: ComponentState<TContractState>, new_public_key: felt252) {
+            self.assert_only_self();
+        }
+
+        fn remove_public_key(ref self: ComponentState<TContractState>, old_public_key: felt252) {
+            self.assert_only_self();
+            self.emit(OwnerRemoved { removed_owner_guid: self.Account_public_key.read() });
         }
     }
 
@@ -199,23 +184,6 @@ pub mod AccountComponent {
         }
     }
 
-    /// Adds camelCase support for `PublicKeyTrait`.
-    #[embeddable_as(PublicKeyCamelImpl)]
-    impl PublicKeyCamel<
-        TContractState,
-        +HasComponent<TContractState>,
-        +SRC5Component::HasComponent<TContractState>,
-        +Drop<TContractState>
-    > of interface::IPublicKeyCamel<ComponentState<TContractState>> {
-        fn getPublicKey(self: @ComponentState<TContractState>) -> felt252 {
-            self.Account_public_key.read()
-        }
-
-        fn setPublicKey(ref self: ComponentState<TContractState>, newPublicKey: felt252) {
-            PublicKey::set_public_key(ref self, newPublicKey);
-        }
-    }
-
     #[generate_trait]
     pub impl InternalImpl<
         TContractState,
@@ -228,7 +196,7 @@ pub mod AccountComponent {
         fn initializer(ref self: ComponentState<TContractState>, public_key: felt252) {
             let mut src5_component = get_dep_component_mut!(ref self, SRC5);
             src5_component.register_interface(interface::ISRC6_ID);
-            self._set_public_key(public_key);
+            self._init_public_key(public_key);
         }
 
         /// Validates that the caller is the account itself. Otherwise it reverts.
@@ -252,8 +220,7 @@ pub mod AccountComponent {
         /// The usage of this method outside the `set_public_key` function is discouraged.
         ///
         /// Emits an `OwnerAdded` event.
-        fn _set_public_key(ref self: ComponentState<TContractState>, new_public_key: felt252) {
-            self.Account_public_key.write(new_public_key);
+        fn _init_public_key(ref self: ComponentState<TContractState>, new_public_key: felt252) {
             let mut new_public_keys = ArrayTrait::<felt252>::new();
             new_public_keys.append(new_public_key);
             self.Account_public_keys.write(new_public_keys);
@@ -269,86 +236,6 @@ pub mod AccountComponent {
             assert(!public_keys.is_empty(), Errors::INVALID_SIGNATURE);
             let public_key = *public_keys.at(0);
             is_valid_stark_signature(hash, public_key, signature)
-        }
-    }
-
-    #[embeddable_as(AccountMixinImpl)]
-    impl AccountMixin<
-        TContractState,
-        +HasComponent<TContractState>,
-        impl SRC5: SRC5Component::HasComponent<TContractState>,
-        +Drop<TContractState>
-    > of interface::AccountABI<ComponentState<TContractState>> {
-        // ISRC6
-        fn __execute__(
-            self: @ComponentState<TContractState>, calls: Array<Call>
-        ) -> Array<Span<felt252>> {
-            SRC6::__execute__(self, calls)
-        }
-
-        fn __validate__(self: @ComponentState<TContractState>, calls: Array<Call>) -> felt252 {
-            SRC6::__validate__(self, calls)
-        }
-
-        fn is_valid_signature(
-            self: @ComponentState<TContractState>, hash: felt252, signature: Array<felt252>
-        ) -> felt252 {
-            SRC6::is_valid_signature(self, hash, signature)
-        }
-
-        // ISRC6CamelOnly
-        fn isValidSignature(
-            self: @ComponentState<TContractState>, hash: felt252, signature: Array<felt252>
-        ) -> felt252 {
-            SRC6CamelOnly::isValidSignature(self, hash, signature)
-        }
-
-        // IDeclarer
-        fn __validate_declare__(
-            self: @ComponentState<TContractState>, class_hash: felt252
-        ) -> felt252 {
-            Declarer::__validate_declare__(self, class_hash)
-        }
-
-        // IDeployable
-        fn __validate_deploy__(
-            self: @ComponentState<TContractState>,
-            class_hash: felt252,
-            contract_address_salt: felt252,
-            public_key: felt252
-        ) -> felt252 {
-            Deployable::__validate_deploy__(self, class_hash, contract_address_salt, public_key)
-        }
-
-        // IPublicKey
-        fn get_public_key(self: @ComponentState<TContractState>) -> felt252 {
-            PublicKey::get_public_key(self)
-        }
-
-        fn set_public_key(ref self: ComponentState<TContractState>, new_public_key: felt252) {
-            PublicKey::set_public_key(ref self, new_public_key);
-        }
-
-        // IPublicKeys
-        fn get_public_keys(self: @ComponentState<TContractState>) -> Array<felt252> {
-            PublicKeys::get_public_keys(self)
-        }
-
-        // IPublicKeyCamel
-        fn getPublicKey(self: @ComponentState<TContractState>) -> felt252 {
-            PublicKeyCamel::getPublicKey(self)
-        }
-
-        fn setPublicKey(ref self: ComponentState<TContractState>, newPublicKey: felt252) {
-            PublicKeyCamel::setPublicKey(ref self, newPublicKey);
-        }
-
-        // ISRC5
-        fn supports_interface(
-            self: @ComponentState<TContractState>, interface_id: felt252
-        ) -> bool {
-            let src5 = get_dep_component!(self, SRC5);
-            src5.supports_interface(interface_id)
         }
     }
 }

@@ -177,40 +177,6 @@ export const ABI = [
   },
   {
     "type": "impl",
-    "name": "PublicKeyImpl",
-    "interface_name": "smartr::components::interface::IPublicKey"
-  },
-  {
-    "type": "interface",
-    "name": "smartr::components::interface::IPublicKey",
-    "items": [
-      {
-        "type": "function",
-        "name": "get_public_key",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::felt252"
-          }
-        ],
-        "state_mutability": "view"
-      },
-      {
-        "type": "function",
-        "name": "set_public_key",
-        "inputs": [
-          {
-            "name": "new_public_key",
-            "type": "core::felt252"
-          }
-        ],
-        "outputs": [],
-        "state_mutability": "external"
-      }
-    ]
-  },
-  {
-    "type": "impl",
     "name": "PublicKeysImpl",
     "interface_name": "smartr::components::interface::IPublicKeys"
   },
@@ -228,6 +194,30 @@ export const ABI = [
           }
         ],
         "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "add_public_key",
+        "inputs": [
+          {
+            "name": "new_public_key",
+            "type": "core::felt252"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "remove_public_key",
+        "inputs": [
+          {
+            "name": "old_public_key",
+            "type": "core::felt252"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
       }
     ]
   },
@@ -259,40 +249,6 @@ export const ABI = [
           }
         ],
         "state_mutability": "view"
-      }
-    ]
-  },
-  {
-    "type": "impl",
-    "name": "PublicKeyCamelImpl",
-    "interface_name": "smartr::components::interface::IPublicKeyCamel"
-  },
-  {
-    "type": "interface",
-    "name": "smartr::components::interface::IPublicKeyCamel",
-    "items": [
-      {
-        "type": "function",
-        "name": "getPublicKey",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::felt252"
-          }
-        ],
-        "state_mutability": "view"
-      },
-      {
-        "type": "function",
-        "name": "setPublicKey",
-        "inputs": [
-          {
-            "name": "newPublicKey",
-            "type": "core::felt252"
-          }
-        ],
-        "outputs": [],
-        "state_mutability": "external"
       }
     ]
   },
