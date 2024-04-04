@@ -114,19 +114,13 @@ export class Multisig extends Account {
       cairoVersion: await this.getCairoVersion(),
     };
 
-    let signature = await this.signer.signTransaction(calls, signerDetails);
-    signature = signatureToHexArray(signature);
-
-    let altSignature = [] as ArraySignatureType;
-    // @todo: implement altSigner
-    // altSignature = (await this.altSigner.signTransaction(
-    //   tx,
-    //   signerDetails,
-    //   abis
-    // ));
-    // altSignature = signatureToHexArray(altSignature);
-
-    const signatures = signature.concat(altSignature);
+    let signatures = [] as ArraySignatureType;
+    for await (const signer of this.signers) {
+      const s = signatureToHexArray(
+        await signer.signTransaction(calls, signerDetails)
+      );
+      signatures = signatures.concat(s);
+    }
 
     const calldata = transaction.getExecuteCalldata(
       calls,
