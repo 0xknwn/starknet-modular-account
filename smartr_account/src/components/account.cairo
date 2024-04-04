@@ -54,6 +54,9 @@ pub mod AccountComponent {
     pub mod Errors {
         pub const INVALID_CALLER: felt252 = 'Account: invalid caller';
         pub const INVALID_SIGNATURE: felt252 = 'Account: invalid signature';
+        pub const REGISTERED_KEY: felt252 = 'Account: key already registered';
+        pub const KEY_NOT_FOUND: felt252 = 'Account: key not found';
+        pub const MISSING_KEYS: felt252 = 'Account: not enough keys';
         pub const INVALID_TX_VERSION: felt252 = 'Account: invalid tx version';
         pub const INVALID_THRESHOLD: felt252 = 'Account: invalid threshold';
         pub const UNSUPPORTED_THRESHOLD: felt252 = 'Account: unsupported threshold';
@@ -157,11 +160,24 @@ pub mod AccountComponent {
         +SRC5Component::HasComponent<TContractState>,
         +Drop<TContractState>
     > of interface::IPublicKeys<ComponentState<TContractState>> {
-        /// Returns the current public key of the account.
+        /// Add a key to the current public keys of the account.
         fn add_public_key(ref self: ComponentState<TContractState>, new_public_key: felt252) {
             self.assert_only_self();
+            let mut public_keys = self.Account_public_keys.read();
+            let public_keys_snapshot = @public_keys;
+            let mut i: usize = 0;
+            let len = public_keys_snapshot.len();
+            while i < len {
+                let public_key = public_keys_snapshot.at(i);
+                assert(*public_key != new_public_key, Errors::REGISTERED_KEY);
+                i += 1;
+            };
+            public_keys.append(new_public_key);
+            self.Account_public_keys.write(public_keys);
+            self.emit(OwnerAdded { new_owner_guid: new_public_key });
         }
 
+        /// Returns the current public keys of the account.
         fn get_public_keys(self: @ComponentState<TContractState>) -> Array<felt252> {
             self.Account_public_keys.read()
         }
@@ -170,9 +186,28 @@ pub mod AccountComponent {
             self.Account_threshold.read()
         }
 
+        /// Remove a key from the current public keys of the account.
         fn remove_public_key(ref self: ComponentState<TContractState>, old_public_key: felt252) {
             self.assert_only_self();
-            self.emit(OwnerRemoved { removed_owner_guid: self.Account_public_key.read() });
+            let mut public_keys = ArrayTrait::<felt252>::new();
+            let mut is_found = false;
+            let previous_public_keys = self.Account_public_keys.read();
+            let len = previous_public_keys.len();
+            let threshold: u32 = self.Account_threshold.read().into();
+            assert(len > threshold, Errors::MISSING_KEYS);
+            let mut i: u32 = 0;
+            while i < len {
+                let public_key = *previous_public_keys.at(i);
+                if public_key == old_public_key {
+                    is_found = true;
+                } else {
+                    public_keys.append(public_key);
+                }
+                i += 1;
+            };
+            assert(is_found, Errors::KEY_NOT_FOUND);
+            self.Account_public_keys.write(public_keys);
+            self.emit(OwnerRemoved { removed_owner_guid: old_public_key });
         }
 
         fn set_threshold(ref self: ComponentState<TContractState>, new_threshold: u8) {
