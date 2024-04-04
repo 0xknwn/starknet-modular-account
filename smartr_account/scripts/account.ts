@@ -80,3 +80,33 @@ export const get_threshold = async (a: Account, env: string = "devnet") => {
   );
   return await contract.get_threshold();
 };
+
+export const add_public_key = async (
+  a: Account,
+  new_public_key: string,
+  env: string = "devnet"
+) => {
+  const contract = new Contract(AccountABI, accountAddress(), a).typedv2(
+    AccountABI
+  );
+  const transferCall: Call = contract.populate("add_public_key", {
+    new_public_key: new_public_key,
+  });
+  const { transaction_hash: transferTxHash } = await a.execute(transferCall);
+  return await a.waitForTransaction(transferTxHash);
+};
+
+export const remove_public_key = async (
+  a: Account,
+  old_public_key: string,
+  env: string = "devnet"
+) => {
+  const contract = new Contract(AccountABI, accountAddress(), a).typedv2(
+    AccountABI
+  );
+  const transferCall: Call = contract.populate("remove_public_key", {
+    old_public_key: old_public_key,
+  });
+  const { transaction_hash: transferTxHash } = await a.execute(transferCall);
+  return await a.waitForTransaction(transferTxHash);
+};
