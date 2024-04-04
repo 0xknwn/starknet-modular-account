@@ -211,6 +211,28 @@ export const ABI = [
   },
   {
     "type": "impl",
+    "name": "PublicKeysImpl",
+    "interface_name": "smartr::components::interface::IPublicKeys"
+  },
+  {
+    "type": "interface",
+    "name": "smartr::components::interface::IPublicKeys",
+    "items": [
+      {
+        "type": "function",
+        "name": "get_public_keys",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::array::Array::<core::felt252>"
+          }
+        ],
+        "state_mutability": "view"
+      }
+    ]
+  },
+  {
+    "type": "impl",
     "name": "SRC6CamelOnlyImpl",
     "interface_name": "smartr::components::interface::ISRC6CamelOnly"
   },
