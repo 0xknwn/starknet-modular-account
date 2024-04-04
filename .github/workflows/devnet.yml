@@ -4,17 +4,13 @@ on:
     branches:
       - '**'
     paths:
-      - '**'
-  push:
-    branches:
-      - '**'
-    paths:
-      - '**'
+      - 'smartr_account/**'
 
 jobs:
   test:
     name: run tests on devnet
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     services:
       devnet:
