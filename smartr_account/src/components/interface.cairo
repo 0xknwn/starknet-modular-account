@@ -39,6 +39,8 @@ pub trait IPublicKey<TState> {
 #[starknet::interface]
 pub trait IPublicKeys<TState> {
     fn get_public_keys(self: @TState) -> Array<felt252>;
+    fn add_public_key(ref self: TState, new_public_key: felt252);
+    fn remove_public_key(ref self: TState, old_public_key: felt252);
 }
 
 #[starknet::interface]
