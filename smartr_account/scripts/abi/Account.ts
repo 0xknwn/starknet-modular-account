@@ -277,8 +277,8 @@ export const ABI = [
   },
   {
     "type": "impl",
-    "name": "SRC5Impl",
-    "interface_name": "openzeppelin::introspection::interface::ISRC5"
+    "name": "PluginImpl",
+    "interface_name": "smartr::components::interface::IPlugin"
   },
   {
     "type": "enum",
@@ -293,6 +293,93 @@ export const ABI = [
         "type": "()"
       }
     ]
+  },
+  {
+    "type": "interface",
+    "name": "smartr::components::interface::IPlugin",
+    "items": [
+      {
+        "type": "function",
+        "name": "add_plugin",
+        "inputs": [
+          {
+            "name": "class_hash",
+            "type": "core::starknet::class_hash::ClassHash"
+          },
+          {
+            "name": "calls",
+            "type": "core::array::Array::<core::starknet::account::Call>"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "remove_plugin",
+        "inputs": [
+          {
+            "name": "class_hash",
+            "type": "core::starknet::class_hash::ClassHash"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "is_plugin",
+        "inputs": [
+          {
+            "name": "class_hash",
+            "type": "core::starknet::class_hash::ClassHash"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "read_on_plugin",
+        "inputs": [
+          {
+            "name": "class_hash",
+            "type": "core::starknet::class_hash::ClassHash"
+          },
+          {
+            "name": "calls",
+            "type": "core::array::Array::<core::starknet::account::Call>"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "execute_on_plugin",
+        "inputs": [
+          {
+            "name": "class_hash",
+            "type": "core::starknet::class_hash::ClassHash"
+          },
+          {
+            "name": "calls",
+            "type": "core::array::Array::<core::starknet::account::Call>"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      }
+    ]
+  },
+  {
+    "type": "impl",
+    "name": "SRC5Impl",
+    "interface_name": "openzeppelin::introspection::interface::ISRC5"
   },
   {
     "type": "interface",
