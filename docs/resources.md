@@ -52,7 +52,6 @@ The `.env.template.json` provides the current values. You should be able to
 simply copy it into `.env.devnet.json` like below:
 
 ```shell
-cd smartr_account
 cp .env.template.json .env.devnet.json
 ```
 
@@ -60,7 +59,6 @@ Once done, make sure `scarb` and `starknet foundry` are installed and build the
 project:
 
 ```shell
-cd smartr_account
 scarb build
 scarb run test
 ```
