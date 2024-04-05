@@ -1,0 +1,114 @@
+import { deployClass } from "./class";
+import { account, classHash } from "./utils";
+import {
+  deployContract,
+  counterAddress,
+  reset,
+  increment,
+  get,
+} from "./counter";
+import { timeout } from "./constants";
+
+describe("counter contract (helper)", () => {
+  it(
+    "deploys the Counter class",
+    async () => {
+      const c = await deployClass("Counter");
+      expect(c.classHash).toEqual(classHash("Counter"));
+    },
+    timeout
+  );
+
+  it(
+    "deploys the counter contract",
+    async () => {
+      const c = await deployContract();
+      expect(c.address).toEqual(counterAddress());
+    },
+    timeout
+  );
+
+  it(
+    "increments the counter",
+    async () => {
+      const a = account();
+      const c = await increment(a);
+      expect(c.isSuccess()).toEqual(true);
+    },
+    timeout
+  );
+
+  it(
+    "reads the counter",
+    async () => {
+      const a = account();
+      const c = await get(a);
+      expect(c).toBeGreaterThan(0n);
+    },
+    timeout
+  );
+
+  it(
+    "resets the counter",
+    async () => {
+      const a = account();
+      const c = await reset(a);
+      expect(c.isSuccess()).toEqual(true);
+    },
+    timeout
+  );
+
+  it(
+    "reads the counter",
+    async () => {
+      const a = account();
+      const c = await get(a);
+      expect(c).toBe(0n);
+    },
+    timeout
+  );
+
+  it(
+    "increments the counter",
+    async () => {
+      const a = account();
+      const c = await increment(a);
+      expect(c.isSuccess()).toEqual(true);
+    },
+    timeout
+  );
+
+  it(
+    "reads the counter",
+    async () => {
+      const a = account();
+      const c = await get(a);
+      expect(c).toBeGreaterThan(0n);
+    },
+    timeout
+  );
+
+  it(
+    "resets the counter and fails",
+    async () => {
+      const a = account(1);
+      try {
+        await reset(a);
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e).toBeDefined();
+      }
+    },
+    timeout
+  );
+
+  it(
+    "reads the counter",
+    async () => {
+      const a = account();
+      const c = await get(a);
+      expect(c).toBeGreaterThan(0n);
+    },
+    timeout
+  );
+});
