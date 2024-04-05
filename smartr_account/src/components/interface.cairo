@@ -4,6 +4,7 @@
 use openzeppelin::account::utils::secp256k1::Secp256k1PointSerde;
 use starknet::ContractAddress;
 use starknet::account::Call;
+use starknet::ClassHash;
 
 pub const ISRC6_ID: felt252 = 0x2ceccef7f994940b3962a6c67e0ba4fcd37df7d131417c604f91e03caecc1cd;
 
@@ -42,4 +43,13 @@ pub trait IPublicKeys<TState> {
 #[starknet::interface]
 pub trait ISRC6CamelOnly<TState> {
     fn isValidSignature(self: @TState, hash: felt252, signature: Array<felt252>) -> felt252;
+}
+
+#[starknet::interface]
+pub trait IPlugin<TState> {
+    fn add_plugin(ref self: TState, class_hash: ClassHash, calls: Array<Call>);
+    fn remove_plugin(ref self: TState, class_hash: ClassHash);
+    fn is_plugin(self: @TState, class_hash: ClassHash) -> bool;
+    fn read_on_plugin(self: @TState, class_hash: ClassHash, calls: Array<Call>);
+    fn execute_on_plugin(ref self: TState, class_hash: ClassHash, calls: Array<Call>);
 }

@@ -1,3 +1,4 @@
 pub mod interface;
 pub mod account;
-pub mod storage;
+pub mod plugin;
+pub mod store;

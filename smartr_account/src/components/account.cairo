@@ -6,12 +6,12 @@
 /// The Account component enables contracts to behave as accounts.
 
 use super::interface;
-use super::storage;
+use super::store;
 
 #[starknet::component]
 pub mod AccountComponent {
     use super::interface;
-    use super::storage::StoreFelt252Array;
+    use super::store::Felt252ArrayStore;
     use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
     use openzeppelin::account::utils::{execute_calls, is_valid_stark_signature};
     use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SRC5InternalTrait;
@@ -22,6 +22,7 @@ pub mod AccountComponent {
     use starknet::get_contract_address;
     use starknet::get_tx_info;
     use core::num::traits::Zero;
+    use starknet::ClassHash;
 
     #[storage]
     struct Storage {
@@ -30,6 +31,7 @@ pub mod AccountComponent {
         Account_public_key: felt252,
         Account_public_keys: Array<felt252>,
         Account_threshold: u8,
+        Account_plugins: LegacyMap<ClassHash, bool>
     }
 
     #[event]
@@ -62,6 +64,7 @@ pub mod AccountComponent {
         pub const UNSUPPORTED_THRESHOLD: felt252 = 'Account: unsupported threshold';
         pub const THRESHOLD_TOO_BIG: felt252 = 'Account: threshold too big';
         pub const UNAUTHORIZED: felt252 = 'Account: unauthorized';
+        pub const UNINSTALLED: felt252 = 'Plugin: uninstalled plugin';
     }
 
     #[embeddable_as(SRC6Impl)]
@@ -236,6 +239,34 @@ pub mod AccountComponent {
         ) -> felt252 {
             SRC6::is_valid_signature(self, hash, signature)
         }
+    }
+
+    #[embeddable_as(PluginImpl)]
+    pub impl Plugin<
+        TContractState,
+        +HasComponent<TContractState>,
+        +SRC5Component::HasComponent<TContractState>,
+        +Drop<TContractState>
+    > of interface::IPlugin<ComponentState<TContractState>> {
+        fn add_plugin(ref self: ComponentState<TContractState>, class_hash: ClassHash, calls: Array<Call>) { 
+            self.assert_only_self();
+            self.Account_plugins.write(class_hash, true);
+        }
+
+        fn remove_plugin(ref self: ComponentState<TContractState>, class_hash: ClassHash) {
+            self.assert_only_self();
+            let installed = self.Account_plugins.read(class_hash);
+            assert(installed, Errors::UNINSTALLED);
+            self.Account_plugins.write(class_hash, false);
+        }
+    
+        fn is_plugin(self: @ComponentState<TContractState>, class_hash: ClassHash) -> bool { 
+            self.Account_plugins.read(class_hash)
+        }
+
+        fn read_on_plugin(self: @ComponentState<TContractState>, class_hash: ClassHash, calls: Array<Call>) { }
+
+        fn execute_on_plugin(ref self: ComponentState<TContractState>, class_hash: ClassHash, calls: Array<Call>) { }
     }
 
     #[generate_trait]

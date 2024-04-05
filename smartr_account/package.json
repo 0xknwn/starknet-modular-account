@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "rimraf ./build && tsc",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand --verbose"
   },
   "keywords": [],
   "author": "0xknwn",

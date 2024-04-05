@@ -8,15 +8,15 @@ pub trait IStoreArrayContract<TContractState> {
     fn read_array(self: @TContractState) -> Array<felt252>;
 }
 
-pub impl StoreFelt252Array of Store<Array<felt252>> {
+pub impl Felt252ArrayStore of Store<Array<felt252>> {
     fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult<Array<felt252>> {
-        StoreFelt252Array::read_at_offset(address_domain, base, 0)
+        Felt252ArrayStore::read_at_offset(address_domain, base, 0)
     }
 
     fn write(
         address_domain: u32, base: StorageBaseAddress, value: Array<felt252>
     ) -> SyscallResult<()> {
-        StoreFelt252Array::write_at_offset(address_domain, base, 0, value)
+        Felt252ArrayStore::write_at_offset(address_domain, base, 0, value)
     }
 
     fn read_at_offset(
