@@ -5,6 +5,20 @@ export const ABI = [
     "interface_name": "smartr::components::plugin::IPluginClass"
   },
   {
+    "type": "enum",
+    "name": "core::bool",
+    "variants": [
+      {
+        "name": "False",
+        "type": "()"
+      },
+      {
+        "name": "True",
+        "type": "()"
+      }
+    ]
+  },
+  {
     "type": "struct",
     "name": "core::array::Span::<core::felt252>",
     "members": [
@@ -33,20 +47,6 @@ export const ABI = [
     ]
   },
   {
-    "type": "enum",
-    "name": "core::bool",
-    "variants": [
-      {
-        "name": "False",
-        "type": "()"
-      },
-      {
-        "name": "True",
-        "type": "()"
-      }
-    ]
-  },
-  {
     "type": "interface",
     "name": "smartr::components::plugin::IPluginClass",
     "items": [
@@ -55,8 +55,8 @@ export const ABI = [
         "name": "initialize",
         "inputs": [
           {
-            "name": "calls",
-            "type": "core::array::Array::<core::starknet::account::Call>"
+            "name": "args",
+            "type": "core::array::Array::<core::felt252>"
           }
         ],
         "outputs": [],

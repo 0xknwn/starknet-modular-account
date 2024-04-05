@@ -47,8 +47,9 @@ pub trait ISRC6CamelOnly<TState> {
 
 #[starknet::interface]
 pub trait IPlugin<TState> {
-    fn add_plugin(ref self: TState, class_hash: ClassHash, calls: Array<Call>);
+    fn add_plugin(ref self: TState, class_hash: ClassHash, args: Array<felt252>);
     fn remove_plugin(ref self: TState, class_hash: ClassHash);
+    fn get_initialization(self: @TState, key: felt252) -> felt252;
     fn is_plugin(self: @TState, class_hash: ClassHash) -> bool;
     fn read_on_plugin(self: @TState, class_hash: ClassHash, calls: Array<Call>);
     fn execute_on_plugin(ref self: TState, class_hash: ClassHash, calls: Array<Call>);

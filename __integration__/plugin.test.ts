@@ -1,9 +1,15 @@
 import { deployClass } from "./class";
 import { accountAddress, deployAccount, get_public_keys } from "./account";
-import { is_plugin, add_plugin, remove_plugin } from "./plugin";
+import {
+  is_plugin,
+  add_plugin,
+  remove_plugin,
+  get_initialization,
+} from "./plugin";
 import { config, account, classHash, provider } from "./utils";
 import { Account } from "starknet";
 import { timeout } from "./constants";
+import { Multisig } from "./multisig";
 
 describe("plugin management", () => {
   it(
@@ -63,16 +69,24 @@ describe("plugin management", () => {
     async () => {
       const conf = config();
       const p = provider();
-      const a = new Account(
-        p,
-        accountAddress("Account"),
-        conf.accounts[0].privateKey
-      );
+      const a = new Multisig(p, accountAddress("Account"), [
+        conf.accounts[0].privateKey,
+      ]);
       const c = await add_plugin(a, classHash("SimplePlugin"));
       expect(c.isSuccess()).toEqual(true);
       const acc = account();
       const value = await is_plugin(acc, classHash("SimplePlugin"));
       expect(value).toBe(true);
+    },
+    timeout
+  );
+
+  it(
+    "checks the plugin initialize has been called",
+    async () => {
+      const acc = account();
+      const c = await get_initialization(acc);
+      expect(`0x${c.toString(16)}`).toEqual("0x8");
     },
     timeout
   );
