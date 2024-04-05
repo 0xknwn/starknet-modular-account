@@ -1,31 +1,32 @@
 ## Motivations
 
-This project is an implementation of a modular Account for Starknet. There are
-already numerous implementation of Abstract Accounts, some of which provide
-awesome features like:
+There are already numerous implementation of Abstract Accounts, most of which
+provide awesome features like:
 
-- the [Guarded WebWallet Account](https://github.com/argentlabs/argent-contracts-starknet) from Argent
-- the [passkey/webauthn controller](https://github.com/cartridge-gg/cairo-webauthn) from Cartridge
+- the [Guarded WebWallet Account](https://github.com/argentlabs/argent-contracts-starknet)
+  from Argent
+- the [passkey/webauthn controller](https://github.com/cartridge-gg/cairo-webauthn)
+  from Cartridge
 - the [Starksign Multisig from Equilibrium](https://github.com/eqlabs/starknet-multisig),
   the [one from Braavos](https://github.com/myBraavos/braavos-account-cairo) and
   the [one from Argent](https://github.com/argentlabs/argent-contracts-starknet)
-- the MIT-licensed [well documented](https://docs.openzeppelin.com/contracts-cairo/0.10.0/accounts) 
-  and reusable[ Abstract Account from OpenZeppelin](https://github.com/OpenZeppelin/cairo-contracts/tree/main/src/account)
+- the MIT-licensed [well documented](https://docs.openzeppelin.com/contracts-cairo) 
+  and reusable [Abstract Account from OpenZeppelin](https://github.com/OpenZeppelin/cairo-contracts/tree/main/src/account)
 
 In addition to that, Starkware provides a nice workshop about
 [Abstract Account development](https://github.com/starknet-edu/aa-workshop) and
 the [Starknet Book](https://book.starknet.io) has several sections about
 accounts and multisig.
 
-Not only we can agree that each wallets have a different positioning but also
-that they are key to the current success of Starknet. Besides, we could be
-better and help the Ecosystem to thrive:
+Not only we can agree that each wallet has a different positioning but also
+that they are key to the current success of Starknet. Besides, we could provide
+even more:
 
 - What if we could have the same set of features that exists in EVM Wallets and
   Multisig like Safe? We need *extensibility* 
 - What if we could program Argent-X, OpenZeppelin and Braavos accounts with the
   same code? We need *interoperability*
-- What if we could still trust our accounts? We need *security*
+- What if we could trust our accounts even more? We need *security*
 - What if we could find extensions in a Market Place, trust and configure them
   in our account, have the app and SDK to rely on them from external services?
   We need to make it frictionless. We need to make it is *easy*
@@ -46,8 +47,8 @@ be able to improve reliably later.
 
 We would like to explore solutions like:
 
-- [Porting the Plugin Account](https://github.com/argentlabs/starknet-plugin-account)
-  if that is still feasible
+- the [original Plugin Account](https://github.com/argentlabs/starknet-plugin-account).
+  Is it even possible?
 - [EIP-7579 Minimal Modular Smart Accounts](https://eips.ethereum.org/EIPS/eip-7579).
 - [EIP-6900: Modular Smart Contract Accounts and Plugins](https://eips.ethereum.org/EIPS/eip-6900)
   including the Smart Account implementations by Circle and Alchemy.
@@ -58,9 +59,9 @@ We would like to explore solutions like:
   Argent, Alchemy, Kernel...
 
 > Notes:
-> - a nice feature is to be able to activate module offchain so that you pay for
+> - the kernel account relies on offchain activated module so that you pay for
 >   the fees only if an event occurs.
-> - another nice feature of module is the ability to compose them together. The
+> - a nice feature of modules is the ability to compose them together. The
 >   requirement to execute a module by calling it with execTransaction seems to
 >   prevent that behaviour. We need to study it in both the context of EIP-6900
 >   that is probably preventing it and Safe{Core} Protocol.
@@ -75,16 +76,16 @@ We would like to explore solutions like:
 >   - if somehow we need to reverse transactions and some fees are taken, we 
 >     could end-up in a situation when someone fails transaction on purpose.
 >   - if the plugin stores data in the account, for instance to check for an
->     allowance how can we guarranty that there is no collision overtime,
->     including on purpose. How can we also guarranty those data are not lost
+>     allowance how can we guaranty that there is no collision overtime,
+>     including on purpose. How can we also guaranty those data are not lost
 >     with a plugin upgrade
->   - how to we check for security when modules are combined because, it is
+>   - how to we check for security when modules are combined? Composability is
 >     great, except that it could very well be that together module are dangerous
 >     when used standalone, they are actually fine
 
-## What for
+## Use cases...
 
-Modules help to address advanced scenarios. Ethereum existing solutions comes
+Modules help to address advanced scenarios. Ethereum existing solutions come
 with endless inspirations for what can be done with those. They are usually
 classified in 4 groups:
 
@@ -98,15 +99,14 @@ classified in 4 groups:
   MEV protection
 - Modifiers: time-lock, cooldown/grace period, bonds
 
-Sky is the limit!
-
-If you want to dig deeper into some of the many scenarios associated with Module,
-we recommand you have a look at existing implementations like:
+Sky is the limit! If you want to dig deeper into some of the many scenarios
+associated with Module, we recommend you have a look at existing implementations
+like:
 - [Safe Modules](https://github.com/safe-global/safe-modules)
 - [Zodiac Modules](https://github.com/gnosisguild/zodiac)
 - [A list of modules and resources by Rhinestone](https://github.com/rhinestonewtf/awesome-modular-accounts)
 
-Hackathons and ideas popping around include:
+You should also check hackathons and ideas popping around include:
 
 - The Ability to activate a module Offchain from a session key, see
   [Why we are building Kernel on ERC-7579](https://docs.zerodev.app/blog/why-7579-over-6900)

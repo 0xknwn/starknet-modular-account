@@ -23,6 +23,7 @@ export const add_plugin = async (
   );
   const transferCall: Call = contract.populate("add_plugin", {
     class_hash: class_hash,
+    calls: [],
   });
   const { transaction_hash: transferTxHash } = await a.execute(transferCall);
   return await a.waitForTransaction(transferTxHash);

@@ -67,9 +67,7 @@ The you should be able to run tests like below:
 
 ```shell
 npm install
-npm run test -- utils.test.ts
-npm run test -- counter.test.ts
-npm run test -- account.test.ts
+npm run test
 ```
 
 > Note: for the account test to work, the `counter.test.ts` must have been run

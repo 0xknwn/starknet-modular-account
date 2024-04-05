@@ -64,7 +64,8 @@ pub mod AccountComponent {
         pub const UNSUPPORTED_THRESHOLD: felt252 = 'Account: unsupported threshold';
         pub const THRESHOLD_TOO_BIG: felt252 = 'Account: threshold too big';
         pub const UNAUTHORIZED: felt252 = 'Account: unauthorized';
-        pub const UNINSTALLED: felt252 = 'Plugin: uninstalled plugin';
+        pub const PLUGIN_NOT_INSTALLED: felt252 = 'Plugin: uninstalled plugin';
+        pub const PLUGIN_ALREADY_INSTALLED: felt252 = 'Plugin: already installed';
     }
 
     #[embeddable_as(SRC6Impl)]
@@ -250,13 +251,15 @@ pub mod AccountComponent {
     > of interface::IPlugin<ComponentState<TContractState>> {
         fn add_plugin(ref self: ComponentState<TContractState>, class_hash: ClassHash, calls: Array<Call>) { 
             self.assert_only_self();
+            let installed = self.Account_plugins.read(class_hash);
+            assert(!installed, Errors::PLUGIN_ALREADY_INSTALLED);
             self.Account_plugins.write(class_hash, true);
         }
 
         fn remove_plugin(ref self: ComponentState<TContractState>, class_hash: ClassHash) {
             self.assert_only_self();
             let installed = self.Account_plugins.read(class_hash);
-            assert(installed, Errors::UNINSTALLED);
+            assert(installed, Errors::PLUGIN_NOT_INSTALLED);
             self.Account_plugins.write(class_hash, false);
         }
     
