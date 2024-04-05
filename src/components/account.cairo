@@ -7,11 +7,13 @@
 
 use super::interface;
 use super::store;
+use super::plugin;
 
 #[starknet::component]
 pub mod AccountComponent {
     use super::interface;
     use super::store::Felt252ArrayStore;
+    use super::plugin::{IPluginClassDispatcherTrait, IPluginClassLibraryDispatcher};
     use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
     use openzeppelin::account::utils::{execute_calls, is_valid_stark_signature};
     use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SRC5InternalTrait;
@@ -22,7 +24,7 @@ pub mod AccountComponent {
     use starknet::get_contract_address;
     use starknet::get_tx_info;
     use core::num::traits::Zero;
-    use starknet::ClassHash;
+    use starknet::{ClassHash, ContractAddress};
 
     #[storage]
     struct Storage {
@@ -31,7 +33,8 @@ pub mod AccountComponent {
         Account_public_key: felt252,
         Account_public_keys: Array<felt252>,
         Account_threshold: u8,
-        Account_plugins: LegacyMap<ClassHash, bool>
+        Account_plugins: LegacyMap<ClassHash, bool>,
+        Account_plugins_initialize: LegacyMap<felt252, felt252>
     }
 
     #[event]
@@ -249,11 +252,18 @@ pub mod AccountComponent {
         +SRC5Component::HasComponent<TContractState>,
         +Drop<TContractState>
     > of interface::IPlugin<ComponentState<TContractState>> {
-        fn add_plugin(ref self: ComponentState<TContractState>, class_hash: ClassHash, calls: Array<Call>) { 
+        fn add_plugin(ref self: ComponentState<TContractState>, class_hash: ClassHash, args: Array<felt252>) { 
             self.assert_only_self();
             let installed = self.Account_plugins.read(class_hash);
             assert(!installed, Errors::PLUGIN_ALREADY_INSTALLED);
             self.Account_plugins.write(class_hash, true);
+            if args.len() > 0 {
+                IPluginClassLibraryDispatcher{ class_hash: class_hash }.initialize(args)
+            }
+        }
+
+        fn get_initialization(self: @ComponentState<TContractState>, key: felt252) -> felt252 {
+            self.Account_plugins_initialize.read(key)
         }
 
         fn remove_plugin(ref self: ComponentState<TContractState>, class_hash: ClassHash) {

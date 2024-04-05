@@ -307,8 +307,8 @@ export const ABI = [
             "type": "core::starknet::class_hash::ClassHash"
           },
           {
-            "name": "calls",
-            "type": "core::array::Array::<core::starknet::account::Call>"
+            "name": "args",
+            "type": "core::array::Array::<core::felt252>"
           }
         ],
         "outputs": [],
@@ -325,6 +325,22 @@ export const ABI = [
         ],
         "outputs": [],
         "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "get_initialization",
+        "inputs": [
+          {
+            "name": "key",
+            "type": "core::felt252"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::felt252"
+          }
+        ],
+        "state_mutability": "view"
       },
       {
         "type": "function",
