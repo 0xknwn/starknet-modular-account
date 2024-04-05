@@ -1,7 +1,7 @@
 {
-  "name": "smartr_account",
+  "name": "starknet-modular-account",
   "version": "0.0.1",
-  "description": "scripts to manage smartr account",
+  "description": "a modular account for starknet",
   "main": "index.js",
   "scripts": {
     "build": "rimraf ./build && tsc",
