@@ -36,20 +36,14 @@ export const deployContract = async (): Promise<Contract> => {
   return new Contract(CounterABI, deployResponse.contract_address, a);
 };
 
-export const increment = async (a: Account, env: string = "devnet") => {
-  const contract = new Contract(CounterABI, counterAddress(), a).typedv2(
-    CounterABI
-  );
-  const transferCall: Call = contract.populate("increment", {});
-  const { transaction_hash: transferTxHash } = await a.execute(transferCall);
-  return await a.waitForTransaction(transferTxHash);
-};
-
-export const increment_by = async (
+export const increment = async (
   a: Account,
-  values: number[],
+  values: number[] | number = 1,
   env: string = "devnet"
 ) => {
+  if (!Array.isArray(values)) {
+    values = [values];
+  }
   if (values.length === 0) {
     throw new Error("values should not be empty");
   }
