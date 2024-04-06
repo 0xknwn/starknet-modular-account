@@ -8,13 +8,11 @@
 use super::interface;
 use super::store;
 use super::plugin;
-use super::utils;
 
 #[starknet::component]
 pub mod AccountComponent {
     use super::interface;
     use super::store::Felt252ArrayStore;
-    use super::utils;
     use super::plugin::{IPluginClassDispatcherTrait, IPluginClassLibraryDispatcher};
     use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
     use openzeppelin::account::utils::{execute_calls, is_valid_stark_signature};
@@ -27,6 +25,7 @@ pub mod AccountComponent {
     use starknet::get_tx_info;
     use core::num::traits::Zero;
     use starknet::{ClassHash, ContractAddress};
+    use core::traits::Into;
 
     #[storage]
     struct Storage {
@@ -69,6 +68,7 @@ pub mod AccountComponent {
         pub const UNSUPPORTED_THRESHOLD: felt252 = 'Account: unsupported threshold';
         pub const THRESHOLD_TOO_BIG: felt252 = 'Account: threshold too big';
         pub const UNAUTHORIZED: felt252 = 'Account: unauthorized';
+        pub const PLUGIN_NOT_FOUND: felt252 = 'Plugin: plugin not found';
         pub const PLUGIN_NOT_INSTALLED: felt252 = 'Plugin: uninstalled plugin';
         pub const PLUGIN_ALREADY_INSTALLED: felt252 = 'Plugin: already installed';
     }
@@ -111,7 +111,7 @@ pub mod AccountComponent {
             let mut i = 0;
             let len = calls.len();
             if calls.len() > 1 {
-              if *calls.at(0).selector == selector!("module:validator") {
+              if *calls.at(0).selector == selector!("__module__validate__") {
                 i = 1;
               }
             }
@@ -131,10 +131,12 @@ pub mod AccountComponent {
         /// This function is used by the protocol to verify `invoke` transactions.
         fn __validate__(self: @ComponentState<TContractState>, mut calls: Array<Call>) -> felt252 {
             let selector = *calls.at(0).selector;
-            if selector == selector!("module:validator") {
-                let contract_address = *calls.at(0).to;
-                let class_hash = utils::contractAddress_to_classhash(contract_address);
-                assert( self.Account_plugins.read(class_hash), Errors::PLUGIN_NOT_INSTALLED);
+            if selector == selector!("__module__validate__") {
+                let calldata = *calls.at(0).calldata;
+                assert(calldata.len() > 0, Errors::PLUGIN_NOT_FOUND);
+                let felt = *calldata.at(0);
+                let class_hash : ClassHash =felt.try_into().unwrap();
+                assert(self.Account_plugins.read(class_hash), Errors::PLUGIN_NOT_INSTALLED);
                 return IPluginClassLibraryDispatcher{ class_hash: class_hash }.validate(calls);
             }
             self.validate_transaction()
@@ -278,6 +280,10 @@ pub mod AccountComponent {
         +SRC5Component::HasComponent<TContractState>,
         +Drop<TContractState>
     > of interface::IPlugin<ComponentState<TContractState>> {
+        fn __module__validate__(ref self: ComponentState<TContractState>, class_hash: ClassHash) {
+          self.assert_only_self();
+        }
+
         fn add_plugin(ref self: ComponentState<TContractState>, class_hash: ClassHash, args: Array<felt252>) { 
             self.assert_only_self();
             let installed = self.Account_plugins.read(class_hash);
