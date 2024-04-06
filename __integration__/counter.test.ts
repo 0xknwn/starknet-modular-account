@@ -49,6 +49,26 @@ describe("counter contract (helper)", () => {
   );
 
   it(
+    "increments the counter by 5 and 6",
+    async () => {
+      const a = account();
+      const c = await increment(a, [5, 6, 1]);
+      expect(c.isSuccess()).toEqual(true);
+    },
+    timeout
+  );
+
+  it(
+    "reads the counter",
+    async () => {
+      const a = account();
+      const c = await get(a);
+      expect(c).toBeGreaterThan(11n);
+    },
+    timeout
+  );
+
+  it(
     "resets the counter",
     async () => {
       const a = account();
