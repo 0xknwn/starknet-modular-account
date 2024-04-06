@@ -45,6 +45,31 @@ export const increment = async (a: Account, env: string = "devnet") => {
   return await a.waitForTransaction(transferTxHash);
 };
 
+export const increment_by = async (
+  a: Account,
+  values: number[],
+  env: string = "devnet"
+) => {
+  if (values.length === 0) {
+    throw new Error("values should not be empty");
+  }
+  const contract = new Contract(CounterABI, counterAddress(), a).typedv2(
+    CounterABI
+  );
+  let transferCalls: Call[] = [];
+  for (const value of values) {
+    let transferCall: Call = contract.populate("increment", {});
+    if (value > 1) {
+      transferCall = contract.populate("increment_by", {
+        value: value,
+      });
+    }
+    transferCalls.push(transferCall);
+  }
+  const { transaction_hash: transferTxHash } = await a.execute(transferCalls);
+  return await a.waitForTransaction(transferTxHash);
+};
+
 export const reset = async (a: Account, env: string = "devnet") => {
   const contract = new Contract(CounterABI, counterAddress(), a).typedv2(
     CounterABI

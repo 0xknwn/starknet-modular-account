@@ -5,6 +5,7 @@ import {
   counterAddress,
   reset,
   increment,
+  increment_by,
   get,
 } from "./counter";
 import { timeout } from "./constants";
@@ -44,6 +45,26 @@ describe("counter contract (helper)", () => {
       const a = account();
       const c = await get(a);
       expect(c).toBeGreaterThan(0n);
+    },
+    timeout
+  );
+
+  it(
+    "increments the counter by 5 and 6",
+    async () => {
+      const a = account();
+      const c = await increment_by(a, [5, 6, 1]);
+      expect(c.isSuccess()).toEqual(true);
+    },
+    timeout
+  );
+
+  it(
+    "reads the counter",
+    async () => {
+      const a = account();
+      const c = await get(a);
+      expect(c).toBeGreaterThan(11n);
     },
     timeout
   );
