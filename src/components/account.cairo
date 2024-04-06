@@ -106,25 +106,7 @@ pub mod AccountComponent {
             } else {
                 assert(MIN_TRANSACTION_VERSION <= tx_version, Errors::INVALID_TX_VERSION);
             }
-            // @todo: remove that to avoid double execution
-            let mut new_calls = ArrayTrait::<Call>::new();
-            let mut i = 0;
-            let len = calls.len();
-            if calls.len() > 1 {
-              if *calls.at(0).selector == selector!("__module__validate__") {
-                i = 1;
-              }
-            }
-            while i < len {
-              let call = Call{
-                to: *calls.at(i).to,
-                selector: *calls.at(i).selector,
-                calldata: *calls.at(i).calldata,
-                };
-              new_calls.append(call);
-              i += 1;
-            };
-            execute_calls(new_calls)
+            execute_calls(calls)
         }
 
         /// Verifies the validity of the signature for the current transaction.
