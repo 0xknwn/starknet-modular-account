@@ -22,6 +22,7 @@ import type {
   Signature,
   WeierstrassSignatureType,
 } from "starknet";
+import { SessionKey } from "./module";
 
 const signatureToHexArray = (signature: Signature): ArraySignatureType => {
   if (Array.isArray(signature)) {
@@ -43,10 +44,13 @@ const signatureToHexArray = (signature: Signature): ArraySignatureType => {
 export class Multisig extends Account {
   public signers: Array<SignerInterface>;
 
+  public module: SessionKey | undefined;
+
   constructor(
     providerOrOptions: ProviderOptions | ProviderInterface,
     address: string,
     pkOrSigners: Array<Uint8Array> | Array<string> | Array<SignerInterface>,
+    module: SessionKey | undefined = undefined,
     cairoVersion?: CairoVersion,
     transactionVersion:
       | typeof RPC.ETransactionVersion.V2
@@ -64,6 +68,7 @@ export class Multisig extends Account {
         ? new Signer(pkOrSigner)
         : pkOrSigner
     );
+    this.module = module;
   }
 
   public async execute(
@@ -92,9 +97,13 @@ export class Multisig extends Account {
       details.version
     );
 
+    if (this.module) {
+      calls.unshift(this.module.prefix());
+    }
+
     const estimate = await this.getUniversalSuggestedFee(
       version,
-      { type: TransactionType.INVOKE, payload: transactions },
+      { type: TransactionType.INVOKE, payload: calls },
       {
         ...details,
         version,
