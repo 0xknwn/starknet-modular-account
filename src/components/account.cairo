@@ -8,11 +8,13 @@
 use super::interface;
 use super::store;
 use super::plugin;
+use super::utils;
 
 #[starknet::component]
 pub mod AccountComponent {
     use super::interface;
     use super::store::Felt252ArrayStore;
+    use super::utils;
     use super::plugin::{IPluginClassDispatcherTrait, IPluginClassLibraryDispatcher};
     use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
     use openzeppelin::account::utils::{execute_calls, is_valid_stark_signature};
@@ -104,13 +106,37 @@ pub mod AccountComponent {
             } else {
                 assert(MIN_TRANSACTION_VERSION <= tx_version, Errors::INVALID_TX_VERSION);
             }
-
-            execute_calls(calls)
+            // @todo: remove that to avoid double execution
+            let mut new_calls = ArrayTrait::<Call>::new();
+            let mut i = 0;
+            let len = calls.len();
+            if calls.len() > 1 {
+              if *calls.at(0).selector == selector!("module:validator") {
+                i = 1;
+              }
+            }
+            while i < len {
+              let call = Call{
+                to: *calls.at(i).to,
+                selector: *calls.at(i).selector,
+                calldata: *calls.at(i).calldata,
+                };
+              new_calls.append(call);
+              i += 1;
+            };
+            execute_calls(new_calls)
         }
 
         /// Verifies the validity of the signature for the current transaction.
         /// This function is used by the protocol to verify `invoke` transactions.
         fn __validate__(self: @ComponentState<TContractState>, mut calls: Array<Call>) -> felt252 {
+            let selector = *calls.at(0).selector;
+            if selector == selector!("module:validator") {
+                let contract_address = *calls.at(0).to;
+                let class_hash = utils::contractAddress_to_classhash(contract_address);
+                assert( self.Account_plugins.read(class_hash), Errors::PLUGIN_NOT_INSTALLED);
+                return IPluginClassLibraryDispatcher{ class_hash: class_hash }.validate(calls);
+            }
             self.validate_transaction()
         }
 

@@ -22,8 +22,8 @@ mod SimplePlugin {
             true
         }
 
-        fn validate(self: @ContractState, calls: Array<Call>) {
-
+        fn validate(self: @ContractState, calls: Array<Call>) -> felt252 {
+            starknet::VALIDATED
         }
     }
 }
