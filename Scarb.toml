@@ -16,4 +16,4 @@ sierra = true
 casm = true
 
 [scripts]
-test = "snforge test"
+test = "snforge test --detailed-resources"
