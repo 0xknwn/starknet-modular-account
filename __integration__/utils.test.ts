@@ -49,7 +49,7 @@ describe("utilities (helpers)", () => {
   it("checks the $ETH balance", async () => {
     const c = config(env);
     const amount = await ethBalance(c.accounts[0].address, env);
-    expect(amount).toBeGreaterThanOrEqual(10000000000000000n);
+    expect(amount).toBeGreaterThanOrEqual(3n * initial_EthTransfer);
   });
 
   it("checks the $STRK balance", async () => {
@@ -71,6 +71,8 @@ describe("utilities (helpers)", () => {
       const c = config(env);
       const a = account(0, env);
       const destAddress = c.accounts[1].address;
+      // const destAddress =
+      //   "0x34b547f8eddeaa4966cb0def63cc9446786e051eb049c8e4b96135ff2200f4a";
       const initialAmount = (await ethBalance(
         c.accounts[0].address,
         env

@@ -37,7 +37,6 @@ export const account = (id: number = 0, env: string = "devnet"): Account => {
 export const ethBalance = async (account: string, env: string = "devnet") => {
   const eth = ethAddress(env);
   const p = provider(env);
-  console.log(account);
   const contract = new Contract(ERC20, eth, p).typedv2(ERC20);
   const amount = await contract.balanceOf(account);
   return amount;

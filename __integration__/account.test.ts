@@ -27,7 +27,7 @@ describe("account management", () => {
   it(
     "deploys the Counter class",
     async () => {
-      const c = await deployClass("Counter");
+      const c = await deployClass("Counter", env);
       expect(c.classHash).toEqual(classHash("Counter"));
     },
     timeout
@@ -36,7 +36,7 @@ describe("account management", () => {
   it(
     "deploys the counter contract",
     async () => {
-      const c = await deployCounterContract();
+      const c = await deployCounterContract(env);
       expect(c.address).toEqual(counterAddress(env));
     },
     timeout
@@ -45,7 +45,7 @@ describe("account management", () => {
   it(
     "deploys the Account class",
     async () => {
-      const c = await deployClass("Account");
+      const c = await deployClass("Account", env);
       expect(c.classHash).toEqual(classHash("Account"));
     },
     timeout
@@ -55,7 +55,7 @@ describe("account management", () => {
     "deploys the account contract",
     async () => {
       const conf = config(env);
-      const c = await deployAccount("Account");
+      const c = await deployAccount("Account", env);
       expect(c).toEqual(accountAddress("Account", env));
     },
     timeout
@@ -78,7 +78,7 @@ describe("account management", () => {
     "checks the account threshold",
     async () => {
       const a = account(0, env);
-      const c = await get_threshold(a);
+      const c = await get_threshold(a, "Account", env);
       expect(c).toEqual(1n);
     },
     timeout
@@ -88,7 +88,7 @@ describe("account management", () => {
     "resets the counter with owner",
     async () => {
       const a = account(0, env);
-      await reset(a);
+      await reset(a, env);
     },
     timeout
   );
@@ -97,7 +97,7 @@ describe("account management", () => {
     "reads the counter",
     async () => {
       const a = account(0, env);
-      const c = await get(a);
+      const c = await get(a, env);
       expect(c).toBe(0n);
     },
     timeout
@@ -113,7 +113,7 @@ describe("account management", () => {
         accountAddress("Account", env),
         conf.accounts[0].privateKey
       );
-      const c = await increment(a);
+      const c = await increment(a, 1, env);
       expect(c.isSuccess()).toEqual(true);
     },
     timeout
@@ -123,7 +123,7 @@ describe("account management", () => {
     "reads the counter",
     async () => {
       const a = account(0, env);
-      const c = await get(a);
+      const c = await get(a, env);
       expect(c).toBe(1n);
     },
     timeout
@@ -139,7 +139,7 @@ describe("account management", () => {
         accountAddress("Account", env),
         conf.accounts[0].privateKey
       );
-      const c = await increment(a);
+      const c = await increment(a, 1, env);
       try {
         await reset(a);
         expect(true).toBe(false);
@@ -154,7 +154,7 @@ describe("account management", () => {
     "reads the counter",
     async () => {
       const a = account(0, env);
-      const c = await get(a);
+      const c = await get(a, env);
       expect(c).toBe(2n);
     },
     timeout
@@ -183,7 +183,7 @@ describe("account management", () => {
     "resets and increments the counter",
     async () => {
       const acc = account(0, env);
-      await reset(acc);
+      await reset(acc, env);
       const conf = config(env);
       const p = provider(env);
       const a = new Account(
@@ -191,9 +191,9 @@ describe("account management", () => {
         accountAddress("Account", env),
         conf.accounts[1].privateKey
       );
-      const c1 = await increment(a);
+      const c1 = await increment(a, 1, env);
       expect(c1.isSuccess()).toEqual(true);
-      const c2 = await get(a);
+      const c2 = await get(a, env);
       expect(c2).toBe(1n);
     },
     timeout
@@ -233,7 +233,7 @@ describe("account management", () => {
         accountAddress("Account", env),
         conf.accounts[0].privateKey
       );
-      await remove_public_key(a, conf.accounts[1].publicKey);
+      await remove_public_key(a, conf.accounts[1].publicKey, "Account", env);
       const c = await get_public_keys(a, "Account", env);
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(1);
@@ -253,7 +253,7 @@ describe("account management", () => {
         conf.accounts[0].privateKey
       );
       try {
-        await remove_public_key(a, "0x2");
+        await remove_public_key(a, "0x2", "Account", env);
         expect(true).toBe(false);
       } catch (e) {
         expect(e).toBeDefined();
@@ -273,13 +273,13 @@ describe("account management", () => {
         conf.accounts[1].privateKey
       );
       try {
-        await increment(a);
+        await increment(a, 1, env);
         expect(true).toBe(false);
       } catch (e) {
         expect(e).toBeDefined();
       }
       const acc = account(0, env);
-      const c2 = await get(acc);
+      const c2 = await get(acc, env);
       expect(c2).toBe(1n);
     },
     timeout
@@ -296,7 +296,7 @@ describe("account management", () => {
         conf.accounts[0].privateKey
       );
       try {
-        await remove_public_key(a, conf.accounts[0].privateKey);
+        await remove_public_key(a, conf.accounts[0].privateKey, "Account", env);
         expect(true).toBe(false);
       } catch (e) {
         expect(e).toBeDefined();

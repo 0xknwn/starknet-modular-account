@@ -28,7 +28,7 @@ describe("multiple signatures", () => {
   it(
     "deploys the Counter class",
     async () => {
-      const c = await deployClass("Counter");
+      const c = await deployClass("Counter", env);
       expect(c.classHash).toEqual(classHash("Counter"));
     },
     timeout
@@ -46,7 +46,7 @@ describe("multiple signatures", () => {
   it(
     "deploys the Account class",
     async () => {
-      const c = await deployClass("Account");
+      const c = await deployClass("Account", env);
       expect(c.classHash).toEqual(classHash("Account"));
     },
     timeout
@@ -55,8 +55,7 @@ describe("multiple signatures", () => {
   it(
     "deploys the account",
     async () => {
-      const conf = config(env);
-      const c = await deployAccount("Account");
+      const c = await deployAccount("Account", env);
       expect(c).toEqual(accountAddress("Account", env));
     },
     timeout
@@ -79,7 +78,7 @@ describe("multiple signatures", () => {
     "resets the counter with its owner",
     async () => {
       const a = account(0, env);
-      await reset(a);
+      await reset(a, env);
     },
     timeout
   );
@@ -88,7 +87,7 @@ describe("multiple signatures", () => {
     "reads the counter",
     async () => {
       const a = account(0, env);
-      const c = await get(a);
+      const c = await get(a, env);
       expect(c).toBe(0n);
     },
     timeout
@@ -102,7 +101,7 @@ describe("multiple signatures", () => {
       const a = new Multisig(p, accountAddress("Account", env), [
         conf.accounts[0].privateKey,
       ]);
-      const c = await increment(a);
+      const c = await increment(a, 1, env);
       expect(c.isSuccess()).toEqual(true);
     },
     timeout
@@ -112,7 +111,7 @@ describe("multiple signatures", () => {
     "reads the counter",
     async () => {
       const a = account(0, env);
-      const c = await get(a);
+      const c = await get(a, env);
       expect(c).toBe(1n);
     },
     timeout
@@ -139,15 +138,15 @@ describe("multiple signatures", () => {
     "resets and increments the counter",
     async () => {
       const acc = account(0, env);
-      await reset(acc);
+      await reset(acc, env);
       const conf = config(env);
       const p = provider(env);
       const a = new Multisig(p, accountAddress("Account", env), [
         conf.accounts[1].privateKey,
       ]);
-      const c1 = await increment(a);
+      const c1 = await increment(a, 1, env);
       expect(c1.isSuccess()).toEqual(true);
-      const c2 = await get(a);
+      const c2 = await get(a, env);
       expect(c2).toBe(1n);
     },
     timeout
@@ -161,10 +160,10 @@ describe("multiple signatures", () => {
       const a = new Multisig(p, accountAddress("Account", env), [
         conf.accounts[1].privateKey,
       ]);
-      const c1 = await set_threshold(a, 2n);
+      const c1 = await set_threshold(a, 2n, "Account", env);
       expect(c1.isSuccess()).toEqual(true);
       const acc = account(0, env);
-      const c = await get_threshold(acc);
+      const c = await get_threshold(acc, "Account", env);
       expect(c).toEqual(2n);
     },
     timeout
@@ -197,10 +196,10 @@ describe("multiple signatures", () => {
         conf.accounts[1].privateKey,
         conf.accounts[2].privateKey,
       ]);
-      const c1 = await increment(a);
+      const c1 = await increment(a, 1, env);
       expect(c1.isSuccess()).toEqual(true);
       const acc = account(0, env);
-      const c2 = await get(acc);
+      const c2 = await get(acc, env);
       expect(c2).toBe(2n);
     },
     timeout
@@ -215,13 +214,13 @@ describe("multiple signatures", () => {
         conf.accounts[0].privateKey,
       ]);
       try {
-        const c1 = await increment(a);
+        const c1 = await increment(a, 1, env);
         expect(false).toBe(true);
       } catch (e) {
         expect(e).toBeDefined();
       }
       const acc = account(0, env);
-      const c2 = await get(acc);
+      const c2 = await get(acc, env);
       expect(c2).toBe(2n);
     },
     timeout
@@ -236,10 +235,10 @@ describe("multiple signatures", () => {
         conf.accounts[0].privateKey,
         conf.accounts[1].privateKey,
       ]);
-      const c1 = await set_threshold(a, 1n);
+      const c1 = await set_threshold(a, 1n, "Account", env);
       expect(c1.isSuccess()).toEqual(true);
       const acc = account(0, env);
-      const c = await get_threshold(acc);
+      const c = await get_threshold(acc, "Account", env);
       expect(c).toEqual(1n);
     },
     timeout
@@ -253,10 +252,10 @@ describe("multiple signatures", () => {
       const a = new Multisig(p, accountAddress("Account", env), [
         conf.accounts[1].privateKey,
       ]);
-      const c1 = await increment(a);
+      const c1 = await increment(a, 1, env);
       expect(c1.isSuccess()).toEqual(true);
       const acc = account(0, env);
-      const c2 = await get(acc);
+      const c2 = await get(acc, env);
       expect(c2).toBe(3n);
     },
     timeout
@@ -270,7 +269,7 @@ describe("multiple signatures", () => {
       const a = new Multisig(p, accountAddress("Account", env), [
         conf.accounts[0].privateKey,
       ]);
-      await remove_public_key(a, conf.accounts[1].publicKey);
+      await remove_public_key(a, conf.accounts[1].publicKey, "Account", env);
       const c = await get_public_keys(a, "Account", env);
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(2);
@@ -287,7 +286,7 @@ describe("multiple signatures", () => {
       const a = new Multisig(p, accountAddress("Account", env), [
         conf.accounts[0].privateKey,
       ]);
-      await remove_public_key(a, conf.accounts[2].publicKey);
+      await remove_public_key(a, conf.accounts[2].publicKey, "Account", env);
       const c = await get_public_keys(a, "Account", env);
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(1);
@@ -304,10 +303,10 @@ describe("multiple signatures", () => {
       const a = new Multisig(p, accountAddress("Account", env), [
         conf.accounts[0].privateKey,
       ]);
-      const c1 = await increment(a);
+      const c1 = await increment(a, 1, env);
       expect(c1.isSuccess()).toEqual(true);
       const acc = account(0, env);
-      const c2 = await get(acc);
+      const c2 = await get(acc, env);
       expect(c2).toBe(4n);
     },
     timeout

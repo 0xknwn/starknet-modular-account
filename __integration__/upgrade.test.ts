@@ -13,7 +13,7 @@ describe("account upgrade and downgrade", () => {
   it(
     "deploys the SimpleAccount class",
     async () => {
-      const c = await deployClass("SimpleAccount");
+      const c = await deployClass("SimpleAccount", env);
       expect(c.classHash).toEqual(classHash("SimpleAccount"));
     },
     timeout
@@ -22,7 +22,7 @@ describe("account upgrade and downgrade", () => {
   it(
     "deploys the Account class",
     async () => {
-      const c = await deployClass("Account");
+      const c = await deployClass("Account", env);
       expect(c.classHash).toEqual(classHash("Account"));
     },
     timeout
@@ -32,7 +32,7 @@ describe("account upgrade and downgrade", () => {
     "deploys the account contract with Account",
     async () => {
       const conf = config(env);
-      const c = await deployAccount("Account");
+      const c = await deployAccount("Account", env);
       expect(c).toEqual(accountAddress("Account", env));
     },
     timeout
@@ -43,12 +43,12 @@ describe("account upgrade and downgrade", () => {
     async () => {
       const c = config(env);
       const p = provider(env);
-      const a2 = new Account(
+      const a = new Account(
         p,
         accountAddress("Account", env),
         c.accounts[0].privateKey
       );
-      const deployedClass = await a2.getClassHashAt(a2.address);
+      const deployedClass = await a.getClassHashAt(a.address);
       expect(deployedClass).toEqual(classHash("Account"));
     },
     timeout
@@ -59,12 +59,12 @@ describe("account upgrade and downgrade", () => {
     async () => {
       const c = config(env);
       const p = provider(env);
-      const a2 = new Account(
+      const a = new Account(
         p,
         accountAddress("Account", env),
         c.accounts[0].privateKey
       );
-      const txReceipt = await upgrade(a2, classHash("SimpleAccount"));
+      const txReceipt = await upgrade(a, classHash("SimpleAccount"));
       expect(txReceipt.isSuccess()).toEqual(true);
     },
     timeout

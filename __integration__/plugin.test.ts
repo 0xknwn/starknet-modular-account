@@ -20,7 +20,7 @@ describe("plugin management", () => {
   it(
     "deploys the Account class",
     async () => {
-      const c = await deployClass("Account");
+      const c = await deployClass("Account", env);
       expect(c.classHash).toEqual(classHash("Account"));
     },
     timeout
@@ -29,8 +29,7 @@ describe("plugin management", () => {
   it(
     "deploys the account",
     async () => {
-      const conf = config(env);
-      const c = await deployAccount("Account");
+      const c = await deployAccount("Account", env);
       expect(c).toEqual(accountAddress("Account", env));
     },
     timeout
@@ -39,7 +38,7 @@ describe("plugin management", () => {
   it(
     "deploys the SimplePlugin class",
     async () => {
-      const c = await deployClass("SimplePlugin");
+      const c = await deployClass("SimplePlugin", env);
       expect(c.classHash).toEqual(classHash("SimplePlugin"));
     },
     timeout
@@ -61,7 +60,6 @@ describe("plugin management", () => {
   it(
     "checks the account plugin is not installed",
     async () => {
-      const conf = config(env);
       const a = account(0, env);
       const c = await is_plugin(a, "0x0", env);
       expect(c).toBe(false);
@@ -90,7 +88,7 @@ describe("plugin management", () => {
     "checks the plugin initialize has been called",
     async () => {
       const acc = account(0, env);
-      const c = await get_initialization(acc);
+      const c = await get_initialization(acc, env);
       expect(`0x${c.toString(16)}`).toEqual("0x8");
     },
     timeout
@@ -129,7 +127,7 @@ describe("plugin management", () => {
         accountAddress("Account", env),
         conf.accounts[0].privateKey
       );
-      const c = await remove_plugin(a, classHash("SimplePlugin"));
+      const c = await remove_plugin(a, classHash("SimplePlugin"), env);
       expect(c.isSuccess()).toEqual(true);
       const acc = account(0, env);
       const value = await is_plugin(acc, classHash("SimplePlugin"), env);

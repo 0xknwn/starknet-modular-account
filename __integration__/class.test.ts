@@ -11,7 +11,7 @@ describe("class management", () => {
   it(
     "deploys the Account class",
     async () => {
-      const c = await deployClass("SimpleAccount");
+      const c = await deployClass("SimpleAccount", env);
       expect(c.classHash).toEqual(classHash("SimpleAccount"));
     },
     timeout

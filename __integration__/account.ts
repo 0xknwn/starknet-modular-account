@@ -59,13 +59,7 @@ export const deployAccount = async (
   return AccountAddress;
 };
 
-export const upgrade = async (
-  a: Account,
-  classHash: string,
-  env: string = "devnet"
-) => {
-  const conf = config(env);
-
+export const upgrade = async (a: Account, classHash: string) => {
   const contract = new Contract(AccountABI, a.address, a).typedv2(AccountABI);
   const upgradeCall: Call = contract.populate("upgrade", {
     new_class_hash: classHash,
