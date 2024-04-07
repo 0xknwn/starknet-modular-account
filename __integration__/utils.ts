@@ -1,13 +1,5 @@
 import fs from "fs";
-import {
-  RpcProvider,
-  Account,
-  Contract,
-  Call,
-  ec,
-  CallData,
-  hash,
-} from "starknet";
+import { RpcProvider, Account, Contract, Call } from "starknet";
 import { ABI as ERC20 } from "./abi/ERC20";
 import { ethAddress, strkAddress } from "./addresses";
 import { execSync } from "child_process";
@@ -25,8 +17,8 @@ type Config = {
 };
 
 export const config = (env: string = "devnet"): Config => {
-  if (env && env === "devnet") {
-    return JSON.parse(fs.readFileSync(".env.devnet.json", "utf-8"));
+  if (env && env !== "devnet") {
+    return JSON.parse(fs.readFileSync(`.env.${env}.json`, "utf-8"));
   }
   return JSON.parse(fs.readFileSync(".env.devnet.json", "utf-8"));
 };
@@ -44,7 +36,7 @@ export const account = (id: number = 0, env: string = "devnet"): Account => {
 
 export const ethBalance = async (account: string, env: string = "devnet") => {
   const eth = ethAddress(env);
-  const p = provider("devnet");
+  const p = provider(env);
   const contract = new Contract(ERC20, eth, p).typedv2(ERC20);
   const amount = await contract.balanceOf(account);
   return amount;
@@ -52,7 +44,7 @@ export const ethBalance = async (account: string, env: string = "devnet") => {
 
 export const strkBalance = async (account: string, env: string = "devnet") => {
   const eth = strkAddress(env);
-  const p = provider("devnet");
+  const p = provider(env);
   const contract = new Contract(ERC20, eth, p).typedv2(ERC20);
   const amount = await contract.balanceOf(account);
   return amount;
@@ -81,16 +73,4 @@ export const classHash = (className: string): string => {
     `starkli class-hash ./target/dev/smartr_${className}.contract_class.json`
   );
   return output.toString().trim().replace(/^0x0+/, "0x");
-};
-
-export const counterAddress = (class_hash: string): string => {
-  const c = config();
-  const starkKeyPub = ec.starkCurve.getStarkKey(c.accounts[0].privateKey);
-  const calldata = CallData.compile({ publicKey: starkKeyPub });
-  return hash.calculateContractAddressFromHash(
-    starkKeyPub,
-    class_hash,
-    calldata,
-    0
-  );
 };

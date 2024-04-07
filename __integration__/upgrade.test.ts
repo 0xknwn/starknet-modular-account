@@ -1,14 +1,19 @@
 import { deployClass } from "./class";
 import { accountAddress, deployAccount, upgrade } from "./account";
-import { config, account, classHash, provider } from "./utils";
+import { config, classHash, provider } from "./utils";
 import { Account } from "starknet";
 import { timeout } from "./constants";
 
 describe("account upgrade and downgrade", () => {
+  let env: string;
+  beforeAll(() => {
+    env = "devnet";
+  });
+
   it(
     "deploys the SimpleAccount class",
     async () => {
-      const c = await deployClass("SimpleAccount");
+      const c = await deployClass("SimpleAccount", env);
       expect(c.classHash).toEqual(classHash("SimpleAccount"));
     },
     timeout
@@ -17,7 +22,7 @@ describe("account upgrade and downgrade", () => {
   it(
     "deploys the Account class",
     async () => {
-      const c = await deployClass("Account");
+      const c = await deployClass("Account", env);
       expect(c.classHash).toEqual(classHash("Account"));
     },
     timeout
@@ -26,9 +31,9 @@ describe("account upgrade and downgrade", () => {
   it(
     "deploys the account contract with Account",
     async () => {
-      const conf = config();
-      const c = await deployAccount("Account");
-      expect(c).toEqual(accountAddress("Account"));
+      const conf = config(env);
+      const c = await deployAccount("Account", env);
+      expect(c).toEqual(accountAddress("Account", env));
     },
     timeout
   );
@@ -36,14 +41,14 @@ describe("account upgrade and downgrade", () => {
   it(
     "checks the account class hash",
     async () => {
-      const c = config();
-      const p = provider();
-      const a2 = new Account(
+      const c = config(env);
+      const p = provider(env);
+      const a = new Account(
         p,
-        accountAddress("Account"),
+        accountAddress("Account", env),
         c.accounts[0].privateKey
       );
-      const deployedClass = await a2.getClassHashAt(a2.address);
+      const deployedClass = await a.getClassHashAt(a.address);
       expect(deployedClass).toEqual(classHash("Account"));
     },
     timeout
@@ -52,14 +57,14 @@ describe("account upgrade and downgrade", () => {
   it(
     "upgrades the account with SimpleAccount",
     async () => {
-      const c = config();
-      const p = provider();
-      const a2 = new Account(
+      const c = config(env);
+      const p = provider(env);
+      const a = new Account(
         p,
-        accountAddress("Account"),
+        accountAddress("Account", env),
         c.accounts[0].privateKey
       );
-      const txReceipt = await upgrade(a2, classHash("SimpleAccount"));
+      const txReceipt = await upgrade(a, classHash("SimpleAccount"));
       expect(txReceipt.isSuccess()).toEqual(true);
     },
     timeout
@@ -68,11 +73,11 @@ describe("account upgrade and downgrade", () => {
   it(
     "checks the new account class hash",
     async () => {
-      const c = config();
-      const p = provider();
+      const c = config(env);
+      const p = provider(env);
       const a2 = new Account(
         p,
-        accountAddress("Account"),
+        accountAddress("Account", env),
         c.accounts[0].privateKey
       );
       const deployedClass = await a2.getClassHashAt(a2.address);
@@ -84,11 +89,11 @@ describe("account upgrade and downgrade", () => {
   it(
     "downgrades the account back to Account",
     async () => {
-      const c = config();
-      const p = provider();
+      const c = config(env);
+      const p = provider(env);
       const a2 = new Account(
         p,
-        accountAddress("Account"),
+        accountAddress("Account", env),
         c.accounts[0].privateKey
       );
       const txReceipt = await upgrade(a2, classHash("Account"));
@@ -100,11 +105,11 @@ describe("account upgrade and downgrade", () => {
   it(
     "checks the account class hash",
     async () => {
-      const c = config();
-      const p = provider();
+      const c = config(env);
+      const p = provider(env);
       const a2 = new Account(
         p,
-        accountAddress("Account"),
+        accountAddress("Account", env),
         c.accounts[0].privateKey
       );
       const deployedClass = await a2.getClassHashAt(a2.address);

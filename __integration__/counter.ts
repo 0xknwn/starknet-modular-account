@@ -4,11 +4,12 @@ import { ABI as CounterABI } from "./abi/Counter";
 import { udcAddress } from "./addresses";
 
 // accountAddress compute the account address from the account public key.
-export const counterAddress = (name: string = "Counter"): string => {
-  const a = account();
+export const counterAddress = (env: string = "devnet"): string => {
+  const name = "Counter";
+  const a = account(0, env);
   const myCallData = new CallData(CounterABI);
   const _calldata = myCallData.compile("constructor", {
-    owner: account().address,
+    owner: account(0, env).address,
   });
   return hash.calculateContractAddressFromHash(
     ec.starkCurve.pedersen(a.address, 0),
@@ -18,18 +19,21 @@ export const counterAddress = (name: string = "Counter"): string => {
   );
 };
 
-export const deployContract = async (): Promise<Contract> => {
-  const a = account();
-  const CounterClassHash = classHash("Counter");
+export const deployCounterContract = async (
+  env: string = "devnet"
+): Promise<Contract> => {
+  const name = "Counter";
+  const a = account(0, env);
+  const CounterClassHash = classHash(name);
   try {
-    const v = await a.getContractVersion(counterAddress());
+    const v = await a.getContractVersion(counterAddress(env));
     if (v.cairo == "1" && v.compiler == "2") {
-      return new Contract(CounterABI, counterAddress(), a);
+      return new Contract(CounterABI, counterAddress(env), a);
     }
   } catch (e) {}
   const deployResponse = await a.deployContract({
     classHash: CounterClassHash,
-    constructorCalldata: [account().address],
+    constructorCalldata: [a.address],
     salt: "0x0",
   });
   await a.waitForTransaction(deployResponse.transaction_hash);
@@ -47,7 +51,7 @@ export const increment = async (
   if (values.length === 0) {
     throw new Error("values should not be empty");
   }
-  const contract = new Contract(CounterABI, counterAddress(), a).typedv2(
+  const contract = new Contract(CounterABI, counterAddress(env), a).typedv2(
     CounterABI
   );
   let transferCalls: Call[] = [];
@@ -65,7 +69,7 @@ export const increment = async (
 };
 
 export const reset = async (a: Account, env: string = "devnet") => {
-  const contract = new Contract(CounterABI, counterAddress(), a).typedv2(
+  const contract = new Contract(CounterABI, counterAddress(env), a).typedv2(
     CounterABI
   );
   const transferCall: Call = contract.populate("reset", {});
@@ -74,7 +78,7 @@ export const reset = async (a: Account, env: string = "devnet") => {
 };
 
 export const get = async (a: Account, env: string = "devnet") => {
-  const contract = new Contract(CounterABI, counterAddress(), a).typedv2(
+  const contract = new Contract(CounterABI, counterAddress(env), a).typedv2(
     CounterABI
   );
   return await contract.get();
