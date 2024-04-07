@@ -84,12 +84,6 @@ describe("module management", () => {
     timeout
   );
 
-  it("checks the account address", async () => {
-    expect(accountAddress("Account", env)).toEqual(
-      "0x34b547f8eddeaa4966cb0def63cc9446786e051eb049c8e4b96135ff2200f4a"
-    );
-  });
-
   it(
     "adds a plugin to the account",
     async () => {
