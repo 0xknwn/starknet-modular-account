@@ -46,13 +46,13 @@ pub trait ISRC6CamelOnly<TState> {
 }
 
 #[starknet::interface]
-pub trait IPlugin<TState> {
+pub trait IModule<TState> {
     // @todo: discuss this function and how fragile it is
     fn __module__validate__(ref self: TState, class_hash: ClassHash);
-    fn add_plugin(ref self: TState, class_hash: ClassHash, args: Array<felt252>);
-    fn remove_plugin(ref self: TState, class_hash: ClassHash);
+    fn add_module(ref self: TState, class_hash: ClassHash, args: Array<felt252>);
+    fn remove_module(ref self: TState, class_hash: ClassHash);
     fn get_initialization(self: @TState, key: felt252) -> felt252;
-    fn is_plugin(self: @TState, class_hash: ClassHash) -> bool;
-    fn read_on_plugin(self: @TState, class_hash: ClassHash, calls: Array<Call>);
-    fn execute_on_plugin(ref self: TState, class_hash: ClassHash, calls: Array<Call>);
+    fn is_module(self: @TState, class_hash: ClassHash) -> bool;
+    fn read_on_module(self: @TState, class_hash: ClassHash, calls: Array<Call>);
+    fn execute_on_module(ref self: TState, class_hash: ClassHash, calls: Array<Call>);
 }

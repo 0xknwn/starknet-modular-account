@@ -1,8 +1,8 @@
 export const ABI = [
   {
     "type": "impl",
-    "name": "PluginClassImpl",
-    "interface_name": "smartr::components::plugin::IPluginClass"
+    "name": "ModuleClassImpl",
+    "interface_name": "smartr::components::module::IModuleClass"
   },
   {
     "type": "enum",
@@ -48,7 +48,7 @@ export const ABI = [
   },
   {
     "type": "interface",
-    "name": "smartr::components::plugin::IPluginClass",
+    "name": "smartr::components::module::IModuleClass",
     "items": [
       {
         "type": "function",
@@ -102,7 +102,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::simple_plugin::SimplePlugin::Event",
+    "name": "smartr::simple_module::SimpleModule::Event",
     "kind": "enum",
     "variants": []
   }
