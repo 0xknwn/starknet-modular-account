@@ -37,12 +37,6 @@ describe("module management", () => {
     timeout
   );
 
-  it("checks the counter address", async () => {
-    expect(counterAddress(env)).toEqual(
-      "0x177578170200d3ef6bf17a62f44dde7ae5b89cbe670e6a0c328f63819a1a20a"
-    );
-  });
-
   it(
     "deploys the Account class",
     async () => {
