@@ -1,0 +1,38 @@
+name: snfoundry
+on:
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - '**'
+      - '!docs/*'
+  push:
+    branches:
+      - 'develop'
+    paths:
+      - '**'
+
+jobs:
+  test:
+    name: install, build and run snforge tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '21.x'
+          cache: 'npm'
+      - name: Download starkli
+        run: curl -L --no-progress-meter -o starkli-x86_64-unknown-linux-gnu.tar.gz https://github.com/xJonathanLEI/starkli/releases/download/v0.2.8/starkli-x86_64-unknown-linux-gnu.tar.gz
+      - name: Install starkli
+        run: tar -C /usr/local/bin -zxvf starkli-x86_64-unknown-linux-gnu.tar.gz
+      - name: Install scarb
+        run: curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh
+      - name: Install snfoundry
+        run: curl -L https://raw.githubusercontent.com/foundry-rs/starknet-foundry/master/scripts/install.sh | sh
+      - name: Install snforge and sncast
+        run: snfoundryup && snforge --version
+      - name: Run tests
+        run: scarb test
