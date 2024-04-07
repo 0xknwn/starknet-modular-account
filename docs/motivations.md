@@ -66,19 +66,19 @@ We would like to explore solutions like:
 >   prevent that behaviour. We need to study it in both the context of EIP-6900
 >   that is probably preventing it and Safe{Core} Protocol.
 > - the way module stores data when enabled can be a concern for upgrades. We
->   should look at this in the context of plugin account
-> - the use of a standardized plugin protocol also opens the door to the
+>   should look at this in the context of modular account
+> - the use of a standardized module protocol also opens the door to the
 >   integration of the shipping of client-side SDK and UI components to ease 
->   and help the use to interact with the plugin in the context of a service.
+>   and help the use to interact with the module in the context of a service.
 >   This would help provide installation/blocking and also standardize
 >   behaviours on the dapp or in the signer.
 > - the concerns we have identified sofar are that:
 >   - if somehow we need to reverse transactions and some fees are taken, we 
 >     could end-up in a situation when someone fails transaction on purpose.
->   - if the plugin stores data in the account, for instance to check for an
+>   - if the module stores data in the account, for instance to check for an
 >     allowance how can we guaranty that there is no collision overtime,
 >     including on purpose. How can we also guaranty those data are not lost
->     with a plugin upgrade
+>     with a module upgrade
 >   - how to we check for security when modules are combined? Composability is
 >     great, except that it could very well be that together module are dangerous
 >     when used standalone, they are actually fine

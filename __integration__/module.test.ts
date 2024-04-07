@@ -9,7 +9,12 @@ import {
   reset,
 } from "./counter";
 import { Multisig } from "./multisig";
-import { add_plugin, is_plugin, remove_plugin } from "./plugin";
+import {
+  add_module,
+  is_module,
+  remove_module,
+  get_initialization,
+} from "./module";
 import { timeout } from "./constants";
 import { SessionKey } from "./module";
 
@@ -49,7 +54,6 @@ describe("module management", () => {
   it(
     "deploys the account",
     async () => {
-      const conf = config(env);
       const c = await deployAccount("Account", env);
       expect(c).toEqual(accountAddress("Account", env));
     },
@@ -57,7 +61,16 @@ describe("module management", () => {
   );
 
   it(
-    "checks the account public keys",
+    "deploys the SimpleModule class",
+    async () => {
+      const c = await deployClass("SimpleModule", env);
+      expect(c.classHash).toEqual(classHash("SimpleModule"));
+    },
+    timeout
+  );
+
+  it(
+    "checks the public keys",
     async () => {
       const conf = config(env);
       const a = account(0, env);
@@ -70,33 +83,65 @@ describe("module management", () => {
   );
 
   it(
-    "deploys the SimplePlugin class",
+    "checks the module 0x0 is not installed",
     async () => {
-      const c = await deployClass("SimplePlugin", env);
-      expect(c.classHash).toEqual(classHash("SimplePlugin"));
+      const a = account(0, env);
+      const c = await is_module(a, "0x0", env);
+      expect(c).toBe(false);
     },
     timeout
   );
 
   it(
-    "adds a plugin to the account",
+    "adds a module to the account",
     async () => {
       const conf = config(env);
       const p = provider(env);
       const a = new Multisig(p, accountAddress("Account", env), [
         conf.accounts[0].privateKey,
       ]);
-      const c = await add_plugin(a, classHash("SimplePlugin"), env);
+      const c = await add_module(a, classHash("SimpleModule"), env);
       expect(c.isSuccess()).toEqual(true);
     },
     timeout
   );
 
   it(
-    "checks the plugin with the account",
+    "checks the module with the account",
     async () => {
       const acc = account(0, env);
-      const value = await is_plugin(acc, classHash("SimplePlugin"), env);
+      const value = await is_module(acc, classHash("SimpleModule"), env);
+      expect(value).toBe(true);
+    },
+    timeout
+  );
+
+  it(
+    "checks the module initialize has been called",
+    async () => {
+      const acc = account(0, env);
+      const c = await get_initialization(acc, env);
+      expect(`0x${c.toString(16)}`).toEqual("0x8");
+    },
+    timeout
+  );
+
+  it(
+    "adds the module to the account again",
+    async () => {
+      const conf = config(env);
+      const p = provider(env);
+      const a = new Multisig(p, accountAddress("Account", env), [
+        conf.accounts[0].privateKey,
+      ]);
+      try {
+        const c = await add_module(a, classHash("SimpleModule"), env);
+        expect(c.isSuccess()).toEqual(false);
+      } catch (e) {
+        expect(e).toBeDefined();
+      }
+      const acc = account(0, env);
+      const value = await is_module(acc, classHash("SimpleModule"), env);
       expect(value).toBe(true);
     },
     timeout
@@ -120,7 +165,7 @@ describe("module management", () => {
       const module = new SessionKey(
         "0x0",
         accountAddress("Account", env),
-        classHash("SimplePlugin")
+        classHash("SimpleModule")
       );
       const a = new Multisig(p, accountAddress("Account", env), [], module);
       const c = await increment(a, 1, env);
@@ -140,7 +185,7 @@ describe("module management", () => {
   );
 
   it(
-    "removes the plugin from account",
+    "removes the module from account",
     async () => {
       const conf = config(env);
       const p = provider(env);
@@ -150,17 +195,17 @@ describe("module management", () => {
         [conf.accounts[0].privateKey],
         undefined
       );
-      const c = await remove_plugin(a, classHash("SimplePlugin"), env);
+      const c = await remove_module(a, classHash("SimpleModule"), env);
       expect(c.isSuccess()).toEqual(true);
     },
     timeout
   );
 
   it(
-    "checks the plugin with the account",
+    "checks the module with the account",
     async () => {
       const acc = account(0, env);
-      const value = await is_plugin(acc, classHash("SimplePlugin"), env);
+      const value = await is_module(acc, classHash("SimpleModule"), env);
       expect(value).toBe(false);
     },
     timeout
@@ -173,7 +218,7 @@ describe("module management", () => {
       const module = new SessionKey(
         "0x0",
         accountAddress("Account", env),
-        classHash("SimplePlugin")
+        classHash("SimpleModule")
       );
       const a = new Multisig(p, accountAddress("Account", env), [], module);
       try {

@@ -7,13 +7,13 @@
 
 use super::interface;
 use super::store;
-use super::plugin;
+use super::module;
 
 #[starknet::component]
 pub mod AccountComponent {
     use super::interface;
     use super::store::Felt252ArrayStore;
-    use super::plugin::{IPluginClassDispatcherTrait, IPluginClassLibraryDispatcher};
+    use super::module::{IModuleClassDispatcherTrait, IModuleClassLibraryDispatcher};
     use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
     use openzeppelin::account::utils::{execute_calls, is_valid_stark_signature};
     use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SRC5InternalTrait;
@@ -34,8 +34,8 @@ pub mod AccountComponent {
         Account_public_key: felt252,
         Account_public_keys: Array<felt252>,
         Account_threshold: u8,
-        Account_plugins: LegacyMap<ClassHash, bool>,
-        Account_plugins_initialize: LegacyMap<felt252, felt252>
+        Account_modules: LegacyMap<ClassHash, bool>,
+        Account_modules_initialize: LegacyMap<felt252, felt252>
     }
 
     #[event]
@@ -68,9 +68,9 @@ pub mod AccountComponent {
         pub const UNSUPPORTED_THRESHOLD: felt252 = 'Account: unsupported threshold';
         pub const THRESHOLD_TOO_BIG: felt252 = 'Account: threshold too big';
         pub const UNAUTHORIZED: felt252 = 'Account: unauthorized';
-        pub const PLUGIN_NOT_FOUND: felt252 = 'Plugin: plugin not found';
-        pub const PLUGIN_NOT_INSTALLED: felt252 = 'Plugin: uninstalled plugin';
-        pub const PLUGIN_ALREADY_INSTALLED: felt252 = 'Plugin: already installed';
+        pub const MODULE_NOT_FOUND: felt252 = 'Module: module not found';
+        pub const MODULE_NOT_INSTALLED: felt252 = 'Module: module not installed';
+        pub const MODULE_ALREADY_INSTALLED: felt252 = 'Module: already installed';
     }
 
     #[embeddable_as(SRC6Impl)]
@@ -117,11 +117,11 @@ pub mod AccountComponent {
                 let account = get_contract_address();
                 assert(*calls.at(0).to == account, Errors::UNAUTHORIZED);
                 let calldata = *calls.at(0).calldata;
-                assert(calldata.len() > 0, Errors::PLUGIN_NOT_FOUND);
+                assert(calldata.len() > 0, Errors::MODULE_NOT_FOUND);
                 let felt = *calldata.at(0);
                 let class_hash : ClassHash =felt.try_into().unwrap();
-                assert(self.Account_plugins.read(class_hash), Errors::PLUGIN_NOT_INSTALLED);
-                return IPluginClassLibraryDispatcher{ class_hash: class_hash }.validate(calls);
+                assert(self.Account_modules.read(class_hash), Errors::MODULE_NOT_INSTALLED);
+                return IModuleClassLibraryDispatcher{ class_hash: class_hash }.validate(calls);
             }
             self.validate_transaction()
         }
@@ -257,45 +257,45 @@ pub mod AccountComponent {
         }
     }
 
-    #[embeddable_as(PluginImpl)]
-    pub impl Plugin<
+    #[embeddable_as(ModuleImpl)]
+    pub impl Module<
         TContractState,
         +HasComponent<TContractState>,
         +SRC5Component::HasComponent<TContractState>,
         +Drop<TContractState>
-    > of interface::IPlugin<ComponentState<TContractState>> {
+    > of interface::IModule<ComponentState<TContractState>> {
         fn __module__validate__(ref self: ComponentState<TContractState>, class_hash: ClassHash) {
           self.assert_only_self();
         }
 
-        fn add_plugin(ref self: ComponentState<TContractState>, class_hash: ClassHash, args: Array<felt252>) { 
+        fn add_module(ref self: ComponentState<TContractState>, class_hash: ClassHash, args: Array<felt252>) { 
             self.assert_only_self();
-            let installed = self.Account_plugins.read(class_hash);
-            assert(!installed, Errors::PLUGIN_ALREADY_INSTALLED);
-            self.Account_plugins.write(class_hash, true);
+            let installed = self.Account_modules.read(class_hash);
+            assert(!installed, Errors::MODULE_ALREADY_INSTALLED);
+            self.Account_modules.write(class_hash, true);
             if args.len() > 0 {
-                IPluginClassLibraryDispatcher{ class_hash: class_hash }.initialize(args)
+                IModuleClassLibraryDispatcher{ class_hash: class_hash }.initialize(args)
             }
         }
 
         fn get_initialization(self: @ComponentState<TContractState>, key: felt252) -> felt252 {
-            self.Account_plugins_initialize.read(key)
+            self.Account_modules_initialize.read(key)
         }
 
-        fn remove_plugin(ref self: ComponentState<TContractState>, class_hash: ClassHash) {
+        fn remove_module(ref self: ComponentState<TContractState>, class_hash: ClassHash) {
             self.assert_only_self();
-            let installed = self.Account_plugins.read(class_hash);
-            assert(installed, Errors::PLUGIN_NOT_INSTALLED);
-            self.Account_plugins.write(class_hash, false);
+            let installed = self.Account_modules.read(class_hash);
+            assert(installed, Errors::MODULE_NOT_INSTALLED);
+            self.Account_modules.write(class_hash, false);
         }
     
-        fn is_plugin(self: @ComponentState<TContractState>, class_hash: ClassHash) -> bool { 
-            self.Account_plugins.read(class_hash)
+        fn is_module(self: @ComponentState<TContractState>, class_hash: ClassHash) -> bool { 
+            self.Account_modules.read(class_hash)
         }
 
-        fn read_on_plugin(self: @ComponentState<TContractState>, class_hash: ClassHash, calls: Array<Call>) { }
+        fn read_on_module(self: @ComponentState<TContractState>, class_hash: ClassHash, calls: Array<Call>) { }
 
-        fn execute_on_plugin(ref self: ComponentState<TContractState>, class_hash: ClassHash, calls: Array<Call>) { }
+        fn execute_on_module(ref self: ComponentState<TContractState>, class_hash: ClassHash, calls: Array<Call>) { }
     }
 
     #[generate_trait]

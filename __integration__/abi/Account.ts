@@ -277,8 +277,8 @@ export const ABI = [
   },
   {
     "type": "impl",
-    "name": "PluginImpl",
-    "interface_name": "smartr::components::interface::IPlugin"
+    "name": "ModuleImpl",
+    "interface_name": "smartr::components::interface::IModule"
   },
   {
     "type": "enum",
@@ -296,7 +296,7 @@ export const ABI = [
   },
   {
     "type": "interface",
-    "name": "smartr::components::interface::IPlugin",
+    "name": "smartr::components::interface::IModule",
     "items": [
       {
         "type": "function",
@@ -312,7 +312,7 @@ export const ABI = [
       },
       {
         "type": "function",
-        "name": "add_plugin",
+        "name": "add_module",
         "inputs": [
           {
             "name": "class_hash",
@@ -328,7 +328,7 @@ export const ABI = [
       },
       {
         "type": "function",
-        "name": "remove_plugin",
+        "name": "remove_module",
         "inputs": [
           {
             "name": "class_hash",
@@ -356,7 +356,7 @@ export const ABI = [
       },
       {
         "type": "function",
-        "name": "is_plugin",
+        "name": "is_module",
         "inputs": [
           {
             "name": "class_hash",
@@ -372,7 +372,7 @@ export const ABI = [
       },
       {
         "type": "function",
-        "name": "read_on_plugin",
+        "name": "read_on_module",
         "inputs": [
           {
             "name": "class_hash",
@@ -388,7 +388,7 @@ export const ABI = [
       },
       {
         "type": "function",
-        "name": "execute_on_plugin",
+        "name": "execute_on_module",
         "inputs": [
           {
             "name": "class_hash",
