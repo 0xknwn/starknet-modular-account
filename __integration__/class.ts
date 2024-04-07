@@ -3,9 +3,9 @@ import { account, classHash } from "./utils";
 import { json, type CompiledSierra } from "starknet";
 
 // deployClass checks if the class is already deployed, and if not, deploys it.
-export const deployClass = async (name: string = "Account") => {
+export const deployClass = async (name: string = "Account", env: string = "devnet") => {
   const AccountClassHash = classHash(name);
-  const a = account();
+  const a = account(0, env);
 
   try {
     const cl = (await a.getClass(AccountClassHash)) as Omit<

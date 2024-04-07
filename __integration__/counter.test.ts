@@ -1,7 +1,7 @@
 import { deployClass } from "./class";
 import { account, classHash } from "./utils";
 import {
-  deployContract,
+  deployCounterContract,
   counterAddress,
   reset,
   increment,
@@ -10,6 +10,11 @@ import {
 import { timeout } from "./constants";
 
 describe("counter contract (helper)", () => {
+  let env: string;
+  beforeAll(() => {
+    env = "devnet";
+  });
+
   it(
     "deploys the Counter class",
     async () => {
@@ -22,8 +27,8 @@ describe("counter contract (helper)", () => {
   it(
     "deploys the counter contract",
     async () => {
-      const c = await deployContract();
-      expect(c.address).toEqual(counterAddress());
+      const c = await deployCounterContract();
+      expect(c.address).toEqual(counterAddress(env));
     },
     timeout
   );
@@ -31,7 +36,7 @@ describe("counter contract (helper)", () => {
   it(
     "increments the counter",
     async () => {
-      const a = account();
+      const a = account(0, env);
       const c = await increment(a);
       expect(c.isSuccess()).toEqual(true);
     },
@@ -41,7 +46,7 @@ describe("counter contract (helper)", () => {
   it(
     "reads the counter",
     async () => {
-      const a = account();
+      const a = account(0, env);
       const c = await get(a);
       expect(c).toBeGreaterThan(0n);
     },
@@ -51,7 +56,7 @@ describe("counter contract (helper)", () => {
   it(
     "increments the counter by 5 and 6",
     async () => {
-      const a = account();
+      const a = account(0, env);
       const c = await increment(a, [5, 6, 1]);
       expect(c.isSuccess()).toEqual(true);
     },
@@ -61,7 +66,7 @@ describe("counter contract (helper)", () => {
   it(
     "reads the counter",
     async () => {
-      const a = account();
+      const a = account(0, env);
       const c = await get(a);
       expect(c).toBeGreaterThan(11n);
     },
@@ -71,7 +76,7 @@ describe("counter contract (helper)", () => {
   it(
     "resets the counter",
     async () => {
-      const a = account();
+      const a = account(0, env);
       const c = await reset(a);
       expect(c.isSuccess()).toEqual(true);
     },
@@ -81,7 +86,7 @@ describe("counter contract (helper)", () => {
   it(
     "reads the counter",
     async () => {
-      const a = account();
+      const a = account(0, env);
       const c = await get(a);
       expect(c).toBe(0n);
     },
@@ -91,7 +96,7 @@ describe("counter contract (helper)", () => {
   it(
     "increments the counter",
     async () => {
-      const a = account();
+      const a = account(0, env);
       const c = await increment(a);
       expect(c.isSuccess()).toEqual(true);
     },
@@ -101,7 +106,7 @@ describe("counter contract (helper)", () => {
   it(
     "reads the counter",
     async () => {
-      const a = account();
+      const a = account(0, env);
       const c = await get(a);
       expect(c).toBeGreaterThan(0n);
     },
@@ -125,7 +130,7 @@ describe("counter contract (helper)", () => {
   it(
     "reads the counter",
     async () => {
-      const a = account();
+      const a = account(0, env);
       const c = await get(a);
       expect(c).toBeGreaterThan(0n);
     },

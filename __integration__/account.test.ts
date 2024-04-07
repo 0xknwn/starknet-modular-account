@@ -12,13 +12,18 @@ import {
   reset,
   increment,
   get,
-  deployContract,
+  deployCounterContract,
   counterAddress,
 } from "./counter";
 import { Account } from "starknet";
 import { timeout } from "./constants";
 
 describe("account management", () => {
+  let env: string;
+  beforeAll(() => {
+    env = "devnet";
+  });
+
   it(
     "deploys the Counter class",
     async () => {
@@ -31,8 +36,8 @@ describe("account management", () => {
   it(
     "deploys the counter contract",
     async () => {
-      const c = await deployContract();
-      expect(c.address).toEqual(counterAddress());
+      const c = await deployCounterContract();
+      expect(c.address).toEqual(counterAddress(env));
     },
     timeout
   );
@@ -49,9 +54,9 @@ describe("account management", () => {
   it(
     "deploys the account contract",
     async () => {
-      const conf = config();
+      const conf = config(env);
       const c = await deployAccount("Account");
-      expect(c).toEqual(accountAddress("Account"));
+      expect(c).toEqual(accountAddress("Account", env));
     },
     timeout
   );
@@ -59,9 +64,9 @@ describe("account management", () => {
   it(
     "checks the account public keys",
     async () => {
-      const conf = config();
-      const a = account();
-      const c = await get_public_keys(a);
+      const conf = config(env);
+      const a = account(0, env);
+      const c = await get_public_keys(a, "Account", env);
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(1);
       expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
@@ -72,7 +77,7 @@ describe("account management", () => {
   it(
     "checks the account threshold",
     async () => {
-      const a = account();
+      const a = account(0, env);
       const c = await get_threshold(a);
       expect(c).toEqual(1n);
     },
@@ -82,7 +87,7 @@ describe("account management", () => {
   it(
     "resets the counter with owner",
     async () => {
-      const a = account();
+      const a = account(0, env);
       await reset(a);
     },
     timeout
@@ -91,7 +96,7 @@ describe("account management", () => {
   it(
     "reads the counter",
     async () => {
-      const a = account();
+      const a = account(0, env);
       const c = await get(a);
       expect(c).toBe(0n);
     },
@@ -101,11 +106,11 @@ describe("account management", () => {
   it(
     "increments the counter",
     async () => {
-      const conf = config();
-      const p = provider();
+      const conf = config(env);
+      const p = provider(env);
       const a = new Account(
         p,
-        accountAddress("Account"),
+        accountAddress("Account", env),
         conf.accounts[0].privateKey
       );
       const c = await increment(a);
@@ -117,7 +122,7 @@ describe("account management", () => {
   it(
     "reads the counter",
     async () => {
-      const a = account();
+      const a = account(0, env);
       const c = await get(a);
       expect(c).toBe(1n);
     },
@@ -127,11 +132,11 @@ describe("account management", () => {
   it(
     "increments and fails to reset the counter",
     async () => {
-      const conf = config();
-      const p = provider();
+      const conf = config(env);
+      const p = provider(env);
       const a = new Account(
         p,
-        accountAddress("Account"),
+        accountAddress("Account", env),
         conf.accounts[0].privateKey
       );
       const c = await increment(a);
@@ -148,7 +153,7 @@ describe("account management", () => {
   it(
     "reads the counter",
     async () => {
-      const a = account();
+      const a = account(0, env);
       const c = await get(a);
       expect(c).toBe(2n);
     },
@@ -158,15 +163,15 @@ describe("account management", () => {
   it(
     "adds/checks a new public key",
     async () => {
-      const conf = config();
-      const p = provider();
+      const conf = config(env);
+      const p = provider(env);
       const a = new Account(
         p,
-        accountAddress("Account"),
+        accountAddress("Account", env),
         conf.accounts[0].privateKey
       );
-      await add_public_key(a, conf.accounts[1].publicKey);
-      const c = await get_public_keys(a);
+      await add_public_key(a, conf.accounts[1].publicKey, "Account", env);
+      const c = await get_public_keys(a, "Account", env);
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(2);
       expect(`0x${c[1].toString(16)}`).toEqual(conf.accounts[1].publicKey);
@@ -177,13 +182,13 @@ describe("account management", () => {
   it(
     "resets and increments the counter",
     async () => {
-      const acc = account();
+      const acc = account(0, env);
       await reset(acc);
-      const conf = config();
-      const p = provider();
+      const conf = config(env);
+      const p = provider(env);
       const a = new Account(
         p,
-        accountAddress("Account"),
+        accountAddress("Account", env),
         conf.accounts[1].privateKey
       );
       const c1 = await increment(a);
@@ -197,20 +202,20 @@ describe("account management", () => {
   it(
     "adds an already registered key to the account",
     async () => {
-      const conf = config();
-      const p = provider();
+      const conf = config(env);
+      const p = provider(env);
       const a = new Account(
         p,
-        accountAddress("Account"),
+        accountAddress("Account", env),
         conf.accounts[0].privateKey
       );
       try {
-        await add_public_key(a, conf.accounts[1].publicKey);
+        await add_public_key(a, conf.accounts[1].publicKey, "Account", env);
         expect(true).toBe(false);
       } catch (e) {
         expect(e).toBeDefined();
       }
-      const c = await get_public_keys(a);
+      const c = await get_public_keys(a, "Account", env);
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(2);
       expect(`0x${c[1].toString(16)}`).toEqual(conf.accounts[1].publicKey);
@@ -221,15 +226,15 @@ describe("account management", () => {
   it(
     "removes a key from the account",
     async () => {
-      const conf = config();
-      const p = provider();
+      const conf = config(env);
+      const p = provider(env);
       const a = new Account(
         p,
-        accountAddress("Account"),
+        accountAddress("Account", env),
         conf.accounts[0].privateKey
       );
       await remove_public_key(a, conf.accounts[1].publicKey);
-      const c = await get_public_keys(a);
+      const c = await get_public_keys(a, "Account", env);
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(1);
       expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
@@ -240,11 +245,11 @@ describe("account management", () => {
   it(
     "removes a not registered key from the account",
     async () => {
-      const conf = config();
-      const p = provider();
+      const conf = config(env);
+      const p = provider(env);
       const a = new Account(
         p,
-        accountAddress("Account"),
+        accountAddress("Account", env),
         conf.accounts[0].privateKey
       );
       try {
@@ -260,11 +265,11 @@ describe("account management", () => {
   it(
     "checks the former account key cannot be used anymore",
     async () => {
-      const conf = config();
-      const p = provider();
+      const conf = config(env);
+      const p = provider(env);
       const a = new Account(
         p,
-        accountAddress("Account"),
+        accountAddress("Account", env),
         conf.accounts[1].privateKey
       );
       try {
@@ -273,7 +278,7 @@ describe("account management", () => {
       } catch (e) {
         expect(e).toBeDefined();
       }
-      const acc = account();
+      const acc = account(0, env);
       const c2 = await get(acc);
       expect(c2).toBe(1n);
     },
@@ -283,11 +288,11 @@ describe("account management", () => {
   it(
     "removes the last key from an account",
     async () => {
-      const conf = config();
-      const p = provider();
+      const conf = config(env);
+      const p = provider(env);
       const a = new Account(
         p,
-        accountAddress("Account"),
+        accountAddress("Account", env),
         conf.accounts[0].privateKey
       );
       try {
@@ -296,7 +301,7 @@ describe("account management", () => {
       } catch (e) {
         expect(e).toBeDefined();
       }
-      const c = await get_public_keys(a);
+      const c = await get_public_keys(a, "Account", env);
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(1);
       expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);

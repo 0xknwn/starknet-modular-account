@@ -114,6 +114,8 @@ pub mod AccountComponent {
         fn __validate__(self: @ComponentState<TContractState>, mut calls: Array<Call>) -> felt252 {
             let selector = *calls.at(0).selector;
             if selector == selector!("__module__validate__") {
+                let account = get_contract_address();
+                assert(*calls.at(0).to == account, Errors::UNAUTHORIZED);
                 let calldata = *calls.at(0).calldata;
                 assert(calldata.len() > 0, Errors::PLUGIN_NOT_FOUND);
                 let felt = *calldata.at(0);

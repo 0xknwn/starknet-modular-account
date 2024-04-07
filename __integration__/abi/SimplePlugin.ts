@@ -91,7 +91,11 @@ export const ABI = [
             "type": "core::array::Array::<core::starknet::account::Call>"
           }
         ],
-        "outputs": [],
+        "outputs": [
+          {
+            "type": "core::felt252"
+          }
+        ],
         "state_mutability": "view"
       }
     ]

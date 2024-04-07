@@ -300,6 +300,18 @@ export const ABI = [
     "items": [
       {
         "type": "function",
+        "name": "__module__validate__",
+        "inputs": [
+          {
+            "name": "class_hash",
+            "type": "core::starknet::class_hash::ClassHash"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
         "name": "add_plugin",
         "inputs": [
           {
