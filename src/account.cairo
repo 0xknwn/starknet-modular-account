@@ -27,6 +27,7 @@ mod Account {
     impl SRC6CamelOnlyImpl = AccountComponent::SRC6CamelOnlyImpl<ContractState>;
     #[abi(embed_v0)]
     impl ModuleImpl = AccountComponent::ModuleImpl<ContractState>;
+
     impl AccountInternalImpl = AccountComponent::InternalImpl<ContractState>;
     impl UpgradeableInternalImpl = UpgradeableComponent::InternalImpl<ContractState>;
 

@@ -119,9 +119,9 @@ pub mod AccountComponent {
                 let calldata = *calls.at(0).calldata;
                 assert(calldata.len() > 0, Errors::MODULE_NOT_FOUND);
                 let felt = *calldata.at(0);
-                let class_hash : ClassHash =felt.try_into().unwrap();
+                let class_hash: ClassHash = felt.try_into().unwrap();
                 assert(self.Account_modules.read(class_hash), Errors::MODULE_NOT_INSTALLED);
-                return IModuleClassLibraryDispatcher{ class_hash: class_hash }.validate(calls);
+                return IModuleClassLibraryDispatcher { class_hash: class_hash }.validate(calls);
             }
             self.validate_transaction()
         }
@@ -265,16 +265,18 @@ pub mod AccountComponent {
         +Drop<TContractState>
     > of interface::IModule<ComponentState<TContractState>> {
         fn __module__validate__(ref self: ComponentState<TContractState>, class_hash: ClassHash) {
-          self.assert_only_self();
+            self.assert_only_self();
         }
 
-        fn add_module(ref self: ComponentState<TContractState>, class_hash: ClassHash, args: Array<felt252>) { 
+        fn add_module(
+            ref self: ComponentState<TContractState>, class_hash: ClassHash, args: Array<felt252>
+        ) {
             self.assert_only_self();
             let installed = self.Account_modules.read(class_hash);
             assert(!installed, Errors::MODULE_ALREADY_INSTALLED);
             self.Account_modules.write(class_hash, true);
             if args.len() > 0 {
-                IModuleClassLibraryDispatcher{ class_hash: class_hash }.initialize(args)
+                IModuleClassLibraryDispatcher { class_hash: class_hash }.initialize(args)
             }
         }
 
@@ -288,14 +290,18 @@ pub mod AccountComponent {
             assert(installed, Errors::MODULE_NOT_INSTALLED);
             self.Account_modules.write(class_hash, false);
         }
-    
-        fn is_module(self: @ComponentState<TContractState>, class_hash: ClassHash) -> bool { 
+
+        fn is_module(self: @ComponentState<TContractState>, class_hash: ClassHash) -> bool {
             self.Account_modules.read(class_hash)
         }
 
-        fn read_on_module(self: @ComponentState<TContractState>, class_hash: ClassHash, calls: Array<Call>) { }
+        fn read_on_module(
+            self: @ComponentState<TContractState>, class_hash: ClassHash, calls: Array<Call>
+        ) {}
 
-        fn execute_on_module(ref self: ComponentState<TContractState>, class_hash: ClassHash, calls: Array<Call>) { }
+        fn execute_on_module(
+            ref self: ComponentState<TContractState>, class_hash: ClassHash, calls: Array<Call>
+        ) {}
     }
 
     #[generate_trait]
@@ -358,7 +364,7 @@ pub mod AccountComponent {
             while j < (signature_len - 1) {
                 let mut sig: Array<felt252> = ArrayTrait::<felt252>::new();
                 sig.append(*signature.at(j));
-                sig.append(*signature.at(j+1));
+                sig.append(*signature.at(j + 1));
                 let mut i: usize = 0;
                 let len = public_keys_snapshot.len();
                 while i < len {

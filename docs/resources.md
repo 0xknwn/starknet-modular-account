@@ -18,13 +18,11 @@ To learn, a good starting point is
 
 ## Developing
 
-There is no specific order to the presentation below. Feel free to add some
+There is no specific order to the resources below. Feel free to add some
 more resources and document them if needed:
 
 - [starknet-devnet-rs](./resources/devnet-rs.md) is a rust version of the
   starknet devnet. It is not completed yet but can be used in a number of cases
-- [katana](https://book.dojoengine.org/toolchain/katana/overview) is another
-  rust version of a devnet and might also be used to run tests locally
 - [abi-wan-kanabi](./resources/abi-wan-kanabi.md) is a javascript package that
   extract the ABI from a built contract and generates the associated typescript
 - [scarb](./resources/scarb.md) provides a compiler and the dependency manager
@@ -34,8 +32,9 @@ more resources and document them if needed:
   capture payload and help better understand how they work
 - starknet foundry with snforge et sncast
 - Vscode Cairo 1.0 Extension and Scarb Language Server
-- starknet.js https://github.com/starknet-io/starknet.js
+- [starknet.js](https://github.com/starknet-io/starknet.js)
 - https://walnut.dev/
+- https://github.com/OpenZeppelin/cairo-contracts/issues/696
 
 Also note that Starkware provides nice workshops and learning resources
 including the [Abstract Account development](https://github.com/starknet-edu/aa-workshop)
