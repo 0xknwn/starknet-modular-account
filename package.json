@@ -11,6 +11,8 @@
     "build:abi:SimpleModule": "npx abi-wan-kanabi --input ./target/dev/smartr_SimpleModule.contract_class.json --output ./__integration__/abi/SimpleModule.ts",
     "build:abi": "npm run build:abi:Counter && npm run build:abi:Account && npm run build:abi:SimpleAccount && npm run build:abi:SimpleModule",
     "build": "npm run build:scarb",
+    "test:scarb": "scarb run test",
+    "resource:scarb": "scarb run resource",
     "test": "jest --runInBand --verbose"
   },
   "keywords": [],

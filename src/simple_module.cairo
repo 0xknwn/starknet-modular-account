@@ -3,7 +3,7 @@ use super::components::module::IModuleClass;
 #[starknet::contract]
 mod SimpleModule {
     use starknet::account::Call;
-    
+
     #[storage]
     struct Storage {
         Account_modules_initialize: LegacyMap<felt252, felt252>
@@ -18,7 +18,9 @@ mod SimpleModule {
             self.Account_modules_initialize.write(key, value);
         }
 
-        fn is_valid_signature(self: @ContractState, hash: felt252, signature: Array<felt252>) -> bool {
+        fn is_valid_signature(
+            self: @ContractState, hash: felt252, signature: Array<felt252>
+        ) -> bool {
             true
         }
 
