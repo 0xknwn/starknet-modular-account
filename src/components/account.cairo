@@ -32,6 +32,7 @@ pub mod AccountComponent {
         // Account_public_key is maintained only to allow upgrading to the
         // Openzeppelin account. It should *NOT* be used for any other purpose.
         Account_public_key: felt252,
+        Account_class_hash: ClassHash,
         Account_public_keys: Array<felt252>,
         Account_threshold: u8,
         Account_modules: LegacyMap<ClassHash, bool>,
@@ -121,7 +122,8 @@ pub mod AccountComponent {
                 let felt = *calldata.at(0);
                 let class_hash: ClassHash = felt.try_into().unwrap();
                 assert(self.Account_modules.read(class_hash), Errors::MODULE_NOT_INSTALLED);
-                return IModuleClassLibraryDispatcher { class_hash: class_hash }.validate(calls);
+                return IModuleClassLibraryDispatcher { class_hash: class_hash }
+                    .validate(class_hash, calls);
             }
             self.validate_transaction()
         }

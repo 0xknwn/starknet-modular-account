@@ -1,4 +1,4 @@
-import { deployClass } from "./class";
+import { deployClass, classHash } from "./class";
 import {
   accountAddress,
   deployAccount,
@@ -8,7 +8,14 @@ import {
   set_threshold,
   remove_public_key,
 } from "./account";
-import { config, classHash, account, provider } from "./utils";
+import { simpleValidatorClassHash } from "./validator";
+import {
+  config,
+  testAccount,
+  provider,
+  type AccountConfig,
+  type ContractConfig,
+} from "./utils";
 import {
   reset,
   increment,
@@ -18,17 +25,32 @@ import {
 } from "./counter";
 import { Multisig } from "./multisig";
 import { timeout } from "./constants";
+import { Account } from "starknet";
 
 describe("multiple signatures", () => {
   let env: string;
+  let testAccounts: Account[];
+  let targetAccounts: AccountConfig[];
+  let counterContract: ContractConfig;
   beforeAll(() => {
     env = "devnet";
+    const conf = config(env);
+    testAccounts = [testAccount(0, conf), testAccount(1, conf)];
+    targetAccounts = [
+      {
+        classHash: classHash("Account"),
+        address: accountAddress("Account", conf.accounts[0].publicKey),
+        publicKey: conf.accounts[0].publicKey,
+        privateKey: conf.accounts[0].privateKey,
+      },
+    ];
   });
 
   it(
     "deploys the Counter class",
     async () => {
-      const c = await deployClass("Counter", env);
+      const a = testAccounts[0];
+      const c = await deployClass(a, "Counter");
       expect(c.classHash).toEqual(classHash("Counter"));
     },
     timeout
@@ -37,8 +59,25 @@ describe("multiple signatures", () => {
   it(
     "deploys the counter contract",
     async () => {
-      const c = await deployCounterContract(env);
-      expect(c.address).toEqual(counterAddress(env));
+      const a = testAccounts[0];
+      const c = await deployCounterContract(a);
+      expect(c.address).toEqual(counterAddress(a.address));
+      counterContract = {
+        classHash: classHash("Counter"),
+        address: counterAddress(a.address),
+      };
+    },
+    timeout
+  );
+
+  it(
+    "deploys the SimpleValidator class",
+    async () => {
+      const a = testAccounts[0];
+      const c = await deployClass(a, "SimpleValidator");
+      expect(c.classHash).toEqual(
+        `0x${simpleValidatorClassHash().toString(16)}`
+      );
     },
     timeout
   );
@@ -46,17 +85,21 @@ describe("multiple signatures", () => {
   it(
     "deploys the Account class",
     async () => {
-      const c = await deployClass("Account", env);
+      const a = testAccounts[0];
+      const c = await deployClass(a, "Account");
       expect(c.classHash).toEqual(classHash("Account"));
     },
     timeout
   );
 
   it(
-    "deploys the account",
+    "deploys the account contract",
     async () => {
-      const c = await deployAccount("Account", env);
-      expect(c).toEqual(accountAddress("Account", env));
+      const conf = config(env);
+      const a = testAccounts[0];
+      const publicKey = conf.accounts[0].publicKey;
+      const c = await deployAccount(a, "Account", await a.signer.getPubKey());
+      expect(c).toEqual(accountAddress("Account", publicKey));
     },
     timeout
   );
@@ -65,20 +108,37 @@ describe("multiple signatures", () => {
     "checks the account public keys",
     async () => {
       const conf = config(env);
-      const a = account(0, env);
-      const c = await get_public_keys(a, "Account", env);
+      const p = provider(conf.providerURL);
+      const a = new Multisig(p, targetAccounts[0].address, [
+        conf.accounts[0].privateKey,
+      ]);
+      const c = await get_public_keys(a);
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(1);
-      expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
+      expect(`0x${c[0].toString(16)}`).toEqual(targetAccounts[0].publicKey);
     },
     timeout
   );
 
   it(
-    "resets the counter with its owner",
+    "checks the account threshold",
     async () => {
-      const a = account(0, env);
-      await reset(a, env);
+      const conf = config(env);
+      const p = provider(conf.providerURL);
+      const a = new Multisig(p, targetAccounts[0].address, [
+        targetAccounts[0].privateKey,
+      ]);
+      const c = await get_threshold(a);
+      expect(c).toEqual(1n);
+    },
+    timeout
+  );
+
+  it(
+    "resets the counter with owner",
+    async () => {
+      const a = testAccounts[0];
+      await reset(a, counterContract.address);
     },
     timeout
   );
@@ -86,8 +146,8 @@ describe("multiple signatures", () => {
   it(
     "reads the counter",
     async () => {
-      const a = account(0, env);
-      const c = await get(a, env);
+      const a = testAccounts[0];
+      const c = await get(a, counterContract.address);
       expect(c).toBe(0n);
     },
     timeout
@@ -97,11 +157,11 @@ describe("multiple signatures", () => {
     "increments the counter",
     async () => {
       const conf = config(env);
-      const p = provider(env);
-      const a = new Multisig(p, accountAddress("Account", env), [
-        conf.accounts[0].privateKey,
+      const p = provider(conf.providerURL);
+      const a = new Multisig(p, targetAccounts[0].address, [
+        targetAccounts[0].privateKey,
       ]);
-      const c = await increment(a, 1, env);
+      const c = await increment(a, counterContract.address, 1);
       expect(c.isSuccess()).toEqual(true);
     },
     timeout
@@ -110,23 +170,35 @@ describe("multiple signatures", () => {
   it(
     "reads the counter",
     async () => {
-      const a = account(0, env);
-      const c = await get(a, env);
+      const a = testAccounts[0];
+      const c = await get(a, counterContract.address);
       expect(c).toBe(1n);
     },
     timeout
   );
 
   it(
-    "adds/checks a new public key to the account",
+    "adds a 2nd public key to the account",
     async () => {
       const conf = config(env);
-      const p = provider(env);
-      const a = new Multisig(p, accountAddress("Account", env), [
-        conf.accounts[0].privateKey,
+      const p = provider(conf.providerURL);
+      const a = new Multisig(p, targetAccounts[0].address, [
+        targetAccounts[0].privateKey,
       ]);
-      await add_public_key(a, conf.accounts[1].publicKey, "Account", env);
-      const c = await get_public_keys(a, "Account", env);
+      await add_public_key(a, conf.accounts[1].publicKey);
+    },
+    timeout
+  );
+
+  it(
+    "checks the new public key with the account",
+    async () => {
+      const conf = config(env);
+      const p = provider(conf.providerURL);
+      const a = new Multisig(p, targetAccounts[0].address, [
+        targetAccounts[0].privateKey,
+      ]);
+      const c = await get_public_keys(a);
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(2);
       expect(`0x${c[1].toString(16)}`).toEqual(conf.accounts[1].publicKey);
@@ -135,19 +207,24 @@ describe("multiple signatures", () => {
   );
 
   it(
-    "resets and increments the counter",
+    "resets the counter with owner",
     async () => {
-      const acc = account(0, env);
-      await reset(acc, env);
+      const a = testAccounts[0];
+      await reset(a, counterContract.address);
+    },
+    timeout
+  );
+
+  it(
+    "increments the counter with newly added private key",
+    async () => {
       const conf = config(env);
-      const p = provider(env);
-      const a = new Multisig(p, accountAddress("Account", env), [
+      const p = provider(conf.providerURL);
+      const a = new Multisig(p, targetAccounts[0].address, [
         conf.accounts[1].privateKey,
       ]);
-      const c1 = await increment(a, 1, env);
-      expect(c1.isSuccess()).toEqual(true);
-      const c2 = await get(a, env);
-      expect(c2).toBe(1n);
+      const c = await increment(a, counterContract.address, 1);
+      expect(c.isSuccess()).toEqual(true);
     },
     timeout
   );
@@ -156,15 +233,12 @@ describe("multiple signatures", () => {
     "updates the account threshold to 2",
     async () => {
       const conf = config(env);
-      const p = provider(env);
-      const a = new Multisig(p, accountAddress("Account", env), [
-        conf.accounts[1].privateKey,
+      const p = provider(conf.providerURL);
+      const a = new Multisig(p, targetAccounts[0].address, [
+        targetAccounts[0].privateKey,
       ]);
-      const c1 = await set_threshold(a, 2n, "Account", env);
-      expect(c1.isSuccess()).toEqual(true);
-      const acc = account(0, env);
-      const c = await get_threshold(acc, "Account", env);
-      expect(c).toEqual(2n);
+      const c = await set_threshold(a, 2n);
+      expect(c.isSuccess()).toEqual(true);
     },
     timeout
   );
@@ -173,13 +247,25 @@ describe("multiple signatures", () => {
     "adds a 3rd public key to the account",
     async () => {
       const conf = config(env);
-      const p = provider(env);
-      const a = new Multisig(p, accountAddress("Account", env), [
-        conf.accounts[0].privateKey,
+      const p = provider(conf.providerURL);
+      const a = new Multisig(p, targetAccounts[0].address, [
+        targetAccounts[0].privateKey,
         conf.accounts[1].privateKey,
       ]);
-      await add_public_key(a, conf.accounts[2].publicKey, "Account", env);
-      const c = await get_public_keys(a, "Account", env);
+      await add_public_key(a, conf.accounts[2].publicKey);
+    },
+    timeout
+  );
+
+  it(
+    "checks the new public key with the account",
+    async () => {
+      const conf = config(env);
+      const p = provider(conf.providerURL);
+      const a = new Multisig(p, targetAccounts[0].address, [
+        targetAccounts[0].privateKey,
+      ]);
+      const c = await get_public_keys(a);
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(3);
       expect(`0x${c[2].toString(16)}`).toEqual(conf.accounts[2].publicKey);
@@ -191,15 +277,14 @@ describe("multiple signatures", () => {
     "increments the counter with 2 of 3 signers",
     async () => {
       const conf = config(env);
-      const p = provider(env);
-      const a = new Multisig(p, accountAddress("Account", env), [
+      const p = provider(conf.providerURL);
+      const a = new Multisig(p, targetAccounts[0].address, [
         conf.accounts[1].privateKey,
         conf.accounts[2].privateKey,
       ]);
-      const c1 = await increment(a, 1, env);
+      const c1 = await increment(a, counterContract.address, 1);
       expect(c1.isSuccess()).toEqual(true);
-      const acc = account(0, env);
-      const c2 = await get(acc, env);
+      const c2 = await get(testAccounts[0], counterContract.address);
       expect(c2).toBe(2n);
     },
     timeout
@@ -209,18 +294,17 @@ describe("multiple signatures", () => {
     "increments the counter with 1 signer and fails",
     async () => {
       const conf = config(env);
-      const p = provider(env);
-      const a = new Multisig(p, accountAddress("Account", env), [
-        conf.accounts[0].privateKey,
+      const p = provider(conf.providerURL);
+      const a = new Multisig(p, targetAccounts[0].address, [
+        targetAccounts[0].privateKey,
       ]);
       try {
-        const c1 = await increment(a, 1, env);
+        const c1 = await increment(a, counterContract.address, 1);
         expect(false).toBe(true);
       } catch (e) {
         expect(e).toBeDefined();
       }
-      const acc = account(0, env);
-      const c2 = await get(acc, env);
+      const c2 = await get(testAccounts[0], counterContract.address);
       expect(c2).toBe(2n);
     },
     timeout
@@ -230,15 +314,27 @@ describe("multiple signatures", () => {
     "updates the account threshold back to 1",
     async () => {
       const conf = config(env);
-      const p = provider(env);
-      const a = new Multisig(p, accountAddress("Account", env), [
-        conf.accounts[0].privateKey,
+      const p = provider(conf.providerURL);
+      const a = new Multisig(p, targetAccounts[0].address, [
+        targetAccounts[0].privateKey,
         conf.accounts[1].privateKey,
       ]);
-      const c1 = await set_threshold(a, 1n, "Account", env);
-      expect(c1.isSuccess()).toEqual(true);
-      const acc = account(0, env);
-      const c = await get_threshold(acc, "Account", env);
+      const c = await set_threshold(a, 1n);
+      expect(c.isSuccess()).toEqual(true);
+    },
+    timeout
+  );
+
+  it(
+    "checks the account threshold is 1",
+    async () => {
+      const conf = config(env);
+      const p = provider(conf.providerURL);
+      const a = new Multisig(p, targetAccounts[0].address, [
+        targetAccounts[0].privateKey,
+        conf.accounts[1].privateKey,
+      ]);
+      const c = await get_threshold(a);
       expect(c).toEqual(1n);
     },
     timeout
@@ -248,14 +344,13 @@ describe("multiple signatures", () => {
     "increments the counter with one signer",
     async () => {
       const conf = config(env);
-      const p = provider(env);
-      const a = new Multisig(p, accountAddress("Account", env), [
-        conf.accounts[1].privateKey,
+      const p = provider(conf.providerURL);
+      const a = new Multisig(p, targetAccounts[0].address, [
+        targetAccounts[0].privateKey,
       ]);
-      const c1 = await increment(a, 1, env);
+      const c1 = await increment(a, counterContract.address, 1);
       expect(c1.isSuccess()).toEqual(true);
-      const acc = account(0, env);
-      const c2 = await get(acc, env);
+      const c2 = await get(testAccounts[0], counterContract.address);
       expect(c2).toBe(3n);
     },
     timeout
@@ -265,12 +360,12 @@ describe("multiple signatures", () => {
     "removes a public key from the account",
     async () => {
       const conf = config(env);
-      const p = provider(env);
-      const a = new Multisig(p, accountAddress("Account", env), [
-        conf.accounts[0].privateKey,
+      const p = provider(conf.providerURL);
+      const a = new Multisig(p, targetAccounts[0].address, [
+        targetAccounts[0].privateKey,
       ]);
-      await remove_public_key(a, conf.accounts[1].publicKey, "Account", env);
-      const c = await get_public_keys(a, "Account", env);
+      await remove_public_key(a, conf.accounts[2].publicKey);
+      const c = await get_public_keys(a);
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(2);
       expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
@@ -282,12 +377,12 @@ describe("multiple signatures", () => {
     "removes a public key from the account again",
     async () => {
       const conf = config(env);
-      const p = provider(env);
-      const a = new Multisig(p, accountAddress("Account", env), [
-        conf.accounts[0].privateKey,
+      const p = provider(conf.providerURL);
+      const a = new Multisig(p, targetAccounts[0].address, [
+        targetAccounts[0].privateKey,
       ]);
-      await remove_public_key(a, conf.accounts[2].publicKey, "Account", env);
-      const c = await get_public_keys(a, "Account", env);
+      await remove_public_key(a, conf.accounts[1].publicKey);
+      const c = await get_public_keys(a);
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(1);
       expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
@@ -299,14 +394,13 @@ describe("multiple signatures", () => {
     "increments the counter with 1 signer and succeeds",
     async () => {
       const conf = config(env);
-      const p = provider(env);
-      const a = new Multisig(p, accountAddress("Account", env), [
-        conf.accounts[0].privateKey,
+      const p = provider(conf.providerURL);
+      const a = new Multisig(p, targetAccounts[0].address, [
+        targetAccounts[0].privateKey,
       ]);
-      const c1 = await increment(a, 1, env);
+      const c1 = await increment(a, counterContract.address, 1);
       expect(c1.isSuccess()).toEqual(true);
-      const acc = account(0, env);
-      const c2 = await get(acc, env);
+      const c2 = await get(testAccounts[0], counterContract.address);
       expect(c2).toBe(4n);
     },
     timeout

@@ -1,13 +1,17 @@
-import { deployClass } from "./class";
+import { deployClass, classHash } from "./class";
 import {
   accountAddress,
   deployAccount,
   get_threshold,
   get_public_keys,
-  add_public_key,
-  remove_public_key,
 } from "./account";
-import { config, account, classHash, provider } from "./utils";
+import {
+  config,
+  testAccount,
+  provider,
+  type AccountConfig,
+  type ContractConfig,
+} from "./utils";
 import {
   reset,
   increment,
@@ -17,17 +21,40 @@ import {
 } from "./counter";
 import { Account } from "starknet";
 import { timeout } from "./constants";
+import { simpleValidatorClassHash } from "./validator";
 
 describe("account management", () => {
   let env: string;
+  let testAccounts: Account[];
+  let targetAccounts: Account[];
+  let targetAccountConfigs: AccountConfig[];
+  let counterContract: ContractConfig;
   beforeAll(() => {
     env = "devnet";
+    const conf = config(env);
+    testAccounts = [testAccount(0, conf), testAccount(1, conf)];
+    targetAccountConfigs = [
+      {
+        classHash: classHash("Account"),
+        address: accountAddress("Account", conf.accounts[0].publicKey),
+        publicKey: conf.accounts[0].publicKey,
+        privateKey: conf.accounts[0].privateKey,
+      },
+    ];
+    targetAccounts = [
+      new Account(
+        provider(conf.providerURL),
+        targetAccountConfigs[0].address,
+        targetAccountConfigs[0].privateKey
+      ),
+    ];
   });
 
   it(
     "deploys the Counter class",
     async () => {
-      const c = await deployClass("Counter", env);
+      const a = testAccounts[0];
+      const c = await deployClass(a, "Counter");
       expect(c.classHash).toEqual(classHash("Counter"));
     },
     timeout
@@ -36,8 +63,25 @@ describe("account management", () => {
   it(
     "deploys the counter contract",
     async () => {
-      const c = await deployCounterContract(env);
-      expect(c.address).toEqual(counterAddress(env));
+      const a = testAccounts[0];
+      const c = await deployCounterContract(a);
+      expect(c.address).toEqual(counterAddress(a.address));
+      counterContract = {
+        classHash: classHash("Counter"),
+        address: counterAddress(a.address),
+      };
+    },
+    timeout
+  );
+
+  it(
+    "deploys the SimpleValidator class",
+    async () => {
+      const a = testAccounts[0];
+      const c = await deployClass(a, "SimpleValidator");
+      expect(c.classHash).toEqual(
+        `0x${simpleValidatorClassHash().toString(16)}`
+      );
     },
     timeout
   );
@@ -45,7 +89,8 @@ describe("account management", () => {
   it(
     "deploys the Account class",
     async () => {
-      const c = await deployClass("Account", env);
+      const a = testAccounts[0];
+      const c = await deployClass(a, "Account");
       expect(c.classHash).toEqual(classHash("Account"));
     },
     timeout
@@ -54,9 +99,10 @@ describe("account management", () => {
   it(
     "deploys the account contract",
     async () => {
-      const conf = config(env);
-      const c = await deployAccount("Account", env);
-      expect(c).toEqual(accountAddress("Account", env));
+      const a = testAccounts[0];
+      const publicKey = targetAccountConfigs[0].publicKey;
+      const c = await deployAccount(a, "Account", publicKey);
+      expect(c).toEqual(accountAddress("Account", publicKey));
     },
     timeout
   );
@@ -65,11 +111,14 @@ describe("account management", () => {
     "checks the account public keys",
     async () => {
       const conf = config(env);
-      const a = account(0, env);
-      const c = await get_public_keys(a, "Account", env);
+      const p = provider(conf.providerURL);
+      const a = targetAccounts[0];
+      const c = await get_public_keys(a);
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(1);
-      expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
+      expect(`0x${c[0].toString(16)}`).toEqual(
+        targetAccountConfigs[0].publicKey
+      );
     },
     timeout
   );
@@ -77,8 +126,10 @@ describe("account management", () => {
   it(
     "checks the account threshold",
     async () => {
-      const a = account(0, env);
-      const c = await get_threshold(a, "Account", env);
+      const conf = config(env);
+      const p = provider(conf.providerURL);
+      const a = targetAccounts[0];
+      const c = await get_threshold(a);
       expect(c).toEqual(1n);
     },
     timeout
@@ -87,8 +138,8 @@ describe("account management", () => {
   it(
     "resets the counter with owner",
     async () => {
-      const a = account(0, env);
-      await reset(a, env);
+      const a = testAccounts[0];
+      await reset(a, counterContract.address);
     },
     timeout
   );
@@ -96,8 +147,8 @@ describe("account management", () => {
   it(
     "reads the counter",
     async () => {
-      const a = account(0, env);
-      const c = await get(a, env);
+      const a = testAccounts[0];
+      const c = await get(a, counterContract.address);
       expect(c).toBe(0n);
     },
     timeout
@@ -107,13 +158,9 @@ describe("account management", () => {
     "increments the counter",
     async () => {
       const conf = config(env);
-      const p = provider(env);
-      const a = new Account(
-        p,
-        accountAddress("Account", env),
-        conf.accounts[0].privateKey
-      );
-      const c = await increment(a, 1, env);
+      const p = provider(conf.providerURL);
+      const a = targetAccounts[0];
+      const c = await increment(a, counterContract.address, 1);
       expect(c.isSuccess()).toEqual(true);
     },
     timeout
@@ -122,26 +169,21 @@ describe("account management", () => {
   it(
     "reads the counter",
     async () => {
-      const a = account(0, env);
-      const c = await get(a, env);
+      const a = testAccounts[0];
+      const c = await get(a, counterContract.address);
       expect(c).toBe(1n);
     },
     timeout
   );
 
   it(
-    "increments and fails to reset the counter",
+    "fails to reset the counter",
     async () => {
       const conf = config(env);
-      const p = provider(env);
-      const a = new Account(
-        p,
-        accountAddress("Account", env),
-        conf.accounts[0].privateKey
-      );
-      const c = await increment(a, 1, env);
+      const p = provider(conf.providerURL);
+      const a = targetAccounts[0];
       try {
-        await reset(a);
+        await reset(a, counterContract.address);
         expect(true).toBe(false);
       } catch (e) {
         expect(e).toBeDefined();
@@ -153,158 +195,9 @@ describe("account management", () => {
   it(
     "reads the counter",
     async () => {
-      const a = account(0, env);
-      const c = await get(a, env);
-      expect(c).toBe(2n);
-    },
-    timeout
-  );
-
-  it(
-    "adds/checks a new public key",
-    async () => {
-      const conf = config(env);
-      const p = provider(env);
-      const a = new Account(
-        p,
-        accountAddress("Account", env),
-        conf.accounts[0].privateKey
-      );
-      await add_public_key(a, conf.accounts[1].publicKey, "Account", env);
-      const c = await get_public_keys(a, "Account", env);
-      expect(Array.isArray(c)).toBe(true);
-      expect(c.length).toEqual(2);
-      expect(`0x${c[1].toString(16)}`).toEqual(conf.accounts[1].publicKey);
-    },
-    timeout
-  );
-
-  it(
-    "resets and increments the counter",
-    async () => {
-      const acc = account(0, env);
-      await reset(acc, env);
-      const conf = config(env);
-      const p = provider(env);
-      const a = new Account(
-        p,
-        accountAddress("Account", env),
-        conf.accounts[1].privateKey
-      );
-      const c1 = await increment(a, 1, env);
-      expect(c1.isSuccess()).toEqual(true);
-      const c2 = await get(a, env);
-      expect(c2).toBe(1n);
-    },
-    timeout
-  );
-
-  it(
-    "adds an already registered key to the account",
-    async () => {
-      const conf = config(env);
-      const p = provider(env);
-      const a = new Account(
-        p,
-        accountAddress("Account", env),
-        conf.accounts[0].privateKey
-      );
-      try {
-        await add_public_key(a, conf.accounts[1].publicKey, "Account", env);
-        expect(true).toBe(false);
-      } catch (e) {
-        expect(e).toBeDefined();
-      }
-      const c = await get_public_keys(a, "Account", env);
-      expect(Array.isArray(c)).toBe(true);
-      expect(c.length).toEqual(2);
-      expect(`0x${c[1].toString(16)}`).toEqual(conf.accounts[1].publicKey);
-    },
-    timeout
-  );
-
-  it(
-    "removes a key from the account",
-    async () => {
-      const conf = config(env);
-      const p = provider(env);
-      const a = new Account(
-        p,
-        accountAddress("Account", env),
-        conf.accounts[0].privateKey
-      );
-      await remove_public_key(a, conf.accounts[1].publicKey, "Account", env);
-      const c = await get_public_keys(a, "Account", env);
-      expect(Array.isArray(c)).toBe(true);
-      expect(c.length).toEqual(1);
-      expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
-    },
-    timeout
-  );
-
-  it(
-    "removes a not registered key from the account",
-    async () => {
-      const conf = config(env);
-      const p = provider(env);
-      const a = new Account(
-        p,
-        accountAddress("Account", env),
-        conf.accounts[0].privateKey
-      );
-      try {
-        await remove_public_key(a, "0x2", "Account", env);
-        expect(true).toBe(false);
-      } catch (e) {
-        expect(e).toBeDefined();
-      }
-    },
-    timeout
-  );
-
-  it(
-    "checks the former account key cannot be used anymore",
-    async () => {
-      const conf = config(env);
-      const p = provider(env);
-      const a = new Account(
-        p,
-        accountAddress("Account", env),
-        conf.accounts[1].privateKey
-      );
-      try {
-        await increment(a, 1, env);
-        expect(true).toBe(false);
-      } catch (e) {
-        expect(e).toBeDefined();
-      }
-      const acc = account(0, env);
-      const c2 = await get(acc, env);
-      expect(c2).toBe(1n);
-    },
-    timeout
-  );
-
-  it(
-    "removes the last key from an account",
-    async () => {
-      const conf = config(env);
-      const p = provider(env);
-      const a = new Account(
-        p,
-        accountAddress("Account", env),
-        conf.accounts[0].privateKey
-      );
-      try {
-        await remove_public_key(a, conf.accounts[0].privateKey, "Account", env);
-        expect(true).toBe(false);
-      } catch (e) {
-        expect(e).toBeDefined();
-      }
-      const c = await get_public_keys(a, "Account", env);
-      expect(Array.isArray(c)).toBe(true);
-      expect(c.length).toEqual(1);
-      expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
+      const a = testAccounts[0];
+      const c = await get(a, counterContract.address);
+      expect(c).toBe(1n);
     },
     timeout
   );

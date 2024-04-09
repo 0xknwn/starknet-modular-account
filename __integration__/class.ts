@@ -1,11 +1,17 @@
 import fs from "fs";
-import { account, classHash } from "./utils";
-import { json, type CompiledSierra } from "starknet";
+import { json, type CompiledSierra, Account } from "starknet";
+import { execSync } from "child_process";
+
+export const classHash = (className: string): string => {
+  const output = execSync(
+    `starkli class-hash ./target/dev/smartr_${className}.contract_class.json`
+  );
+  return output.toString().trim().replace(/^0x0+/, "0x");
+};
 
 // deployClass checks if the class is already deployed, and if not, deploys it.
-export const deployClass = async (name: string = "Account", env: string = "devnet") => {
+export const deployClass = async (a: Account, name: string = "Account") => {
   const AccountClassHash = classHash(name);
-  const a = account(0, env);
 
   try {
     const cl = (await a.getClass(AccountClassHash)) as Omit<

@@ -1,17 +1,22 @@
-import { deployClass } from "./class";
-import { classHash } from "./utils";
+import { deployClass, classHash } from "./class";
 import { timeout } from "./constants";
+import { testAccount, config } from "./utils";
+import { Account } from "starknet";
 
 describe("class management", () => {
   let env: string;
+  let testAccounts: Account[];
   beforeAll(() => {
     env = "devnet";
+    const conf = config(env);
+    testAccounts = [testAccount(0, conf), testAccount(1, conf)];
   });
 
   it(
     "deploys the Account class",
     async () => {
-      const c = await deployClass("SimpleAccount", env);
+      const a = testAccounts[0];
+      const c = await deployClass(a, "SimpleAccount");
       expect(c.classHash).toEqual(classHash("SimpleAccount"));
     },
     timeout

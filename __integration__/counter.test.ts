@@ -1,5 +1,5 @@
-import { deployClass } from "./class";
-import { account, classHash } from "./utils";
+import { deployClass, classHash } from "./class";
+import { testAccount, config, type ContractConfig } from "./utils";
 import {
   deployCounterContract,
   counterAddress,
@@ -8,17 +8,23 @@ import {
   get,
 } from "./counter";
 import { timeout } from "./constants";
+import { Account } from "starknet";
 
 describe("counter contract (helper)", () => {
   let env: string;
+  let testAccounts: Account[];
+  let counterContract: ContractConfig;
   beforeAll(() => {
     env = "devnet";
+    const conf = config(env);
+    testAccounts = [testAccount(0, conf), testAccount(1, conf)];
   });
 
   it(
     "deploys the Counter class",
     async () => {
-      const c = await deployClass("Counter", env);
+      const a = testAccounts[0];
+      const c = await deployClass(a, "Counter");
       expect(c.classHash).toEqual(classHash("Counter"));
     },
     timeout
@@ -27,8 +33,13 @@ describe("counter contract (helper)", () => {
   it(
     "deploys the counter contract",
     async () => {
-      const c = await deployCounterContract(env);
-      expect(c.address).toEqual(counterAddress(env));
+      const a = testAccounts[0];
+      const c = await deployCounterContract(a);
+      expect(c.address).toEqual(counterAddress(a.address));
+      counterContract = {
+        classHash: classHash("Counter"),
+        address: counterAddress(a.address),
+      };
     },
     timeout
   );
@@ -36,8 +47,8 @@ describe("counter contract (helper)", () => {
   it(
     "increments the counter",
     async () => {
-      const a = account(0, env);
-      const c = await increment(a, 1, env);
+      const a = testAccounts[0];
+      const c = await increment(a, counterContract.address, [1]);
       expect(c.isSuccess()).toEqual(true);
     },
     timeout
@@ -46,8 +57,8 @@ describe("counter contract (helper)", () => {
   it(
     "reads the counter",
     async () => {
-      const a = account(0, env);
-      const c = await get(a, env);
+      const a = testAccounts[0];
+      const c = await get(a, counterContract.address);
       expect(c).toBeGreaterThan(0n);
     },
     timeout
@@ -56,8 +67,8 @@ describe("counter contract (helper)", () => {
   it(
     "increments the counter by 5 and 6",
     async () => {
-      const a = account(0, env);
-      const c = await increment(a, [5, 6, 1], env);
+      const a = testAccounts[0];
+      const c = await increment(a, counterContract.address, [5, 6, 1]);
       expect(c.isSuccess()).toEqual(true);
     },
     timeout
@@ -66,8 +77,8 @@ describe("counter contract (helper)", () => {
   it(
     "reads the counter",
     async () => {
-      const a = account(0, env);
-      const c = await get(a, env);
+      const a = testAccounts[0];
+      const c = await get(a, counterContract.address);
       expect(c).toBeGreaterThan(11n);
     },
     timeout
@@ -76,8 +87,8 @@ describe("counter contract (helper)", () => {
   it(
     "resets the counter",
     async () => {
-      const a = account(0, env);
-      const c = await reset(a, env);
+      const a = testAccounts[0];
+      const c = await reset(a, counterContract.address);
       expect(c.isSuccess()).toEqual(true);
     },
     timeout
@@ -86,8 +97,8 @@ describe("counter contract (helper)", () => {
   it(
     "reads the counter",
     async () => {
-      const a = account(0, env);
-      const c = await get(a, env);
+      const a = testAccounts[0];
+      const c = await get(a, counterContract.address);
       expect(c).toBe(0n);
     },
     timeout
@@ -96,8 +107,8 @@ describe("counter contract (helper)", () => {
   it(
     "increments the counter",
     async () => {
-      const a = account(0, env);
-      const c = await increment(a, 1, env);
+      const a = testAccounts[0];
+      const c = await increment(a, counterContract.address, 1);
       expect(c.isSuccess()).toEqual(true);
     },
     timeout
@@ -106,8 +117,8 @@ describe("counter contract (helper)", () => {
   it(
     "reads the counter",
     async () => {
-      const a = account(0, env);
-      const c = await get(a, env);
+      const a = testAccounts[0];
+      const c = await get(a, counterContract.address);
       expect(c).toBeGreaterThan(0n);
     },
     timeout
@@ -116,9 +127,9 @@ describe("counter contract (helper)", () => {
   it(
     "resets the counter and fails",
     async () => {
-      const a = account(1, env);
+      const a = testAccounts[1];
       try {
-        await reset(a, env);
+        const c = await reset(a, counterContract.address);
         expect(true).toBe(false);
       } catch (e) {
         expect(e).toBeDefined();
@@ -130,8 +141,8 @@ describe("counter contract (helper)", () => {
   it(
     "reads the counter",
     async () => {
-      const a = account(0, env);
-      const c = await get(a, env);
+      const a = testAccounts[0];
+      const c = await get(a, counterContract.address);
       expect(c).toBeGreaterThan(0n);
     },
     timeout
