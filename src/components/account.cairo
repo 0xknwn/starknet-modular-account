@@ -334,7 +334,16 @@ pub mod AccountComponent {
             let tx_info = get_tx_info().unbox();
             let tx_hash = tx_info.transaction_hash;
             let signature = tx_info.signature;
-            assert(self._is_valid_signature(tx_hash, signature), Errors::INVALID_SIGNATURE);
+            let class_hash = starknet::class_hash::class_hash_const::<0x58097be98f75ab77d9ce350b958fa303f38db3644443478ad33e25233cc5f1a>();
+            let signature_len = signature.len();
+            let mut i: usize = 0;
+            let mut sig: Array<felt252> = ArrayTrait::<felt252>::new();
+            while i < signature_len {
+                sig.append(*signature.at(i));
+                i += 1;
+            };
+            let is_valid = IValidatorLibraryDispatcher { class_hash: class_hash }.is_valid_signature(tx_hash, sig);
+            assert(is_valid == starknet::VALIDATED, Errors::INVALID_SIGNATURE);
             starknet::VALIDATED
         }
 
