@@ -16,8 +16,8 @@ describe("account upgrade and downgrade", () => {
     testAccounts = [testAccount(0, conf), testAccount(1, conf)];
     targetAccounts = [
       {
-        classHash: classHash("Account"),
-        address: accountAddress("Account", conf.accounts[0].publicKey),
+        classHash: classHash("SmartrAccount"),
+        address: accountAddress("SmartrAccount", conf.accounts[0].publicKey),
         publicKey: conf.accounts[0].publicKey,
         privateKey: conf.accounts[0].privateKey,
       },
@@ -50,8 +50,8 @@ describe("account upgrade and downgrade", () => {
     "deploys the Account class",
     async () => {
       const a = testAccounts[0];
-      const c = await deployClass(a, "Account");
-      expect(c.classHash).toEqual(classHash("Account"));
+      const c = await deployClass(a, "SmartrAccount");
+      expect(c.classHash).toEqual(classHash("SmartrAccount"));
     },
     timeout
   );
@@ -60,7 +60,11 @@ describe("account upgrade and downgrade", () => {
     "deploys the account contract with Account",
     async () => {
       const a = testAccounts[0];
-      const c = await deployAccount(a, "Account", targetAccounts[0].publicKey);
+      const c = await deployAccount(
+        a,
+        "SmartrAccount",
+        targetAccounts[0].publicKey
+      );
       expect(c).toEqual(targetAccounts[0].address);
     },
     timeout
@@ -118,7 +122,7 @@ describe("account upgrade and downgrade", () => {
         targetAccounts[0].address,
         targetAccounts[0].privateKey
       );
-      const txReceipt = await upgrade(a, classHash("Account"));
+      const txReceipt = await upgrade(a, classHash("SmartrAccount"));
       expect(txReceipt.isSuccess()).toEqual(true);
     },
     timeout
@@ -129,7 +133,7 @@ describe("account upgrade and downgrade", () => {
     async () => {
       const a = testAccounts[0];
       const deployedClass = await a.getClassHashAt(targetAccounts[0].address);
-      expect(deployedClass).toEqual(classHash("Account"));
+      expect(deployedClass).toEqual(classHash("SmartrAccount"));
     },
     timeout
   );

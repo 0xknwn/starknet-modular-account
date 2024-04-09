@@ -332,7 +332,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::simple_account::SimpleAccount::Event",
+    "name": "smartr::presets::simple_account::SimpleAccount::Event",
     "kind": "enum",
     "variants": [
       {

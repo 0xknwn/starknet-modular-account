@@ -10,7 +10,10 @@ export const classHash = (className: string): string => {
 };
 
 // deployClass checks if the class is already deployed, and if not, deploys it.
-export const deployClass = async (a: Account, name: string = "Account") => {
+export const deployClass = async (
+  a: Account,
+  name: string = "SmartrAccount"
+) => {
   const AccountClassHash = classHash(name);
 
   try {

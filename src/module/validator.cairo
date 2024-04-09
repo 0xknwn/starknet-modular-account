@@ -2,7 +2,6 @@
 
 use starknet::class_hash::ClassHash;
 use starknet::account::Call;
-use super::store;
 
 // use `src5_rs` to generate the interface id
 pub const IValidator_ID: felt252 =
@@ -26,7 +25,7 @@ pub mod ValidatorComponent {
     use super::{IValidator, IValidator_ID};
     use starknet::class_hash::ClassHash;
     use starknet::account::Call;
-    use super::store::Felt252ArrayStore;
+    use smartr::store::Felt252ArrayStore;
 
     mod Errors {
         pub const INVALID_SIGNATURE: felt252 = 'Account: invalid signature';

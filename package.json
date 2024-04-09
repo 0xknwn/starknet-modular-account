@@ -6,10 +6,10 @@
   "scripts": {
     "build:scarb": "scarb build",
     "build:abi:Counter": "npx abi-wan-kanabi --input ./target/dev/smartr_Counter.contract_class.json --output ./__integration__/abi/Counter.ts",
-    "build:abi:Account": "npx abi-wan-kanabi --input ./target/dev/smartr_Account.contract_class.json --output ./__integration__/abi/Account.ts",
+    "build:abi:SmartrAccount": "npx abi-wan-kanabi --input ./target/dev/smartr_SmartrAccount.contract_class.json --output ./__integration__/abi/SmartrAccount.ts",
     "build:abi:SimpleAccount": "npx abi-wan-kanabi --input ./target/dev/smartr_SimpleAccount.contract_class.json --output ./__integration__/abi/SimpleAccount.ts",
     "build:abi:DefaultValidator": "npx abi-wan-kanabi --input ./target/dev/smartr_DefaultValidator.contract_class.json --output ./__integration__/abi/DefaultValidator.ts",
-    "build:abi": "npm run build:abi:Counter && npm run build:abi:Account && npm run build:abi:SimpleAccount && npm run build:abi:DefaultValidator",
+    "build:abi": "npm run build:abi:Counter && npm run build:abi:SmartrAccount && npm run build:abi:SimpleAccount && npm run build:abi:DefaultValidator",
     "build": "npm run build:scarb",
     "test:scarb": "scarb run test",
     "resource:scarb": "scarb run resource",

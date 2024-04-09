@@ -38,8 +38,8 @@ describe("multiple signatures", () => {
     testAccounts = [testAccount(0, conf), testAccount(1, conf)];
     targetAccounts = [
       {
-        classHash: classHash("Account"),
-        address: accountAddress("Account", conf.accounts[0].publicKey),
+        classHash: classHash("SmartrAccount"),
+        address: accountAddress("SmartrAccount", conf.accounts[0].publicKey),
         publicKey: conf.accounts[0].publicKey,
         privateKey: conf.accounts[0].privateKey,
       },
@@ -86,8 +86,8 @@ describe("multiple signatures", () => {
     "deploys the Account class",
     async () => {
       const a = testAccounts[0];
-      const c = await deployClass(a, "Account");
-      expect(c.classHash).toEqual(classHash("Account"));
+      const c = await deployClass(a, "SmartrAccount");
+      expect(c.classHash).toEqual(classHash("SmartrAccount"));
     },
     timeout
   );
@@ -98,8 +98,12 @@ describe("multiple signatures", () => {
       const conf = config(env);
       const a = testAccounts[0];
       const publicKey = conf.accounts[0].publicKey;
-      const c = await deployAccount(a, "Account", await a.signer.getPubKey());
-      expect(c).toEqual(accountAddress("Account", publicKey));
+      const c = await deployAccount(
+        a,
+        "SmartrAccount",
+        await a.signer.getPubKey()
+      );
+      expect(c).toEqual(accountAddress("SmartrAccount", publicKey));
     },
     timeout
   );
