@@ -1,17 +1,21 @@
 import {
   config,
-  account,
+  testAccount,
   provider,
   ethBalance,
   strkBalance,
   ethTransfer,
 } from "./utils";
 import { initial_EthTransfer, timeout } from "./constants";
+import { Account } from "starknet";
 
 describe("utilities (helpers)", () => {
   let env: string;
+  let testAccounts: Account[];
   beforeAll(() => {
     env = "devnet";
+    const conf = config(env);
+    testAccounts = [testAccount(0, conf), testAccount(1, conf)];
   });
 
   it("checks the config file", async () => {
@@ -35,7 +39,8 @@ describe("utilities (helpers)", () => {
   });
 
   it("checks the provider version", async () => {
-    const p = provider(env);
+    const conf = config(env);
+    const p = provider(conf.providerURL);
     switch (env) {
       case "sepolia":
         expect(await p.getSpecVersion()).toBe("0.6.0");
@@ -48,13 +53,13 @@ describe("utilities (helpers)", () => {
 
   it("checks the $ETH balance", async () => {
     const c = config(env);
-    const amount = await ethBalance(c.accounts[0].address, env);
+    const amount = await ethBalance(c.accounts[0].address, c);
     expect(amount).toBeGreaterThanOrEqual(3n * initial_EthTransfer);
   });
 
   it("checks the $STRK balance", async () => {
     const c = config(env);
-    const amount = await strkBalance(c.accounts[0].address, env);
+    const amount = await strkBalance(c.accounts[0].address, c);
     switch (env) {
       case "sepolia":
         expect(amount).toBe(0n);
@@ -68,25 +73,18 @@ describe("utilities (helpers)", () => {
   it(
     "transfers $ETH to new account",
     async () => {
-      const c = config(env);
-      const a = account(0, env);
-      const destAddress = c.accounts[1].address;
-      // const destAddress =
-      //   "0x34b547f8eddeaa4966cb0def63cc9446786e051eb049c8e4b96135ff2200f4a";
+      const conf = config(env);
+      const a = testAccounts[0];
+      const destAddress = conf.accounts[1].address;
       const initialAmount = (await ethBalance(
-        c.accounts[0].address,
-        env
+        conf.accounts[0].address,
+        conf
       )) as bigint;
-      const receipt = await ethTransfer(
-        a,
-        destAddress,
-        initial_EthTransfer,
-        env
-      );
+      const receipt = await ethTransfer(a, destAddress, initial_EthTransfer);
       expect(receipt.isSuccess()).toBe(true);
       const finalAmount = (await ethBalance(
-        c.accounts[0].address,
-        env
+        conf.accounts[0].address,
+        conf
       )) as bigint;
       expect(initialAmount - finalAmount).toBeGreaterThanOrEqual(
         initial_EthTransfer - 1n

@@ -1,19 +1,18 @@
-import { account, config, classHash, provider, ethTransfer } from "./utils";
-import { ec, Call, CallData, hash, Account, Contract } from "starknet";
+import { ethTransfer } from "./utils";
+import { classHash } from "./class";
+import { Call, CallData, hash, Account, Contract } from "starknet";
 import { ABI as AccountABI } from "./abi/Account";
 import { initial_EthTransfer } from "./constants";
 
 // accountAddress compute the account address from the account public key.
 export const accountAddress = (
   name: string = "Account",
-  env: string = "devnet"
+  publicKey: string
 ): string => {
   const AccountClassHash = classHash(name);
-  const c = config(env);
-  const starkKeyPub = ec.starkCurve.getStarkKey(c.accounts[0].privateKey);
-  const calldata = CallData.compile({ public_keys: starkKeyPub });
+  const calldata = CallData.compile({ public_keys: publicKey });
   return hash.calculateContractAddressFromHash(
-    starkKeyPub,
+    publicKey,
     AccountClassHash,
     calldata,
     0
@@ -21,15 +20,15 @@ export const accountAddress = (
 };
 
 export const deployAccount = async (
+  deployerAccount: Account,
   name: string = "Account",
-  env: string = "devnet"
+  publicKey: string
 ) => {
   const computedClassHash = classHash(name);
-  const AccountAddress = accountAddress(name, env);
-  const c = config(env);
-  const a = account(0, env);
+  const AccountAddress = accountAddress(name, publicKey);
   try {
-    const deployedClassHash = await a.getClassHashAt(AccountAddress);
+    const deployedClassHash =
+      await deployerAccount.getClassHashAt(AccountAddress);
     if (deployedClassHash !== computedClassHash) {
       throw new Error(
         `Class mismatch: expect ${computedClassHash}, got ${deployedClassHash}`
@@ -37,22 +36,22 @@ export const deployAccount = async (
     }
     return AccountAddress;
   } catch (e) {}
-  const tx = await ethTransfer(a, AccountAddress, initial_EthTransfer, env);
+  const tx = await ethTransfer(
+    deployerAccount,
+    AccountAddress,
+    initial_EthTransfer
+  );
   if (!tx.isSuccess()) {
     throw new Error(`Failed to transfer eth to account: ${tx.statusReceipt}`);
   }
-  const p = provider(env);
-  const newAccount = new Account(p, AccountAddress, c.accounts[0].privateKey);
-  const starkKeyPub = ec.starkCurve.getStarkKey(c.accounts[0].privateKey);
-  const calldata = CallData.compile({ public_keys: starkKeyPub });
-  const { transaction_hash, contract_address } = await newAccount.deployAccount(
-    {
+  const calldata = CallData.compile({ public_keys: publicKey });
+  const { transaction_hash, contract_address } =
+    await deployerAccount.deployAccount({
       classHash: computedClassHash,
       constructorCalldata: calldata,
-      addressSalt: starkKeyPub,
-    }
-  );
-  const txReceipt = await p.waitForTransaction(transaction_hash);
+      addressSalt: publicKey,
+    });
+  const txReceipt = await deployerAccount.waitForTransaction(transaction_hash);
   if (!txReceipt.isSuccess()) {
     throw new Error(`Failed to deploy account: ${txReceipt.status}`);
   }
@@ -68,43 +67,18 @@ export const upgrade = async (a: Account, classHash: string) => {
   return await a.waitForTransaction(transferTxHash);
 };
 
-export const get_public_keys = async (
-  a: Account,
-  name: string = "Account",
-  env: string = "devnet"
-) => {
-  const contract = new Contract(
-    AccountABI,
-    accountAddress(name, env),
-    a
-  ).typedv2(AccountABI);
+export const get_public_keys = async (a: Account) => {
+  const contract = new Contract(AccountABI, a.address, a).typedv2(AccountABI);
   return await contract.get_public_keys();
 };
 
-export const get_threshold = async (
-  a: Account,
-  name: string = "Account",
-  env: string = "devnet"
-) => {
-  const contract = new Contract(
-    AccountABI,
-    accountAddress(name, env),
-    a
-  ).typedv2(AccountABI);
+export const get_threshold = async (a: Account) => {
+  const contract = new Contract(AccountABI, a.address, a).typedv2(AccountABI);
   return await contract.get_threshold();
 };
 
-export const add_public_key = async (
-  a: Account,
-  new_public_key: string,
-  name: string = "Account",
-  env: string = "devnet"
-) => {
-  const contract = new Contract(
-    AccountABI,
-    accountAddress(name, env),
-    a
-  ).typedv2(AccountABI);
+export const add_public_key = async (a: Account, new_public_key: string) => {
+  const contract = new Contract(AccountABI, a.address, a).typedv2(AccountABI);
   const transferCall: Call = contract.populate("add_public_key", {
     new_public_key: new_public_key,
   });
@@ -112,17 +86,8 @@ export const add_public_key = async (
   return await a.waitForTransaction(transferTxHash);
 };
 
-export const remove_public_key = async (
-  a: Account,
-  old_public_key: string,
-  name: string = "Account",
-  env: string = "devnet"
-) => {
-  const contract = new Contract(
-    AccountABI,
-    accountAddress(name, env),
-    a
-  ).typedv2(AccountABI);
+export const remove_public_key = async (a: Account, old_public_key: string) => {
+  const contract = new Contract(AccountABI, a.address, a).typedv2(AccountABI);
   const transferCall: Call = contract.populate("remove_public_key", {
     old_public_key: old_public_key,
   });
@@ -130,17 +95,8 @@ export const remove_public_key = async (
   return await a.waitForTransaction(transferTxHash);
 };
 
-export const set_threshold = async (
-  a: Account,
-  new_threshold: bigint,
-  name: string = "Account",
-  env: string = "devnet"
-) => {
-  const contract = new Contract(
-    AccountABI,
-    accountAddress(name, env),
-    a
-  ).typedv2(AccountABI);
+export const set_threshold = async (a: Account, new_threshold: bigint) => {
+  const contract = new Contract(AccountABI, a.address, a).typedv2(AccountABI);
   const transferCall: Call = contract.populate("set_threshold", {
     new_threshold: new_threshold,
   });

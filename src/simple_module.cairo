@@ -3,6 +3,7 @@ use super::components::module::IModuleClass;
 #[starknet::contract]
 mod SimpleModule {
     use starknet::account::Call;
+    use starknet::ClassHash;
 
     #[storage]
     struct Storage {
@@ -24,7 +25,7 @@ mod SimpleModule {
             true
         }
 
-        fn validate(self: @ContractState, calls: Array<Call>) -> felt252 {
+        fn validate(self: @ContractState, caller_class: ClassHash, calls: Array<Call>) -> felt252 {
             starknet::VALIDATED
         }
     }
