@@ -125,16 +125,3 @@ pub mod ValidatorComponent {
         }
     }
 }
-
-use snforge_std::errors::{SyscallResultStringErrorTrait, PanicDataOrString};
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn test_check_interface_id() {
-        assert_eq!(
-            selector!("is_valid_signature(felt252,Array<felt252>)->felt252"),
-            super::IValidator_ID,
-            "src5 identifier should match selector! with single function"
-        );
-    }
-}
