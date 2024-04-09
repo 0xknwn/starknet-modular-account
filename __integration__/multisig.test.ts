@@ -8,7 +8,7 @@ import {
   set_threshold,
   remove_public_key,
 } from "./account";
-import { simpleValidatorClassHash } from "./validator";
+import { defaultValidatorClassHash } from "./validator";
 import {
   config,
   testAccount,
@@ -71,12 +71,12 @@ describe("multiple signatures", () => {
   );
 
   it(
-    "deploys the SimpleValidator class",
+    "deploys the DefaultValidator class",
     async () => {
       const a = testAccounts[0];
-      const c = await deployClass(a, "SimpleValidator");
+      const c = await deployClass(a, "DefaultValidator");
       expect(c.classHash).toEqual(
-        `0x${simpleValidatorClassHash().toString(16)}`
+        `0x${defaultValidatorClassHash().toString(16)}`
       );
     },
     timeout

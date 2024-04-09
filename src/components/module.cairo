@@ -3,13 +3,6 @@ use starknet::{ContractAddress, ClassHash};
 use core::pedersen::pedersen;
 use core::traits::Into;
 
-#[starknet::interface]
-pub trait IModuleClass<TState> {
-    fn initialize(ref self: TState, args: Array<felt252>);
-    fn is_valid_signature(self: @TState, hash: felt252, signature: Array<felt252>) -> bool;
-    fn validate(self: @TState, caller_class: ClassHash, calls: Array<Call>) -> felt252;
-}
-
 fn authz_hash(
     account_address: ContractAddress,
     account_class: ClassHash,

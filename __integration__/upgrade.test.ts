@@ -1,7 +1,7 @@
 import { deployClass } from "./class";
 import { accountAddress, deployAccount, upgrade } from "./account";
 import { config, provider, testAccount, type AccountConfig } from "./utils";
-import { simpleValidatorClassHash } from "./validator";
+import { defaultValidatorClassHash } from "./validator";
 import { classHash } from "./class";
 import { Account } from "starknet";
 import { timeout } from "./constants";
@@ -35,12 +35,12 @@ describe("account upgrade and downgrade", () => {
   );
 
   it(
-    "deploys the SimpleValidator class",
+    "deploys the DefaultValidator class",
     async () => {
       const a = testAccounts[0];
-      const c = await deployClass(a, "SimpleValidator");
+      const c = await deployClass(a, "DefaultValidator");
       expect(c.classHash).toEqual(
-        `0x${simpleValidatorClassHash().toString(16)}`
+        `0x${defaultValidatorClassHash().toString(16)}`
       );
     },
     timeout
