@@ -4,7 +4,8 @@ use starknet::class_hash::ClassHash;
 use starknet::account::Call;
 
 // use `src5_rs` to generate the interface id
-pub const IValidator_ID: felt252 = 0x12872aa2454ea533052814f27445df0e498eeccaf2035b018153efff642d34d;
+pub const IValidator_ID: felt252 =
+    0x12872aa2454ea533052814f27445df0e498eeccaf2035b018153efff642d34d;
 
 #[starknet::interface]
 pub trait IValidator<TState> {
@@ -72,14 +73,15 @@ pub mod ValidatorComponent {
             }
         }
 
-        fn validate(self: @ComponentState<TContractState>, caller_class: ClassHash, calls: Array<Call>) -> felt252 {
+        fn validate(
+            self: @ComponentState<TContractState>, caller_class: ClassHash, calls: Array<Call>
+        ) -> felt252 {
             starknet::VALIDATED
         }
 
         fn initialize(ref self: ComponentState<TContractState>, args: Array<felt252>) {
             self.Account_modules_initialize.write(0x7, 0x8);
         }
-
     }
 
     #[generate_trait]
@@ -129,6 +131,10 @@ use snforge_std::errors::{SyscallResultStringErrorTrait, PanicDataOrString};
 mod tests {
     #[test]
     fn test_check_interface_id() {
-        assert_eq!(selector!("is_valid_signature(felt252,Array<felt252>)->felt252"), super::IValidator_ID, "src5 identifier should match selector! with single function");
+        assert_eq!(
+            selector!("is_valid_signature(felt252,Array<felt252>)->felt252"),
+            super::IValidator_ID,
+            "src5 identifier should match selector! with single function"
+        );
     }
 }
