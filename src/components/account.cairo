@@ -132,11 +132,7 @@ pub mod AccountComponent {
         fn is_valid_signature(
             self: @ComponentState<TContractState>, hash: felt252, signature: Array<felt252>
         ) -> felt252 {
-            if self._is_valid_signature(hash, signature.span()) {
-                starknet::VALIDATED
-            } else {
-                0
-            }
+            _module_is_valid_signature(hash, signature)
         }
     }
 
@@ -306,6 +302,13 @@ pub mod AccountComponent {
         ) {}
     }
 
+    fn _module_is_valid_signature(hash: felt252, signature: Array<felt252>) -> felt252 {
+        let class_hash = starknet::class_hash::class_hash_const::<
+            0x58097be98f75ab77d9ce350b958fa303f38db3644443478ad33e25233cc5f1a
+        >();
+        IValidatorLibraryDispatcher { class_hash: class_hash }.is_valid_signature(hash, signature)
+    }
+
     #[generate_trait]
     pub impl InternalImpl<
         TContractState,
@@ -334,8 +337,14 @@ pub mod AccountComponent {
             let tx_info = get_tx_info().unbox();
             let tx_hash = tx_info.transaction_hash;
             let signature = tx_info.signature;
-            assert(self._is_valid_signature(tx_hash, signature), Errors::INVALID_SIGNATURE);
-            starknet::VALIDATED
+            let signature_len = signature.len();
+            let mut i: usize = 0;
+            let mut sig: Array<felt252> = ArrayTrait::<felt252>::new();
+            while i < signature_len {
+                sig.append(*signature.at(i));
+                i += 1;
+            };
+            _module_is_valid_signature(tx_hash, sig)
         }
 
         /// Sets the public key without validating the caller.
@@ -348,39 +357,6 @@ pub mod AccountComponent {
             self.Account_public_keys.write(new_public_keys);
             self.Account_threshold.write(1);
             self.emit(OwnerAdded { new_owner_guid: new_public_key });
-        }
-
-        /// Returns whether the given signature is valid for the given hash
-        /// using the account's current public key.
-        fn _is_valid_signature(
-            self: @ComponentState<TContractState>, hash: felt252, signature: Span<felt252>
-        ) -> bool {
-            let threshold: u32 = self.Account_threshold.read().into();
-            assert(threshold >= 1, Errors::INVALID_THRESHOLD);
-            let signature_len = signature.len();
-            assert(signature_len == 2 * threshold, Errors::INVALID_SIGNATURE);
-            let public_keys: Array<felt252> = self.Account_public_keys.read();
-            let public_keys_snapshot = @public_keys;
-            let mut matching_signature = 0;
-            let mut j: usize = 0;
-            while j < (signature_len - 1) {
-                let mut sig: Array<felt252> = ArrayTrait::<felt252>::new();
-                sig.append(*signature.at(j));
-                sig.append(*signature.at(j + 1));
-                let mut i: usize = 0;
-                let len = public_keys_snapshot.len();
-                while i < len {
-                    let public_key = *public_keys_snapshot.at(i);
-                    if is_valid_stark_signature(hash, public_key, sig.span()) {
-                        matching_signature += 1;
-                        break;
-                    }
-                    i += 1;
-                };
-                j += 2;
-            };
-            assert(matching_signature >= threshold, Errors::INVALID_SIGNATURE);
-            true
         }
     }
 }

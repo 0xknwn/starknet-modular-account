@@ -4,7 +4,7 @@ import { shortString, hash } from "starknet";
 // changing the contract requires to update the cairo account contract default
 // sudo validator.
 export const defaultValidatorClassHash = (env: string = "devnet") =>
-  BigInt("0xfdd96f58c6219f382af97e603eff1bdc4c447e60494acfabce064a0cb0b639");
+  BigInt("0x58097be98f75ab77d9ce350b958fa303f38db3644443478ad33e25233cc5f1a");
 
 export const authz_hash = (
   account_address: string,

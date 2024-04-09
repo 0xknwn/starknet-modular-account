@@ -2,6 +2,7 @@
 
 use starknet::class_hash::ClassHash;
 use starknet::account::Call;
+use super::store;
 
 // use `src5_rs` to generate the interface id
 pub const IValidator_ID: felt252 =
@@ -25,11 +26,21 @@ pub mod ValidatorComponent {
     use super::{IValidator, IValidator_ID};
     use starknet::class_hash::ClassHash;
     use starknet::account::Call;
+    use super::store::Felt252ArrayStore;
+
+    mod Errors {
+        pub const INVALID_SIGNATURE: felt252 = 'Account: invalid signature';
+        pub const INVALID_THRESHOLD: felt252 = 'Account: invalid threshold';
+        pub const UNAUTHORIZED: felt252 = 'Account: unauthorized';
+    }
 
     #[storage]
     struct Storage {
         Account_public_key: felt252,
-        Account_modules_initialize: LegacyMap<felt252, felt252>,
+        Account_public_keys: Array<felt252>,
+        Account_threshold: u8,
+        Account_modules: LegacyMap<ClassHash, bool>,
+        Account_modules_initialize: LegacyMap<felt252, felt252>
     }
 
     #[event]
@@ -49,10 +60,6 @@ pub mod ValidatorComponent {
     pub struct OwnerRemoved {
         #[key]
         removed_owner_guid: felt252
-    }
-
-    mod Errors {
-        pub const UNAUTHORIZED: felt252 = 'Account: unauthorized';
     }
 
     #[embeddable_as(ValidatorImpl)]
@@ -120,8 +127,32 @@ pub mod ValidatorComponent {
         fn _is_valid_signature(
             self: @ComponentState<TContractState>, hash: felt252, signature: Span<felt252>
         ) -> bool {
-            let public_key = self.Account_public_key.read();
-            is_valid_stark_signature(hash, public_key, signature)
+            let threshold: u32 = self.Account_threshold.read().into();
+            assert(threshold >= 1, Errors::INVALID_THRESHOLD);
+            let signature_len = signature.len();
+            assert(signature_len == 2 * threshold, Errors::INVALID_SIGNATURE);
+            let public_keys: Array<felt252> = self.Account_public_keys.read();
+            let public_keys_snapshot = @public_keys;
+            let mut matching_signature = 0;
+            let mut j: usize = 0;
+            while j < (signature_len - 1) {
+                let mut sig: Array<felt252> = ArrayTrait::<felt252>::new();
+                sig.append(*signature.at(j));
+                sig.append(*signature.at(j + 1));
+                let mut i: usize = 0;
+                let len = public_keys_snapshot.len();
+                while i < len {
+                    let public_key = *public_keys_snapshot.at(i);
+                    if is_valid_stark_signature(hash, public_key, sig.span()) {
+                        matching_signature += 1;
+                        break;
+                    }
+                    i += 1;
+                };
+                j += 2;
+            };
+            assert(matching_signature >= threshold, Errors::INVALID_SIGNATURE);
+            true
         }
     }
 }
