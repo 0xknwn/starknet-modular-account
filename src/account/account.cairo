@@ -6,13 +6,11 @@
 /// The Account component enables contracts to behave as accounts.
 
 use super::interface;
-use super::store;
-use super::module;
 
 #[starknet::component]
 pub mod AccountComponent {
     use super::interface;
-    use super::store::Felt252ArrayStore;
+    use smartr::store::Felt252ArrayStore;
     use smartr::module::validator::{IValidatorDispatcherTrait, IValidatorLibraryDispatcher};
     use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
     use openzeppelin::account::utils::{execute_calls, is_valid_stark_signature};

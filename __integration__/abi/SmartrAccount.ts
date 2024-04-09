@@ -25,7 +25,7 @@ export const ABI = [
   {
     "type": "impl",
     "name": "SRC6Impl",
-    "interface_name": "smartr::components::interface::ISRC6"
+    "interface_name": "smartr::account::interface::ISRC6"
   },
   {
     "type": "struct",
@@ -57,7 +57,7 @@ export const ABI = [
   },
   {
     "type": "interface",
-    "name": "smartr::components::interface::ISRC6",
+    "name": "smartr::account::interface::ISRC6",
     "items": [
       {
         "type": "function",
@@ -116,11 +116,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "DeclarerImpl",
-    "interface_name": "smartr::components::interface::IDeclarer"
+    "interface_name": "smartr::account::interface::IDeclarer"
   },
   {
     "type": "interface",
-    "name": "smartr::components::interface::IDeclarer",
+    "name": "smartr::account::interface::IDeclarer",
     "items": [
       {
         "type": "function",
@@ -143,11 +143,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "DeployableImpl",
-    "interface_name": "smartr::components::interface::IDeployable"
+    "interface_name": "smartr::account::interface::IDeployable"
   },
   {
     "type": "interface",
-    "name": "smartr::components::interface::IDeployable",
+    "name": "smartr::account::interface::IDeployable",
     "items": [
       {
         "type": "function",
@@ -178,11 +178,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "PublicKeysImpl",
-    "interface_name": "smartr::components::interface::IPublicKeys"
+    "interface_name": "smartr::account::interface::IPublicKeys"
   },
   {
     "type": "interface",
-    "name": "smartr::components::interface::IPublicKeys",
+    "name": "smartr::account::interface::IPublicKeys",
     "items": [
       {
         "type": "function",
@@ -247,11 +247,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "SRC6CamelOnlyImpl",
-    "interface_name": "smartr::components::interface::ISRC6CamelOnly"
+    "interface_name": "smartr::account::interface::ISRC6CamelOnly"
   },
   {
     "type": "interface",
-    "name": "smartr::components::interface::ISRC6CamelOnly",
+    "name": "smartr::account::interface::ISRC6CamelOnly",
     "items": [
       {
         "type": "function",
@@ -278,7 +278,7 @@ export const ABI = [
   {
     "type": "impl",
     "name": "ModuleImpl",
-    "interface_name": "smartr::components::interface::IModule"
+    "interface_name": "smartr::account::interface::IModule"
   },
   {
     "type": "enum",
@@ -296,7 +296,7 @@ export const ABI = [
   },
   {
     "type": "interface",
-    "name": "smartr::components::interface::IModule",
+    "name": "smartr::account::interface::IModule",
     "items": [
       {
         "type": "function",
@@ -443,7 +443,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::components::account::AccountComponent::OwnerAdded",
+    "name": "smartr::account::account::AccountComponent::OwnerAdded",
     "kind": "struct",
     "members": [
       {
@@ -455,7 +455,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::components::account::AccountComponent::OwnerRemoved",
+    "name": "smartr::account::account::AccountComponent::OwnerRemoved",
     "kind": "struct",
     "members": [
       {
@@ -467,17 +467,17 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::components::account::AccountComponent::Event",
+    "name": "smartr::account::account::AccountComponent::Event",
     "kind": "enum",
     "variants": [
       {
         "name": "OwnerAdded",
-        "type": "smartr::components::account::AccountComponent::OwnerAdded",
+        "type": "smartr::account::account::AccountComponent::OwnerAdded",
         "kind": "nested"
       },
       {
         "name": "OwnerRemoved",
-        "type": "smartr::components::account::AccountComponent::OwnerRemoved",
+        "type": "smartr::account::account::AccountComponent::OwnerRemoved",
         "kind": "nested"
       }
     ]
@@ -514,12 +514,12 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::account::Account::Event",
+    "name": "smartr::presets::smartr_account::SmartrAccount::Event",
     "kind": "enum",
     "variants": [
       {
         "name": "AccountEvent",
-        "type": "smartr::components::account::AccountComponent::Event",
+        "type": "smartr::account::account::AccountComponent::Event",
         "kind": "flat"
       },
       {

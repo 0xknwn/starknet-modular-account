@@ -35,8 +35,8 @@ describe("account management", () => {
     testAccounts = [testAccount(0, conf), testAccount(1, conf)];
     targetAccountConfigs = [
       {
-        classHash: classHash("Account"),
-        address: accountAddress("Account", conf.accounts[0].publicKey),
+        classHash: classHash("SmartrAccount"),
+        address: accountAddress("SmartrAccount", conf.accounts[0].publicKey),
         publicKey: conf.accounts[0].publicKey,
         privateKey: conf.accounts[0].privateKey,
       },
@@ -90,8 +90,8 @@ describe("account management", () => {
     "deploys the Account class",
     async () => {
       const a = testAccounts[0];
-      const c = await deployClass(a, "Account");
-      expect(c.classHash).toEqual(classHash("Account"));
+      const c = await deployClass(a, "SmartrAccount");
+      expect(c.classHash).toEqual(classHash("SmartrAccount"));
     },
     timeout
   );
@@ -101,8 +101,8 @@ describe("account management", () => {
     async () => {
       const a = testAccounts[0];
       const publicKey = targetAccountConfigs[0].publicKey;
-      const c = await deployAccount(a, "Account", publicKey);
-      expect(c).toEqual(accountAddress("Account", publicKey));
+      const c = await deployAccount(a, "SmartrAccount", publicKey);
+      expect(c).toEqual(accountAddress("SmartrAccount", publicKey));
     },
     timeout
   );

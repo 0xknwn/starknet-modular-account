@@ -1,7 +1,7 @@
 import { Signer } from "starknet";
 import type { Call } from "starknet";
 import { Account, Contract } from "starknet";
-import { ABI as AccountABI } from "./abi/Account";
+import { ABI as AccountABI } from "./abi/SmartrAccount";
 
 export const is_module = async (a: Account, class_hash: string) => {
   const contract = new Contract(AccountABI, a.address, a).typedv2(AccountABI);

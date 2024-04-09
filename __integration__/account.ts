@@ -1,12 +1,12 @@
 import { ethTransfer } from "./utils";
 import { classHash } from "./class";
 import { Call, CallData, hash, Account, Contract } from "starknet";
-import { ABI as AccountABI } from "./abi/Account";
+import { ABI as AccountABI } from "./abi/SmartrAccount";
 import { initial_EthTransfer } from "./constants";
 
 // accountAddress compute the account address from the account public key.
 export const accountAddress = (
-  name: string = "Account",
+  name: string = "SmartrAccount",
   publicKey: string
 ): string => {
   const AccountClassHash = classHash(name);
@@ -21,7 +21,7 @@ export const accountAddress = (
 
 export const deployAccount = async (
   deployerAccount: Account,
-  name: string = "Account",
+  name: string = "SmartrAccount",
   publicKey: string
 ) => {
   const computedClassHash = classHash(name);
