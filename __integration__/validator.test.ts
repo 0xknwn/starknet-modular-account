@@ -1,5 +1,5 @@
 import { hash, ec, num } from "starknet";
-import { authz_hash, simpleValidatorClassHash } from "./validator";
+import { authz_hash, defaultValidatorClassHash } from "./validator";
 import { deployClass } from "./class";
 import { timeout } from "./constants";
 import { testAccount, config } from "./utils";
@@ -15,12 +15,12 @@ describe("sessionkey management", () => {
   });
 
   it(
-    "deploys the SimpleValidator class",
+    "deploys the DefaultValidator class",
     async () => {
       const a = testAccounts[0];
-      const c = await deployClass(a, "SimpleValidator");
+      const c = await deployClass(a, "DefaultValidator");
       expect(c.classHash).toEqual(
-        `0x${simpleValidatorClassHash().toString(16)}`
+        `0x${defaultValidatorClassHash().toString(16)}`
       );
     },
     timeout

@@ -13,7 +13,7 @@ use super::module;
 pub mod AccountComponent {
     use super::interface;
     use super::store::Felt252ArrayStore;
-    use super::module::{IModuleClassDispatcherTrait, IModuleClassLibraryDispatcher};
+    use smartr::module::validator::{IValidatorDispatcherTrait, IValidatorLibraryDispatcher};
     use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
     use openzeppelin::account::utils::{execute_calls, is_valid_stark_signature};
     use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SRC5InternalTrait;
@@ -122,7 +122,7 @@ pub mod AccountComponent {
                 let felt = *calldata.at(0);
                 let class_hash: ClassHash = felt.try_into().unwrap();
                 assert(self.Account_modules.read(class_hash), Errors::MODULE_NOT_INSTALLED);
-                return IModuleClassLibraryDispatcher { class_hash: class_hash }
+                return IValidatorLibraryDispatcher { class_hash: class_hash }
                     .validate(class_hash, calls);
             }
             self.validate_transaction()
@@ -278,7 +278,7 @@ pub mod AccountComponent {
             assert(!installed, Errors::MODULE_ALREADY_INSTALLED);
             self.Account_modules.write(class_hash, true);
             if args.len() > 0 {
-                IModuleClassLibraryDispatcher { class_hash: class_hash }.initialize(args)
+                IValidatorLibraryDispatcher { class_hash: class_hash }.initialize(args)
             }
         }
 

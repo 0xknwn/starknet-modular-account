@@ -1,6 +1,6 @@
 import { deployClass, classHash } from "./class";
 import { accountAddress, deployAccount, get_public_keys } from "./account";
-import { simpleValidatorClassHash } from "./validator";
+import { defaultValidatorClassHash } from "./validator";
 import {
   config,
   testAccount,
@@ -69,12 +69,12 @@ describe("module management", () => {
     timeout
   );
   it(
-    "deploys the SimpleValidator class",
+    "deploys the DefaultValidator class",
     async () => {
       const a = testAccounts[0];
-      const c = await deployClass(a, "SimpleValidator");
+      const c = await deployClass(a, "DefaultValidator");
       expect(c.classHash).toEqual(
-        `0x${simpleValidatorClassHash().toString(16)}`
+        `0x${defaultValidatorClassHash().toString(16)}`
       );
     },
     timeout
@@ -118,11 +118,11 @@ describe("module management", () => {
   );
 
   it(
-    "deploys the SimpleModule class",
+    "deploys the DefaultValidator class",
     async () => {
       const a = testAccounts[0];
-      const c = await deployClass(a, "SimpleModule");
-      expect(c.classHash).toEqual(classHash("SimpleModule"));
+      const c = await deployClass(a, "DefaultValidator");
+      expect(c.classHash).toEqual(classHash("DefaultValidator"));
     },
     timeout
   );
@@ -149,7 +149,7 @@ describe("module management", () => {
       const a = new Multisig(p, targetAccounts[0].address, [
         conf.accounts[0].privateKey,
       ]);
-      const c = await add_module(a, classHash("SimpleModule"));
+      const c = await add_module(a, classHash("DefaultValidator"));
       expect(c.isSuccess()).toEqual(true);
     },
     timeout
@@ -163,7 +163,7 @@ describe("module management", () => {
       const a = new Multisig(p, targetAccounts[0].address, [
         conf.accounts[0].privateKey,
       ]);
-      const value = await is_module(a, classHash("SimpleModule"));
+      const value = await is_module(a, classHash("DefaultValidator"));
       expect(value).toBe(true);
     },
     timeout
@@ -192,7 +192,7 @@ describe("module management", () => {
         conf.accounts[0].privateKey,
       ]);
       try {
-        const c = await add_module(a, classHash("SimpleModule"));
+        const c = await add_module(a, classHash("DefaultValidator"));
         expect(true).toEqual(false);
       } catch (e) {
         expect(e).toBeDefined();
@@ -218,7 +218,7 @@ describe("module management", () => {
       const module = new SessionKey(
         "0x0",
         targetAccounts[0].address,
-        classHash("SimpleModule")
+        classHash("DefaultValidator")
       );
       const a = new Multisig(p, targetAccounts[0].address, [], module);
       const c = await increment(a, counterContract.address, 1);
@@ -248,7 +248,7 @@ describe("module management", () => {
         [targetAccounts[0].privateKey],
         undefined
       );
-      const c = await remove_module(a, classHash("SimpleModule"));
+      const c = await remove_module(a, classHash("DefaultValidator"));
       expect(c.isSuccess()).toEqual(true);
     },
     timeout
@@ -265,7 +265,7 @@ describe("module management", () => {
         [targetAccounts[0].privateKey],
         undefined
       );
-      const value = await is_module(a, classHash("SimpleModule"));
+      const value = await is_module(a, classHash("DefaultValidator"));
       expect(value).toBe(false);
     },
     timeout
@@ -279,7 +279,7 @@ describe("module management", () => {
       const module = new SessionKey(
         "0x0",
         targetAccounts[0].address,
-        classHash("SimpleModule")
+        classHash("DefaultValidator")
       );
       const a = new Multisig(p, targetAccounts[0].address, [], module);
       try {

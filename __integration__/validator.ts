@@ -1,10 +1,10 @@
 import { shortString, hash } from "starknet";
 
-// simpleValidatorClassHash returns the class hash of the SimpleValidator class.
+// defaultValidatorClassHash returns the class hash of the DefaultValidator class.
 // changing the contract requires to update the cairo account contract default
 // sudo validator.
-export const simpleValidatorClassHash = (env: string = "devnet") =>
-  BigInt("0x12dda6e5be1370b9488489e62076e2053abdf1b096a866227dd724c5d6cd201");
+export const defaultValidatorClassHash = (env: string = "devnet") =>
+  BigInt("0xfdd96f58c6219f382af97e603eff1bdc4c447e60494acfabce064a0cb0b639");
 
 export const authz_hash = (
   account_address: string,
