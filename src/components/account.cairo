@@ -122,7 +122,8 @@ pub mod AccountComponent {
                 let felt = *calldata.at(0);
                 let class_hash: ClassHash = felt.try_into().unwrap();
                 assert(self.Account_modules.read(class_hash), Errors::MODULE_NOT_INSTALLED);
-                return IModuleClassLibraryDispatcher { class_hash: class_hash }.validate(class_hash, calls);
+                return IModuleClassLibraryDispatcher { class_hash: class_hash }
+                    .validate(class_hash, calls);
             }
             self.validate_transaction()
         }

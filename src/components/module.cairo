@@ -11,12 +11,13 @@ pub trait IModuleClass<TState> {
 }
 
 fn authz_hash(
-  account_address: ContractAddress,
-  account_class: ClassHash,
-  authorized_key: felt252,
-  expires: felt252,
-  merkle_root: felt252,
-  chain_id: felt252) -> felt252 {
+    account_address: ContractAddress,
+    account_class: ClassHash,
+    authorized_key: felt252,
+    expires: felt252,
+    merkle_root: felt252,
+    chain_id: felt252
+) -> felt252 {
     let key = array_hash(array![authorized_key, expires, merkle_root]);
     let account_address_felt = account_address.try_into().unwrap();
     let account_class_felt = account_class.try_into().unwrap();
@@ -47,7 +48,7 @@ mod tests {
 
     #[test]
     fn test_short_message() {
-      assert_eq!('StarkNet Message', 0x537461726b4e6574204d657373616765, "value should match");
+        assert_eq!('StarkNet Message', 0x537461726b4e6574204d657373616765, "value should match");
     }
 
     #[test]
@@ -58,7 +59,13 @@ mod tests {
         let expires: felt252 = 0x2;
         let merkle_root: felt252 = 0x3;
         let chain_id: felt252 = 0x4;
-        let hash = authz_hash(account_address, account_class, authorized_key, expires, merkle_root, chain_id);
-        assert_eq!(hash, 0x4bf9baea6574851c9a8156450442e8db4de44284bba58ab79e634380e3fd294, "value should match");
+        let hash = authz_hash(
+            account_address, account_class, authorized_key, expires, merkle_root, chain_id
+        );
+        assert_eq!(
+            hash,
+            0x4bf9baea6574851c9a8156450442e8db4de44284bba58ab79e634380e3fd294,
+            "value should match"
+        );
     }
 }

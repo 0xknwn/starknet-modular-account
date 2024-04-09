@@ -38,9 +38,7 @@ mod SimpleValidator {
             is_valid_stark_signature(hash, public_key, signature)
         }
 
-        fn _init_public_key(
-            ref self: ContractState, public_key: felt252
-        ) {
+        fn _init_public_key(ref self: ContractState, public_key: felt252) {
             self.account.Account_public_key.write(public_key);
         }
 
