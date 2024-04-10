@@ -26,6 +26,8 @@ pub mod ValidatorComponent {
     use starknet::class_hash::ClassHash;
     use starknet::account::Call;
     use smartr::store::Felt252ArrayStore;
+    use smartr::account::AccountComponent;
+    use smartr::account::AccountComponent::InternalTrait as AccountInternalTrait;
 
     mod Errors {
         pub const INVALID_SIGNATURE: felt252 = 'Account: invalid signature';
@@ -45,20 +47,6 @@ pub mod ValidatorComponent {
     #[event]
     #[derive(Drop, PartialEq, starknet::Event)]
     pub enum Event {
-        OwnerAdded: OwnerAdded,
-        OwnerRemoved: OwnerRemoved
-    }
-
-    #[derive(Drop, PartialEq, starknet::Event)]
-    pub struct OwnerAdded {
-        #[key]
-        new_owner_guid: felt252
-    }
-
-    #[derive(Drop, PartialEq, starknet::Event)]
-    pub struct OwnerRemoved {
-        #[key]
-        removed_owner_guid: felt252
     }
 
     #[embeddable_as(ValidatorImpl)]
@@ -66,6 +54,7 @@ pub mod ValidatorComponent {
         TContractState,
         +HasComponent<TContractState>,
         +SRC5Component::HasComponent<TContractState>,
+        +AccountComponent::HasComponent<TContractState>,
         +Drop<TContractState>
     > of IValidator<ComponentState<TContractState>> {
         /// Verifies that the given signature is valid for the given hash.
@@ -95,6 +84,7 @@ pub mod ValidatorComponent {
         TContractState,
         +HasComponent<TContractState>,
         impl SRC5: SRC5Component::HasComponent<TContractState>,
+        impl AccountInternalImpl: AccountComponent::HasComponent<TContractState>,
         +Drop<TContractState>
     > of InternalTrait<TContractState> {
         /// Initializes the account by setting the initial public key
@@ -102,7 +92,8 @@ pub mod ValidatorComponent {
         fn initializer(ref self: ComponentState<TContractState>, public_key: felt252) {
             let mut src5_component = get_dep_component_mut!(ref self, SRC5);
             src5_component.register_interface(IValidator_ID);
-            self._set_public_key(public_key);
+            let mut account_component = get_dep_component_mut!(ref self, AccountInternalImpl);
+            account_component._init_public_key(public_key);
         }
 
         /// Validates that the caller is the account itself. Otherwise it reverts.
@@ -110,15 +101,6 @@ pub mod ValidatorComponent {
             let caller = get_caller_address();
             let self = get_contract_address();
             assert(self == caller, Errors::UNAUTHORIZED);
-        }
-
-        /// Sets the public key without validating the caller.
-        /// The usage of this method outside the `set_public_key` function is discouraged.
-        ///
-        /// Emits an `OwnerAdded` event.
-        fn _set_public_key(ref self: ComponentState<TContractState>, new_public_key: felt252) {
-            self.Account_public_key.write(new_public_key);
-            self.emit(OwnerAdded { new_owner_guid: new_public_key });
         }
 
         /// Returns whether the given signature is valid for the given hash

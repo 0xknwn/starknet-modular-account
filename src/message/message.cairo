@@ -3,7 +3,12 @@ use starknet::{ContractAddress, ClassHash};
 use core::pedersen::pedersen;
 use core::traits::Into;
 
-fn authz_hash(
+const STARKNET_DOMAIN_TYPE_HASH: felt252 = selector!("StarkNetDomain(chainId:felt)");
+const SESSION_TYPE_HASH: felt252 =
+    selector!("Session(validator:felt,key:felt,expires:felt,root:merkletree)");
+const POLICY_TYPE_HASH: felt252 = selector!("Policy(contractAddress:felt,selector:selector)");
+
+pub fn hash_authz(
     account_address: ContractAddress,
     account_class: ClassHash,
     authorized_key: felt252,
