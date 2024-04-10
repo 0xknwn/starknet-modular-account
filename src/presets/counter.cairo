@@ -1,6 +1,7 @@
 #[starknet::interface]
 trait ICounter<TContractState> {
     fn increment(ref self: TContractState);
+    fn increment_by_array(ref self: TContractState, args: Array<felt252>);
     fn increment_by(ref self: TContractState, value: u64);
     fn get(self: @TContractState) -> u64;
     fn reset(ref self: TContractState);
@@ -11,6 +12,7 @@ mod Counter {
     use openzeppelin::access::ownable::OwnableComponent;
     use openzeppelin::upgrades::UpgradeableComponent;
     use openzeppelin::upgrades::interface::IUpgradeable;
+    use core::traits::Into;
 
     use starknet::{ClassHash, ContractAddress};
 
@@ -50,6 +52,19 @@ mod Counter {
     impl CounterImpl of super::ICounter<ContractState> {
         fn increment(ref self: ContractState) {
             self.counter.write(self.counter.read() + 1);
+        }
+
+        fn increment_by_array(ref self: ContractState, args: Array<felt252>) {
+            let len = args.len();
+            let mut i = 0;
+            let mut count = self.counter.read();
+            while i < len {
+                let arg_to_add: felt252 = *args.at(i);
+                let arg: u64 = arg_to_add.try_into().unwrap();
+                count += arg;
+                i += 1;
+            };
+            self.counter.write(count);
         }
 
         fn increment_by(ref self: ContractState, value: u64) {

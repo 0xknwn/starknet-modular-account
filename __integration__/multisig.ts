@@ -22,9 +22,13 @@ import type {
   Signature,
   WeierstrassSignatureType,
 } from "starknet";
-import { SessionKey } from "./module";
+import { type SessionKeyModule } from "./sessionkey_validator";
 
-const signatureToHexArray = (signature: Signature): ArraySignatureType => {
+export type Module = SessionKeyModule;
+
+export const signatureToHexArray = (
+  signature: Signature
+): ArraySignatureType => {
   if (Array.isArray(signature)) {
     return signature as ArraySignatureType;
   }
@@ -44,13 +48,13 @@ const signatureToHexArray = (signature: Signature): ArraySignatureType => {
 export class Multisig extends Account {
   public signers: Array<SignerInterface>;
 
-  public module: SessionKey | undefined;
+  public module: Module | undefined;
 
   constructor(
     providerOrOptions: ProviderOptions | ProviderInterface,
     address: string,
     pkOrSigners: Array<Uint8Array> | Array<string> | Array<SignerInterface>,
-    module: SessionKey | undefined = undefined,
+    module: Module | undefined = undefined,
     cairoVersion?: CairoVersion,
     transactionVersion:
       | typeof RPC.ETransactionVersion.V2

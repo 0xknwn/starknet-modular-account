@@ -17,6 +17,18 @@ export const ABI = [
       },
       {
         "type": "function",
+        "name": "increment_by_array",
+        "inputs": [
+          {
+            "name": "args",
+            "type": "core::array::Array::<core::felt252>"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
         "name": "increment_by",
         "inputs": [
           {

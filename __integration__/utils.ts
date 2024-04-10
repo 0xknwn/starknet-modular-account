@@ -17,7 +17,6 @@ export type ContractConfig = {
 
 export type Config = {
   providerURL: string;
-  chainID: string;
   accounts: AccountConfig[];
 };
 
@@ -42,6 +41,11 @@ export const testAccount = (id: number = 0, c?: Config): Account => {
   }
   const p = provider(c.providerURL);
   return new Account(p, c.accounts[id].address, c.accounts[id].privateKey);
+};
+
+export const chain = async (url: string) => {
+  const p = provider(url);
+  return (await p.getChainId()).toString();
 };
 
 export const ethBalance = async (account: string, c?: Config) => {

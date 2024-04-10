@@ -300,15 +300,15 @@ export const ABI = [
     "items": [
       {
         "type": "function",
-        "name": "__module__validate__",
+        "name": "__module_validate__",
         "inputs": [
           {
-            "name": "class_hash",
-            "type": "core::starknet::class_hash::ClassHash"
+            "name": "calldata",
+            "type": "core::array::Array::<core::felt252>"
           }
         ],
         "outputs": [],
-        "state_mutability": "external"
+        "state_mutability": "view"
       },
       {
         "type": "function",

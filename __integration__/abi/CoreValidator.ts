@@ -92,7 +92,19 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::module::validator::ValidatorComponent::OwnerAdded",
+    "name": "smartr::module::validator::ValidatorComponent::Event",
+    "kind": "enum",
+    "variants": []
+  },
+  {
+    "type": "event",
+    "name": "openzeppelin::introspection::src5::SRC5Component::Event",
+    "kind": "enum",
+    "variants": []
+  },
+  {
+    "type": "event",
+    "name": "smartr::account::account::AccountComponent::OwnerAdded",
     "kind": "struct",
     "members": [
       {
@@ -104,7 +116,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::module::validator::ValidatorComponent::OwnerRemoved",
+    "name": "smartr::account::account::AccountComponent::OwnerRemoved",
     "kind": "struct",
     "members": [
       {
@@ -116,30 +128,24 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::module::validator::ValidatorComponent::Event",
+    "name": "smartr::account::account::AccountComponent::Event",
     "kind": "enum",
     "variants": [
       {
         "name": "OwnerAdded",
-        "type": "smartr::module::validator::ValidatorComponent::OwnerAdded",
+        "type": "smartr::account::account::AccountComponent::OwnerAdded",
         "kind": "nested"
       },
       {
         "name": "OwnerRemoved",
-        "type": "smartr::module::validator::ValidatorComponent::OwnerRemoved",
+        "type": "smartr::account::account::AccountComponent::OwnerRemoved",
         "kind": "nested"
       }
     ]
   },
   {
     "type": "event",
-    "name": "openzeppelin::introspection::src5::SRC5Component::Event",
-    "kind": "enum",
-    "variants": []
-  },
-  {
-    "type": "event",
-    "name": "smartr::presets::default_validator::DefaultValidator::Event",
+    "name": "smartr::presets::core_validator::CoreValidator::Event",
     "kind": "enum",
     "variants": [
       {
@@ -150,6 +156,11 @@ export const ABI = [
       {
         "name": "SRC5Event",
         "type": "openzeppelin::introspection::src5::SRC5Component::Event",
+        "kind": "flat"
+      },
+      {
+        "name": "AccountEvent",
+        "type": "smartr::account::account::AccountComponent::Event",
         "kind": "flat"
       }
     ]

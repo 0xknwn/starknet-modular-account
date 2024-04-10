@@ -1,8 +1,18 @@
 use starknet::class_hash::ClassHash;
+use core::traits::Into;
+
+pub const core_validator_felt: felt252 =
+    0xa30f23324c2a0c8348e3ef1e9dbcdc37f9e602c4937c2fba7f6652e724f5db;
 
 pub fn core_validator() -> ClassHash {
-  let class_hash = starknet::class_hash::class_hash_const::<
-    0x01e031bf56ab85b41715e9d8cbab6e30324c60ce1f4c02da4c84a752bbc4cdb6
-   >();
-  class_hash
+    let classhash: ClassHash = core_validator_felt.try_into().unwrap();
+    classhash
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test__module_validate__selector() {
+        assert_eq!(selector!("__module_validate__"), 0x119c88dea7ff05dbe71c36247fc6682116f6dafa24089373d49aca7b2657017, "should match the expected value");
+    }
 }

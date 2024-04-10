@@ -1,11 +1,9 @@
 import { hash, ec, num } from "starknet";
-import { authz_hash, defaultValidatorClassHash } from "./validator";
-import { deployClass } from "./class";
-import { timeout } from "./constants";
+import { hash_auth_message } from "./message";
 import { testAccount, config } from "./utils";
 import { Account } from "starknet";
 
-describe("sessionkey management", () => {
+describe("message management", () => {
   let env: string;
   let testAccounts: Account[];
   beforeAll(() => {
@@ -13,18 +11,6 @@ describe("sessionkey management", () => {
     const conf = config(env);
     testAccounts = [testAccount(0, conf), testAccount(1, conf)];
   });
-
-  it(
-    "deploys the DefaultValidator class",
-    async () => {
-      const a = testAccounts[0];
-      const c = await deployClass(a, "DefaultValidator");
-      expect(c.classHash).toEqual(
-        `0x${defaultValidatorClassHash().toString(16)}`
-      );
-    },
-    timeout
-  );
 
   it("computes the hash with computeHashOnElements", async () => {
     let code = hash.computeHashOnElements(["0x1", "0x2", "0x3"]);
@@ -47,10 +33,18 @@ describe("sessionkey management", () => {
     expect(num.toBigInt("0x1")).toBe(1n);
   });
 
-  it("computes the hash of a string", async () => {
-    let code = authz_hash("0x123", "0x234", "0x1", "0x2", "0x3", "0x4");
+  it("computes the hash with hash_auth_message", async () => {
+    let code = hash_auth_message(
+      "0x123",
+      "0x234",
+      "0x456",
+      "0x1",
+      "0x2",
+      "0x3",
+      "0x4"
+    );
     expect(code).toBe(
-      "0x4bf9baea6574851c9a8156450442e8db4de44284bba58ab79e634380e3fd294"
+      `0x${3607702933816136767961445235909759424846066858635070681944709519388181433692n.toString(16)}`
     );
   });
 });

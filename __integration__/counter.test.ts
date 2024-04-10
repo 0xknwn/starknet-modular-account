@@ -1,10 +1,11 @@
 import { deployClass, classHash } from "./class";
-import { testAccount, config, type ContractConfig } from "./utils";
+import { testAccount, config, type ContractConfig, provider } from "./utils";
 import {
   deployCounterContract,
   counterAddress,
   reset,
   increment,
+  increment_by_array,
   get,
 } from "./counter";
 import { timeout } from "./constants";
@@ -14,9 +15,14 @@ describe("counter contract (helper)", () => {
   let env: string;
   let testAccounts: Account[];
   let counterContract: ContractConfig;
+  let altURL: string;
   beforeAll(() => {
     env = "devnet";
     const conf = config(env);
+    // altURL = "http://localhost:8080";
+    if (!altURL) {
+      altURL = conf.providerURL;
+    }
     testAccounts = [testAccount(0, conf), testAccount(1, conf)];
   });
 
@@ -109,6 +115,22 @@ describe("counter contract (helper)", () => {
     async () => {
       const a = testAccounts[0];
       const c = await increment(a, counterContract.address, 1);
+      expect(c.isSuccess()).toEqual(true);
+    },
+    timeout
+  );
+
+  it(
+    "increments the counter with an alt provider URL",
+    async () => {
+      const conf = config(env);
+      const p = provider(altURL);
+      const a = new Account(
+        p,
+        conf.accounts[0].address,
+        conf.accounts[0].privateKey
+      );
+      const c = await increment_by_array(a, counterContract.address, [1, 2, 3]);
       expect(c.isSuccess()).toEqual(true);
     },
     timeout

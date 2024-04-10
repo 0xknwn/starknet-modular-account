@@ -4,15 +4,30 @@
 mod SessionKeyValidator {
     use smartr::module::{ValidatorComponent, IValidator};
     use openzeppelin::account::utils::{is_valid_stark_signature};
+    use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
     use openzeppelin::introspection::src5::SRC5Component;
     use starknet::{get_caller_address, get_contract_address};
     use smartr::account::AccountComponent;
+    use smartr::account::{core_validator_felt, core_validator};
+    use smartr::message::hash_auth_message;
     use starknet::class_hash::ClassHash;
     use starknet::account::Call;
+    use starknet::get_tx_info;
+    use core::traits::Into;
+    use starknet::ContractAddress;
+    use smartr::module::{IValidatorDispatcherTrait, IValidatorLibraryDispatcher};
 
     component!(path: ValidatorComponent, storage: validator, event: ValidatorEvent);
     component!(path: SRC5Component, storage: src5, event: SRC5Event);
     component!(path: AccountComponent, storage: account, event: AccountEvent);
+
+    mod Errors {
+        pub const INVALID_TX_VERSION: felt252 = 'Invalid transaction version';
+        pub const INVALID_MODULE_VALIDATE: felt252 = 'Missing __module_validate__';
+        pub const INVALID_MODULE_CALLDATA: felt252 = 'Invalid module calldata';
+        pub const INVALID_MODULE_SIGNATURE: felt252 = 'Invalid module signature';
+        pub const INVALID_MODULE_VALIDATOR: felt252 = 'Invalid Core Validator';
+    }
 
     #[abi(embed_v0)]
     impl ValidatorImpl of IValidator<ContractState> {
@@ -26,20 +41,68 @@ mod SessionKeyValidator {
             }
         }
 
-        fn validate(
-            self: @ContractState, caller_class: ClassHash, calls: Array<Call>
-        ) -> felt252 {
-          // 1. get the signature from get_tx_info();
-          // 2. checks the signature is valid compared to the session token
-          // 3. checks the session token is valid, including
-          //    - the session key is not revoked
-          //    - the session token signature are valid
-          //    - the session token is not expired
-          starknet::VALIDATED
+        fn validate(self: @ContractState, grantor_class: ClassHash, calls: Array<Call>) -> felt252 {
+            // Parse the transaction info
+            let tx_info = get_tx_info().unbox();
+            let tx_version: u256 = tx_info.version.into();
+            if (tx_version >= QUERY_OFFSET) {
+                assert(
+                    QUERY_OFFSET + MIN_TRANSACTION_VERSION <= tx_version, Errors::INVALID_TX_VERSION
+                );
+            } else {
+                assert(MIN_TRANSACTION_VERSION <= tx_version, Errors::INVALID_TX_VERSION);
+            }
+            let chain_id = tx_info.chain_id;
+            let tx_hash = tx_info.transaction_hash;
+            let tx_signature = tx_info.signature;
+
+            // Parse the authz prefix
+            assert(calls.len() > 1, Errors::INVALID_MODULE_VALIDATE);
+            let account_address: ContractAddress = *calls.at(0).to;
+            let selector = *calls.at(0).selector;
+            assert(selector == selector!("__module_validate__"), Errors::INVALID_MODULE_VALIDATE);
+            let authz: Span<felt252> = *calls.at(0).calldata;
+            assert(authz.len() > 6, Errors::INVALID_MODULE_CALLDATA);
+            let _calldata_length_felt = *authz.at(0);
+            let validator_class_felt = *authz.at(1);
+            let validator_class: ClassHash = validator_class_felt.try_into().unwrap();
+            let grantor_class_felt = *authz.at(2);
+            let grantor_class: ClassHash = grantor_class_felt.try_into().unwrap();
+            // @todo: unblock the core validator check
+            assert(grantor_class_felt == core_validator_felt, grantor_class_felt);
+            let authz_key = *authz.at(3);
+            let expires = *authz.at(4);
+            let root = *authz.at(5);
+
+            // Check the tx signature is valid with the authz key
+            assert(is_valid_stark_signature(tx_hash, authz_key, tx_signature), Errors::INVALID_MODULE_SIGNATURE);
+
+            // Parse the authz Signature
+            let signature_len_felt = *authz.at(6);
+            let signature_len: usize = signature_len_felt.try_into().unwrap();
+            let authz_len = authz.len();
+            let computed_len: usize = signature_len + 7;
+            assert(authz_len == computed_len, Errors::INVALID_MODULE_CALLDATA);
+            let mut signature = ArrayTrait::<felt252>::new();
+            let mut i: usize = 0;
+            while i < signature_len {
+                signature.append(*authz.at(i + 7));
+                i += 1;
+            };
+
+            // @todo: add other validity checks, including
+            // - module is installed in the account
+            // - expires is in the future
+            // - calls are valids and matches the merkle proof
+
+            // Check the authz signature is valid
+            let _auth_hash = hash_auth_message(
+                account_address, validator_class, grantor_class, authz_key, expires, root, chain_id
+            );
+            IValidatorLibraryDispatcher { class_hash: grantor_class }.is_valid_signature(_auth_hash, signature)
         }
 
-        fn initialize(ref self: ContractState, args: Array<felt252>) {
-        }
+        fn initialize(ref self: ContractState, args: Array<felt252>) {}
     }
 
     impl ValidatorInternalImpl = ValidatorComponent::InternalImpl<ContractState>;

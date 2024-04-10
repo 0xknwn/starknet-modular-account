@@ -114,16 +114,16 @@ pub mod AccountComponent {
         /// This function is used by the protocol to verify `invoke` transactions.
         fn __validate__(self: @ComponentState<TContractState>, mut calls: Array<Call>) -> felt252 {
             let selector = *calls.at(0).selector;
-            if selector == selector!("__module__validate__") {
+            if selector == selector!("__module_validate__") {
                 let account = get_contract_address();
                 assert(*calls.at(0).to == account, Errors::UNAUTHORIZED);
                 let calldata = *calls.at(0).calldata;
-                assert(calldata.len() > 0, Errors::MODULE_NOT_FOUND);
-                let felt = *calldata.at(0);
+                assert(calldata.len() > 1, Errors::MODULE_NOT_FOUND);
+                let felt = *calldata.at(1);
                 let class_hash: ClassHash = felt.try_into().unwrap();
                 assert(self.Account_modules.read(class_hash), Errors::MODULE_NOT_INSTALLED);
                 return IValidatorLibraryDispatcher { class_hash: class_hash }
-                    .validate(class_hash, calls);
+                    .validate(core_validator(), calls);
             }
             self.validate_transaction()
         }
@@ -262,7 +262,7 @@ pub mod AccountComponent {
         +SRC5Component::HasComponent<TContractState>,
         +Drop<TContractState>
     > of interface::IModule<ComponentState<TContractState>> {
-        fn __module__validate__(ref self: ComponentState<TContractState>, class_hash: ClassHash) {
+        fn __module_validate__(self: @ComponentState<TContractState>, calldata: Array<felt252>) {
             self.assert_only_self();
         }
 
