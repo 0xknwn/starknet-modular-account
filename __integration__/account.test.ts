@@ -21,7 +21,7 @@ import {
 } from "./counter";
 import { Account } from "starknet";
 import { timeout } from "./constants";
-import { defaultValidatorClassHash } from "./validator";
+import { coreValidatorClassHash } from "./core_validator";
 
 describe("account management", () => {
   let env: string;
@@ -75,12 +75,12 @@ describe("account management", () => {
   );
 
   it(
-    "deploys the DefaultValidator class",
+    "deploys the CoreValidator class",
     async () => {
       const a = testAccounts[0];
-      const c = await deployClass(a, "DefaultValidator");
+      const c = await deployClass(a, "CoreValidator");
       expect(c.classHash).toEqual(
-        `0x${defaultValidatorClassHash().toString(16)}`
+        `0x${coreValidatorClassHash().toString(16)}`
       );
     },
     timeout

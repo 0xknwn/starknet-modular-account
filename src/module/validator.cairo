@@ -46,8 +46,7 @@ pub mod ValidatorComponent {
 
     #[event]
     #[derive(Drop, PartialEq, starknet::Event)]
-    pub enum Event {
-    }
+    pub enum Event {}
 
     #[embeddable_as(ValidatorImpl)]
     pub impl Validator<

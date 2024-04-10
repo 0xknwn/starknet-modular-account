@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 #[starknet::contract]
-mod DefaultValidator {
+mod CoreValidator {
     use smartr::module::ValidatorComponent;
     use openzeppelin::account::utils::{is_valid_stark_signature};
     use openzeppelin::introspection::src5::SRC5Component;

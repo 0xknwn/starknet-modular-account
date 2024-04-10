@@ -9,3 +9,4 @@ pub use interface::ISRC6CamelOnly;
 pub use interface::IModule;
 mod validator;
 pub use validator::core_validator;
+pub use validator::core_validator_felt;

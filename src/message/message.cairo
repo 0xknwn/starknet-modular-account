@@ -3,23 +3,28 @@ use starknet::{ContractAddress, ClassHash};
 use core::pedersen::pedersen;
 use core::traits::Into;
 
-const STARKNET_DOMAIN_TYPE_HASH: felt252 = selector!("StarkNetDomain(chainId:felt)");
-const SESSION_TYPE_HASH: felt252 =
+pub const STARKNET_DOMAIN_TYPE_HASH: felt252 = selector!("StarkNetDomain(chainId:felt)");
+pub const SESSION_TYPE_HASH: felt252 =
     selector!("Session(validator:felt,key:felt,expires:felt,root:merkletree)");
-const POLICY_TYPE_HASH: felt252 = selector!("Policy(contractAddress:felt,selector:selector)");
+pub const POLICY_TYPE_HASH: felt252 = selector!("Policy(contractAddress:felt,selector:selector)");
 
-pub fn hash_authz(
+pub fn hash_auth_message(
     account_address: ContractAddress,
-    account_class: ClassHash,
-    authorized_key: felt252,
+    validator_class: ClassHash,
+    authz_key: felt252,
     expires: felt252,
-    merkle_root: felt252,
+    root: felt252,
     chain_id: felt252
 ) -> felt252 {
-    let key = array_hash(array![authorized_key, expires, merkle_root]);
+    let chain_hash = array_hash(array![STARKNET_DOMAIN_TYPE_HASH, chain_id]);
+    let authz_hash = array_hash(array![SESSION_TYPE_HASH, authz_key, expires, root]);
     let account_address_felt = account_address.try_into().unwrap();
-    let account_class_felt = account_class.try_into().unwrap();
-    array_hash(array!['StarkNet Message', account_address_felt, account_class_felt, key, chain_id])
+    let validator_class_felt = validator_class.try_into().unwrap();
+    array_hash(
+        array![
+            'StarkNet Message', account_address_felt, validator_class_felt, authz_hash, chain_hash
+        ]
+    )
 }
 
 fn array_hash(data: Array<felt252>) -> felt252 {
@@ -35,35 +40,29 @@ fn array_hash(data: Array<felt252>) -> felt252 {
     v
 }
 
-use snforge_std::errors::{SyscallResultStringErrorTrait, PanicDataOrString};
 #[cfg(test)]
 mod tests {
-    use starknet::contract_address_const;
-    use starknet::class_hash::class_hash_const;
-    use starknet::{ContractAddress, ClassHash};
-    use super::hash_authz;
-    use core::pedersen::pedersen;
-
     #[test]
     fn test_short_message() {
         assert_eq!('StarkNet Message', 0x537461726b4e6574204d657373616765, "value should match");
     }
 
     #[test]
-    fn test_authz_hash() {
-        let account_address: ContractAddress = contract_address_const::<0x123>();
-        let account_class: ClassHash = class_hash_const::<0x234>();
-        let authorized_key: felt252 = 0x1;
-        let expires: felt252 = 0x2;
-        let merkle_root: felt252 = 0x3;
-        let chain_id: felt252 = 0x4;
-        let hash = hash_authz(
-            account_address, account_class, authorized_key, expires, merkle_root, chain_id
+    fn test_type_hash() {
+        assert_eq!(
+            super::STARKNET_DOMAIN_TYPE_HASH,
+            559829204566802802769333095934997962208934200349121683389685917736841749624,
+            "domain should match"
         );
         assert_eq!(
-            hash,
-            0x4bf9baea6574851c9a8156450442e8db4de44284bba58ab79e634380e3fd294,
-            "value should match"
+            super::SESSION_TYPE_HASH,
+            1415336097774224203643131111985973272453127989837854520002715463980982593570,
+            "session should match"
+        );
+        assert_eq!(
+            super::POLICY_TYPE_HASH,
+            1328685774472303838129974879115470406966524039382350505658868861646452794728,
+            "policy should match"
         );
     }
 }
