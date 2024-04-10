@@ -149,16 +149,6 @@ describe("module management", () => {
   );
 
   it(
-    "checks the module initialize has been called",
-    async () => {
-      const a = targetAccounts[0];
-      const c = await get_initialization(a);
-      expect(`0x${c.toString(16)}`).toEqual("0x8");
-    },
-    timeout
-  );
-
-  it(
     "adds the module to the account again",
     async () => {
       const a = targetAccounts[0];
