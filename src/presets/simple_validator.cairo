@@ -26,7 +26,7 @@ mod SimpleValidator {
             }
         }
 
-        fn validate(self: @ContractState, caller_class: ClassHash, calls: Array<Call>) -> felt252 {
+        fn validate(self: @ContractState, grantor_class: ClassHash, calls: Array<Call>) -> felt252 {
             starknet::VALIDATED
         }
 

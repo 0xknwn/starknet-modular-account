@@ -8,16 +8,17 @@ use smartr::message::hash_auth_message;
 fn test_hash_auth_message() {
     let account_address: ContractAddress = contract_address_const::<0x123>();
     let validator_class: ClassHash = class_hash_const::<0x234>();
+    let grantor_class: ClassHash = class_hash_const::<0x456>();
     let authn_key: felt252 = 0x1;
     let expires: felt252 = 0x2;
     let root: felt252 = 0x3;
     let chain_id: felt252 = 0x4;
     let hash = hash_auth_message(
-        account_address, validator_class, authn_key, expires, root, chain_id
+        account_address, validator_class, grantor_class, authn_key, expires, root, chain_id
     );
     assert_eq!(
         hash,
-        2082333857348120007286744785825472038669092855486256517073272066416227387528,
+        3607702933816136767961445235909759424846066858635070681944709519388181433692,
         "value should match"
     );
 }

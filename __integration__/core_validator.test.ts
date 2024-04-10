@@ -6,7 +6,7 @@ import { timeout } from "./constants";
 import { testAccount, config } from "./utils";
 import { Account } from "starknet";
 
-describe("sessionkey management", () => {
+describe("coreValidator management", () => {
   let env: string;
   let testAccounts: Account[];
   beforeAll(() => {
@@ -16,7 +16,7 @@ describe("sessionkey management", () => {
   });
 
   it(
-    "deploys the codeValidator class",
+    "deploys the coreValidator class",
     async () => {
       const a = testAccounts[0];
       const c = await deployClass(a, "CoreValidator");

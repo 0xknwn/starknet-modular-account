@@ -5,12 +5,13 @@ use core::traits::Into;
 
 pub const STARKNET_DOMAIN_TYPE_HASH: felt252 = selector!("StarkNetDomain(chainId:felt)");
 pub const SESSION_TYPE_HASH: felt252 =
-    selector!("Session(validator:felt,key:felt,expires:felt,root:merkletree)");
+    selector!("Session(account:felt,validator:felt,grantor:felt,key:felt,expires:felt,root:merkletree)");
 pub const POLICY_TYPE_HASH: felt252 = selector!("Policy(contractAddress:felt,selector:selector)");
 
 pub fn hash_auth_message(
     account_address: ContractAddress,
     validator_class: ClassHash,
+    grantor_class: ClassHash,
     authz_key: felt252,
     expires: felt252,
     root: felt252,
@@ -20,9 +21,10 @@ pub fn hash_auth_message(
     let authz_hash = array_hash(array![SESSION_TYPE_HASH, authz_key, expires, root]);
     let account_address_felt = account_address.try_into().unwrap();
     let validator_class_felt = validator_class.try_into().unwrap();
+    let grantor_class_felt = grantor_class.try_into().unwrap();
     array_hash(
         array![
-            'StarkNet Message', account_address_felt, validator_class_felt, authz_hash, chain_hash
+            'StarkNet Message', account_address_felt, validator_class_felt, grantor_class_felt, authz_hash, chain_hash
         ]
     )
 }
@@ -56,7 +58,7 @@ mod tests {
         );
         assert_eq!(
             super::SESSION_TYPE_HASH,
-            1415336097774224203643131111985973272453127989837854520002715463980982593570,
+            300158337552274304490739948149127820835543586625599349706216852674177038348,
             "session should match"
         );
         assert_eq!(

@@ -75,9 +75,7 @@ describe("multiple signatures", () => {
     async () => {
       const a = testAccounts[0];
       const c = await deployClass(a, "CoreValidator");
-      expect(c.classHash).toEqual(
-        `0x${coreValidatorClassHash().toString(16)}`
-      );
+      expect(c.classHash).toEqual(`0x${coreValidatorClassHash().toString(16)}`);
     },
     timeout
   );

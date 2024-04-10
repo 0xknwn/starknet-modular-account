@@ -9,8 +9,12 @@
     "build:abi:SmartrAccount": "npx abi-wan-kanabi --input ./target/dev/smartr_SmartrAccount.contract_class.json --output ./__integration__/abi/SmartrAccount.ts",
     "build:abi:SimpleAccount": "npx abi-wan-kanabi --input ./target/dev/smartr_SimpleAccount.contract_class.json --output ./__integration__/abi/SimpleAccount.ts",
     "build:abi:CoreValidator": "npx abi-wan-kanabi --input ./target/dev/smartr_CoreValidator.contract_class.json --output ./__integration__/abi/CoreValidator.ts",
-    "build:abi": "npm run build:abi:Counter && npm run build:abi:SmartrAccount && npm run build:abi:SimpleAccount && npm run build:abi:CoreValidator",
+    "build:abi:SessionKeyValidator": "npx abi-wan-kanabi --input ./target/dev/smartr_SessionKeyValidator.contract_class.json --output ./__integration__/abi/SessionKeyValidator.ts",
+    "build:abi": "npm run build:abi:Counter && npm run build:abi:SmartrAccount && npm run build:abi:SimpleAccount && npm run build:abi:CoreValidator && npm run build:abi:SessionKeyValidator",
     "build": "npm run build:scarb",
+    "test:sessionkey_validator": "npm run build && jest --runInBand --verbose sessionkey_validator.test.ts",
+    "test:core_validator": "npm run build && jest --runInBand --verbose core_validator.test.ts",
+    "test:module": "npm run build && jest --runInBand --verbose module.test.ts",
     "test:scarb": "scarb run test",
     "resource:scarb": "scarb run resource",
     "test": "jest --runInBand --verbose"

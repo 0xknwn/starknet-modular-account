@@ -1,6 +1,5 @@
-import { Signer } from "starknet";
 import type { Call } from "starknet";
-import { Account, Contract } from "starknet";
+import { Account, Contract, Signer, type Signature } from "starknet";
 import { ABI as AccountABI } from "./abi/SmartrAccount";
 
 export const is_module = async (a: Account, class_hash: string) => {
@@ -31,25 +30,3 @@ export const remove_module = async (a: Account, class_hash: string) => {
   const { transaction_hash: transferTxHash } = await a.execute(transferCall);
   return await a.waitForTransaction(transferTxHash);
 };
-
-export class SessionKey extends Signer {
-  public accountAddress: string;
-  public classHash: string;
-  constructor(
-    pk: Uint8Array | string,
-    accountAddress: string,
-    classHash: string
-  ) {
-    super(pk);
-    this.accountAddress = accountAddress;
-    this.classHash = classHash;
-  }
-
-  public prefix(): Call {
-    return {
-      contractAddress: this.accountAddress,
-      entrypoint: "__module_validate__",
-      calldata: [this.classHash],
-    };
-  }
-}

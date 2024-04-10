@@ -79,9 +79,7 @@ describe("account management", () => {
     async () => {
       const a = testAccounts[0];
       const c = await deployClass(a, "CoreValidator");
-      expect(c.classHash).toEqual(
-        `0x${coreValidatorClassHash().toString(16)}`
-      );
+      expect(c.classHash).toEqual(`0x${coreValidatorClassHash().toString(16)}`);
     },
     timeout
   );
@@ -157,8 +155,6 @@ describe("account management", () => {
   it(
     "increments the counter",
     async () => {
-      const conf = config(env);
-      const p = provider(conf.providerURL);
       const a = targetAccounts[0];
       const c = await increment(a, counterContract.address, 1);
       expect(c.isSuccess()).toEqual(true);

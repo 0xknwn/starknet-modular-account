@@ -1,4 +1,5 @@
 import {
+  chain,
   config,
   testAccount,
   provider,
@@ -25,15 +26,26 @@ describe("utilities (helpers)", () => {
         expect(c.providerURL).toBe(
           "https://starknet-sepolia.public.blastapi.io"
         );
-        expect(c.chainID).toBe("0x534e5f5345504f4c4941");
         expect(c.accounts[0]).not.toBe(undefined);
         expect(c.accounts[0].address).not.toBe(undefined);
         break;
       default:
         expect(c.providerURL).toBe("http://127.0.0.1:5050/rpc");
-        expect(c.chainID).toBe("0x534e5f474f45524c49");
         expect(c.accounts[0]).not.toBe(undefined);
         expect(c.accounts[0].address).not.toBe(undefined);
+        break;
+    }
+  });
+
+  it("tests chain", async () => {
+    const c = config(env);
+    const chainId = await chain(c.providerURL);
+    switch (env) {
+      case "sepolia":
+        expect(chainId).toBe("0x534e5f474f45524c49");
+        break;
+      default:
+        expect(chainId).toBe("0x534e5f474f45524c49");
         break;
     }
   });

@@ -24,7 +24,7 @@ mod SessionKeyValidator {
     mod Errors {
         pub const INVALID_TX_VERSION: felt252 = 'Invalid transaction version';
         pub const INVALID_MODULE_VALIDATE: felt252 = 'Missing __module_validate__';
-        pub const INVALID_MODULE_CALLDATA: felt252 = 'Inconsistent module calldata';
+        pub const INVALID_MODULE_CALLDATA: felt252 = 'Invalid module calldata';
         pub const INVALID_MODULE_SIGNATURE: felt252 = 'Invalid module signature';
         pub const INVALID_MODULE_VALIDATOR: felt252 = 'Invalid Core Validator';
     }
@@ -41,7 +41,7 @@ mod SessionKeyValidator {
             }
         }
 
-        fn validate(self: @ContractState, caller_class: ClassHash, calls: Array<Call>) -> felt252 {
+        fn validate(self: @ContractState, grantor_class: ClassHash, calls: Array<Call>) -> felt252 {
             // Parse the transaction info
             let tx_info = get_tx_info().unbox();
             let tx_version: u256 = tx_info.version.into();
@@ -57,33 +57,36 @@ mod SessionKeyValidator {
             let tx_signature = tx_info.signature;
 
             // Parse the authz prefix
-            assert(calls.len() == 1, Errors::INVALID_MODULE_VALIDATE);
+            assert(calls.len() > 1, Errors::INVALID_MODULE_VALIDATE);
             let account_address: ContractAddress = *calls.at(0).to;
             let selector = *calls.at(0).selector;
             assert(selector == selector!("__module_validate__"), Errors::INVALID_MODULE_VALIDATE);
             let authz: Span<felt252> = *calls.at(0).calldata;
-            assert(authz.len() > 5, Errors::INVALID_MODULE_CALLDATA);
-            let validator_class_felt = *authz.at(0);
+            assert(authz.len() > 6, Errors::INVALID_MODULE_CALLDATA);
+            let _calldata_length_felt = *authz.at(0);
+            let validator_class_felt = *authz.at(1);
             let validator_class: ClassHash = validator_class_felt.try_into().unwrap();
+            let grantor_class_felt = *authz.at(2);
+            let grantor_class: ClassHash = grantor_class_felt.try_into().unwrap();
             // @todo: unblock the core validator check
-            assert(validator_class_felt == core_validator_felt, Errors::INVALID_MODULE_VALIDATOR);
-            let authz_key = *authz.at(1);
-            let expires = *authz.at(2);
-            let root = *authz.at(3);
+            assert(grantor_class_felt == core_validator_felt, grantor_class_felt);
+            let authz_key = *authz.at(3);
+            let expires = *authz.at(4);
+            let root = *authz.at(5);
 
             // Check the tx signature is valid with the authz key
             assert(is_valid_stark_signature(tx_hash, authz_key, tx_signature), Errors::INVALID_MODULE_SIGNATURE);
 
             // Parse the authz Signature
-            let signature_len_felt = *authz.at(4);
+            let signature_len_felt = *authz.at(6);
             let signature_len: usize = signature_len_felt.try_into().unwrap();
             let authz_len = authz.len();
-            let computed_len: usize = signature_len + 5;
+            let computed_len: usize = signature_len + 7;
             assert(authz_len == computed_len, Errors::INVALID_MODULE_CALLDATA);
             let mut signature = ArrayTrait::<felt252>::new();
             let mut i: usize = 0;
-            while i < authz_len {
-                signature.append(*authz.at(i + 5));
+            while i < signature_len {
+                signature.append(*authz.at(i + 7));
                 i += 1;
             };
 
@@ -94,9 +97,9 @@ mod SessionKeyValidator {
 
             // Check the authz signature is valid
             let _auth_hash = hash_auth_message(
-                account_address, validator_class, authz_key, expires, root, chain_id
+                account_address, validator_class, grantor_class, authz_key, expires, root, chain_id
             );
-            IValidatorLibraryDispatcher { class_hash: validator_class }.is_valid_signature(_auth_hash, signature)
+            IValidatorLibraryDispatcher { class_hash: grantor_class }.is_valid_signature(_auth_hash, signature)
         }
 
         fn initialize(ref self: ContractState, args: Array<felt252>) {}

@@ -76,6 +76,26 @@ export const increment = async (
   return await a.waitForTransaction(transferTxHash);
 };
 
+export const increment_by_array = async (
+  a: Account,
+  counterAddress: string,
+  values: number[] | number = 1
+) => {
+  if (!Array.isArray(values)) {
+    values = [values];
+  }
+  const contract = new Contract(CounterABI, counterAddress, a).typedv2(
+    CounterABI
+  );
+  const transferCall = contract.populate("increment_by_array", {
+    args: values,
+  });
+  let transferCalls: Call[] = [transferCall, transferCall];
+
+  const { transaction_hash: transferTxHash } = await a.execute(transferCalls);
+  return await a.waitForTransaction(transferTxHash);
+};
+
 export const reset = async (a: Account, counterAddress: string) => {
   const contract = new Contract(CounterABI, counterAddress, a).typedv2(
     CounterABI

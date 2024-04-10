@@ -2,19 +2,13 @@ import { deployClass, classHash } from "./class";
 import { accountAddress, deployAccount, get_public_keys } from "./account";
 import { coreValidatorClassHash } from "./core_validator";
 import {
+  chain,
   config,
   testAccount,
   provider,
   type AccountConfig,
   type ContractConfig,
 } from "./utils";
-import {
-  reset,
-  increment,
-  get,
-  deployCounterContract,
-  counterAddress,
-} from "./counter";
 import { Multisig } from "./multisig";
 import {
   add_module,
@@ -23,19 +17,21 @@ import {
   get_initialization,
 } from "./module";
 import { timeout } from "./constants";
-import { SessionKey } from "./module";
 import { Account } from "starknet";
 
 describe("module management", () => {
   let env: string;
   let testAccounts: Account[];
-  let targetAccounts: AccountConfig[];
+  let targetAccountConfigs: AccountConfig[];
+  let targetAccounts: Account[];
   let counterContract: ContractConfig;
+  let connectedChain: string | undefined;
+
   beforeAll(() => {
     env = "devnet";
     const conf = config(env);
     testAccounts = [testAccount(0, conf), testAccount(1, conf)];
-    targetAccounts = [
+    targetAccountConfigs = [
       {
         classHash: classHash("SmartrAccount"),
         address: accountAddress("SmartrAccount", conf.accounts[0].publicKey),
@@ -46,28 +42,22 @@ describe("module management", () => {
   });
 
   it(
-    "deploys the Counter class",
+    "gets the chain id",
     async () => {
-      const a = testAccounts[0];
-      const c = await deployClass(a, "Counter");
-      expect(c.classHash).toEqual(classHash("Counter"));
+      const conf = config(env);
+      connectedChain = await chain(conf.providerURL);
+      switch (env) {
+        case "sepolia":
+          expect(connectedChain).toBe("0x534e5f474f45524c49");
+          break;
+        default:
+          expect(connectedChain).toBe("0x534e5f474f45524c49");
+          break;
+      }
     },
     timeout
   );
 
-  it(
-    "deploys the counter contract",
-    async () => {
-      const a = testAccounts[0];
-      const c = await deployCounterContract(a);
-      expect(c.address).toEqual(counterAddress(a.address));
-      counterContract = {
-        classHash: classHash("Counter"),
-        address: counterAddress(a.address),
-      };
-    },
-    timeout
-  );
   it(
     "deploys the CoreValidator class",
     async () => {
@@ -104,23 +94,16 @@ describe("module management", () => {
     async () => {
       const conf = config(env);
       const p = provider(conf.providerURL);
-      const a = new Multisig(p, targetAccounts[0].address, [
-        conf.accounts[0].privateKey,
+      const a = new Multisig(p, targetAccountConfigs[0].address, [
+        targetAccountConfigs[0].privateKey,
       ]);
+      targetAccounts = [a];
       const c = await get_public_keys(a);
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(1);
-      expect(`0x${c[0].toString(16)}`).toEqual(targetAccounts[0].publicKey);
-    },
-    timeout
-  );
-
-  it(
-    "deploys the CoreValidator class",
-    async () => {
-      const a = testAccounts[0];
-      const c = await deployClass(a, "CoreValidator");
-      expect(c.classHash).toEqual(classHash("CoreValidator"));
+      expect(`0x${c[0].toString(16)}`).toEqual(
+        targetAccountConfigs[0].publicKey
+      );
     },
     timeout
   );
@@ -128,11 +111,7 @@ describe("module management", () => {
   it(
     "checks the module 0x0 is not installed",
     async () => {
-      const conf = config(env);
-      const p = provider(conf.providerURL);
-      const a = new Multisig(p, targetAccounts[0].address, [
-        conf.accounts[0].privateKey,
-      ]);
+      const a = targetAccounts[0];
       const c = await is_module(a, "0x0");
       expect(c).toBe(false);
     },
@@ -140,14 +119,20 @@ describe("module management", () => {
   );
 
   it(
+    "deploys the SimpleValidator class",
+    async () => {
+      const a = testAccounts[0];
+      const c = await deployClass(a, "SimpleValidator");
+      expect(c.classHash).toEqual(classHash("SimpleValidator"));
+    },
+    timeout
+  );
+
+  it(
     "adds a module to the account",
     async () => {
-      const conf = config(env);
-      const p = provider(conf.providerURL);
-      const a = new Multisig(p, targetAccounts[0].address, [
-        conf.accounts[0].privateKey,
-      ]);
-      const c = await add_module(a, classHash("CoreValidator"));
+      const a = targetAccounts[0];
+      const c = await add_module(a, classHash("SimpleValidator"));
       expect(c.isSuccess()).toEqual(true);
     },
     timeout
@@ -156,12 +141,8 @@ describe("module management", () => {
   it(
     "checks the module with the account",
     async () => {
-      const conf = config(env);
-      const p = provider(conf.providerURL);
-      const a = new Multisig(p, targetAccounts[0].address, [
-        conf.accounts[0].privateKey,
-      ]);
-      const value = await is_module(a, classHash("CoreValidator"));
+      const a = targetAccounts[0];
+      const value = await is_module(a, classHash("SimpleValidator"));
       expect(value).toBe(true);
     },
     timeout
@@ -170,11 +151,7 @@ describe("module management", () => {
   it(
     "checks the module initialize has been called",
     async () => {
-      const conf = config(env);
-      const p = provider(conf.providerURL);
-      const a = new Multisig(p, targetAccounts[0].address, [
-        conf.accounts[0].privateKey,
-      ]);
+      const a = targetAccounts[0];
       const c = await get_initialization(a);
       expect(`0x${c.toString(16)}`).toEqual("0x8");
     },
@@ -184,13 +161,9 @@ describe("module management", () => {
   it(
     "adds the module to the account again",
     async () => {
-      const conf = config(env);
-      const p = provider(conf.providerURL);
-      const a = new Multisig(p, targetAccounts[0].address, [
-        conf.accounts[0].privateKey,
-      ]);
+      const a = targetAccounts[0];
       try {
-        const c = await add_module(a, classHash("CoreValidator"));
+        const c = await add_module(a, classHash("SimpleValidator"));
         expect(true).toEqual(false);
       } catch (e) {
         expect(e).toBeDefined();
@@ -200,53 +173,10 @@ describe("module management", () => {
   );
 
   it(
-    "resets the counter with owner",
-    async () => {
-      const a = testAccounts[0];
-      await reset(a, counterContract.address);
-    },
-    timeout
-  );
-
-  it(
-    "calls increment with module",
-    async () => {
-      const conf = config(env);
-      const p = provider(conf.providerURL);
-      const module = new SessionKey(
-        "0x0",
-        targetAccounts[0].address,
-        classHash("CoreValidator")
-      );
-      const a = new Multisig(p, targetAccounts[0].address, [], module);
-      const c = await increment(a, counterContract.address, 1);
-      expect(c.isSuccess()).toEqual(true);
-    },
-    timeout
-  );
-
-  it(
-    "reads the counter",
-    async () => {
-      const a = testAccounts[0];
-      const c = await get(a, counterContract.address);
-      expect(c).toBe(1n);
-    },
-    timeout
-  );
-
-  it(
     "removes the module from account",
     async () => {
-      const conf = config(env);
-      const p = provider(conf.providerURL);
-      const a = new Multisig(
-        p,
-        targetAccounts[0].address,
-        [targetAccounts[0].privateKey],
-        undefined
-      );
-      const c = await remove_module(a, classHash("CoreValidator"));
+      const a = targetAccounts[0];
+      const c = await remove_module(a, classHash("SimpleValidator"));
       expect(c.isSuccess()).toEqual(true);
     },
     timeout
@@ -257,35 +187,9 @@ describe("module management", () => {
     async () => {
       const conf = config(env);
       const p = provider(conf.providerURL);
-      const a = new Multisig(
-        p,
-        targetAccounts[0].address,
-        [targetAccounts[0].privateKey],
-        undefined
-      );
-      const value = await is_module(a, classHash("CoreValidator"));
+      const a = targetAccounts[0];
+      const value = await is_module(a, classHash("SimpleValidator"));
       expect(value).toBe(false);
-    },
-    timeout
-  );
-
-  it(
-    "calls increment with not installed module",
-    async () => {
-      const conf = config(env);
-      const p = provider(conf.providerURL);
-      const module = new SessionKey(
-        "0x0",
-        targetAccounts[0].address,
-        classHash("CoreValidator")
-      );
-      const a = new Multisig(p, targetAccounts[0].address, [], module);
-      try {
-        await increment(a, counterContract.address, 1);
-        expect(false).toBe(true);
-      } catch (e) {
-        expect(e).toBeDefined();
-      }
     },
     timeout
   );

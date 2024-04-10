@@ -118,12 +118,12 @@ pub mod AccountComponent {
                 let account = get_contract_address();
                 assert(*calls.at(0).to == account, Errors::UNAUTHORIZED);
                 let calldata = *calls.at(0).calldata;
-                assert(calldata.len() > 0, Errors::MODULE_NOT_FOUND);
-                let felt = *calldata.at(0);
+                assert(calldata.len() > 1, Errors::MODULE_NOT_FOUND);
+                let felt = *calldata.at(1);
                 let class_hash: ClassHash = felt.try_into().unwrap();
                 assert(self.Account_modules.read(class_hash), Errors::MODULE_NOT_INSTALLED);
                 return IValidatorLibraryDispatcher { class_hash: class_hash }
-                    .validate(class_hash, calls);
+                    .validate(core_validator(), calls);
             }
             self.validate_transaction()
         }

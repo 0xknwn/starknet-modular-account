@@ -10,7 +10,7 @@ pub const IValidator_ID: felt252 =
 #[starknet::interface]
 pub trait IValidator<TState> {
     fn is_valid_signature(self: @TState, hash: felt252, signature: Array<felt252>) -> felt252;
-    fn validate(self: @TState, caller_class: ClassHash, calls: Array<Call>) -> felt252;
+    fn validate(self: @TState, grantor_class: ClassHash, calls: Array<Call>) -> felt252;
     fn initialize(ref self: TState, args: Array<felt252>);
 }
 
@@ -68,7 +68,7 @@ pub mod ValidatorComponent {
         }
 
         fn validate(
-            self: @ComponentState<TContractState>, caller_class: ClassHash, calls: Array<Call>
+            self: @ComponentState<TContractState>, grantor_class: ClassHash, calls: Array<Call>
         ) -> felt252 {
             starknet::VALIDATED
         }
