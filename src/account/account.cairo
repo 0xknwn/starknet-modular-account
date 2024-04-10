@@ -6,12 +6,14 @@
 /// The Account component enables contracts to behave as accounts.
 
 use super::interface;
+use super::validator;
 
 #[starknet::component]
 pub mod AccountComponent {
     use super::interface;
+    use super::validator::core_validator;
     use smartr::store::Felt252ArrayStore;
-    use smartr::module::validator::{IValidatorDispatcherTrait, IValidatorLibraryDispatcher};
+    use smartr::module::{IValidatorDispatcherTrait, IValidatorLibraryDispatcher};
     use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
     use openzeppelin::account::utils::{execute_calls, is_valid_stark_signature};
     use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SRC5InternalTrait;
@@ -301,9 +303,7 @@ pub mod AccountComponent {
     }
 
     fn _module_is_valid_signature(hash: felt252, signature: Array<felt252>) -> felt252 {
-        let class_hash = starknet::class_hash::class_hash_const::<
-            0x58097be98f75ab77d9ce350b958fa303f38db3644443478ad33e25233cc5f1a
-        >();
+        let class_hash = core_validator();
         IValidatorLibraryDispatcher { class_hash: class_hash }.is_valid_signature(hash, signature)
     }
 

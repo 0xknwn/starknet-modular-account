@@ -3,7 +3,12 @@ use starknet::{ContractAddress, ClassHash};
 use core::pedersen::pedersen;
 use core::traits::Into;
 
-fn authz_hash(
+const STARKNET_DOMAIN_TYPE_HASH: felt252 = selector!("StarkNetDomain(chainId:felt)");
+const SESSION_TYPE_HASH: felt252 =
+    selector!("Session(validator:felt,key:felt,expires:felt,root:merkletree)");
+const POLICY_TYPE_HASH: felt252 = selector!("Policy(contractAddress:felt,selector:selector)");
+
+pub fn hash_authz(
     account_address: ContractAddress,
     account_class: ClassHash,
     authorized_key: felt252,
@@ -36,7 +41,7 @@ mod tests {
     use starknet::contract_address_const;
     use starknet::class_hash::class_hash_const;
     use starknet::{ContractAddress, ClassHash};
-    use super::authz_hash;
+    use super::hash_authz;
     use core::pedersen::pedersen;
 
     #[test]
@@ -52,7 +57,7 @@ mod tests {
         let expires: felt252 = 0x2;
         let merkle_root: felt252 = 0x3;
         let chain_id: felt252 = 0x4;
-        let hash = authz_hash(
+        let hash = hash_authz(
             account_address, account_class, authorized_key, expires, merkle_root, chain_id
         );
         assert_eq!(
