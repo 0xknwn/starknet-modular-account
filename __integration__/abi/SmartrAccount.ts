@@ -300,7 +300,7 @@ export const ABI = [
     "items": [
       {
         "type": "function",
-        "name": "__module__validate__",
+        "name": "__module_validate__",
         "inputs": [
           {
             "name": "class_hash",

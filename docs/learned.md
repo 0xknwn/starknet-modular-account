@@ -12,7 +12,7 @@ A few comments about this approach:
 - the network, i.e. starknet, checks the prefix is valid, i.e the account
   address in the `to` attribute is valid and the entrypoint in the `selector`
   attributes exists. To workaround this issue we have added an external function
-  to the account named `__module__validate__` that checks that is the account
+  to the account named `__module_validate__` that checks that is the account
   that runs it. There are 2 benefits to that approach:
 
   1. It passes the protocol check. Because the function exists, it is allowed
@@ -30,7 +30,7 @@ A few comments about this approach:
 > wanted.
 
 To figure out the module class to use, we rely on the first parameter of the
-`__module__validate__` that we have named `class_hash`. Internally, we are
+`__module_validate__` that we have named `class_hash`. Internally, we are
 checking the module is installed in the account by checking the associated
 storage variable.
 

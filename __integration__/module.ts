@@ -48,7 +48,7 @@ export class SessionKey extends Signer {
   public prefix(): Call {
     return {
       contractAddress: this.accountAddress,
-      entrypoint: "__module__validate__",
+      entrypoint: "__module_validate__",
       calldata: [this.classHash],
     };
   }
