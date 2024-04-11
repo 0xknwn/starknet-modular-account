@@ -1,0 +1,6 @@
+[book]
+authors = ["0xknwn"]
+language = "en"
+multilingual = false
+src = "docs"
+title = "starknet-modular-account"
