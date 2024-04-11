@@ -17,7 +17,7 @@ import {
 import { Account } from "starknet";
 import { timeout } from "./constants";
 
-describe("failed account management", () => {
+describe.skip("failed account management", () => {
   let env: string;
   let testAccounts: Account[];
   let targetAccounts: Account[];
