@@ -18,10 +18,31 @@ The project should have a number of documentation:
 
 ## Validators
 
-Validators are to be improved in a number of ways
+Validators are to be improved in a number of ways, In particular:
 
-- jail the core validator so that it can only be limited to account management
-  tasks
+- check if we can move the validator decorator away from the call prefix
+  into the signature
+- make sure they are properly tested on sepolia and on the mainnet
+- jail the sudo validator so that it can only be limited to account management
+  tasks, including enabling/disabling the gardian
+
+In addition there are a list feature that could be implemented as module
+validators.
+
+### Multisig
+
+Multisig Validators should be used both as a sudo and as a standard validator.
+For now what we plan is a "all addresses are even" validator with a threshold.
+It is working with the stark signature. What is plan is:
+- Have validators that support P256 (secp256r1) to support passkeys and and
+  ECDSA (secp256k1) to support ETH validators. We can assume that the hash have
+  to also evolve in order to simplify the usage with the wallets.
+- Force the use of a guardian validator in order to allow unlocking an account
+  if, for instance, number of steps for \_\_validate\_\_ is too high and the
+  account cannot be used (or could it be the core validator)
+
+## Session Key
+
 - remove the current hardcoding of the core validator and make sure it can be
   updated, even if it requires the validator keys to be regenerated. This could
   be part of the services an infrastructure would offer
@@ -32,17 +53,36 @@ Validators are to be improved in a number of ways
   - it supports other signature schemes to work with passkeys
   - it supports policies with the merkle root and proofs
   - it requires a list of calls/parameters to be applied
-- figure-out a way to limit the number of executions of a sessionkey (incl.
-  1-only)
+- Limit the number of executions or the amount of ERC20 managed by a sessionkey
+  by adding some sort of a tracker in a contract.
 - check if we can group multiple-execution with one session-key per execution in
   a single transaction.
-- check if we can move the validator decorator away from the call prefix and
-  into the signature
-- make sure they are properly tested sepolia and mainnet
-- develop validators with support for passkeys (secp256r1) and eth (secp256k1)
-- force the use of a guardian validator in order to allow unlocking an account
-  if, for instance, number of steps for \_\_validate\_\_ is too high and the
-  account cannot be used (or could it be the core validator)
+
+### Transaction Grant
+
+The Transaction Grant validator is a interesting concept to push forward,
+including to reduce cost and group calls to avoid the `nonce` and ordering
+issue. For now on, this is a proof of concept only and remain to be worked:
+
+- this validator enables to sign a transaction without the nonce, so that it can
+  be executed several times, assuming the validator is enabled on the account.
+- an addition to it consists in limiting the number of executions associated 
+  with it so that the transaction can be executed, N-times only. To address that
+  we would generate the nonce from the transaction hash and add a counter inside
+  the contract
+- N-of-M; as an evolution of this validator, we would define M transaction and
+  generate a Merkle tree of them, passing the root to the validator with the
+  TX Grant proof. We would track the number of execution, allowing to run N of
+  M transactions. A use case is to allow a 3rd party to swap on an account but
+  force it to only do it once letting him choose between several protocols.
+- Add a condition to trigger the event like, for instance, the result of an
+  Oracle, a VRF or the result of a vote.
+
+> Note: For security reasons, we would strongly encourage to use an `expires`
+> attribute and to rely on a separate service to keep track of those "granted"
+
+### Others
+
 - develop a yasager validator with merkle root and ordered transactions. It
   could be that the first call is actually a nonce  stored in a separate
   contract this way we would limit the execution to one and only one time.

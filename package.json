@@ -4,6 +4,7 @@
   "description": "a modular account for starknet",
   "main": "index.js",
   "scripts": {
+    "doc": "mdbook serve --open -d book",
     "build:scarb": "scarb build",
     "build:abi:Counter": "npx abi-wan-kanabi --input ./target/dev/smartr_Counter.contract_class.json --output ./__integration__/abi/Counter.ts",
     "build:abi:SmartrAccount": "npx abi-wan-kanabi --input ./target/dev/smartr_SmartrAccount.contract_class.json --output ./__integration__/abi/SmartrAccount.ts",
