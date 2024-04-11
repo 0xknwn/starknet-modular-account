@@ -3,5 +3,6 @@ target
 /node_modules
 /build
 /book
+/index.html
 /.env.*
 /!.env.template.json
