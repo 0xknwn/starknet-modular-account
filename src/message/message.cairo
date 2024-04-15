@@ -48,7 +48,11 @@ fn array_hash(data: Array<felt252>) -> felt252 {
 mod tests {
     #[test]
     fn test_short_message() {
-        assert_eq!(STARKNET_PREFIX_MESSAGE, 0x537461726b4e6574204d657373616765, "value should match");
+        assert_eq!(
+            super::STARKNET_PREFIX_MESSAGE, 
+            0x537461726b4e6574204d657373616765, 
+            "value should match"
+        );
     }
 
     #[test]
