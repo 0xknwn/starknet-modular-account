@@ -136,15 +136,3 @@ pub mod ValidatorComponent {
         }
     }
 }
-
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn test_is_valid_signature() {
-        // let mut contract = starknet::new_contract!(ValidatorComponent::ValidatorImpl);
-        // let hash = 0x1234567890;
-        // let signature = [0x1234567890, 0x1234567890];
-        // assert_eq!(contract.is_valid_signature(hash, signature), 0);
-    }
-}
