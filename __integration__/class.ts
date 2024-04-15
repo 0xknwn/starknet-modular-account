@@ -1,19 +1,14 @@
 import fs from "fs";
-import { json, type CompiledSierra, Account } from "starknet";
-import { execSync } from "child_process";
+import { hash, json, type CompiledSierra, CompiledContract, Account } from "starknet";
 
 export const classHash = (className: string): string => {
-  const output = execSync(
-    `starkli class-hash ./target/dev/smartr_${className}.contract_class.json`
-  );
-  return output.toString().trim().replace(/^0x0+/, "0x");
+  const f = `./target/dev/smartr_${className}.contract_class.json`;
+  const contract: CompiledContract = json.parse(fs.readFileSync(f).toString("ascii"));
+  return hash.computeContractClassHash(contract);
 };
 
 // deployClass checks if the class is already deployed, and if not, deploys it.
-export const deployClass = async (
-  a: Account,
-  name: string = "SmartrAccount"
-) => {
+export const deployClass = async (a: Account, name: string = "SmartrAccount") => {
   const AccountClassHash = classHash(name);
 
   try {
@@ -27,14 +22,10 @@ export const deployClass = async (
   } catch (e) {}
 
   const compiledTestSierra = json.parse(
-    fs
-      .readFileSync(`./target/dev/smartr_${name}.contract_class.json`)
-      .toString("ascii")
+    fs.readFileSync(`./target/dev/smartr_${name}.contract_class.json`).toString("ascii")
   );
   const compiledTestCasm = json.parse(
-    fs
-      .readFileSync(`./target/dev/smartr_${name}.compiled_contract_class.json`)
-      .toString("ascii")
+    fs.readFileSync(`./target/dev/smartr_${name}.compiled_contract_class.json`).toString("ascii")
   );
   try {
     const declareResponse = await a.declare({

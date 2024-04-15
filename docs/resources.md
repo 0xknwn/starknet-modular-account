@@ -4,6 +4,7 @@ references what you should learn and what tools you should use.
 ## Learning
 
 To learn, a good starting point is
+
 - [Awesome Starknet](https://github.com/keep-starknet-strange/awesome-starknet)
 - [Cairo Compiler](https://github.com/starkware-libs/cairo)
 - [Cairo Book](https://book.cairo-lang.org/)
@@ -27,7 +28,6 @@ more resources and document them if needed:
   extract the ABI from a built contract and generates the associated typescript
 - [scarb](./resources/scarb.md) provides a compiler and the dependency manager
   for cairo
-- [starkli](./resources/starkli.md) is a CLI to interact with starknet
 - [mitmproxy](./resources/mitmproxy.md) is a proxy and reverse proxy that can be used to
   capture payload and help better understand how they work
 - starknet foundry with snforge et sncast
@@ -43,6 +43,7 @@ including the [Abstract Account development](https://github.com/starknet-edu/aa-
 
 In order to test the project, you need to run the `starknet-devnet` with the
 `--seed=0` option and add a `.env.devnet.json` with 3 accounts:
+
 - 2 accounts that are used to deploy the counter contract and run some tests
 - the target account that should be used to deploy our own account and test it
   with the `counter` contract.
