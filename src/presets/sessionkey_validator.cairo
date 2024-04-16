@@ -75,7 +75,10 @@ mod SessionKeyValidator {
             let root = *authz.at(5);
 
             // Check the tx signature is valid with the authz key
-            assert(is_valid_stark_signature(tx_hash, authz_key, tx_signature), Errors::INVALID_MODULE_SIGNATURE);
+            assert(
+                is_valid_stark_signature(tx_hash, authz_key, tx_signature),
+                Errors::INVALID_MODULE_SIGNATURE
+            );
 
             // Parse the authz Signature
             let signature_len_felt = *authz.at(6);
@@ -99,7 +102,8 @@ mod SessionKeyValidator {
             let _auth_hash = hash_auth_message(
                 account_address, validator_class, grantor_class, authz_key, expires, root, chain_id
             );
-            IValidatorLibraryDispatcher { class_hash: grantor_class }.is_valid_signature(_auth_hash, signature)
+            IValidatorLibraryDispatcher { class_hash: grantor_class }
+                .is_valid_signature(_auth_hash, signature)
         }
 
         fn initialize(ref self: ContractState, args: Array<felt252>) {}
