@@ -22,9 +22,7 @@ mod FailedAccount {
 
     #[abi(embed_v0)]
     impl SRC6Impl of ISRC6<ContractState> {
-        fn __execute__(
-            self: @ContractState, mut calls: Array<Call>
-        ) -> Array<Span<felt252>> {
+        fn __execute__(self: @ContractState, mut calls: Array<Call>) -> Array<Span<felt252>> {
             let sender = get_caller_address();
             assert(sender.is_zero(), Errors::INVALID_CALLER);
 
@@ -45,7 +43,7 @@ mod FailedAccount {
             let nonce = tx_info.nonce;
             let num_nonce: u64 = nonce.try_into().unwrap();
             if signature_len > 0 {
-              assert(num_nonce < 2, 'nonce is too high');
+                assert(num_nonce < 2, 'nonce is too high');
             }
 
             execute_calls(calls)

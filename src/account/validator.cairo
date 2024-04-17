@@ -13,6 +13,10 @@ pub fn core_validator() -> ClassHash {
 mod tests {
     #[test]
     fn test__module_validate__selector() {
-        assert_eq!(selector!("__module_validate__"), 0x119c88dea7ff05dbe71c36247fc6682116f6dafa24089373d49aca7b2657017, "should match the expected value");
+        assert_eq!(
+            selector!("__module_validate__"),
+            0x119c88dea7ff05dbe71c36247fc6682116f6dafa24089373d49aca7b2657017,
+            "should match the expected value"
+        );
     }
 }

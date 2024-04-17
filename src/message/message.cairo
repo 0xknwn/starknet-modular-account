@@ -5,7 +5,9 @@ use core::traits::Into;
 
 pub const STARKNET_DOMAIN_TYPE_HASH: felt252 = selector!("StarkNetDomain(chainId:felt)");
 pub const SESSION_TYPE_HASH: felt252 =
-    selector!("Session(account:felt,validator:felt,grantor:felt,key:felt,expires:felt,root:merkletree)");
+    selector!(
+        "Session(account:felt,validator:felt,grantor:felt,key:felt,expires:felt,root:merkletree)"
+    );
 pub const POLICY_TYPE_HASH: felt252 = selector!("Policy(contractAddress:felt,selector:selector)");
 
 pub fn hash_auth_message(
@@ -24,7 +26,12 @@ pub fn hash_auth_message(
     let grantor_class_felt = grantor_class.try_into().unwrap();
     array_hash(
         array![
-            'StarkNet Message', account_address_felt, validator_class_felt, grantor_class_felt, authz_hash, chain_hash
+            'StarkNet Message',
+            account_address_felt,
+            validator_class_felt,
+            grantor_class_felt,
+            authz_hash,
+            chain_hash
         ]
     )
 }

@@ -41,6 +41,15 @@ It is working with the stark signature. What is plan is:
   if, for instance, number of steps for \_\_validate\_\_ is too high and the
   account cannot be used (or could it be the core validator)
 
+### Guardians
+
+Guardian can be requested to execute a limited number of things like:
+- Helping for the recovery via a KYC process
+- Managing the dead switch in case an event makes us think there is an issue
+  with those wallets
+- Prevent position liquidation if the market crashes
+
+
 ## Session Key
 
 - remove the current hardcoding of the core validator and make sure it can be
@@ -96,6 +105,12 @@ of solutions that can be provided with this system, including:
   except if some blocage is performed. Allow to run later transaction with a
   model with an incentive for triggering bots
 - onchain multi-signature
+
+## Signers
+
+- ERC-165 signers generated a message you sign with your real signer. The
+  message format should be compliant with ERC-165 and interpreted by the
+  signer that could present it correctly on your phone
 
 ## Dapps and SDKs
 
