@@ -10,7 +10,9 @@ export const counterAddress = (ownerAddress: string): string => {
   const _calldata = myCallData.compile("constructor", {
     owner: ownerAddress,
   });
-  return hash.calculateContractAddressFromHash(
+    // see https://community.starknet.io/t/universal-deployer-contract-proposal/1864
+    // to understand the calculateContractAddressFromHash function works with the UDC
+    return hash.calculateContractAddressFromHash(
     ec.starkCurve.pedersen(ownerAddress, 0),
     classHash(name),
     _calldata,
