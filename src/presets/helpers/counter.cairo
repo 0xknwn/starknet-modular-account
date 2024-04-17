@@ -93,18 +93,18 @@ mod Counter {
 use snforge_std::errors::{SyscallResultStringErrorTrait, PanicDataOrString};
 #[cfg(test)]
 mod tests {
-    use snforge_std::cheatcodes::contract_class::ContractClassTrait;
-    use snforge_std::{declare};
+    // use snforge_std::cheatcodes::contract_class::ContractClassTrait;
+    use snforge_std::{declare, ContractClassTrait};
+    use snforge_std::{start_prank, CheatTarget};
     use super::{ICounterDispatcher, ICounterDispatcherTrait};
     use openzeppelin::access::ownable::interface::{IOwnable, IOwnableCamelOnly};
-    use snforge_std::{start_prank, CheatTarget};
-    use starknet::{ContractAddress};
+    use starknet::{SyscallResultTrait, ContractAddress};
 
     #[test]
     fn test_counter_increment() {
-        let contract = declare("Counter");
+        let contract = declare("Counter").unwrap();
         let owner: felt252 = 1;
-        let contract_address = contract.deploy(@array![owner]).unwrap();
+        let (contract_address, _) = contract.deploy(@array![owner]).unwrap();
         let dispatcher = ICounterDispatcher { contract_address };
         dispatcher.increment();
         let counter = dispatcher.get();
@@ -113,9 +113,9 @@ mod tests {
 
     #[test]
     fn test_success_reset() {
-        let contract = declare("Counter");
+        let contract = declare("Counter").unwrap();
         let owner: felt252 = 1;
-        let contract_address = contract.deploy(@array![owner]).unwrap();
+        let (contract_address, _) = contract.deploy(@array![owner]).unwrap();
         let dispatcher = ICounterDispatcher { contract_address };
         dispatcher.increment();
         let counter = dispatcher.get();
@@ -129,9 +129,9 @@ mod tests {
     #[test]
     #[should_panic(expected: ('Caller is not the owner',))]
     fn test_fail_reset() {
-        let contract = declare("Counter");
+        let contract = declare("Counter").unwrap();
         let owner: felt252 = 1;
-        let contract_address = contract.deploy(@array![owner]).unwrap();
+        let (contract_address, _) = contract.deploy(@array![owner]).unwrap();
         let dispatcher = ICounterDispatcher { contract_address };
         let caller_address: ContractAddress = 2.try_into().unwrap();
         start_prank(CheatTarget::One(contract_address), caller_address);
