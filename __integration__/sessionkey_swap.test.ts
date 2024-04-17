@@ -18,21 +18,27 @@ import {
   tokenBAddress,
   deployTokenBContract,
   set_swapRouter_tokens,
+  faucet,
+  balance_of,
+  swap,
 } from "./sessionkey_swap";
 import { Multisig } from "./multisig";
 import { add_module, is_module, remove_module } from "./module";
 import { timeout } from "./constants";
 import { SessionKeyModule, SessionKeyGrantor } from "./sessionkey_validator";
-import { Account, ec, hash } from "starknet";
+import { Account, ec, hash, num } from "starknet";
+import type { Uint256 } from "starknet";
 import { hash_auth_message } from "./message";
 
-describe("sessionkey swap", () => {
+describe("swap router", () => {
   let env: string;
   let testAccounts: Account[];
   let targetAccountConfigs: AccountConfig[];
   let targetAccounts: Account[];
   let tokenAContract: ContractConfig;
+  let tokenAInitialBalance: number | bigint | Uint256;
   let tokenBContract: ContractConfig;
+  let tokenBInitialBalance: number | bigint | Uint256;
   let SwapRouterContract: ContractConfig;
   let connectedChain: string | undefined;
   let sessionKeyModule: SessionKeyModule | undefined;
@@ -52,6 +58,13 @@ describe("sessionkey swap", () => {
         publicKey: conf.accounts[0].publicKey,
         privateKey: conf.accounts[0].privateKey,
       },
+    ];
+    targetAccounts = [
+      new Account(
+        provider(conf.providerURL),
+        targetAccountConfigs[0].address,
+        targetAccountConfigs[0].privateKey
+      ),
     ];
   });
 
@@ -186,6 +199,89 @@ describe("sessionkey swap", () => {
   );
 
   it(
+    "checks tokenA initial account balance",
+    async () => {
+      const a = testAccounts[0];
+      const c = await balance_of(a, tokenAContract.address);
+      expect(c).toBeGreaterThanOrEqual(0n);
+      tokenAInitialBalance = c;
+    },
+    timeout
+  );
+
+  it(
+    "requests tokenA to the faucet",
+    async () => {
+      const a = testAccounts[0];
+      const c = await faucet(
+        a,
+        SwapRouterContract.address,
+        "0x1bc16d674ec80000"
+      );
+      expect(c.isSuccess()).toBe(true);
+    },
+    timeout
+  );
+
+  it(
+    "checks the account has been funded with tokenA",
+    async () => {
+      if (tokenAInitialBalance === undefined) {
+        throw new Error("tokenAInitialBalance is undefined");
+      }
+      const a = testAccounts[0];
+      const c = await balance_of(a, tokenAContract.address);
+      expect(
+        num.toBigInt(`0x${c.toString(16)}`) -
+          num.toBigInt(`0x${tokenAInitialBalance.toString(16)}`)
+      ).toBeGreaterThanOrEqual(2000000000000000000n);
+    },
+    timeout
+  );
+
+  it(
+    "checks tokenB initial account balance",
+    async () => {
+      const a = testAccounts[0];
+      const c = await balance_of(a, tokenBContract.address);
+      expect(c).toBeGreaterThanOrEqual(0n);
+      tokenBInitialBalance = c;
+    },
+    timeout
+  );
+
+  it(
+    "swaps tokenA for tokenB",
+    async () => {
+      const a = testAccounts[0];
+      const c = await swap(
+        a,
+        SwapRouterContract.address,
+        tokenAContract.address,
+        "0x1bc16d674ec80000"
+      );
+      expect(c.isSuccess()).toBe(true);
+    },
+    timeout
+  );
+
+  it(
+    "checks the account has been funded with tokenB",
+    async () => {
+      if (tokenBInitialBalance === undefined) {
+        throw new Error("tokenBInitialBalance is undefined");
+      }
+      const a = testAccounts[0];
+      const c = await balance_of(a, tokenBContract.address);
+      expect(
+        num.toBigInt(`0x${c.toString(16)}`) -
+          num.toBigInt(`0x${tokenBInitialBalance.toString(16)}`)
+      ).toBeGreaterThanOrEqual(2000000000000000000n);
+    },
+    timeout
+  );
+
+  it(
     "deploys the CoreValidator class",
     async () => {
       const a = testAccounts[0];
@@ -212,6 +308,89 @@ describe("sessionkey swap", () => {
       const publicKey = await testAccounts[0].signer.getPubKey();
       const c = await deployAccount(a, "SmartrAccount", publicKey);
       expect(c).toEqual(accountAddress("SmartrAccount", publicKey));
+    },
+    timeout
+  );
+
+  it(
+    "checks tokenA initial target[0] balance",
+    async () => {
+      const a = targetAccounts[0];
+      const c = await balance_of(a, tokenAContract.address);
+      expect(c).toBeGreaterThanOrEqual(0n);
+      tokenAInitialBalance = c;
+    },
+    timeout
+  );
+
+  it(
+    "requests tokenA from target[0] to the faucet",
+    async () => {
+      const a = targetAccounts[0];
+      const c = await faucet(
+        a,
+        SwapRouterContract.address,
+        "0x1bc16d674ec80000"
+      );
+      expect(c.isSuccess()).toBe(true);
+    },
+    timeout
+  );
+
+  it(
+    "checks target[0] has been funded with tokenA",
+    async () => {
+      if (tokenAInitialBalance === undefined) {
+        throw new Error("tokenAInitialBalance is undefined");
+      }
+      const a = targetAccounts[0];
+      const c = await balance_of(a, tokenAContract.address);
+      expect(
+        num.toBigInt(`0x${c.toString(16)}`) -
+          num.toBigInt(`0x${tokenAInitialBalance.toString(16)}`)
+      ).toBeGreaterThanOrEqual(2000000000000000000n);
+    },
+    timeout
+  );
+
+  it(
+    "checks tokenB initial target[0] balance",
+    async () => {
+      const a = targetAccounts[0];
+      const c = await balance_of(a, tokenBContract.address);
+      expect(c).toBeGreaterThanOrEqual(0n);
+      tokenBInitialBalance = c;
+    },
+    timeout
+  );
+
+  it(
+    "swaps tokenA for tokenB from target[0]",
+    async () => {
+      const a = targetAccounts[0];
+      const c = await swap(
+        a,
+        SwapRouterContract.address,
+        tokenAContract.address,
+        "0x1bc16d674ec80000"
+      );
+      expect(c.isSuccess()).toBe(true);
+    },
+    timeout
+  );
+
+  it(
+    "checks target[0] has been funded with tokenB",
+    async () => {
+      if (tokenBInitialBalance === undefined) {
+        throw new Error("tokenBInitialBalance is undefined");
+      }
+      const a = targetAccounts[0];
+      const c = await balance_of(a, tokenBContract.address);
+      expect(
+        num.toBigInt(`0x${c.toString(16)}`) -
+          num.toBigInt(`0x${tokenBInitialBalance.toString(16)}`)
+      ).toBeGreaterThanOrEqual(2000000000000000000n);
     },
     timeout
   );

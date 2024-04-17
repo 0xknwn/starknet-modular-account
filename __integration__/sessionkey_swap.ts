@@ -69,6 +69,54 @@ export const set_swapRouter_tokens = async (
   return await a.waitForTransaction(transferTxHash);
 };
 
+export const faucet = async (
+  a: Account,
+  swapRouterAddress: string,
+  amount: string
+) => {
+  const contract = new Contract(SwapRouterABI, swapRouterAddress, a).typedv2(
+    SwapRouterABI
+  );
+  let call: Call = contract.populate("faucet", {
+    amount,
+  });
+  const { transaction_hash: transferTxHash } = await a.execute(call);
+  return await a.waitForTransaction(transferTxHash);
+};
+
+export const balance_of = async (a: Account, tokenAddress: string) => {
+  const contract = new Contract(TokenAABI, tokenAddress, a).typedv2(TokenAABI);
+  return await contract.balance_of(a.address);
+};
+
+export const swap = async (
+  a: Account,
+  swapRouterAddress: string,
+  tokenAAddress: string,
+  amount: string
+) => {
+  const swapRouterContract = new Contract(
+    SwapRouterABI,
+    swapRouterAddress,
+    a
+  ).typedv2(SwapRouterABI);
+  const tokenAContract = new Contract(TokenAABI, tokenAAddress, a).typedv2(
+    TokenAABI
+  );
+  let approveCall: Call = tokenAContract.populate("approve", {
+    spender: swapRouterAddress,
+    amount,
+  });
+  let swapCall: Call = swapRouterContract.populate("swap", {
+    amount,
+  });
+  const { transaction_hash: transferTxHash } = await a.execute([
+    approveCall,
+    swapCall,
+  ]);
+  return await a.waitForTransaction(transferTxHash);
+};
+
 // tokenAAddress compute the tokenA address from the recipient and owner.
 export const tokenAAddress = (
   creatorAddress: string,

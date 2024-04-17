@@ -5,13 +5,32 @@ export const ABI = [
     "interface_name": "smartr::presets::helpers::swap_router::ISwapRouter"
   },
   {
+    "type": "struct",
+    "name": "core::integer::u256",
+    "members": [
+      {
+        "name": "low",
+        "type": "core::integer::u128"
+      },
+      {
+        "name": "high",
+        "type": "core::integer::u128"
+      }
+    ]
+  },
+  {
     "type": "interface",
     "name": "smartr::presets::helpers::swap_router::ISwapRouter",
     "items": [
       {
         "type": "function",
         "name": "swap",
-        "inputs": [],
+        "inputs": [
+          {
+            "name": "amount",
+            "type": "core::integer::u256"
+          }
+        ],
         "outputs": [],
         "state_mutability": "external"
       },
@@ -20,12 +39,8 @@ export const ABI = [
         "name": "faucet",
         "inputs": [
           {
-            "name": "to",
-            "type": "core::starknet::contract_address::ContractAddress"
-          },
-          {
             "name": "amount",
-            "type": "core::integer::u128"
+            "type": "core::integer::u256"
           }
         ],
         "outputs": [],
