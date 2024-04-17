@@ -17,10 +17,11 @@ import {
   deployTokenAContract,
   tokenBAddress,
   deployTokenBContract,
-  set_swapRouter_tokens,
+  set_tokens,
   faucet,
   balance_of,
   swap,
+  swap_minimum_at,
 } from "./sessionkey_swap";
 import { Multisig } from "./multisig";
 import { add_module, is_module, remove_module } from "./module";
@@ -30,7 +31,7 @@ import { Account, ec, hash, num } from "starknet";
 import type { Uint256 } from "starknet";
 import { hash_auth_message } from "./message";
 
-describe.skip("swap router", () => {
+describe("swap router", () => {
   let env: string;
   let testAccounts: Account[];
   let targetAccountConfigs: AccountConfig[];
@@ -193,7 +194,7 @@ describe.skip("swap router", () => {
     "sets the tokens in the SwapRouter",
     async () => {
       const a = testAccounts[0];
-      const c = await set_swapRouter_tokens(
+      const c = await set_tokens(
         a,
         SwapRouterContract.address,
         tokenAContract.address,
@@ -545,14 +546,34 @@ describe.skip("swap router", () => {
     timeout
   );
 
-  it(
-    "swaps tokenA for tokenB",
+  // @todo we need to fail this with the session key. That is because in this
+  // scenario, we would have authorized the swap with the session key to apply
+  // to an amount of "0x1bc16d674ec80000" and a rate of "0xb1a2bc2ec500000"
+  it.skip(
+    "swaps tokenA for tokenB should fail",
     async () => {
       const a = targetAccounts[1];
-      const c = await swap(
+      const c = await swap_minimum_at(
         a,
         SwapRouterContract.address,
         tokenAContract.address,
+        "0x6f05b59d3b20000",
+        "0x1bc16d674ec80000"
+      );
+      expect(c.isSuccess()).toBe(true);
+    },
+    timeout
+  );
+
+  it(
+    "swaps tokenA for tokenB should succeed",
+    async () => {
+      const a = targetAccounts[1];
+      const c = await swap_minimum_at(
+        a,
+        SwapRouterContract.address,
+        tokenAContract.address,
+        "0xb1a2bc2ec500000",
         "0x1bc16d674ec80000"
       );
       expect(c.isSuccess()).toBe(true);

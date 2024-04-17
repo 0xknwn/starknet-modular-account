@@ -3,6 +3,10 @@ use starknet::ContractAddress;
 #[starknet::interface]
 trait ISwapRouter<TContractState> {
     fn swap(ref self: TContractState, amount: u256);
+    fn swap_minimum_at(ref self: TContractState, rate: u256, amount: u256);
+    fn swap_maximum_at(ref self: TContractState, rate: u256, amount: u256);
+    fn set_conversion_rate(ref self: TContractState, rate: u256);
+    fn get_conversion_rate(self: @TContractState) -> u256;
     fn faucet(ref self: TContractState, amount: u256);
     fn set_tokens(
         ref self: TContractState, tokenAAddress: ContractAddress, tokenBAddress: ContractAddress
@@ -66,6 +70,40 @@ mod SwapRouter {
 
     #[abi(embed_v0)]
     impl SwapRouterImpl of super::ISwapRouter<ContractState> {
+        fn swap_minimum_at(ref self: ContractState, rate: u256, amount: u256) {
+            self.pausable.assert_not_paused();
+            assert(rate < self.tokenConversionRate.read(), 'Current rate too low');
+            let tokenA: ContractAddress = self.tokenAAddress.read();
+            let caller = get_caller_address();
+            let swaprouter = get_contract_address();
+            IERC20Dispatcher { contract_address: tokenA }.transfer_from(caller, swaprouter, amount);
+            let amountB: u256 = amount * self.tokenConversionRate.read() / 1000000000000000000;
+            let tokenB: ContractAddress = self.tokenBAddress.read();
+            IERC20Dispatcher { contract_address: tokenB }.transfer(caller, amountB);
+        }
+
+        fn swap_maximum_at(ref self: ContractState, rate: u256, amount: u256) {
+            self.pausable.assert_not_paused();
+            assert(rate > self.tokenConversionRate.read(), 'Current rate too high');
+            let tokenA: ContractAddress = self.tokenAAddress.read();
+            let caller = get_caller_address();
+            let swaprouter = get_contract_address();
+            IERC20Dispatcher { contract_address: tokenA }.transfer_from(caller, swaprouter, amount);
+            let amountB: u256 = amount * self.tokenConversionRate.read() / 1000000000000000000;
+            let tokenB: ContractAddress = self.tokenBAddress.read();
+            IERC20Dispatcher { contract_address: tokenB }.transfer(caller, amountB);
+        }
+
+        fn set_conversion_rate(ref self: ContractState, rate: u256) {
+            self.pausable.assert_not_paused();
+            self.ownable.assert_only_owner();
+            self.tokenConversionRate.write(rate);
+        }
+
+        fn get_conversion_rate(self: @ContractState) -> u256 {
+            self.tokenConversionRate.read()    
+        }
+
         fn swap(ref self: ContractState, amount: u256) {
             self.pausable.assert_not_paused();
             let tokenA: ContractAddress = self.tokenAAddress.read();

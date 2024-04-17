@@ -52,7 +52,7 @@ export const deploySwapRouterContract = async (
   );
 };
 
-export const set_swapRouter_tokens = async (
+export const set_tokens = async (
   a: Account,
   swapRouterAddress: string,
   tokenAAddress: string,
@@ -84,6 +84,31 @@ export const faucet = async (
   return await a.waitForTransaction(transferTxHash);
 };
 
+export const set_conversion_rate = async (
+  a: Account,
+  swapRouterAddress: string,
+  rate: string
+) => {
+  const contract = new Contract(SwapRouterABI, swapRouterAddress, a).typedv2(
+    SwapRouterABI
+  );
+  let call: Call = contract.populate("set_conversion_rate", {
+    rate,
+  });
+  const { transaction_hash: transferTxHash } = await a.execute(call);
+  return await a.waitForTransaction(transferTxHash);
+};
+
+export const get_conversion_rate = async (
+  a: Account,
+  swapRouterAddress: string
+) => {
+  const contract = new Contract(SwapRouterABI, swapRouterAddress, a).typedv2(
+    SwapRouterABI
+  );
+  return await contract.get_conversion_rate();
+};
+
 export const balance_of = async (a: Account, tokenAddress: string) => {
   const contract = new Contract(TokenAABI, tokenAddress, a).typedv2(TokenAABI);
   return await contract.balance_of(a.address);
@@ -108,6 +133,66 @@ export const swap = async (
     amount,
   });
   let swapCall: Call = swapRouterContract.populate("swap", {
+    amount,
+  });
+  const { transaction_hash: transferTxHash } = await a.execute([
+    approveCall,
+    swapCall,
+  ]);
+  return await a.waitForTransaction(transferTxHash);
+};
+
+export const swap_minimum_at = async (
+  a: Account,
+  swapRouterAddress: string,
+  tokenAAddress: string,
+  rate: string,
+  amount: string
+) => {
+  const swapRouterContract = new Contract(
+    SwapRouterABI,
+    swapRouterAddress,
+    a
+  ).typedv2(SwapRouterABI);
+  const tokenAContract = new Contract(TokenAABI, tokenAAddress, a).typedv2(
+    TokenAABI
+  );
+  let approveCall: Call = tokenAContract.populate("approve", {
+    spender: swapRouterAddress,
+    amount,
+  });
+  let swapCall: Call = swapRouterContract.populate("swap_minimum_at", {
+    rate,
+    amount,
+  });
+  const { transaction_hash: transferTxHash } = await a.execute([
+    approveCall,
+    swapCall,
+  ]);
+  return await a.waitForTransaction(transferTxHash);
+};
+
+export const swap_maximum_at = async (
+  a: Account,
+  swapRouterAddress: string,
+  tokenAAddress: string,
+  rate: string,
+  amount: string
+) => {
+  const swapRouterContract = new Contract(
+    SwapRouterABI,
+    swapRouterAddress,
+    a
+  ).typedv2(SwapRouterABI);
+  const tokenAContract = new Contract(TokenAABI, tokenAAddress, a).typedv2(
+    TokenAABI
+  );
+  let approveCall: Call = tokenAContract.populate("approve", {
+    spender: swapRouterAddress,
+    amount,
+  });
+  let swapCall: Call = swapRouterContract.populate("swap_maximum_at", {
+    rate,
     amount,
   });
   const { transaction_hash: transferTxHash } = await a.execute([
