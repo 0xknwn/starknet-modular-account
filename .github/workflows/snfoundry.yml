@@ -29,6 +29,6 @@ jobs:
       - name: Install snfoundry
         run: curl -L https://raw.githubusercontent.com/foundry-rs/starknet-foundry/master/scripts/install.sh | sh
       - name: Install snforge and sncast
-        run: snfoundryup && snforge --version
+        run: snfoundryup -v 0.21.0 && snforge --version
       - name: Run tests
         run: scarb test
