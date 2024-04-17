@@ -8,7 +8,7 @@ experimental-features = ["negative_impls"]
 
 [dependencies]
 openzeppelin = { git = "https://github.com/openzeppelin/cairo-contracts", tag = "v0.11.0" }
-snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry", tag = "v0.21.0" }
+snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry", tag = "v0.22.0" }
 starknet = "2.6.3"
 
 [[target.starknet-contract]]
