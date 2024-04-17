@@ -58,6 +58,12 @@ describe("swap router", () => {
         publicKey: conf.accounts[0].publicKey,
         privateKey: conf.accounts[0].privateKey,
       },
+      {
+        classHash: classHash("SmartrAccount"),
+        address: accountAddress("SmartrAccount", conf.accounts[0].publicKey),
+        publicKey: conf.accounts[1].publicKey,
+        privateKey: conf.accounts[1].privateKey,
+      },
     ];
     targetAccounts = [
       new Account(
@@ -391,6 +397,193 @@ describe("swap router", () => {
         num.toBigInt(`0x${c.toString(16)}`) -
           num.toBigInt(`0x${tokenBInitialBalance.toString(16)}`)
       ).toBeGreaterThanOrEqual(2000000000000000000n);
+    },
+    timeout
+  );
+
+  it(
+    "deploys the SessionKeyValidator class",
+    async () => {
+      const a = testAccounts[0];
+      const c = await deployClass(a, "SessionKeyValidator");
+      expect(c.classHash).toEqual(classHash("SessionKeyValidator"));
+    },
+    timeout
+  );
+
+  it(
+    "adds a module to the account",
+    async () => {
+      const a = targetAccounts[0];
+      const c = await add_module(a, classHash("SessionKeyValidator"));
+      expect(c.isSuccess()).toEqual(true);
+    },
+    timeout
+  );
+
+  it(
+    "checks the module with the account",
+    async () => {
+      const a = targetAccounts[0];
+      const value = await is_module(a, classHash("SessionKeyValidator"));
+      expect(value).toBe(true);
+    },
+    timeout
+  );
+
+  it(
+    "creates a typescript session key module",
+    async () => {
+      const conf = config(env);
+      const p = provider(conf.providerURL);
+      const module = new SessionKeyModule(
+        targetAccountConfigs[1].publicKey,
+        targetAccountConfigs[0].address,
+        classHash("SessionKeyValidator"),
+        connectedChain
+      );
+      sessionKeyModule = module;
+      let r = await module.request(
+        `0x${coreValidatorClassHash().toString(16)}`
+      );
+      if (!connectedChain) {
+        expect(connectedChain).toBeDefined();
+        return;
+      }
+      expect(r.hash).toBe(
+        hash_auth_message(
+          targetAccountConfigs[0].address,
+          classHash("SessionKeyValidator"),
+          classHash("CoreValidator"),
+          targetAccountConfigs[1].publicKey,
+          "0x0",
+          "0x0",
+          connectedChain
+        )
+      );
+    },
+    timeout
+  );
+
+  it("signs the typescript session key module", async () => {
+    if (!sessionKeyModule) {
+      expect(sessionKeyModule).toBeDefined();
+      return;
+    }
+    let grantor = new SessionKeyGrantor(
+      `0x${coreValidatorClassHash().toString(16)}`,
+      targetAccountConfigs[0].privateKey
+    );
+    let signature = await grantor.sign(sessionKeyModule);
+    expect(signature.length).toEqual(2);
+    sessionKeyModule.add_signature(signature);
+  });
+
+  it("creates an account with the session key module", async () => {
+    if (!sessionKeyModule) {
+      expect(sessionKeyModule).toBeDefined();
+      return;
+    }
+    const conf = config(env);
+    const p = provider(conf.providerURL);
+    const a = new Multisig(
+      p,
+      targetAccountConfigs[0].address,
+      [targetAccountConfigs[1].privateKey],
+      sessionKeyModule
+    );
+    targetAccounts.push(a);
+  });
+
+  it(
+    "checks tokenA initial account balance",
+    async () => {
+      const a = targetAccounts[0];
+      const c = await balance_of(a, tokenAContract.address);
+      expect(c).toBeGreaterThanOrEqual(0n);
+      tokenAInitialBalance = c;
+    },
+    timeout
+  );
+
+  it(
+    "requests tokenA to the faucet",
+    async () => {
+      const a = targetAccounts[0];
+      const c = await faucet(
+        a,
+        SwapRouterContract.address,
+        "0x1bc16d674ec80000"
+      );
+      expect(c.isSuccess()).toBe(true);
+    },
+    timeout
+  );
+
+  it(
+    "checks the account has been funded with tokenA",
+    async () => {
+      if (tokenAInitialBalance === undefined) {
+        throw new Error("tokenAInitialBalance is undefined");
+      }
+      const a = targetAccounts[0];
+      const c = await balance_of(a, tokenAContract.address);
+      expect(
+        num.toBigInt(`0x${c.toString(16)}`) -
+          num.toBigInt(`0x${tokenAInitialBalance.toString(16)}`)
+      ).toBeGreaterThanOrEqual(2000000000000000000n);
+    },
+    timeout
+  );
+
+  it(
+    "checks tokenB initial account balance",
+    async () => {
+      const a = targetAccounts[0];
+      const c = await balance_of(a, tokenBContract.address);
+      expect(c).toBeGreaterThanOrEqual(0n);
+      tokenBInitialBalance = c;
+    },
+    timeout
+  );
+
+  it(
+    "swaps tokenA for tokenB",
+    async () => {
+      const a = targetAccounts[1];
+      const c = await swap(
+        a,
+        SwapRouterContract.address,
+        tokenAContract.address,
+        "0x1bc16d674ec80000"
+      );
+      expect(c.isSuccess()).toBe(true);
+    },
+    timeout
+  );
+
+  it(
+    "checks the account has been funded with tokenB",
+    async () => {
+      if (tokenBInitialBalance === undefined) {
+        throw new Error("tokenBInitialBalance is undefined");
+      }
+      const a = targetAccounts[0];
+      const c = await balance_of(a, tokenBContract.address);
+      expect(
+        num.toBigInt(`0x${c.toString(16)}`) -
+          num.toBigInt(`0x${tokenBInitialBalance.toString(16)}`)
+      ).toBeGreaterThanOrEqual(2000000000000000000n);
+    },
+    timeout
+  );
+
+  it(
+    "removes the module from account",
+    async () => {
+      const a = targetAccounts[0];
+      const c = await remove_module(a, classHash("SessionKeyValidator"));
+      expect(c.isSuccess()).toEqual(true);
     },
     timeout
   );
