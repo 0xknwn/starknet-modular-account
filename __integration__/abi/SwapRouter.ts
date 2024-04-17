@@ -14,6 +14,38 @@ export const ABI = [
         "inputs": [],
         "outputs": [],
         "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "faucet",
+        "inputs": [
+          {
+            "name": "to",
+            "type": "core::starknet::contract_address::ContractAddress"
+          },
+          {
+            "name": "amount",
+            "type": "core::integer::u128"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "set_tokens",
+        "inputs": [
+          {
+            "name": "tokenAAddress",
+            "type": "core::starknet::contract_address::ContractAddress"
+          },
+          {
+            "name": "tokenBAddress",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
       }
     ]
   },
@@ -82,12 +114,89 @@ export const ABI = [
     ]
   },
   {
+    "type": "impl",
+    "name": "PausableImpl",
+    "interface_name": "openzeppelin::security::interface::IPausable"
+  },
+  {
+    "type": "enum",
+    "name": "core::bool",
+    "variants": [
+      {
+        "name": "False",
+        "type": "()"
+      },
+      {
+        "name": "True",
+        "type": "()"
+      }
+    ]
+  },
+  {
+    "type": "interface",
+    "name": "openzeppelin::security::interface::IPausable",
+    "items": [
+      {
+        "type": "function",
+        "name": "is_paused",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "view"
+      }
+    ]
+  },
+  {
     "type": "constructor",
     "name": "constructor",
     "inputs": [
       {
         "name": "owner",
         "type": "core::starknet::contract_address::ContractAddress"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "openzeppelin::security::pausable::PausableComponent::Paused",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "account",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "openzeppelin::security::pausable::PausableComponent::Unpaused",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "account",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "openzeppelin::security::pausable::PausableComponent::Event",
+    "kind": "enum",
+    "variants": [
+      {
+        "name": "Paused",
+        "type": "openzeppelin::security::pausable::PausableComponent::Paused",
+        "kind": "nested"
+      },
+      {
+        "name": "Unpaused",
+        "type": "openzeppelin::security::pausable::PausableComponent::Unpaused",
+        "kind": "nested"
       }
     ]
   },
@@ -171,6 +280,11 @@ export const ABI = [
     "name": "smartr::presets::helpers::swap_router::SwapRouter::Event",
     "kind": "enum",
     "variants": [
+      {
+        "name": "PausableEvent",
+        "type": "openzeppelin::security::pausable::PausableComponent::Event",
+        "kind": "flat"
+      },
       {
         "name": "OwnableEvent",
         "type": "openzeppelin::access::ownable::ownable::OwnableComponent::Event",

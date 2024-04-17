@@ -81,9 +81,9 @@ mod SwapRouter {
             ref self: ContractState, tokenAAddress: ContractAddress, tokenBAddress: ContractAddress
         ) {
             self.ownable.assert_only_owner();
-            let tokenA: felt252 = self.tokenAAddress.read().into();
+            let tokenA: felt252 = tokenAAddress.into();
             assert(tokenA != 0, 'Token A address not set');
-            let tokenB: felt252 = self.tokenBAddress.read().into();
+            let tokenB: felt252 = tokenBAddress.into();
             assert(tokenB != 0, 'Token B address not set');
             self.tokenAAddress.write(tokenAAddress);
             self.tokenBAddress.write(tokenBAddress);

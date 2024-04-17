@@ -52,6 +52,23 @@ export const deploySwapRouterContract = async (
   );
 };
 
+export const set_swapRouter_tokens = async (
+  a: Account,
+  swapRouterAddress: string,
+  tokenAAddress: string,
+  tokenBAddress: string
+) => {
+  const contract = new Contract(SwapRouterABI, swapRouterAddress, a).typedv2(
+    SwapRouterABI
+  );
+  let call: Call = contract.populate("set_tokens", {
+    tokenAAddress,
+    tokenBAddress,
+  });
+  const { transaction_hash: transferTxHash } = await a.execute(call);
+  return await a.waitForTransaction(transferTxHash);
+};
+
 // tokenAAddress compute the tokenA address from the recipient and owner.
 export const tokenAAddress = (
   creatorAddress: string,

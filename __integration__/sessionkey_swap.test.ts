@@ -17,6 +17,7 @@ import {
   deployTokenAContract,
   tokenBAddress,
   deployTokenBContract,
+  set_swapRouter_tokens,
 } from "./sessionkey_swap";
 import { Multisig } from "./multisig";
 import { add_module, is_module, remove_module } from "./module";
@@ -76,13 +77,7 @@ describe("sessionkey swap", () => {
     async () => {
       const a = testAccounts[0];
       const c = await deployClass(a, "SwapRouter");
-      // expect(c.classHash).toEqual(classHash("SwapRouter"));
-      expect(c.classHash).toEqual(
-        "0x3be0b9327d4e3921ba653c7dc36115d33850c71664fd00feec8bc299e701c78"
-      );
-      expect(classHash("SwapRouter")).toEqual(
-        "0x3be0b9327d4e3921ba653c7dc36115d33850c71664fd00feec8bc299e701c78"
-      );
+      expect(c.classHash).toEqual(classHash("SwapRouter"));
     },
     timeout
   );
@@ -97,9 +92,6 @@ describe("sessionkey swap", () => {
         address: swapRouterAddress(a.address),
       };
       expect(c.address).toEqual(swapRouterAddress(a.address));
-      expect(SwapRouterContract.address).toEqual(
-        "0x3abd5450fb4a4cd8283965080728d61546440953742365d59d13b75dbd6f207"
-      );
     },
     timeout
   );
@@ -147,7 +139,6 @@ describe("sessionkey swap", () => {
       [recipientAddress, ownerAddress],
       factoryAddress
     );
-
     expect(res).toBe(
       tokenAAddress(a.address, swapRouterAddress(a.address), a.address)
     );
@@ -175,6 +166,21 @@ describe("sessionkey swap", () => {
         classHash: classHash("TokenB"),
         address: c.address,
       };
+    },
+    timeout
+  );
+
+  it(
+    "sets the tokens in the SwapRouter",
+    async () => {
+      const a = testAccounts[0];
+      const c = await set_swapRouter_tokens(
+        a,
+        SwapRouterContract.address,
+        tokenAContract.address,
+        tokenBContract.address
+      );
+      expect(c.isSuccess()).toBe(true);
     },
     timeout
   );
