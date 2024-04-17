@@ -101,7 +101,7 @@ mod SwapRouter {
         }
 
         fn get_conversion_rate(self: @ContractState) -> u256 {
-            self.tokenConversionRate.read()    
+            self.tokenConversionRate.read()
         }
 
         fn swap(ref self: ContractState, amount: u256) {

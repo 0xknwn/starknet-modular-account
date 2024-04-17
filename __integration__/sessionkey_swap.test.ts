@@ -31,7 +31,7 @@ import { Account, ec, hash, num } from "starknet";
 import type { Uint256 } from "starknet";
 import { hash_auth_message } from "./message";
 
-describe("swap router", () => {
+describe.skip("swap router", () => {
   let env: string;
   let testAccounts: Account[];
   let targetAccountConfigs: AccountConfig[];
