@@ -25,11 +25,14 @@ Validators are to be improved in a number of ways, In particular:
 - make sure they are properly tested on sepolia and on the mainnet
 - jail the sudo validator so that it can only be limited to account management
   tasks, including enabling/disabling the gardian
+- remove the current hardcoding of the core validator and make sure it can be
+  updated, even if it requires the validator keys to be regenerated. This could
+  be part of the services an infrastructure would offer
 
 In addition there are a list feature that could be implemented as module
 validators.
 
-### Multisig
+### Multisig Validators
 
 Multisig Validators should be used both as a sudo and as a standard validator.
 For now what we plan is a "all addresses are even" validator with a threshold.
@@ -41,7 +44,7 @@ It is working with the stark signature. What is plan is:
   if, for instance, number of steps for \_\_validate\_\_ is too high and the
   account cannot be used (or could it be the core validator)
 
-### Guardians
+### Guardian Validator
 
 Guardian can be requested to execute a limited number of things like:
 - Helping for the recovery via a KYC process
@@ -50,11 +53,15 @@ Guardian can be requested to execute a limited number of things like:
 - Prevent position liquidation if the market crashes
 
 
-## Session Key
+### Session Key Validator
 
-- remove the current hardcoding of the core validator and make sure it can be
-  updated, even if it requires the validator keys to be regenerated. This could
-  be part of the services an infrastructure would offer
+This would allow to provide access to a signer and not only a transaction see
+is as a "sign the signer not the transaction". In this scenario, the grant can
+be done (1) Offchain with (2) the merkle tree root of a set ACL or a set of
+Nonce (i.e. Nonce Maps that can be filled) and (3) limits (e.g. Timed-Based or
+Allowance). Those keys can then git given to a video game for autosigning
+transactions or to a bot to execute a stop-loss order.
+
 - check the sessionkey so that:
   - it can support a multiple signatures core validator
   - it can itself be a multi-signature
@@ -67,7 +74,18 @@ Guardian can be requested to execute a limited number of things like:
 - check if we can group multiple-execution with one session-key per execution in
   a single transaction.
 
-### Transaction Grant
+### Passkeys/WebAuthn:
+
+secp256r1, with a **R** is the signature validated by the NIST and the basis for
+a number of protocols including TLS, DNSSEC, Apple's Secure Enclave, Passkeys,
+Android Keystore or Yubikey. Starknet supports with v0.12.3 secp256r1 as part of
+[Starknet OS](https://community.starknet.io/t/starknet-next-versions-v0-12-3-v0-13-0-and-sepolia-testnet-migration/106529)
+
+ That is for sure something
+that can easily be reproduced for other use cases with the help of the
+[WebAuthn Chrome Web Developer Codelabs](https://developers.google.com/codelabs/webauthn-reauth)
+
+### Transaction Grant Validator
 
 The Transaction Grant validator is a interesting concept to push forward,
 including to reduce cost and group calls to avoid the `nonce` and ordering
@@ -90,11 +108,52 @@ issue. For now on, this is a proof of concept only and remain to be worked:
 > Note: For security reasons, we would strongly encourage to use an `expires`
 > attribute and to rely on a separate service to keep track of those "granted"
 
-### Others
+### Other Validators
+
+There are a number of validators to consider, including:
 
 - develop a yasager validator with merkle root and ordered transactions. It
   could be that the first call is actually a nonce  stored in a separate
   contract this way we would limit the execution to one and only one time.
+
+
+You should also check hackathons and ideas popping around include:
+
+- The Ability to activate a module Offchain from a session key, see
+  [Why we are building Kernel on ERC-7579](https://docs.zerodev.app/blog/why-7579-over-6900)
+  in the Zerodev.app.
+- The use of ZK Verifier to only use if something is proven. I'm wondering if
+  it could help with Privacy to avoid showing-up addresses or more simply
+  building some kind of mixer.
+- The use of other verification techniques like the [time/place of a photo](https://www.tdcommons.org/cgi/viewcontent.cgi?article=5433&context=dpubs_series)
+  as well as the result of an AI-classification of the photo.
+- The ability to integrate Offchain Service to access the account. They could be
+  centralize with the addition of a limited access to the account via a key.
+  They could also be part of a composition, i.e. they could co-sign or sign a
+  certain set of arguments in the call. They could have been granted some sort
+  of pre-agreement onchain (via an ID) or even offchain with a sessionkey. A
+  good example is that an external service chooses the address of the swap
+  protocol to use to optimize fees
+- The ability to use the same transaction on several chain for a global
+  transaction. This requires relying on an Internal Nonce and filtering the call
+  based on the chainid. A close scenario consists in signing the L2 transaction
+  with a L1 wallet.
+- Basing realworld operation on a wallet transaction. Not sure if it makes sense
+  right scenario and what the challenge but a hackathon project has opened a
+  house door base on the fact people can run a Tx on a Safe
+- The addition of some specific requirements, like the fact that the
+  service/person that gets the fund sign the transaction to prove he has the key
+  to release fund and avoid we send data into the ether
+- The creation of a safe switch that can be triggered by a third party that can
+  act as a guardian for certain transactions but also freeze the account in
+  case of an emergency.
+- Use a custodial guardian to change keys based on an email. Coupled with a
+  web signer, this enable the design of a web solution.
+- Prebuilt modules for DAOs
+- Starknet implement other schemes like secp256k1. the Ethereum Elliptic Curve
+Cryptography. It is already possible, with the OpenZeppelin account, to sign
+transactions with a key from an Ethereum Signers. We could leverage this feature
+and possibly others in the future.
 
 ## Executors
 
@@ -124,8 +183,12 @@ of solutions that can be provided with this system, including:
 ## Registry and "reviewed" Modules
 
 provide a validation process for a modular model. Check if we can rely on
-manager/registry/interfaces like Safe does or on something like
-[eip-7484](https://eips.ethereum.org/EIPS/eip-7484).
+manager/registry/interfaces like [Safe{Core} Protocol](https://forum.safe.global/t/safe-core-protocol-whitepaper/3949) does or on something like
+[EIP-7484](https://eips.ethereum.org/EIPS/eip-7484).
+
+Assuming we can call a library from the __validate__ entrypoint, we propose the following:
+- the list of validator modules should be managed in a library so that it can be checked at execution time
+- we should have a contract with the expired validator so that the lib does not change, we can blacklist a validator. In that case, it would be executed in the __execute__
 
 ## Other considerations
 

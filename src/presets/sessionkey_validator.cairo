@@ -2,19 +2,17 @@
 
 #[starknet::contract]
 mod SessionKeyValidator {
-    use smartr::module::{ValidatorComponent, IValidator};
+    use core::traits::Into;
     use openzeppelin::account::utils::{is_valid_stark_signature};
     use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
     use openzeppelin::introspection::src5::SRC5Component;
-    use starknet::{get_caller_address, get_contract_address};
     use smartr::account::AccountComponent;
     use smartr::message::hash_auth_message;
-    use starknet::class_hash::ClassHash;
+    use smartr::module::{ValidatorComponent, IValidator, IValidatorDispatcherTrait, IValidatorLibraryDispatcher};
+    use starknet::{get_caller_address, get_contract_address, get_tx_info};
     use starknet::account::Call;
-    use starknet::get_tx_info;
-    use core::traits::Into;
+    use starknet::class_hash::ClassHash;
     use starknet::ContractAddress;
-    use smartr::module::{IValidatorDispatcherTrait, IValidatorLibraryDispatcher};
 
     component!(path: ValidatorComponent, storage: validator, event: ValidatorEvent);
     component!(path: SRC5Component, storage: src5, event: SRC5Event);
