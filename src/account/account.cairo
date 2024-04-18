@@ -293,6 +293,15 @@ pub mod AccountComponent {
             self.Account_modules.read(class_hash)
         }
 
+        fn update_core_module(ref self: ComponentState<TContractState>, class_hash: ClassHash) {
+            self.assert_only_self();
+            self.Account_core_validator.write(class_hash);
+        }
+
+        fn get_core_module(self: @ComponentState<TContractState>) -> ClassHash {
+            self.Account_core_validator.read()
+        }
+
         fn read_on_module(
             self: @ComponentState<TContractState>, class_hash: ClassHash, calls: Array<Call>
         ) {}
