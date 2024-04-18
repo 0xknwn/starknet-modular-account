@@ -57,10 +57,6 @@ export const deployAccount = async (
     core_validator: classHash("CoreValidator"),
     public_key: publicKey,
   });
-  console.log(`calldata: ${calldata}`);
-  console.log(`core validator: ${classHash("CoreValidator")}`);
-  console.log(`public key: ${publicKey}`);
-
   const { transaction_hash, contract_address } =
     await deployerAccount.deployAccount({
       classHash: computedClassHash,
