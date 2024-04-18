@@ -162,6 +162,10 @@ export const ABI = [
             "type": "core::felt252"
           },
           {
+            "name": "core_validator",
+            "type": "core::felt252"
+          },
+          {
             "name": "public_key",
             "type": "core::felt252"
           }
@@ -340,22 +344,6 @@ export const ABI = [
       },
       {
         "type": "function",
-        "name": "get_initialization",
-        "inputs": [
-          {
-            "name": "key",
-            "type": "core::felt252"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "core::felt252"
-          }
-        ],
-        "state_mutability": "view"
-      },
-      {
-        "type": "function",
         "name": "is_module",
         "inputs": [
           {
@@ -435,6 +423,10 @@ export const ABI = [
     "type": "constructor",
     "name": "constructor",
     "inputs": [
+      {
+        "name": "core_validator",
+        "type": "core::felt252"
+      },
       {
         "name": "public_key",
         "type": "core::felt252"

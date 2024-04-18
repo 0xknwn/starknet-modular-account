@@ -1,68 +1,6 @@
 export const ABI = [
   {
     "type": "impl",
-    "name": "DeployableImpl",
-    "interface_name": "smartr::presets::helpers::simple_account::IDeployable"
-  },
-  {
-    "type": "interface",
-    "name": "smartr::presets::helpers::simple_account::IDeployable",
-    "items": [
-      {
-        "type": "function",
-        "name": "__validate_deploy__",
-        "inputs": [
-          {
-            "name": "class_hash",
-            "type": "core::felt252"
-          },
-          {
-            "name": "contract_address_salt",
-            "type": "core::felt252"
-          },
-          {
-            "name": "public_key",
-            "type": "core::felt252"
-          },
-          {
-            "name": "more",
-            "type": "core::felt252"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "core::felt252"
-          }
-        ],
-        "state_mutability": "view"
-      }
-    ]
-  },
-  {
-    "type": "impl",
-    "name": "UpgradeableImpl",
-    "interface_name": "openzeppelin::upgrades::interface::IUpgradeable"
-  },
-  {
-    "type": "interface",
-    "name": "openzeppelin::upgrades::interface::IUpgradeable",
-    "items": [
-      {
-        "type": "function",
-        "name": "upgrade",
-        "inputs": [
-          {
-            "name": "new_class_hash",
-            "type": "core::starknet::class_hash::ClassHash"
-          }
-        ],
-        "outputs": [],
-        "state_mutability": "external"
-      }
-    ]
-  },
-  {
-    "type": "impl",
     "name": "SRC6Impl",
     "interface_name": "openzeppelin::account::interface::ISRC6"
   },
@@ -154,6 +92,29 @@ export const ABI = [
   },
   {
     "type": "impl",
+    "name": "UpgradeableImpl",
+    "interface_name": "openzeppelin::upgrades::interface::IUpgradeable"
+  },
+  {
+    "type": "interface",
+    "name": "openzeppelin::upgrades::interface::IUpgradeable",
+    "items": [
+      {
+        "type": "function",
+        "name": "upgrade",
+        "inputs": [
+          {
+            "name": "new_class_hash",
+            "type": "core::starknet::class_hash::ClassHash"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      }
+    ]
+  },
+  {
+    "type": "impl",
     "name": "DeclarerImpl",
     "interface_name": "openzeppelin::account::interface::IDeclarer"
   },
@@ -167,6 +128,41 @@ export const ABI = [
         "inputs": [
           {
             "name": "class_hash",
+            "type": "core::felt252"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::felt252"
+          }
+        ],
+        "state_mutability": "view"
+      }
+    ]
+  },
+  {
+    "type": "impl",
+    "name": "DeployableImpl",
+    "interface_name": "openzeppelin::account::interface::IDeployable"
+  },
+  {
+    "type": "interface",
+    "name": "openzeppelin::account::interface::IDeployable",
+    "items": [
+      {
+        "type": "function",
+        "name": "__validate_deploy__",
+        "inputs": [
+          {
+            "name": "class_hash",
+            "type": "core::felt252"
+          },
+          {
+            "name": "contract_address_salt",
+            "type": "core::felt252"
+          },
+          {
+            "name": "public_key",
             "type": "core::felt252"
           }
         ],
@@ -215,6 +211,40 @@ export const ABI = [
   },
   {
     "type": "impl",
+    "name": "PublicKeyCamelImpl",
+    "interface_name": "openzeppelin::account::interface::IPublicKeyCamel"
+  },
+  {
+    "type": "interface",
+    "name": "openzeppelin::account::interface::IPublicKeyCamel",
+    "items": [
+      {
+        "type": "function",
+        "name": "getPublicKey",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::felt252"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "setPublicKey",
+        "inputs": [
+          {
+            "name": "newPublicKey",
+            "type": "core::felt252"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      }
+    ]
+  },
+  {
+    "type": "impl",
     "name": "SRC6CamelOnlyImpl",
     "interface_name": "openzeppelin::account::interface::ISRC6CamelOnly"
   },
@@ -245,15 +275,52 @@ export const ABI = [
     ]
   },
   {
+    "type": "impl",
+    "name": "SRC5Impl",
+    "interface_name": "openzeppelin::introspection::interface::ISRC5"
+  },
+  {
+    "type": "enum",
+    "name": "core::bool",
+    "variants": [
+      {
+        "name": "False",
+        "type": "()"
+      },
+      {
+        "name": "True",
+        "type": "()"
+      }
+    ]
+  },
+  {
+    "type": "interface",
+    "name": "openzeppelin::introspection::interface::ISRC5",
+    "items": [
+      {
+        "type": "function",
+        "name": "supports_interface",
+        "inputs": [
+          {
+            "name": "interface_id",
+            "type": "core::felt252"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "view"
+      }
+    ]
+  },
+  {
     "type": "constructor",
     "name": "constructor",
     "inputs": [
       {
         "name": "public_key",
-        "type": "core::felt252"
-      },
-      {
-        "name": "more",
         "type": "core::felt252"
       }
     ]
@@ -331,7 +398,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::presets::helpers::simple_account::SimpleAccount::Event",
+    "name": "smartr::presets::helpers::failed_account::FailedAccount::Event",
     "kind": "enum",
     "variants": [
       {

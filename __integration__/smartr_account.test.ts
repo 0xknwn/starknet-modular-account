@@ -4,7 +4,7 @@ import {
   deployAccount,
   get_threshold,
   get_public_keys,
-} from "./account";
+} from "./smartr_account";
 import {
   config,
   testAccount,
@@ -21,7 +21,8 @@ import {
 } from "./counter";
 import { Account } from "starknet";
 import { timeout } from "./constants";
-import { coreValidatorClassHash } from "./core_validator";
+
+describe("account addresses", () => {});
 
 describe("account management", () => {
   let env: string;
@@ -79,7 +80,7 @@ describe("account management", () => {
     async () => {
       const a = testAccounts[0];
       const c = await deployClass(a, "CoreValidator");
-      expect(c.classHash).toEqual(`0x${coreValidatorClassHash().toString(16)}`);
+      expect(c.classHash).toEqual(classHash("CoreValidator"));
     },
     timeout
   );

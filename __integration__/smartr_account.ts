@@ -9,8 +9,14 @@ export const accountAddress = (
   name: string = "SmartrAccount",
   publicKey: string
 ): string => {
+  if (name !== "SmartrAccount") {
+    throw new Error(`Unsupported account class: ${name}`);
+  }
   const AccountClassHash = classHash(name);
-  const calldata = CallData.compile({ public_keys: publicKey });
+  const calldata = CallData.compile({
+    core_validator: classHash("CoreValidator"),
+    public_key: publicKey,
+  });
   return hash.calculateContractAddressFromHash(
     publicKey,
     AccountClassHash,
@@ -24,6 +30,9 @@ export const deployAccount = async (
   name: string = "SmartrAccount",
   publicKey: string
 ) => {
+  if (name !== "SmartrAccount") {
+    throw new Error(`Unsupported account class: ${name}`);
+  }
   const computedClassHash = classHash(name);
   const AccountAddress = accountAddress(name, publicKey);
   try {
@@ -44,7 +53,14 @@ export const deployAccount = async (
   if (!tx.isSuccess()) {
     throw new Error(`Failed to transfer eth to account: ${tx.statusReceipt}`);
   }
-  const calldata = CallData.compile({ public_keys: publicKey });
+  const calldata = new CallData(AccountABI).compile("constructor", {
+    core_validator: classHash("CoreValidator"),
+    public_key: publicKey,
+  });
+  console.log(`calldata: ${calldata}`);
+  console.log(`core validator: ${classHash("CoreValidator")}`);
+  console.log(`public key: ${publicKey}`);
+
   const { transaction_hash, contract_address } =
     await deployerAccount.deployAccount({
       classHash: computedClassHash,

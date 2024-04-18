@@ -145,7 +145,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::presets::core_validator::CoreValidator::Event",
+    "name": "smartr::presets::sessionkey_validator::SessionKeyValidator::Event",
     "kind": "enum",
     "variants": [
       {

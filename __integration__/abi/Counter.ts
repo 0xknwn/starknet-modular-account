@@ -2,11 +2,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "CounterImpl",
-    "interface_name": "smartr::presets::counter::ICounter"
+    "interface_name": "smartr::presets::helpers::counter::ICounter"
   },
   {
     "type": "interface",
-    "name": "smartr::presets::counter::ICounter",
+    "name": "smartr::presets::helpers::counter::ICounter",
     "items": [
       {
         "type": "function",
@@ -210,7 +210,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::presets::counter::Counter::Event",
+    "name": "smartr::presets::helpers::counter::Counter::Event",
     "kind": "enum",
     "variants": [
       {

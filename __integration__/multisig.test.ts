@@ -7,8 +7,7 @@ import {
   add_public_key,
   set_threshold,
   remove_public_key,
-} from "./account";
-import { coreValidatorClassHash } from "./core_validator";
+} from "./smartr_account";
 import {
   config,
   testAccount,
@@ -75,7 +74,7 @@ describe("multiple signatures", () => {
     async () => {
       const a = testAccounts[0];
       const c = await deployClass(a, "CoreValidator");
-      expect(c.classHash).toEqual(`0x${coreValidatorClassHash().toString(16)}`);
+      expect(c.classHash).toEqual(classHash("CoreValidator"));
     },
     timeout
   );

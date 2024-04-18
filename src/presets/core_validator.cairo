@@ -3,9 +3,7 @@
 #[starknet::contract]
 mod CoreValidator {
     use smartr::module::ValidatorComponent;
-    use openzeppelin::account::utils::{is_valid_stark_signature};
     use openzeppelin::introspection::src5::SRC5Component;
-    use starknet::{get_caller_address, get_contract_address};
     use smartr::account::AccountComponent;
 
     component!(path: ValidatorComponent, storage: validator, event: ValidatorEvent);

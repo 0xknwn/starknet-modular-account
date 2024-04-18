@@ -27,7 +27,11 @@ pub trait IDeclarer<TState> {
 #[starknet::interface]
 pub trait IDeployable<TState> {
     fn __validate_deploy__(
-        self: @TState, class_hash: felt252, contract_address_salt: felt252, public_key: felt252
+        self: @TState,
+        class_hash: felt252,
+        contract_address_salt: felt252,
+        core_validator: felt252,
+        public_key: felt252
     ) -> felt252;
 }
 
@@ -51,7 +55,6 @@ pub trait IModule<TState> {
     fn __module_validate__(self: @TState, calldata: Array<felt252>);
     fn add_module(ref self: TState, class_hash: ClassHash, args: Array<felt252>);
     fn remove_module(ref self: TState, class_hash: ClassHash);
-    fn get_initialization(self: @TState, key: felt252) -> felt252;
     fn is_module(self: @TState, class_hash: ClassHash) -> bool;
     fn read_on_module(self: @TState, class_hash: ClassHash, calls: Array<Call>);
     fn execute_on_module(ref self: TState, class_hash: ClassHash, calls: Array<Call>);

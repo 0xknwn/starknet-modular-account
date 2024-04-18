@@ -1,6 +1,9 @@
 import { deployClass, classHash } from "./class";
-import { accountAddress, deployAccount, get_public_keys } from "./account";
-import { coreValidatorClassHash } from "./core_validator";
+import {
+  accountAddress,
+  deployAccount,
+  get_public_keys,
+} from "./smartr_account";
 import {
   chain,
   config,
@@ -96,7 +99,7 @@ describe("sessionkey validator", () => {
     async () => {
       const a = testAccounts[0];
       const c = await deployClass(a, "CoreValidator");
-      expect(c.classHash).toEqual(`0x${coreValidatorClassHash().toString(16)}`);
+      expect(c.classHash).toEqual(classHash("CoreValidator"));
     },
     timeout
   );
@@ -200,9 +203,7 @@ describe("sessionkey validator", () => {
         connectedChain
       );
       sessionKeyModule = module;
-      let r = await module.request(
-        `0x${coreValidatorClassHash().toString(16)}`
-      );
+      let r = await module.request(classHash("CoreValidator"));
       if (!connectedChain) {
         expect(connectedChain).toBeDefined();
         return;
@@ -228,7 +229,7 @@ describe("sessionkey validator", () => {
       return;
     }
     let grantor = new SessionKeyGrantor(
-      `0x${coreValidatorClassHash().toString(16)}`,
+      classHash("CoreValidator"),
       targetAccountConfigs[0].privateKey
     );
     let signature = await grantor.sign(sessionKeyModule);

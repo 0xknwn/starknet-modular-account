@@ -7,6 +7,3 @@ pub use interface::IDeployable;
 pub use interface::IPublicKeys;
 pub use interface::ISRC6CamelOnly;
 pub use interface::IModule;
-mod validator;
-pub use validator::core_validator;
-pub use validator::core_validator_felt;

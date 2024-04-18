@@ -6,12 +6,10 @@
 /// The Account component enables contracts to behave as accounts.
 
 use super::interface;
-use super::validator;
 
 #[starknet::component]
 pub mod AccountComponent {
     use super::interface;
-    use super::validator::core_validator;
     use smartr::store::Felt252ArrayStore;
     use smartr::module::{IValidatorDispatcherTrait, IValidatorLibraryDispatcher};
     use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
@@ -32,7 +30,7 @@ pub mod AccountComponent {
         // Account_public_key is maintained only to allow upgrading to the
         // Openzeppelin account. It should *NOT* be used for any other purpose.
         Account_public_key: felt252,
-        Account_class_hash: ClassHash,
+        Account_core_validator: ClassHash,
         Account_public_keys: Array<felt252>,
         Account_threshold: u8,
         Account_modules: LegacyMap<ClassHash, bool>,
@@ -122,8 +120,11 @@ pub mod AccountComponent {
                 let felt = *calldata.at(1);
                 let class_hash: ClassHash = felt.try_into().unwrap();
                 assert(self.Account_modules.read(class_hash), Errors::MODULE_NOT_INSTALLED);
+                let core_validator = self.Account_core_validator.read();
+                // @todo - check if the signer is the core validator as it should be
+                // part of the prefix calldata.
                 return IValidatorLibraryDispatcher { class_hash: class_hash }
-                    .validate(core_validator(), calls);
+                    .validate(core_validator, calls);
             }
             self.validate_transaction()
         }
@@ -132,7 +133,9 @@ pub mod AccountComponent {
         fn is_valid_signature(
             self: @ComponentState<TContractState>, hash: felt252, signature: Array<felt252>
         ) -> felt252 {
-            _module_is_valid_signature(hash, signature)
+            let core_validator = self.Account_core_validator.read();
+            IValidatorLibraryDispatcher { class_hash: core_validator }
+                .is_valid_signature(hash, signature)
         }
     }
 
@@ -165,6 +168,7 @@ pub mod AccountComponent {
             self: @ComponentState<TContractState>,
             class_hash: felt252,
             contract_address_salt: felt252,
+            core_validator: felt252,
             public_key: felt252
         ) -> felt252 {
             self.validate_transaction()
@@ -278,10 +282,6 @@ pub mod AccountComponent {
             }
         }
 
-        fn get_initialization(self: @ComponentState<TContractState>, key: felt252) -> felt252 {
-            self.Account_modules_initialize.read(key)
-        }
-
         fn remove_module(ref self: ComponentState<TContractState>, class_hash: ClassHash) {
             self.assert_only_self();
             let installed = self.Account_modules.read(class_hash);
@@ -302,11 +302,6 @@ pub mod AccountComponent {
         ) {}
     }
 
-    fn _module_is_valid_signature(hash: felt252, signature: Array<felt252>) -> felt252 {
-        let class_hash = core_validator();
-        IValidatorLibraryDispatcher { class_hash: class_hash }.is_valid_signature(hash, signature)
-    }
-
     #[generate_trait]
     pub impl InternalImpl<
         TContractState,
@@ -316,9 +311,14 @@ pub mod AccountComponent {
     > of InternalTrait<TContractState> {
         /// Initializes the account by setting the initial public key
         /// and registering the ISRC6 interface Id.
-        fn initializer(ref self: ComponentState<TContractState>, public_key: felt252) {
+        fn initializer(
+            ref self: ComponentState<TContractState>, core_validator: felt252, public_key: felt252
+        ) {
             let mut src5_component = get_dep_component_mut!(ref self, SRC5);
             src5_component.register_interface(interface::ISRC6_ID);
+            assert(core_validator != 0, Errors::INVALID_SIGNATURE);
+            let core_validator_adddress: ClassHash = core_validator.try_into().unwrap();
+            self.Account_core_validator.write(core_validator_adddress);
             self._init_public_key(public_key);
         }
 
@@ -342,7 +342,9 @@ pub mod AccountComponent {
                 sig.append(*signature.at(i));
                 i += 1;
             };
-            _module_is_valid_signature(tx_hash, sig)
+            let core_validator = self.Account_core_validator.read();
+            IValidatorLibraryDispatcher { class_hash: core_validator }
+                .is_valid_signature(tx_hash, sig)
         }
 
         /// Sets the public key without validating the caller.

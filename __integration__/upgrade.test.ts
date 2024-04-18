@@ -1,7 +1,6 @@
 import { deployClass } from "./class";
-import { accountAddress, deployAccount, upgrade } from "./account";
+import { accountAddress, deployAccount, upgrade } from "./smartr_account";
 import { config, provider, testAccount, type AccountConfig } from "./utils";
-import { coreValidatorClassHash } from "./core_validator";
 import { classHash } from "./class";
 import { Account } from "starknet";
 import { timeout } from "./constants";
@@ -39,9 +38,7 @@ describe("account upgrade and downgrade", () => {
     async () => {
       const a = testAccounts[0];
       const c = await deployClass(a, "CoreValidator");
-      expect(c.classHash).toEqual(
-        `0x${coreValidatorClassHash().toString(16)}`
-      );
+      expect(c.classHash).toEqual(classHash("CoreValidator"));
     },
     timeout
   );
