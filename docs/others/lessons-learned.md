@@ -110,22 +110,11 @@ On the technical side:
 > **NOTE** relying on the signature for the validation makes a lot of sense
 > because, that is the purpose of it after all.
 
-### EIP-7579 and EIP-7484
-
-TBD
-
-### Safe{Core} Protocol
-
-TBD
-
 ## Questions
 
 What we have learned sofar opens a number of questions that we would answer over
 time:
-- Is `__execute__` actually called in estimate fee? It seems to me it is not, or
-  at least in some node implementation because it passes when it should not. The
-  worse case scenario being, it depends on the node implementation... We should
-  create some code to check that. 
+
 - Why does Starknet not have a `fallback` entrypoint in contracts like solidity
   does so that, if a function does not exist, this function is called. Is there
   some sort of plan to support it?
