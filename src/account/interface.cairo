@@ -55,6 +55,8 @@ pub trait IModule<TState> {
     fn __module_validate__(self: @TState, calldata: Array<felt252>);
     fn add_module(ref self: TState, class_hash: ClassHash, args: Array<felt252>);
     fn remove_module(ref self: TState, class_hash: ClassHash);
+    fn update_core_module(ref self: TState, class_hash: ClassHash);
+    fn get_core_module(self: @TState) -> ClassHash;
     fn is_module(self: @TState, class_hash: ClassHash) -> bool;
     fn read_on_module(self: @TState, class_hash: ClassHash, calls: Array<Call>);
     fn execute_on_module(ref self: TState, class_hash: ClassHash, calls: Array<Call>);
