@@ -3,11 +3,12 @@ use starknet::{ContractAddress, ClassHash};
 use core::pedersen::pedersen;
 use core::traits::Into;
 
-pub const STARKNET_DOMAIN_TYPE_HASH: felt252 = selector!("StarkNetDomain(chainId:felt)");
 pub const SESSION_TYPE_HASH: felt252 =
     selector!(
         "Session(account:felt,validator:felt,grantor:felt,key:felt,expires:felt,root:merkletree)"
     );
+pub const STARKNET_DOMAIN_TYPE_HASH: felt252 = selector!("StarkNetDomain(chainId:felt)");
+pub const STARKNET_PREFIX_MESSAGE: felt252 = 'StarkNet Message';
 pub const POLICY_TYPE_HASH: felt252 = selector!("Policy(contractAddress:felt,selector:selector)");
 
 pub fn hash_auth_message(
@@ -26,7 +27,7 @@ pub fn hash_auth_message(
     let grantor_class_felt = grantor_class.try_into().unwrap();
     array_hash(
         array![
-            'StarkNet Message',
+            STARKNET_PREFIX_MESSAGE,
             account_address_felt,
             validator_class_felt,
             grantor_class_felt,
@@ -53,7 +54,9 @@ fn array_hash(data: Array<felt252>) -> felt252 {
 mod tests {
     #[test]
     fn test_short_message() {
-        assert_eq!('StarkNet Message', 0x537461726b4e6574204d657373616765, "value should match");
+        assert_eq!(
+            super::STARKNET_PREFIX_MESSAGE, 0x537461726b4e6574204d657373616765, "value should match"
+        );
     }
 
     #[test]
