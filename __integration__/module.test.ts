@@ -51,10 +51,10 @@ describe("module management", () => {
       connectedChain = await chain(conf.providerURL);
       switch (env) {
         case "sepolia":
-          expect(connectedChain).toBe("0x534e5f474f45524c49");
+          expect(connectedChain).toBe("0x534e5f5345504f4c4941");
           break;
         default:
-          expect(connectedChain).toBe("0x534e5f474f45524c49");
+          expect(connectedChain).toBe("0x534e5f5345504f4c4941");
           break;
       }
     },

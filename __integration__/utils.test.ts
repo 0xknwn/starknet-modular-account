@@ -42,10 +42,10 @@ describe("utilities (helpers)", () => {
     const chainId = await chain(c.providerURL);
     switch (env) {
       case "sepolia":
-        expect(chainId).toBe("0x534e5f474f45524c49");
+        expect(chainId).toBe("0x534e5f5345504f4c4941");
         break;
       default:
-        expect(chainId).toBe("0x534e5f474f45524c49");
+        expect(chainId).toBe("0x534e5f5345504f4c4941");
         break;
     }
   });
@@ -58,7 +58,7 @@ describe("utilities (helpers)", () => {
         expect(await p.getSpecVersion()).toBe("0.6.0");
         break;
       default:
-        expect(await p.getSpecVersion()).toBe("0.7.0");
+        expect(await p.getSpecVersion()).toBe("0.7.1");
         break;
     }
   });
