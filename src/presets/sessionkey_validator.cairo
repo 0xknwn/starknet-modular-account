@@ -8,7 +8,6 @@ mod SessionKeyValidator {
     use openzeppelin::introspection::src5::SRC5Component;
     use starknet::{get_caller_address, get_contract_address};
     use smartr::account::AccountComponent;
-    use smartr::account::{core_validator_felt, core_validator};
     use smartr::message::hash_auth_message;
     use starknet::class_hash::ClassHash;
     use starknet::account::Call;
@@ -69,6 +68,8 @@ mod SessionKeyValidator {
             let grantor_class_felt = *authz.at(2);
             let grantor_class: ClassHash = grantor_class_felt.try_into().unwrap();
             // @todo: unblock the core validator check
+            let core_validator: ClassHash = self.account.Account_core_validator.read();
+            let core_validator_felt: felt252 = core_validator.try_into().unwrap();
             assert(grantor_class_felt == core_validator_felt, grantor_class_felt);
             let authz_key = *authz.at(3);
             let expires = *authz.at(4);

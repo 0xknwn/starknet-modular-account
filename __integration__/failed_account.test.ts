@@ -1,5 +1,5 @@
 import { deployClass, classHash } from "./class";
-import { accountAddress, deployAccount } from "./account";
+import { accountAddress, deployAccount } from "./failed_account";
 import {
   config,
   testAccount,

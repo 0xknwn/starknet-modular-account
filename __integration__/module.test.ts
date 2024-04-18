@@ -1,6 +1,9 @@
 import { deployClass, classHash } from "./class";
-import { accountAddress, deployAccount, get_public_keys } from "./account";
-import { coreValidatorClassHash } from "./core_validator";
+import {
+  accountAddress,
+  deployAccount,
+  get_public_keys,
+} from "./smartr_account";
 import {
   chain,
   config,
@@ -63,7 +66,7 @@ describe("module management", () => {
     async () => {
       const a = testAccounts[0];
       const c = await deployClass(a, "CoreValidator");
-      expect(c.classHash).toEqual(`0x${coreValidatorClassHash().toString(16)}`);
+      expect(c.classHash).toEqual(classHash("CoreValidator"));
     },
     timeout
   );

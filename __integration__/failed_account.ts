@@ -2,19 +2,18 @@ import { ethTransfer } from "./utils";
 import { classHash } from "./class";
 import { hash, Account, CallData } from "starknet";
 import { initial_EthTransfer } from "./constants";
-import { ABI as AccountABI } from "./abi/SimpleAccount";
+import { ABI as AccountABI } from "./abi/FailedAccount";
 
 // accountAddress compute the account address from the account public key.
 export const accountAddress = (
-  name: string = "SimpleAccount",
-  publicKey: string,
-  more: string
+  name: string = "FailedAccount",
+  publicKey: string
 ): string => {
-  if (name !== "SimpleAccount") {
+  if (name !== "FailedAccount") {
     throw new Error(`Unsupported account class: ${name}`);
   }
   const AccountClassHash = classHash(name);
-  const calldata = [publicKey, more];
+  const calldata = [publicKey];
   return hash.calculateContractAddressFromHash(
     publicKey,
     AccountClassHash,
@@ -25,15 +24,14 @@ export const accountAddress = (
 
 export const deployAccount = async (
   deployerAccount: Account,
-  name: string = "SimpleAccount",
-  publicKey: string,
-  more: string
+  name: string = "FailedAccount",
+  publicKey: string
 ) => {
-  if (name !== "SimpleAccount") {
+  if (name !== "FailedAccount") {
     throw new Error(`Unsupported account class: ${name}`);
   }
   const computedClassHash = classHash(name);
-  const AccountAddress = accountAddress(name, publicKey, more);
+  const AccountAddress = accountAddress(name, publicKey);
   try {
     const deployedClassHash =
       await deployerAccount.getClassHashAt(AccountAddress);
@@ -54,7 +52,6 @@ export const deployAccount = async (
   }
   const calldata = new CallData(AccountABI).compile("constructor", {
     public_key: publicKey,
-    more: more,
   });
   const { transaction_hash } = await deployerAccount.deployAccount({
     classHash: computedClassHash,
