@@ -1,7 +1,15 @@
 // SPDX-License-Identifier: MIT
 
+#[starknet::interface]
+pub trait IDeployable<TState> {
+    fn __validate_deploy__(
+        self: @TState, class_hash: felt252, contract_address_salt: felt252, public_key: felt252, more: felt252
+    ) -> felt252;
+}
+
 #[starknet::contract(account)]
 mod SimpleAccount {
+    use super::IDeployable;
     use openzeppelin::account::AccountComponent;
     use openzeppelin::introspection::src5::SRC5Component;
     use openzeppelin::upgrades::UpgradeableComponent;
@@ -13,9 +21,29 @@ mod SimpleAccount {
     component!(path: UpgradeableComponent, storage: upgradeable, event: UpgradeableEvent);
 
     #[abi(embed_v0)]
-    impl AccountMixinImpl = AccountComponent::AccountMixinImpl<ContractState>;
+    impl SRC6Impl = AccountComponent::SRC6Impl<ContractState>;
+    #[abi(embed_v0)]
+    impl DeclarerImpl = AccountComponent::DeclarerImpl<ContractState>;
+    #[abi(embed_v0)]
+    impl PublicKeyImpl = AccountComponent::PublicKeyImpl<ContractState>;
+    #[abi(embed_v0)]
+    impl SRC6CamelOnlyImpl = AccountComponent::SRC6CamelOnlyImpl<ContractState>;
+
     impl AccountInternalImpl = AccountComponent::InternalImpl<ContractState>;
     impl UpgradeableInternalImpl = UpgradeableComponent::InternalImpl<ContractState>;
+
+    #[abi(embed_v0)]
+    impl DeployableImpl of IDeployable<ContractState> {
+        fn __validate_deploy__(
+            self: @ContractState,
+            class_hash: felt252,
+            contract_address_salt: felt252,
+            public_key: felt252,
+            more: felt252
+        ) -> felt252 {
+            self.account.validate_transaction()
+        }
+    }
 
     #[storage]
     struct Storage {
@@ -39,7 +67,7 @@ mod SimpleAccount {
     }
 
     #[constructor]
-    fn constructor(ref self: ContractState, public_key: felt252) {
+    fn constructor(ref self: ContractState, public_key: felt252, more: felt252) {
         self.account.initializer(public_key);
     }
 
