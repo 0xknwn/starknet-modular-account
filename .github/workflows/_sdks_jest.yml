@@ -1,4 +1,4 @@
-name: _ Reusable Typescript/Vitest Workflow for SDKs
+name: _ Reusable Typescript/Jest Workflow for SDKs
 
 on:
   workflow_call:
