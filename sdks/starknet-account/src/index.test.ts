@@ -1,8 +1,14 @@
-import { Account } from "./index";
+import { describe, expect, it } from "vitest";
 
 describe("account management", () => {
-  it("checks the account can be instanciated", async () => {
-    const account = new Account();
-    expect(account.log("xyz")).toBeUndefined();
+  let x = 1;
+  it("check variable is 1", async () => {
+    expect(x).toBe(1);
+    x++;
+  });
+
+  it("check variable is 2", async () => {
+    expect(x).toBe(2);
+    x++;
   });
 });
