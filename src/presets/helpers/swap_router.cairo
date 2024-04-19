@@ -2,26 +2,26 @@ use starknet::ContractAddress;
 
 #[starknet::interface]
 trait ISwapRouter<TContractState> {
-    fn swap(ref self: TContractState, amount: u256);
-    fn swap_minimum_at(ref self: TContractState, rate: u256, amount: u256);
-    fn swap_maximum_at(ref self: TContractState, rate: u256, amount: u256);
-    fn set_conversion_rate(ref self: TContractState, rate: u256);
-    fn get_conversion_rate(self: @TContractState) -> u256;
     fn faucet(ref self: TContractState, amount: u256);
+    fn get_conversion_rate(self: @TContractState) -> u256;
+    fn get_token_a(ref self: TContractState) -> ContractAddress;
+    fn set_conversion_rate(ref self: TContractState, rate: u256);
     fn set_tokens(
         ref self: TContractState, tokenAAddress: ContractAddress, tokenBAddress: ContractAddress
     );
+    fn swap_maximum_at(ref self: TContractState, rate: u256, amount: u256);
+    fn swap_minimum_at(ref self: TContractState, rate: u256, amount: u256);
+    fn swap(ref self: TContractState, amount: u256);
 }
 
 #[starknet::contract]
 mod SwapRouter {
+    use core::traits::Into;
     use openzeppelin::access::ownable::OwnableComponent;
     use openzeppelin::security::pausable::PausableComponent;
-    use openzeppelin::upgrades::UpgradeableComponent;
-    use openzeppelin::upgrades::interface::IUpgradeable;
     use openzeppelin::token::erc20::interface::{IERC20DispatcherTrait, IERC20Dispatcher};
-    use core::traits::Into;
-
+    use openzeppelin::upgrades::interface::IUpgradeable;
+    use openzeppelin::upgrades::UpgradeableComponent;
     use starknet::{ClassHash, ContractAddress};
     use starknet::{get_contract_address, get_caller_address};
 
@@ -104,6 +104,10 @@ mod SwapRouter {
             self.tokenConversionRate.read()
         }
 
+        fn get_token_a(ref self: ContractState) -> ContractAddress {
+            self.tokenAAddress.read()
+        }
+
         fn swap(ref self: ContractState, amount: u256) {
             self.pausable.assert_not_paused();
             let tokenA: ContractAddress = self.tokenAAddress.read();
@@ -123,6 +127,7 @@ mod SwapRouter {
             IERC20Dispatcher { contract_address: tokenA }.transfer(caller, amount);
         }
 
+        // Set the tokens to be swapped
         fn set_tokens(
             ref self: ContractState, tokenAAddress: ContractAddress, tokenBAddress: ContractAddress
         ) {
@@ -149,4 +154,24 @@ mod SwapRouter {
 
 use snforge_std::errors::{SyscallResultStringErrorTrait, PanicDataOrString};
 #[cfg(test)]
-mod tests {}
+mod tests {
+    use super::{SwapRouter, ISwapRouterDispatcher, ISwapRouterDispatcherTrait};
+    use snforge_std::{declare, ContractClassTrait};
+    use starknet::{SyscallResultTrait, ContractAddress, get_caller_address};
+    use snforge_std::{start_prank, stop_prank, CheatTarget};
+
+    #[test]
+    fn test_set_tokens() {
+        let owner: ContractAddress = 'owner'.try_into().unwrap();
+        let token_a: ContractAddress = 'token_a'.try_into().unwrap();
+        let token_b: ContractAddress = 'token_b'.try_into().unwrap();
+        let contract = declare("SwapRouter").unwrap();
+        let (contract_address, _) = contract.deploy(@array!['owner']).unwrap();
+        let dispatcher = ISwapRouterDispatcher { contract_address };
+        start_prank(CheatTarget::One(contract_address), owner);
+        dispatcher.set_tokens(token_a, token_b);
+        let addr = dispatcher.get_token_a().try_into().unwrap();
+        stop_prank(CheatTarget::One(contract_address));
+        assert_eq!(addr, 'token_a', "counter should be 'token_a'");
+    }
+}

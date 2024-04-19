@@ -94,11 +94,11 @@ use snforge_std::errors::{SyscallResultStringErrorTrait, PanicDataOrString};
 #[cfg(test)]
 mod tests {
     // use snforge_std::cheatcodes::contract_class::ContractClassTrait;
-    use snforge_std::{declare, ContractClassTrait};
-    use snforge_std::{start_prank, CheatTarget};
-    use super::{ICounterDispatcher, ICounterDispatcherTrait};
     use openzeppelin::access::ownable::interface::{IOwnable, IOwnableCamelOnly};
+    use snforge_std::{declare, ContractClassTrait};
+    use snforge_std::{start_prank, stop_prank, CheatTarget};
     use starknet::{SyscallResultTrait, ContractAddress};
+    use super::{ICounterDispatcher, ICounterDispatcherTrait};
 
     #[test]
     fn test_counter_increment() {
@@ -117,6 +117,8 @@ mod tests {
         let owner: felt252 = 1;
         let (contract_address, _) = contract.deploy(@array![owner]).unwrap();
         let dispatcher = ICounterDispatcher { contract_address };
+        let counter = dispatcher.get();
+        assert_eq!(counter, 0, "counter should be 0");
         dispatcher.increment();
         let counter = dispatcher.get();
         assert_eq!(counter, 1, "counter should be 1");
@@ -124,8 +126,10 @@ mod tests {
         start_prank(CheatTarget::One(contract_address), caller_address);
         dispatcher.reset();
         let counter = dispatcher.get();
+        stop_prank(CheatTarget::One(contract_address));
         assert_eq!(counter, 0, "counter should be 0");
     }
+
     #[test]
     #[should_panic(expected: ('Caller is not the owner',))]
     fn test_fail_reset() {
@@ -136,5 +140,6 @@ mod tests {
         let caller_address: ContractAddress = 2.try_into().unwrap();
         start_prank(CheatTarget::One(contract_address), caller_address);
         dispatcher.reset();
+        stop_prank(CheatTarget::One(contract_address));
     }
 }

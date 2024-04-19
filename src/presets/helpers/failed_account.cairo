@@ -2,19 +2,19 @@
 
 #[starknet::contract(account)]
 mod FailedAccount {
+    use core::num::traits::Zero;
+    use core::traits::Into;
     use openzeppelin::account::AccountComponent;
     use openzeppelin::account::AccountComponent::Errors;
     use openzeppelin::account::interface::ISRC6;
-    use openzeppelin::introspection::src5::SRC5Component;
-    use openzeppelin::upgrades::UpgradeableComponent;
-    use openzeppelin::upgrades::interface::IUpgradeable;
-    use starknet::ClassHash;
-    use starknet::{get_caller_address, get_tx_info};
-    use core::traits::Into;
-    use core::num::traits::Zero;
-    use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
     use openzeppelin::account::utils::{execute_calls, is_valid_stark_signature};
+    use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
+    use openzeppelin::introspection::src5::SRC5Component;
+    use openzeppelin::upgrades::interface::IUpgradeable;
+    use openzeppelin::upgrades::UpgradeableComponent;
+    use starknet::{get_caller_address, get_tx_info};
     use starknet::account::Call;
+    use starknet::ClassHash;
 
     component!(path: AccountComponent, storage: account, event: AccountEvent);
     component!(path: SRC5Component, storage: src5, event: SRC5Event);
