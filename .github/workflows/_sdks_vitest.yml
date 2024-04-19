@@ -3,9 +3,6 @@ name: _ Reusable Typescript/Vitest Workflow for SDKs
 on:
   workflow_call:
     inputs:
-      config-path:
-        required: true
-        type: string
       workspace:
         required: true
         type: string
