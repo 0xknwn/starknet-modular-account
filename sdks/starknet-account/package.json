@@ -1,0 +1,32 @@
+{
+  "name": "@0xknwn/starknet-account",
+  "version": "0.0.2",
+  "description": "starknet modular account SDK",
+  "type": "module",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "unpkg": "./dist/index.umd.js",
+  "exports": {
+    ".": {
+      "require": "./dist/index.umd.js",
+      "import": "./dist/index.js"
+    }
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "jest --runInBand --verbose",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/0xknwn/starknet-modular-account.git"
+  },
+  "author": "0xknwn",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/0xknwn/starknet-modular-account/issues"
+  },
+  "homepage": "https://0xknwn.github.io/starknet-modular-account"
+}
