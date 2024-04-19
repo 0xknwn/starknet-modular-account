@@ -1,0 +1,19 @@
+name: 0xknwn/starknet-account tests
+on:
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - '**'
+      - '!docs/*'
+  push:
+    branches:
+      - 'develop'
+    paths:
+      - '**'
+
+jobs:
+  test:
+    uses: ./.github/workflows/_sdks_vitest.yml
+    with:
+      workspace: "@0xknwn/starknet-account"
