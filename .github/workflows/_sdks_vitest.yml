@@ -1,0 +1,46 @@
+name: _ Reusable Typescript/Vitest Workflow for SDKs
+
+on:
+  workflow_call:
+    inputs:
+      config-path:
+        required: true
+        type: string
+      workspace:
+        required: true
+        type: string
+
+jobs:
+  test:
+    name: install, build and run jest scripts
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    services:
+      devnet:
+        image: shardlabs/starknet-devnet-rs:0.0.5-seed0
+        ports:
+          - 5050:5050
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '21.x'
+          cache: 'npm'
+
+      - name: Install npm dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Install scarb
+        run: curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh
+
+      - name: Build starknet contracts
+        run: scarb build
+
+      - name: Configure environment for devnet and seed=0
+        run: cp .env.template.json .env.devnet.json
+
+      - name: Run jest tests
+        run: npm run test -w ${{ inputs.workspace }}
