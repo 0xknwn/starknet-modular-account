@@ -9,7 +9,7 @@ on:
 
 jobs:
   test:
-    name: install, build and run jest scripts
+    name: ${{ inputs.workspace }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
