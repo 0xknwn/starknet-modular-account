@@ -1,4 +1,4 @@
-name: 0xknwn/starknet-account tests
+name: 0xknwn/starknet-module-sessionkey tests
 on:
   pull_request:
     branches:
@@ -15,4 +15,4 @@ jobs:
   test:
     uses: ./.github/workflows/_sdks_jest.yml
     with:
-      workspace: "@0xknwn/starknet-account"
+      workspace: "@0xknwn/starknet-module-sessionkey"

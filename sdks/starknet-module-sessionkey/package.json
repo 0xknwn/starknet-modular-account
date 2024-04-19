@@ -1,5 +1,5 @@
 {
-  "name": "@0xknwn/starknet-account",
+  "name": "@0xknwn/starknet-module-sessionkey",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",

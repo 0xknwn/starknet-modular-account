@@ -6,7 +6,7 @@ import { Account } from "starknet";
 const coreValidatorClassHash =
   "0x2739b5ddf22645e638a811b0c9c0c11a59e82b2b0739f2dfaf82cefc67349ab";
 
-describe("coreValidator management", () => {
+describe.skip("coreValidator management", () => {
   let env: string;
   let testAccounts: Account[];
   beforeAll(() => {

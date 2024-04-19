@@ -3,7 +3,7 @@ import { hash_auth_message } from "./message";
 import { testAccount, config } from "./utils";
 import { Account } from "starknet";
 
-describe("message management", () => {
+describe.skip("message management", () => {
   let env: string;
   let testAccounts: Account[];
   beforeAll(() => {

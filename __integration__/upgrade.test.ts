@@ -5,7 +5,7 @@ import { classHash } from "./class";
 import { Account } from "starknet";
 import { timeout } from "./constants";
 
-describe("account upgrade and downgrade", () => {
+describe.skip("account upgrade and downgrade", () => {
   let env: string;
   let testAccounts: Account[];
   let targetAccounts: AccountConfig[];

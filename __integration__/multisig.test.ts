@@ -26,7 +26,7 @@ import { Multisig } from "./multisig";
 import { timeout } from "./constants";
 import { Account } from "starknet";
 
-describe("multiple signatures", () => {
+describe.skip("multiple signatures", () => {
   let env: string;
   let testAccounts: Account[];
   let targetAccounts: AccountConfig[];

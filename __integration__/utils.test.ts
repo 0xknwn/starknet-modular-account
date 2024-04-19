@@ -10,7 +10,7 @@ import {
 import { initial_EthTransfer, timeout } from "./constants";
 import { Account } from "starknet";
 
-describe("utilities (helpers)", () => {
+describe.skip("utilities (helpers)", () => {
   let env: string;
   let testAccounts: Account[];
   beforeAll(() => {

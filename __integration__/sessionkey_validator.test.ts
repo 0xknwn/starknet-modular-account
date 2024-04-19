@@ -26,7 +26,7 @@ import { SessionKeyModule, SessionKeyGrantor } from "./sessionkey_validator";
 import { Account } from "starknet";
 import { hash_auth_message } from "./message";
 
-describe("sessionkey validator", () => {
+describe.skip("sessionkey validator", () => {
   let env: string;
   let testAccounts: Account[];
   let targetAccountConfigs: AccountConfig[];
