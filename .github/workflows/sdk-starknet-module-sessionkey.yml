@@ -4,8 +4,7 @@ on:
     branches:
       - '**'
     paths:
-      - 'sdk/starknet-module-sessionkey/**'
-      - 'src'
+      - '**'
   push:
     branches:
       - 'develop'

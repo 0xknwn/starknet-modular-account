@@ -4,8 +4,7 @@ on:
     branches:
       - '**'
     paths:
-      - 'sdk/starknet-account/**'
-      - 'src'
+      - '**'
   push:
     branches:
       - 'develop'
