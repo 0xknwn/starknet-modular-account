@@ -1,4 +1,4 @@
-name: 0xknwn/starknet-account sdk tests
+name: 0xknwn/starknet-account tests
 on:
   pull_request:
     branches:
