@@ -39,5 +39,8 @@ jobs:
       - name: Configure environment for devnet and seed=0
         run: cp .env.template.json .env.devnet.json
 
+      - name: build the project
+        run: npm run build
+
       - name: Run jest tests
         run: npm run test -w ${{ inputs.workspace }}

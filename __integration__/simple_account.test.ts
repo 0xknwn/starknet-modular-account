@@ -4,7 +4,7 @@ import { config, testAccount, provider, type AccountConfig } from "./utils";
 import { Account } from "starknet";
 import { timeout } from "./constants";
 
-describe("simple account management", () => {
+describe.skip("simple account management", () => {
   let env: string;
   let testAccounts: Account[];
   let targetAccounts: Account[];

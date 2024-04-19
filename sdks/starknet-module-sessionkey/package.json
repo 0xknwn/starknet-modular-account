@@ -1,11 +1,12 @@
 {
-  "name": "@0xknwn/starknet-account",
+  "name": "@0xknwn/starknet-module-sessionkey",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "test": "jest"
   },
   "author": "Dávid Szabó",
   "license": "ISC",

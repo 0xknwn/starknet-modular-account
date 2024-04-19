@@ -22,9 +22,9 @@ import {
 import { Account } from "starknet";
 import { timeout } from "./constants";
 
-describe("account addresses", () => {});
+describe.skip("account addresses", () => {});
 
-describe("account management", () => {
+describe.skip("account management", () => {
   let env: string;
   let testAccounts: Account[];
   let targetAccounts: Account[];

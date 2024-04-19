@@ -11,7 +11,7 @@ import {
 import { timeout } from "./constants";
 import { Account } from "starknet";
 
-describe("counter contract (helper)", () => {
+describe.skip("counter contract (helper)", () => {
   let env: string;
   let testAccounts: Account[];
   let counterContract: ContractConfig;

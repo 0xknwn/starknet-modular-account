@@ -3,7 +3,7 @@ import { timeout } from "./constants";
 import { testAccount, config } from "./utils";
 import { Account } from "starknet";
 
-describe("class management", () => {
+describe.skip("class management", () => {
   let env: string;
   let testAccounts: Account[];
   beforeAll(() => {

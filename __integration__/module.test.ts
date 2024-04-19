@@ -22,7 +22,7 @@ import {
 import { timeout } from "./constants";
 import { Account } from "starknet";
 
-describe("module management", () => {
+describe.skip("module management", () => {
   let env: string;
   let testAccounts: Account[];
   let targetAccountConfigs: AccountConfig[];

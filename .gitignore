@@ -1,7 +1,9 @@
 target
 .snfoundry_cache/
-/node_modules
-/build
+node_modules
+build
+dist
+*.tsbuildinfo
 /book
 /index.html
 /.env.*
