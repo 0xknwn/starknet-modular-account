@@ -61,7 +61,7 @@ Represents the configuration of an account.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/utils.ts:7](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/utils.ts#L7)
+[sdks/starknet-test-helpers/src/utils.ts:7](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/utils.ts#L7)
 
 ___
 
@@ -80,7 +80,7 @@ Represents the configuration for the test helpers.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/utils.ts:21](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/utils.ts#L21)
+[sdks/starknet-test-helpers/src/utils.ts:21](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/utils.ts#L21)
 
 ## Variables
 
@@ -90,7 +90,7 @@ Represents the configuration for the test helpers.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/abi/Counter.ts:1](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/abi/Counter.ts#L1)
+[sdks/starknet-test-helpers/src/abi/Counter.ts:1](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/abi/Counter.ts#L1)
 
 ___
 
@@ -100,7 +100,7 @@ ___
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/parameters.ts:3](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/parameters.ts#L3)
+[sdks/starknet-test-helpers/src/parameters.ts:3](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/parameters.ts#L3)
 
 ___
 
@@ -112,7 +112,7 @@ The address of the UDC (Universal Deployer Contract) in the StarkNet network.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/natives.ts:13](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/natives.ts#L13)
+[sdks/starknet-test-helpers/src/natives.ts:13](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/natives.ts#L13)
 
 ## Functions
 
@@ -135,7 +135,7 @@ The address of the UDC (Universal Deployer Contract) in the StarkNet network.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/natives.ts:30](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/natives.ts#L30)
+[sdks/starknet-test-helpers/src/natives.ts:30](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/natives.ts#L30)
 
 ___
 
@@ -159,7 +159,7 @@ An instance of the STARK contract.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/natives.ts:23](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/natives.ts#L23)
+[sdks/starknet-test-helpers/src/natives.ts:23](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/natives.ts#L23)
 
 ___
 
@@ -190,7 +190,7 @@ This function requires the cairo account to be compiled with the
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/contract.ts:41](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/contract.ts#L41)
+[sdks/starknet-test-helpers/src/contract.ts:41](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/contract.ts#L41)
 
 ___
 
@@ -220,7 +220,7 @@ This function requires the cairo contract to be compiled with the
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/class.ts:19](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/class.ts#L19)
+[sdks/starknet-test-helpers/src/class.ts:19](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/class.ts#L19)
 
 ___
 
@@ -244,7 +244,7 @@ The configuration object.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/utils.ts:33](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/utils.ts#L33)
+[sdks/starknet-test-helpers/src/utils.ts:33](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/utils.ts#L33)
 
 ___
 
@@ -269,7 +269,7 @@ The address of the Counter contract.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/counter.ts:11](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/counter.ts#L11)
+[sdks/starknet-test-helpers/src/counter.ts:11](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/counter.ts#L11)
 
 ___
 
@@ -307,7 +307,7 @@ account to have enough funds to declare the class to the Starknet network.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/class.ts:41](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/class.ts#L41)
+[sdks/starknet-test-helpers/src/class.ts:41](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/class.ts#L41)
 
 ___
 
@@ -338,7 +338,7 @@ Error if the deployment fails.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/contract.ts:107](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/contract.ts#L107)
+[sdks/starknet-test-helpers/src/contract.ts:107](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/contract.ts#L107)
 
 ___
 
@@ -363,7 +363,7 @@ A Promise that resolves to the deployed Counter contract.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/counter.ts:28](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/counter.ts#L28)
+[sdks/starknet-test-helpers/src/counter.ts:28](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/counter.ts#L28)
 
 ___
 
@@ -389,7 +389,7 @@ A promise that resolves to the deployed simple account.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/simple_account.ts:33](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/simple_account.ts#L33)
+[sdks/starknet-test-helpers/src/simple_account.ts:33](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/simple_account.ts#L33)
 
 ___
 
@@ -414,7 +414,7 @@ A Promise that resolves to the deployed Counter contract.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/swap_router.ts:29](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/swap_router.ts#L29)
+[sdks/starknet-test-helpers/src/swap_router.ts:29](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/swap_router.ts#L29)
 
 ___
 
@@ -440,7 +440,7 @@ A Promise that resolves to the deployed Counter contract.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/tokens.ts:71](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/tokens.ts#L71)
+[sdks/starknet-test-helpers/src/tokens.ts:71](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/tokens.ts#L71)
 
 ___
 
@@ -466,7 +466,7 @@ A Promise that resolves to the deployed Counter contract.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/tokens.ts:105](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/tokens.ts#L105)
+[sdks/starknet-test-helpers/src/tokens.ts:105](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/tokens.ts#L105)
 
 ___
 
@@ -492,7 +492,7 @@ The generated account address.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/simple_account.ts:14](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/simple_account.ts#L14)
+[sdks/starknet-test-helpers/src/simple_account.ts:14](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/simple_account.ts#L14)
 
 ___
 
@@ -517,7 +517,7 @@ The address of the swap router contract.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/swap_router.ts:12](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/swap_router.ts#L12)
+[sdks/starknet-test-helpers/src/swap_router.ts:12](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/swap_router.ts#L12)
 
 ___
 
@@ -541,7 +541,7 @@ An array of Accounts.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/utils.ts:42](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/utils.ts#L42)
+[sdks/starknet-test-helpers/src/utils.ts:42](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/utils.ts#L42)
 
 ___
 
@@ -567,7 +567,7 @@ The token A address.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/tokens.ts:58](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/tokens.ts#L58)
+[sdks/starknet-test-helpers/src/tokens.ts:58](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/tokens.ts#L58)
 
 ___
 
@@ -593,4 +593,4 @@ The token B address.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/tokens.ts:92](https://github.com/0xknwn/starknet-modular-account/blob/6c1c42749806d20a09515e40349c95b942b62ed6/sdks/starknet-test-helpers/src/tokens.ts#L92)
+[sdks/starknet-test-helpers/src/tokens.ts:92](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/tokens.ts#L92)
