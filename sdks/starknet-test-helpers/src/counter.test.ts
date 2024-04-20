@@ -1,20 +1,12 @@
-import { deployClass, classHash } from "./class";
-import { testAccount, config, type ContractConfig, provider } from "./utils";
-import {
-  deployCounterContract,
-  counterAddress,
-  reset,
-  increment,
-  increment_by_array,
-  get,
-} from "./counter";
-import { timeout } from "./constants";
-import { Account } from "starknet";
+import { declareClass, classHash } from "./class";
+import { testAccounts, config, type ContractConfig } from "./utils";
+import { deployCounter, counterAddress, CounterABI } from "./counter";
+import { default_timeout } from "./parameters";
+import { Contract, type Call, RpcProvider, Account } from "starknet";
 
-describe.skip("counter contract (helper)", () => {
+describe("counter contract (helper)", () => {
   let env: string;
-  let testAccounts: Account[];
-  let counterContract: ContractConfig;
+  let counter: Contract;
   let altURL: string;
   beforeAll(() => {
     env = "devnet";
@@ -23,150 +15,229 @@ describe.skip("counter contract (helper)", () => {
     if (!altURL) {
       altURL = conf.providerURL;
     }
-    testAccounts = [testAccount(0, conf), testAccount(1, conf)];
   });
 
   it(
-    "deploys the Counter class",
+    "declare the Counter class",
     async () => {
-      const a = testAccounts[0];
-      const c = await deployClass(a, "Counter");
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      const c = await declareClass(account, "Counter");
       expect(c.classHash).toEqual(classHash("Counter"));
     },
-    timeout
+    default_timeout
   );
 
   it(
-    "deploys the counter contract",
+    "deploys the Counter contract",
     async () => {
-      const a = testAccounts[0];
-      const c = await deployCounterContract(a);
-      expect(c.address).toEqual(counterAddress(a.address));
-      counterContract = {
-        classHash: classHash("Counter"),
-        address: counterAddress(a.address),
-      };
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      const c = await deployCounter(account, account.address);
+      expect(c.address).toEqual(
+        await counterAddress(account.address, account.address)
+      );
+      counter = c;
     },
-    timeout
+    default_timeout
   );
 
   it(
     "increments the counter",
     async () => {
-      const a = testAccounts[0];
-      const c = await increment(a, counterContract.address, [1]);
-      expect(c.isSuccess()).toEqual(true);
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      if (!counter) {
+        counter = await deployCounter(account, account.address);
+      }
+      const transferCall: Call = counter.populate("increment", {});
+      const { transaction_hash } = await account.execute(transferCall);
+      const receipt = await account.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
     },
-    timeout
+    default_timeout
   );
 
   it(
     "reads the counter",
     async () => {
-      const a = testAccounts[0];
-      const c = await get(a, counterContract.address);
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      if (!counter) {
+        counter = await deployCounter(account, account.address);
+      }
+      const c = await counter.get();
       expect(c).toBeGreaterThan(0n);
     },
-    timeout
+    default_timeout
   );
 
   it(
     "increments the counter by 5 and 6",
     async () => {
-      const a = testAccounts[0];
-      const c = await increment(a, counterContract.address, [5, 6, 1]);
-      expect(c.isSuccess()).toEqual(true);
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      if (!counter) {
+        counter = await deployCounter(account, account.address);
+      }
+      const transferCall: Call = counter.populate("increment_by_array", {
+        args: [5, 6],
+      });
+      const { transaction_hash } = await account.execute(transferCall);
+      const receipt = await account.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
     },
-    timeout
+    default_timeout
   );
 
   it(
-    "reads the counter",
+    "reads the counter again",
     async () => {
-      const a = testAccounts[0];
-      const c = await get(a, counterContract.address);
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      if (!counter) {
+        counter = await deployCounter(account, account.address);
+      }
+      const c = await counter.get();
       expect(c).toBeGreaterThan(11n);
     },
-    timeout
+    default_timeout
   );
 
   it(
     "resets the counter",
     async () => {
-      const a = testAccounts[0];
-      const c = await reset(a, counterContract.address);
-      expect(c.isSuccess()).toEqual(true);
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      if (!counter) {
+        counter = await deployCounter(account, account.address);
+      }
+      const transferCall: Call = counter.populate("reset", {});
+      const { transaction_hash } = await account.execute(transferCall);
+      const receipt = await account.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
     },
-    timeout
+    default_timeout
+  );
+
+  it(
+    "reads the counter again",
+    async () => {
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      if (!counter) {
+        counter = await deployCounter(account, account.address);
+      }
+      const c = await counter.get();
+      expect(c).toBe(0n);
+    },
+    default_timeout
+  );
+
+  it(
+    "increments the counter from another account",
+    async () => {
+      const conf = config(env);
+      const account = testAccounts(conf)[1];
+      if (!counter) {
+        counter = await deployCounter(account, account.address);
+      }
+      const transferCall: Call = counter.populate("increment", {});
+      const { transaction_hash } = await account.execute(transferCall);
+      const receipt = await account.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
   );
 
   it(
     "reads the counter",
     async () => {
-      const a = testAccounts[0];
-      const c = await get(a, counterContract.address);
-      expect(c).toBe(0n);
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      if (!counter) {
+        counter = await deployCounter(account, account.address);
+      }
+      const c = await counter.get();
+      expect(c).toBeGreaterThan(0n);
     },
-    timeout
+    default_timeout
   );
 
   it(
-    "increments the counter",
+    "resets the counter and fails",
     async () => {
-      const a = testAccounts[0];
-      const c = await increment(a, counterContract.address, 1);
-      expect(c.isSuccess()).toEqual(true);
+      const conf = config(env);
+      let account = testAccounts(conf)[0];
+      if (!counter) {
+        counter = await deployCounter(account, account.address);
+      }
+      const transferCall: Call = counter.populate("reset", {});
+      try {
+        account = testAccounts(conf)[1];
+        const { transaction_hash } = await account.execute(transferCall);
+        await account.waitForTransaction(transaction_hash);
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e).toBeDefined();
+      }
     },
-    timeout
+    default_timeout
+  );
+
+  it(
+    "reads the counter again",
+    async () => {
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      if (!counter) {
+        counter = await deployCounter(account, account.address);
+      }
+      const c = await counter.get();
+      expect(c).toBeGreaterThan(0n);
+    },
+    default_timeout
   );
 
   it(
     "increments the counter with an alt provider URL",
     async () => {
       const conf = config(env);
-      const p = provider(altURL);
+      const account = testAccounts(conf)[0];
+      if (!counter) {
+        counter = await deployCounter(account, account.address);
+      }
+      const provider = new RpcProvider({ nodeUrl: altURL });
       const a = new Account(
-        p,
+        provider,
         conf.accounts[0].address,
         conf.accounts[0].privateKey
       );
-      const c = await increment_by_array(a, counterContract.address, [1, 2, 3]);
-      expect(c.isSuccess()).toEqual(true);
+      const transferCall: Call = counter.populate("increment", {});
+      const { transaction_hash } = await account.execute(transferCall);
+      const receipt = await a.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
     },
-    timeout
+    default_timeout
   );
 
   it(
-    "reads the counter",
+    "reads the counter from an alt. provider URL",
     async () => {
-      const a = testAccounts[0];
-      const c = await get(a, counterContract.address);
-      expect(c).toBeGreaterThan(0n);
-    },
-    timeout
-  );
-
-  it(
-    "resets the counter and fails",
-    async () => {
-      const a = testAccounts[1];
-      try {
-        const c = await reset(a, counterContract.address);
-        expect(true).toBe(false);
-      } catch (e) {
-        expect(e).toBeDefined();
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      if (!counter) {
+        counter = await deployCounter(account, account.address);
       }
-    },
-    timeout
-  );
-
-  it(
-    "reads the counter",
-    async () => {
-      const a = testAccounts[0];
-      const c = await get(a, counterContract.address);
+      const provider = new RpcProvider({ nodeUrl: altURL });
+      const altCounter = new Contract(
+        CounterABI,
+        counter.address,
+        provider
+      ).typedv2(CounterABI);
+      const c = await altCounter.get();
       expect(c).toBeGreaterThan(0n);
     },
-    timeout
+    default_timeout
   );
 });

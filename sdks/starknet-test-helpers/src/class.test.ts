@@ -1,24 +1,18 @@
-import { deployClass, classHash } from "./class";
-import { timeout } from "./constants";
-import { testAccount, config } from "./utils";
-import { Account } from "starknet";
+import { declareClass, classHash } from "./class";
+import { default_timeout } from "./parameters";
+import { testAccounts, config } from "./utils";
 
-describe.skip("class management", () => {
-  let env: string;
-  let testAccounts: Account[];
-  beforeAll(() => {
-    env = "devnet";
-    const conf = config(env);
-    testAccounts = [testAccount(0, conf), testAccount(1, conf)];
-  });
+describe("class management", () => {
+  const env = "devnet";
 
   it(
     "deploys the Account class",
     async () => {
-      const a = testAccounts[0];
-      const c = await deployClass(a, "SimpleAccount");
-      expect(c.classHash).toEqual(classHash("SimpleAccount"));
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      const output = await declareClass(account, "SimpleAccount");
+      expect(output.classHash).toEqual(classHash("SimpleAccount"));
     },
-    timeout
+    default_timeout
   );
 });

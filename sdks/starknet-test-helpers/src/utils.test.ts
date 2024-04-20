@@ -1,23 +1,9 @@
-import {
-  chain,
-  config,
-  testAccount,
-  provider,
-  ethBalance,
-  strkBalance,
-  ethTransfer,
-} from "./utils";
-import { initial_EthTransfer, timeout } from "./constants";
-import { Account } from "starknet";
+import { config } from "./utils";
+import { default_timeout } from "./parameters";
+import { RpcProvider } from "starknet";
 
-describe.skip("utilities (helpers)", () => {
-  let env: string;
-  let testAccounts: Account[];
-  beforeAll(() => {
-    env = "devnet";
-    const conf = config(env);
-    testAccounts = [testAccount(0, conf), testAccount(1, conf)];
-  });
+describe("utilities (helpers)", () => {
+  let env = "devnet";
 
   it("checks the config file", async () => {
     const c = config(env);
@@ -37,71 +23,34 @@ describe.skip("utilities (helpers)", () => {
     }
   });
 
-  it("tests chain", async () => {
-    const c = config(env);
-    const chainId = await chain(c.providerURL);
-    switch (env) {
-      case "sepolia":
-        expect(chainId).toBe("0x534e5f5345504f4c4941");
-        break;
-      default:
-        expect(chainId).toBe("0x534e5f5345504f4c4941");
-        break;
-    }
-  });
+  it(
+    "tests chain",
+    async () => {
+      const c = config(env);
+      const provider = new RpcProvider({ nodeUrl: c.providerURL });
+      const chainId = await provider.getChainId();
+      switch (env) {
+        case "sepolia":
+          expect(chainId).toBe("0x534e5f5345504f4c4941");
+          break;
+        default:
+          expect(chainId).toBe("0x534e5f5345504f4c4941");
+          break;
+      }
+    },
+    default_timeout
+  );
 
   it("checks the provider version", async () => {
     const conf = config(env);
-    const p = provider(conf.providerURL);
+    const provider = new RpcProvider({ nodeUrl: conf.providerURL });
     switch (env) {
       case "sepolia":
-        expect(await p.getSpecVersion()).toBe("0.6.0");
+        expect(await provider.getSpecVersion()).toBe("0.6.0");
         break;
       default:
-        expect(await p.getSpecVersion()).toBe("0.7.1");
+        expect(await provider.getSpecVersion()).toBe("0.7.1");
         break;
     }
   });
-
-  it("checks the $ETH balance", async () => {
-    const c = config(env);
-    const amount = await ethBalance(c.accounts[0].address, c);
-    expect(amount).toBeGreaterThanOrEqual(3n * initial_EthTransfer);
-  });
-
-  it("checks the $STRK balance", async () => {
-    const c = config(env);
-    const amount = await strkBalance(c.accounts[0].address, c);
-    switch (env) {
-      case "sepolia":
-        expect(amount).toBe(0n);
-        break;
-      default:
-        expect(amount).toBeGreaterThanOrEqual(100000000000000000000n);
-        break;
-    }
-  });
-
-  it(
-    "transfers $ETH to new account",
-    async () => {
-      const conf = config(env);
-      const a = testAccounts[0];
-      const destAddress = conf.accounts[1].address;
-      const initialAmount = (await ethBalance(
-        conf.accounts[0].address,
-        conf
-      )) as bigint;
-      const receipt = await ethTransfer(a, destAddress, initial_EthTransfer);
-      expect(receipt.isSuccess()).toBe(true);
-      const finalAmount = (await ethBalance(
-        conf.accounts[0].address,
-        conf
-      )) as bigint;
-      expect(initialAmount - finalAmount).toBeGreaterThanOrEqual(
-        initial_EthTransfer - 1n
-      );
-    },
-    timeout
-  );
 });

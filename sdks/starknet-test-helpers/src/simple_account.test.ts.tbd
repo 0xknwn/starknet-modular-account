@@ -2,7 +2,7 @@ import { deployClass, classHash } from "./class";
 import { accountAddress, deployAccount } from "./simple_account";
 import { config, testAccount, provider, type AccountConfig } from "./utils";
 import { Account } from "starknet";
-import { timeout } from "./constants";
+import { default_timeout } from "./constants";
 
 describe.skip("simple account management", () => {
   let env: string;
@@ -41,7 +41,7 @@ describe.skip("simple account management", () => {
       const c = await deployClass(a, "SimpleAccount");
       expect(c.classHash).toEqual(classHash("SimpleAccount"));
     },
-    timeout
+    default_timeout
   );
 
   it(
@@ -52,6 +52,6 @@ describe.skip("simple account management", () => {
       const c = await deployAccount(a, "SimpleAccount", publicKey, "0x10");
       expect(c).toEqual(accountAddress("SimpleAccount", publicKey, "0x10"));
     },
-    timeout
+    default_timeout
   );
 });
