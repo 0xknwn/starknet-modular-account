@@ -1,7 +1,7 @@
 import { config, testAccounts } from "./utils";
 import { initial_EthTransfer, default_timeout } from "./parameters";
 import { ETH } from "./natives";
-import { RpcProvider, uint256 } from "starknet";
+import { RpcProvider, uint256, cairo } from "starknet";
 
 describe("native tokens management", () => {
   let env = "devnet";
@@ -12,7 +12,9 @@ describe("native tokens management", () => {
     const amount = await (
       await ETH(provider)
     ).balance_of(testAccounts(conf)[0].address);
-    expect(amount).toBeGreaterThanOrEqual(3n * uint256.uint256ToBN(initial_EthTransfer));
+    expect(amount).toBeGreaterThanOrEqual(
+      3n * uint256.uint256ToBN(initial_EthTransfer)
+    );
   });
 
   it("checks an $STRK balance", async () => {
@@ -26,7 +28,9 @@ describe("native tokens management", () => {
         expect(amount).toBe(0n);
         break;
       default:
-        expect(amount).toBeGreaterThanOrEqual(3n * uint256.uint256ToBN(initial_EthTransfer));
+        expect(amount).toBeGreaterThanOrEqual(
+          3n * uint256.uint256ToBN(initial_EthTransfer)
+        );
         break;
     }
   });
@@ -47,7 +51,9 @@ describe("native tokens management", () => {
       const receipt = await accounts[0].waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
       const finalAmount = (await eth.balance_of(destAddress)) as bigint;
-      expect(finalAmount - initialAmount).toBe(initial_EthTransfer);
+      expect(finalAmount - initialAmount).toBe(
+        uint256.uint256ToBN(initial_EthTransfer)
+      );
     },
     default_timeout
   );
