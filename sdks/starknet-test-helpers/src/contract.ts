@@ -3,6 +3,7 @@ import { Contract, Account, hash, ec } from "starknet";
 import { ABI as CounterABI } from "./abi/Counter";
 import { udcAddress, ETH } from "./natives";
 import { initial_EthTransfer } from "./parameters";
+import { type Abi } from "starknet";
 
 /**
  * Calculates the contract address for a given contract name, deployer address,
@@ -61,6 +62,7 @@ export const accountAddress = (
  */
 export const deployContract = async (
   contractName: string,
+  ABI: Abi,
   deployerAccount: Account,
   constructorCalldata: any[]
 ): Promise<Contract> => {
@@ -75,7 +77,7 @@ export const deployContract = async (
     );
     const v = await deployerAccount.getContractVersion(address);
     if (v.cairo == "1" && v.compiler == "2") {
-      return new Contract(CounterABI, address, deployerAccount);
+      return new Contract(ABI, address, deployerAccount);
     }
   } catch (e) {}
 
@@ -86,7 +88,7 @@ export const deployContract = async (
   });
   await deployerAccount.waitForTransaction(deployResponse.transaction_hash);
   return new Contract(
-    CounterABI,
+    ABI,
     deployResponse.contract_address,
     deployerAccount
   );

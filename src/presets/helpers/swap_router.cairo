@@ -106,13 +106,14 @@ mod SwapRouter {
 
         fn swap(ref self: ContractState, amount: u256) {
             self.pausable.assert_not_paused();
-            let tokenA: ContractAddress = self.tokenAAddress.read();
+            let tokenA = self.tokenAAddress.read();
             let caller = get_caller_address();
             let swaprouter = get_contract_address();
             IERC20Dispatcher { contract_address: tokenA }.transfer_from(caller, swaprouter, amount);
-            let amountB: u256 = amount * self.tokenConversionRate.read() / 1000000000000000000;
-            let tokenB: ContractAddress = self.tokenBAddress.read();
-            IERC20Dispatcher { contract_address: tokenB }.transfer(caller, amountB);
+            // let amountB = amount;
+            // let amountB: u256 = amount * self.tokenConversionRate.read() / 1000000000000000000;
+            // let tokenB = self.tokenBAddress.read();
+            // IERC20Dispatcher { contract_address: tokenB }.transfer(caller, amountB);
         }
 
         fn faucet(ref self: ContractState, amount: u256) {

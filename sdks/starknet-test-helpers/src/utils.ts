@@ -15,11 +15,6 @@ export type AccountConfig = {
   publicKey: string;
 };
 
-export type ContractConfig = {
-  classHash?: string;
-  address: string;
-};
-
 /**
  * Represents the configuration for the test helpers.
  */

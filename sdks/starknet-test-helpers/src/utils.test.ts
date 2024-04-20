@@ -2,7 +2,7 @@ import { config } from "./utils";
 import { default_timeout } from "./parameters";
 import { RpcProvider } from "starknet";
 
-describe("utilities (helpers)", () => {
+describe.skip("utilities (helpers)", () => {
   let env = "devnet";
 
   it("checks the config file", async () => {

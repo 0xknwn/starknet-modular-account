@@ -1,5 +1,5 @@
 import { declareClass, classHash } from "./class";
-import { testAccounts, config, type ContractConfig } from "./utils";
+import { testAccounts, config } from "./utils";
 import { deployCounter, counterAddress, CounterABI } from "./counter";
 import { default_timeout } from "./parameters";
 import { Contract, type Call, RpcProvider, Account } from "starknet";

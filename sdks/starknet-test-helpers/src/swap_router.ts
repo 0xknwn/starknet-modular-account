@@ -1,9 +1,8 @@
-import { classHash } from "./class";
-import { Contract, Call, RpcProvider, Account, CallData } from "starknet";
+import { Contract, Call, Account, CallData } from "starknet";
 import { ABI as SwapRouterABI } from "./abi/SwapRouter";
 import { contractAddress, deployContract } from "./contract";
 import { ERC20 } from "./tokens";
-
+import { type Uint256 } from "starknet";
 /**
  * Retrieves the swap router address from its deployer and owner.
  * @param deployerAddress - The address of the deployer.
@@ -35,7 +34,12 @@ export const deploySwapRouter = async (
   const _calldata = myCallData.compile("constructor", {
     owner: ownerAddress,
   });
-  return deployContract("SwapRouter", deployerAccount, _calldata);
+  return deployContract(
+    "SwapRouter",
+    SwapRouterABI,
+    deployerAccount,
+    _calldata
+  );
 };
 
 /**
@@ -56,7 +60,7 @@ export class SwapRouter extends Contract {
    * @param amount - The amount of tokens to request from the faucet.
    * @returns A promise that resolves to the transaction receipt once the transfer is complete.
    */
-  async faucet(amount: string) {
+  async faucet(amount: Uint256) {
     let call: Call = this.populate("faucet", {
       amount,
     });
@@ -110,7 +114,7 @@ export class SwapRouter extends Contract {
    * @param amount The amount of the token to be swapped.
    * @returns A promise that resolves to the transaction receipt once the swap is completed.
    */
-  async swap(tokenAAddress: string, amount: string) {
+  async swap(tokenAAddress: string, amount: Uint256) {
     const a = this.providerOrAccount as Account;
     const tokenAContract = new ERC20(tokenAAddress, a);
     let approveCall: Call = tokenAContract.populate("approve", {
@@ -120,6 +124,7 @@ export class SwapRouter extends Contract {
     let swapCall: Call = this.populate("swap", {
       amount,
     });
+    // console.log(swapCall);
     const { transaction_hash: transferTxHash } = await a.execute([
       approveCall,
       swapCall,
@@ -134,7 +139,7 @@ export class SwapRouter extends Contract {
    * @param amount - The amount to swap.
    * @returns A promise that resolves to the transaction receipt of the swap.
    */
-  async swap_minimum_at(tokenAAddress: string, rate: string, amount: string) {
+  async swap_minimum_at(tokenAAddress: string, rate: string, amount: Uint256) {
     const a = this.providerOrAccount as Account;
     const tokenAContract = new ERC20(tokenAAddress, a);
     let approveCall: Call = tokenAContract.populate("approve", {
@@ -154,13 +159,13 @@ export class SwapRouter extends Contract {
 
   /**
    * Swaps the maximum amount of tokens at a given rate.
-   * 
+   *
    * @param tokenAAddress - The address of the token A.
    * @param rate - The rate at which to swap the tokens.
    * @param amount - The amount of tokens to swap.
    * @returns A promise that resolves to the transaction receipt of the swap.
    */
-  async swap_maximum_at(tokenAAddress: string, rate: string, amount: string) {
+  async swap_maximum_at(tokenAAddress: string, rate: string, amount: Uint256) {
     const a = this.providerOrAccount as Account;
     const tokenAContract = new ERC20(tokenAAddress, a);
     let approveCall: Call = tokenAContract.populate("approve", {

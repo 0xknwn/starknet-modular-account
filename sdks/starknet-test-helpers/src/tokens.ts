@@ -1,4 +1,3 @@
-import { classHash } from "./class";
 import { Contract, RpcProvider, Account, CallData } from "starknet";
 import { deployContract } from "./contract";
 import { ABI as TokenAABI } from "./abi/TokenA";
@@ -6,8 +5,8 @@ import { ABI as TokenBABI } from "./abi/TokenB";
 
 import { ABI as ERC20ABI } from "./abi/TokenA";
 import { contractAddress } from "./contract";
+import { type Uint256 } from "starknet";
 
-/**
 /**
  * Represents an instance of the ERC20 contract.
  */
@@ -38,7 +37,7 @@ export class ERC20 extends Contract {
    * @throws {Error} - Throws an error when interacting with a RpcProvider and
    * not an Account.
    */
-  async transfer(recipient: string, amount: bigint) {
+  async transfer(recipient: string, amount: Uint256) {
     const account = this.providerOrAccount as Account;
     if (!account?.address) {
       throw new Error("Using ETH transfer without an account is not supported");
@@ -79,7 +78,7 @@ export const deployTokenA = async (
     recipient: recipientAddress,
     owner: ownerAddress,
   });
-  return deployContract("TokenA", deployerAccount, _calldata);
+  return deployContract("TokenA", TokenAABI, deployerAccount, _calldata);
 };
 
 /**
@@ -113,5 +112,5 @@ export const deployTokenB = async (
     recipient: recipientAddress,
     owner: ownerAddress,
   });
-  return deployContract("TokenB", deployerAccount, _calldata);
+  return deployContract("TokenB", TokenBABI, deployerAccount, _calldata);
 };

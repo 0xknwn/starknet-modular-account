@@ -33,7 +33,7 @@ export const deployCounter = async (
   const _calldata = myCallData.compile("constructor", {
     owner: ownerAddress,
   });
-  return deployContract("Counter", ownerAccount, _calldata);
+  return deployContract("Counter", CounterABI, ownerAccount, _calldata);
 };
 
 export { CounterABI };
