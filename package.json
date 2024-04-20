@@ -15,7 +15,8 @@
   "author": "0xknwn",
   "license": "MIT",
   "workspaces": [
-    "sdks/starknet-test-helpers"
+    "sdks/starknet-test-helpers",
+    "sdks/starknet-account"
   ],
   "devDependencies": {
     "@types/jest": "^29.5.12",
