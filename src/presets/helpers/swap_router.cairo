@@ -2,9 +2,10 @@ use starknet::ContractAddress;
 
 #[starknet::interface]
 trait ISwapRouter<TContractState> {
-    fn faucet(ref self: TContractState, amount: u256);
+    fn faucet(ref self: TContractState, amount: u256) -> bool;
     fn get_conversion_rate(self: @TContractState) -> u256;
-    fn get_token_a(ref self: TContractState) -> ContractAddress;
+    fn get_token_a(self: @TContractState) -> ContractAddress;
+    fn get_token_b(self: @TContractState) -> ContractAddress;
     fn set_conversion_rate(ref self: TContractState, rate: u256);
     fn set_tokens(
         ref self: TContractState, tokenAAddress: ContractAddress, tokenBAddress: ContractAddress
@@ -104,8 +105,12 @@ mod SwapRouter {
             self.tokenConversionRate.read()
         }
 
-        fn get_token_a(ref self: ContractState) -> ContractAddress {
+        fn get_token_a(self: @ContractState) -> ContractAddress {
             self.tokenAAddress.read()
+        }
+
+        fn get_token_b(self: @ContractState) -> ContractAddress {
+            self.tokenBAddress.read()
         }
 
         fn swap(ref self: ContractState, amount: u256) {
@@ -119,12 +124,12 @@ mod SwapRouter {
             IERC20Dispatcher { contract_address: tokenB }.transfer(caller, amountB);
         }
 
-        fn faucet(ref self: ContractState, amount: u256) {
+        fn faucet(ref self: ContractState, amount: u256) -> bool {
             self.pausable.assert_not_paused();
             assert(amount <= (2 * 1000000000000000000), 'Amount too high');
             let tokenA: ContractAddress = self.tokenAAddress.read();
             let caller = get_caller_address();
-            IERC20Dispatcher { contract_address: tokenA }.transfer(caller, amount);
+            IERC20Dispatcher { contract_address: tokenA }.transfer(caller, amount)
         }
 
         // Set the tokens to be swapped
@@ -161,6 +166,18 @@ mod tests {
     use snforge_std::{start_prank, stop_prank, CheatTarget};
 
     #[test]
+    #[should_panic(expected: ('Pausable: paused',))]
+    fn test_faucet() {
+        let owner: ContractAddress = 'owner'.try_into().unwrap();
+        let contract = declare("SwapRouter").unwrap();
+        let (contract_address, _) = contract.deploy(@array!['owner']).unwrap();
+        let dispatcher = ISwapRouterDispatcher { contract_address };
+        start_prank(CheatTarget::One(contract_address), owner);
+        let status = dispatcher.faucet(100000);
+        assert_eq!(status, true, "status should be true");
+    }
+
+    #[test]
     fn test_set_tokens() {
         let owner: ContractAddress = 'owner'.try_into().unwrap();
         let token_a: ContractAddress = 'token_a'.try_into().unwrap();
@@ -170,8 +187,10 @@ mod tests {
         let dispatcher = ISwapRouterDispatcher { contract_address };
         start_prank(CheatTarget::One(contract_address), owner);
         dispatcher.set_tokens(token_a, token_b);
-        let addr = dispatcher.get_token_a().try_into().unwrap();
+        let addr_a = dispatcher.get_token_a().try_into().unwrap();
+        let addr_b = dispatcher.get_token_b().try_into().unwrap();
         stop_prank(CheatTarget::One(contract_address));
-        assert_eq!(addr, 'token_a', "counter should be 'token_a'");
+        assert_eq!(addr_a, 'token_a', "token should be 'token_a'");
+        assert_eq!(addr_b, 'token_b', "token should be 'token_b'");
     }
 }
