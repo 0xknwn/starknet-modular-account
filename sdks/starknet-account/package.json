@@ -1,16 +1,18 @@
 {
   "name": "@0xknwn/starknet-account",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "start": "node dist/index.js",
-    "test": "jest"
+    "build:abi:CoreValidator": "npx abi-wan-kanabi --input ../../target/dev/smartr_CoreValidator.contract_class.json --output ./src/abi/CoreValidator.ts",
+    "build:abi:SmartrAccount": "npx abi-wan-kanabi --input ../../target/dev/smartr_SmartrAccount.contract_class.json --output ./src/abi/SmartrAccount.ts",
+    "build:abi": "mkdir -p src/abi && npm run build:abi:SmartrAccount && npm run build:abi:CoreValidator",
+    "test": "jest --runInBand"
   },
-  "author": "Dávid Szabó",
-  "license": "ISC",
+  "author": "0xknwn",
+  "license": "MIT",
   "dependencies": {
-    "@0xknwn/starknet-test-helpers": "^1.0.0"
+    "starknet-test-helpers": "^0.1.0"
   }
 }

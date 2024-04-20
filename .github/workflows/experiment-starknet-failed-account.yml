@@ -1,0 +1,8 @@
+name: starknet-failed-account tests
+on: workflow_dispatch
+
+jobs:
+  test:
+    uses: ./.github/workflows/_sdks_jest.yml
+    with:
+      workspace: "starknet-failed-account"
