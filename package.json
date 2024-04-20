@@ -15,9 +15,6 @@
   "author": "0xknwn",
   "license": "MIT",
   "workspaces": [
-    "experiments/starknet-failed-account",
-    "sdks/starknet-account",
-    "sdks/starknet-module-sessionkey",
     "sdks/starknet-test-helpers"
   ],
   "devDependencies": {
@@ -28,6 +25,8 @@
     "starknet": "^6.7.0",
     "ts-jest": "^29.1.2",
     "tslib": "^2.6.2",
+    "typedoc": "^0.25.13",
+    "typedoc-plugin-markdown": "^3.17.1",
     "typescript": "^4.9.5"
   }
 }
