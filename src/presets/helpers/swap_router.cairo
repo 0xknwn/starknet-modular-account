@@ -109,11 +109,14 @@ mod SwapRouter {
             let tokenA = self.tokenAAddress.read();
             let caller = get_caller_address();
             let swaprouter = get_contract_address();
+            // @todo: check why the estimateFee fails on this line
+            // Contract error: {"revert_error":"Error in the called contract (0x064b48806902a367c8598f4f95c305e8c1a1acba5f082d294a43793113115691):\nError at pc=0:4835:\nGot an exception while executing a hint.\nCairo traceback (most recent call last):\nUnknown location (pc=0:67)\nUnknown location (pc=0:1835)\nUnknown location (pc=0:2554)\nUnknown location (pc=0:3436)\nUnknown location (pc=0:4054)\nUnknown location (pc=0:4040)\n\nError in the called contract (0x05e59eeb9b47cde522762e280b064a0e8761cd965b99e859017f8243e4e05eda):\nError at pc=0:5904:\nGot an exception while executing a hint: Execution failed. Failure reason: 0x753235365f737562204f766572666c6f77 ('u256_sub Overflow').\nCairo traceback (most recent call last):\nUnknown location (pc=0:1516)\nUnknown location (pc=0:4827)\n\nError in the called contract (0x06c1310199a2c2739d580d98716f7e8261b2580c583b78b8db7fa54040e39e15):\nExecution failed. Failure reason: 0x753235365f737562204f766572666c6f77 ('u256_sub Overflow').\n"}
             IERC20Dispatcher { contract_address: tokenA }.transfer_from(caller, swaprouter, amount);
-            // let amountB = amount;
+            let amountB = amount;
+            // @todo: reenable the conversion rate
             // let amountB: u256 = amount * self.tokenConversionRate.read() / 1000000000000000000;
-            // let tokenB = self.tokenBAddress.read();
-            // IERC20Dispatcher { contract_address: tokenB }.transfer(caller, amountB);
+            let tokenB = self.tokenBAddress.read();
+            IERC20Dispatcher { contract_address: tokenB }.transfer(caller, amountB);
         }
 
         fn faucet(ref self: ContractState, amount: u256) {
