@@ -6,5 +6,7 @@ dist
 *.tsbuildinfo
 /book
 /index.html
+/docs/starknet-test-helpers
+/docs/starknet-account
 /.env.*
 /!.env.template.json

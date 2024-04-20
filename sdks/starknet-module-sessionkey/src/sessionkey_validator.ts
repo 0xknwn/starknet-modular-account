@@ -1,19 +1,7 @@
 import { Signer } from "starknet";
 import { hash_auth_message } from "./message";
 import { signatureToHexArray } from "./multisig";
-
-export type Authorization = {
-  accountAddress: string;
-  chainId: string;
-  selector: string;
-  validatorClass: string;
-  authKey: string;
-  expires: string;
-  root: string;
-  hash?: string;
-  grantorClass?: string;
-  signature: string[];
-};
+import { AccountModuleInterface } from "./types";
 
 export const __module_validate__ =
   "0x119c88dea7ff05dbe71c36247fc6682116f6dafa24089373d49aca7b2657017";
@@ -37,7 +25,7 @@ export class SessionKeyGrantor extends Signer {
   };
 }
 
-export class SessionKeyModule {
+export class SessionKeyModule implements AccountModuleInterface {
   protected auth: Authorization;
 
   constructor(

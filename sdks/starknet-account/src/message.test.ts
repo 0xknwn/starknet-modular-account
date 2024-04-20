@@ -1,7 +1,7 @@
 import { hash, ec, num } from "starknet";
 import { hash_auth_message } from "./message";
 
-describe.skip("message management", () => {
+describe("message management", () => {
   let env = "devnet";
   beforeAll(() => {
     env = "devnet";
