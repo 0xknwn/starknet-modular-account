@@ -12,6 +12,7 @@
     "build:abi:TokenA": "npx abi-wan-kanabi --input ../../target/dev/smartr_TokenA.contract_class.json --output ./src/abi/TokenA.ts",
     "build:abi:TokenB": "npx abi-wan-kanabi --input ../../target/dev/smartr_TokenB.contract_class.json --output ./src/abi/TokenB.ts",
     "build:abi": "mkdir -p src/abi && npm run build:abi:Counter && npm run build:abi:SimpleAccount && npm run build:abi:SwapRouter && npm run build:abi:TokenA && npm run build:abi:TokenB",
+    "doc": "typedoc && cp docs/modules.md ../../docs/starknet-test-helpers.md",
     "test": "jest --runInBand --verbose"
   },
   "author": "0xknwn",

@@ -10,7 +10,7 @@ describe("native tokens management", () => {
     const conf = config(env);
     const provider = new RpcProvider({ nodeUrl: conf.providerURL });
     const amount = await (
-      await ETH(provider)
+      await new ETH(provider)
     ).balance_of(testAccounts(conf)[0].address);
     expect(amount).toBeGreaterThanOrEqual(3n * initial_EthTransfer);
   });
@@ -18,7 +18,7 @@ describe("native tokens management", () => {
   it("checks an $STRK balance", async () => {
     const conf = config(env);
     const provider = new RpcProvider({ nodeUrl: conf.providerURL });
-    const amount = await ETH(provider).balance_of(
+    const amount = await new ETH(provider).balance_of(
       testAccounts(conf)[0].address
     );
     switch (env) {
@@ -36,14 +36,14 @@ describe("native tokens management", () => {
     async () => {
       const conf = config(env);
       const accounts = testAccounts(conf);
-      const eth = ETH(accounts[0]);
+      const eth = new ETH(accounts[0]);
       const destAddress = accounts[1].address;
       const initialAmount = (await eth.balance_of(destAddress)) as bigint;
-      const transferCall: Call = eth.populate("transfer", {
-        recipient: destAddress,
-        amount: initial_EthTransfer,
-      });
-      const { transaction_hash } = await accounts[0].execute(transferCall);
+
+      const { transaction_hash } = await eth.transfer(
+        destAddress,
+        initialAmount
+      );
       const receipt = await accounts[0].waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
       const finalAmount = (await eth.balance_of(destAddress)) as bigint;

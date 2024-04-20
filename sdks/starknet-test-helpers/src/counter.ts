@@ -38,66 +38,83 @@ export const deployCounter = async (
 
 export { CounterABI };
 
-// export const increment = async (
-//   a: Account,
-//   counterAddress: string,
-//   values: number[] | number = 1
-// ) => {
-//   if (!Array.isArray(values)) {
-//     values = [values];
-//   }
-//   if (values.length === 0) {
-//     throw new Error("values should not be empty");
-//   }
-//   const contract = new Contract(CounterABI, counterAddress, a).typedv2(
-//     CounterABI
-//   );
-//   let transferCalls: Call[] = [];
-//   for (const value of values) {
-//     let transferCall: Call = contract.populate("increment", {});
-//     if (value > 1) {
-//       transferCall = contract.populate("increment_by", {
-//         value: value,
-//       });
-//     }
-//     transferCalls.push(transferCall);
-//   }
-//   const { transaction_hash: transferTxHash } = await a.execute(transferCalls);
-//   return await a.waitForTransaction(transferTxHash);
-// };
+/**
+ * Represents a Counter contract.
+ */
+export class Counter extends Contract {
+  /**
+   * Creates an instance of the Counter contract.
+   * @param address The address of the contract.
+   * @param account The account used to interact with the contract.
+   */
+  constructor(address: string, account: Account) {
+    super(CounterABI, address, account);
+  }
 
-// export const increment_by_array = async (
-//   a: Account,
-//   counterAddress: string,
-//   values: number[] | number = 1
-// ) => {
-//   if (!Array.isArray(values)) {
-//     values = [values];
-//   }
-//   const contract = new Contract(CounterABI, counterAddress, a).typedv2(
-//     CounterABI
-//   );
-//   const transferCall = contract.populate("increment_by_array", {
-//     args: values,
-//   });
-//   let transferCalls: Call[] = [transferCall, transferCall];
+  /**
+   * Increments the counter by 1.
+   * @returns A promise that resolves to the result of the execution.
+   */
+  async increment() {
+    let transferCall: Call = this.populate("increment", {});
+    return await this.execute(transferCall);
+  }
 
-//   const { transaction_hash: transferTxHash } = await a.execute(transferCalls);
-//   return await a.waitForTransaction(transferTxHash);
-// };
+  /**
+   * Increments the counter by the specified value.
+   * @param value The value to increment the counter by.
+   * @returns A promise that resolves to the result of the execution.
+   */
+  async increment_by(value: number) {
+    let transferCall: Call = this.populate("increment_by", { value });
+    return await this.execute(transferCall);
+  }
 
-// export const reset = async (a: Account, counterAddress: string) => {
-//   const contract = new Contract(CounterABI, counterAddress, a).typedv2(
-//     CounterABI
-//   );
-//   const transferCall: Call = contract.populate("reset", {});
-//   const { transaction_hash: transferTxHash } = await a.execute(transferCall);
-//   return await a.waitForTransaction(transferTxHash);
-// };
+  /**
+   * Increments the counter by an array of numbers using a multicall of increment_by.
+   * @param values The array of values to increment the counter by.
+   * @returns A promise that resolves to the result of the execution.
+   */
+  async increment_by_multicall(values: number[]) {
+    if (values.length === 0) {
+      throw new Error("values should not be empty");
+    }
+    let transferCalls: Call[] = [];
+    for (const value of values) {
+      const transferCall: Call = this.populate("increment_by", { value });
+      transferCalls.push(transferCall);
+    }
+    return await this.execute(transferCalls);
+  }
 
-// export const get = async (a: Account, counterAddress: string) => {
-//   const contract = new Contract(CounterABI, counterAddress, a).typedv2(
-//     CounterABI
-//   );
-//   return await contract.get();
-// };
+  /**
+   * Increments the counter by an array of numbers using increment_by_array.
+   * @param args The array of values to increment the counter by.
+   * @returns A promise that resolves to the result of the execution.
+   */
+  async increment_by_array(args: number[]) {
+    if (!Array.isArray(args)) {
+      throw new Error("args should not be empty");
+    }
+    let transferCall: Call = this.populate("increment_by_array", { args });
+    return await this.execute(transferCall);
+  }
+
+  /**
+   * Resets the counter.
+   * @returns A promise that resolves to the result of the execution.
+   * @remarks This function requires the Account used by the Counter to be its owner.
+   */
+  async reset() {
+    let transferCall: Call = this.populate("reset", {});
+    return await this.execute(transferCall);
+  }
+
+  /**
+   * Gets the current value of the counter.
+   * @returns A promise that contains the counter value.
+   */
+  async get(): Promise<bigint> {
+    return await this.get();
+  }
+}
