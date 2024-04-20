@@ -132,7 +132,7 @@ export const deployAccount = async (
   } catch (e) {}
 
   // transfer some eth to the account
-  const { transaction_hash } = await new ETH(deployerAccount).transfer(
+  const { transaction_hash } = await ETH(deployerAccount).transfer(
     computedAccountAddress,
     initial_EthTransfer
   );
