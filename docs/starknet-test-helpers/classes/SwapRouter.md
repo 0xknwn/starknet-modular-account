@@ -75,7 +75,7 @@ Contract.constructor
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/swap_router.ts:54](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/swap_router.ts#L54)
+[sdks/starknet-test-helpers/src/swap_router.ts:54](https://github.com/0xknwn/starknet-modular-account/blob/b252147e67f1a93442e2234401250f5105244be9/sdks/starknet-test-helpers/src/swap_router.ts#L54)
 
 ## Properties
 
@@ -376,7 +376,7 @@ A promise that resolves to the transaction receipt once the transfer is complete
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/swap_router.ts:63](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/swap_router.ts#L63)
+[sdks/starknet-test-helpers/src/swap_router.ts:63](https://github.com/0xknwn/starknet-modular-account/blob/b252147e67f1a93442e2234401250f5105244be9/sdks/starknet-test-helpers/src/swap_router.ts#L63)
 
 ___
 
@@ -412,7 +412,7 @@ A promise that resolves to a bigint representing the conversion rate.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/swap_router.ts:107](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/swap_router.ts#L107)
+[sdks/starknet-test-helpers/src/swap_router.ts:107](https://github.com/0xknwn/starknet-modular-account/blob/b252147e67f1a93442e2234401250f5105244be9/sdks/starknet-test-helpers/src/swap_router.ts#L107)
 
 ___
 
@@ -529,7 +529,7 @@ A promise that resolves to the transaction receipt once the conversion rate is s
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/swap_router.ts:94](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/swap_router.ts#L94)
+[sdks/starknet-test-helpers/src/swap_router.ts:94](https://github.com/0xknwn/starknet-modular-account/blob/b252147e67f1a93442e2234401250f5105244be9/sdks/starknet-test-helpers/src/swap_router.ts#L94)
 
 ___
 
@@ -554,7 +554,7 @@ A promise that resolves to the transaction receipt once the transaction is confi
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/swap_router.ts:79](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/swap_router.ts#L79)
+[sdks/starknet-test-helpers/src/swap_router.ts:79](https://github.com/0xknwn/starknet-modular-account/blob/b252147e67f1a93442e2234401250f5105244be9/sdks/starknet-test-helpers/src/swap_router.ts#L79)
 
 ___
 
@@ -579,7 +579,7 @@ A promise that resolves to the transaction receipt once the swap is completed.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/swap_router.ts:117](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/swap_router.ts#L117)
+[sdks/starknet-test-helpers/src/swap_router.ts:117](https://github.com/0xknwn/starknet-modular-account/blob/b252147e67f1a93442e2234401250f5105244be9/sdks/starknet-test-helpers/src/swap_router.ts#L117)
 
 ___
 
@@ -605,7 +605,7 @@ A promise that resolves to the transaction receipt of the swap.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/swap_router.ts:168](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/swap_router.ts#L168)
+[sdks/starknet-test-helpers/src/swap_router.ts:168](https://github.com/0xknwn/starknet-modular-account/blob/b252147e67f1a93442e2234401250f5105244be9/sdks/starknet-test-helpers/src/swap_router.ts#L168)
 
 ___
 
@@ -631,7 +631,7 @@ A promise that resolves to the transaction receipt of the swap.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/swap_router.ts:142](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/swap_router.ts#L142)
+[sdks/starknet-test-helpers/src/swap_router.ts:142](https://github.com/0xknwn/starknet-modular-account/blob/b252147e67f1a93442e2234401250f5105244be9/sdks/starknet-test-helpers/src/swap_router.ts#L142)
 
 ___
 

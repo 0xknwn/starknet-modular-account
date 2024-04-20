@@ -70,7 +70,7 @@ Contract.constructor
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/tokens.ts:19](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/tokens.ts#L19)
+[sdks/starknet-test-helpers/src/tokens.ts:19](https://github.com/0xknwn/starknet-modular-account/blob/b252147e67f1a93442e2234401250f5105244be9/sdks/starknet-test-helpers/src/tokens.ts#L19)
 
 ## Properties
 
@@ -278,7 +278,7 @@ A promise that resolves to the balance of the address as a bigint.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/tokens.ts:28](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/tokens.ts#L28)
+[sdks/starknet-test-helpers/src/tokens.ts:28](https://github.com/0xknwn/starknet-modular-account/blob/b252147e67f1a93442e2234401250f5105244be9/sdks/starknet-test-helpers/src/tokens.ts#L28)
 
 ___
 
@@ -510,7 +510,7 @@ not an Account.
 
 #### Defined in
 
-[sdks/starknet-test-helpers/src/tokens.ts:40](https://github.com/0xknwn/starknet-modular-account/blob/840a6dafe49b1873f6605b7b75762738f0785693/sdks/starknet-test-helpers/src/tokens.ts#L40)
+[sdks/starknet-test-helpers/src/tokens.ts:40](https://github.com/0xknwn/starknet-modular-account/blob/b252147e67f1a93442e2234401250f5105244be9/sdks/starknet-test-helpers/src/tokens.ts#L40)
 
 ___
 
