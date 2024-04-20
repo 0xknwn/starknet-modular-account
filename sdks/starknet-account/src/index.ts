@@ -1,2 +1,2 @@
-import "@0xknwn/starknet-test-helpers";
+import "starknet-test-helpers";
 console.log("Hello from Web!");
