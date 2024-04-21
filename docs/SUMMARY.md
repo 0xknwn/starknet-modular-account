@@ -2,8 +2,6 @@
 
 - [Introduction](./README.md)
 - [Using SDKs](./SDK.md)
-- [Developing a Module]()
-- [Reference](./REFERENCE.md)
   - [@0xknwn/starknet-account](./starknet-account/modules.md)
     - [SmartrAccount class](./starknet-account/classes/SmartrAccount.md)
     - [AccountModuleInterface interface](./starknet-account/interfaces/AccountModuleInterface.md)
@@ -12,6 +10,8 @@
     - [Counter class](./starknet-test-helpers/classes/Counter.md)
     - [ERC20 class](./starknet-test-helpers/classes/ERC20.md)
     - [SwapRouter class](./starknet-test-helpers/classes/SwapRouter.md)
+- [Developing a Module]()
+- [Reference](./REFERENCE.md)
 - [Known Issues and Roadmap](./KNOWN-ISSUES.md)
 - [Contributing](./CONTRIBUTING.md)
   - [Writing code](./DEVELOPMENT.md)
