@@ -1,11 +1,8 @@
 import {
   declareClass,
   classHash,
-  deployCounter,
   testAccounts,
   default_timeout,
-  Counter,
-  counterAddress,
   config,
 } from "starknet-test-helpers";
 import {
@@ -15,39 +12,13 @@ import {
 } from "./smartr_account";
 import { RpcProvider } from "starknet";
 
-describe("account management", () => {
+describe("module management", () => {
   let env: string;
-  let counterContract: Counter;
   let smartrAccount: SmartrAccount;
 
   beforeAll(() => {
     env = "devnet";
   });
-
-  it(
-    "declare the Counter class",
-    async () => {
-      const conf = config(env);
-      const account = testAccounts(conf)[0];
-      const c = await declareClass(account, "Counter");
-      expect(c.classHash).toEqual(classHash("Counter"));
-    },
-    default_timeout
-  );
-
-  it(
-    "deploys the Counter contract",
-    async () => {
-      const conf = config(env);
-      const account = testAccounts(conf)[0];
-      const c = await deployCounter(account, account.address);
-      expect(c.address).toEqual(
-        await counterAddress(account.address, account.address)
-      );
-      counterContract = new Counter(c.address, testAccounts(conf)[0]);
-    },
-    default_timeout
-  );
 
   it(
     "deploys the coreValidator class",
@@ -107,45 +78,37 @@ describe("account management", () => {
   );
 
   it(
-    "checks the SmartAccount threshhold",
+    "checks module 0x0 is not installed",
+    async () => {
+      if (!smartrAccount) {
+        throw new Error("SmartrAccount is not deployed");
+      }
+      const output = await smartrAccount.is_module("0x0");
+      expect(output).toBe(false);
+    },
+    default_timeout
+  );
+
+  it(
+    "deploys the SimpleValidator class",
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await smartrAccount.get_threshold();
-      expect(c).toEqual(1n);
+      const c = await declareClass(a, "SimpleValidator");
+      expect(c.classHash).toEqual(classHash("SimpleValidator"));
     },
     default_timeout
   );
 
   it(
-    "resets the counter",
+    "adds a module to the account",
     async () => {
-      const conf = config(env);
-      const account = testAccounts(conf)[0];
-      if (!counterContract) {
-        throw new Error("Counter not deployed");
-      }
-      const { transaction_hash } = await counterContract.reset();
-      const receipt = await account.waitForTransaction(transaction_hash);
-      expect(receipt.isSuccess()).toBe(true);
-    },
-    default_timeout
-  );
-
-  it(
-    "increments the counter from SmartrAccount and succeed",
-    async () => {
-      if (!counterContract) {
-        throw new Error("Counter not deployed");
-      }
       if (!smartrAccount) {
-        throw new Error("SmartrAccount not installed");
+        throw new Error("SmartrAccount is not deployed");
       }
-      const counterWithSmartrAccount = new Counter(
-        counterContract.address,
-        smartrAccount
+      const { transaction_hash } = await smartrAccount.add_module(
+        classHash("SimpleValidator")
       );
-      const { transaction_hash } = await counterWithSmartrAccount.increment();
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
     },
@@ -153,36 +116,60 @@ describe("account management", () => {
   );
 
   it(
-    "reads the counter",
+    "checks the SimpleValidator is installed",
     async () => {
-      if (!counterContract) {
-        throw new Error("Counter not deployed");
+      if (!smartrAccount) {
+        throw new Error("SmartrAccount is not deployed");
       }
-      const c = await counterContract.get();
-      expect(c).toBeGreaterThan(0n);
+      const output = await smartrAccount.is_module(
+        classHash("SimpleValidator")
+      );
+      expect(output).toBe(true);
     },
     default_timeout
   );
 
   it(
-    "resets the counter from SmartrAccount and fails",
+    "adds a module to the account again and fails",
     async () => {
-      if (!counterContract) {
-        throw new Error("Counter not deployed");
-      }
       if (!smartrAccount) {
-        throw new Error("SmartrAccount not installed");
+        throw new Error("SmartrAccount is not deployed");
       }
-      const counterWithSmartrAccount = new Counter(
-        counterContract.address,
-        smartrAccount
-      );
       try {
-        await counterWithSmartrAccount.reset();
+        await smartrAccount.add_module(classHash("SimpleValidator"));
         expect(true).toBe(false);
       } catch (e) {
         expect(e).toBeDefined();
       }
+    },
+    default_timeout
+  );
+
+  it(
+    "removes the module from the account",
+    async () => {
+      if (!smartrAccount) {
+        throw new Error("SmartrAccount is not deployed");
+      }
+      const { transaction_hash } = await smartrAccount.remove_module(
+        classHash("SimpleValidator")
+      );
+      const receipt = await smartrAccount.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
+
+  it(
+    "checks the SimpleValidator is not installed",
+    async () => {
+      if (!smartrAccount) {
+        throw new Error("SmartrAccount is not deployed");
+      }
+      const output = await smartrAccount.is_module(
+        classHash("SimpleValidator")
+      );
+      expect(output).toBe(false);
     },
     default_timeout
   );
