@@ -1,6 +1,8 @@
-import { Account, CallData} from "starknet";
-import { ABI as AccountABI } from "./abi/SimpleAccount";
+import { Account, CallData } from "starknet";
+import { ABI as SimpleAccountABI } from "./abi/SimpleAccount";
 import { accountAddress, deployAccount } from "./contract";
+
+export { SimpleAccountABI };
 
 /**
  * Generates a simple account address based on the provided public key and
@@ -13,7 +15,7 @@ export const simpleAccountAddress = (
   publicKey: string,
   more: string
 ): string => {
-  const calldata = new CallData(AccountABI).compile("constructor", {
+  const calldata = new CallData(SimpleAccountABI).compile("constructor", {
     public_key: publicKey,
     more: more,
   });
@@ -33,7 +35,7 @@ export const deploySimpleAccount = async (
   publicKey: string,
   more: string
 ) => {
-  const callData = new CallData(AccountABI).compile("constructor", {
+  const callData = new CallData(SimpleAccountABI).compile("constructor", {
     public_key: publicKey,
     more: more,
   });
