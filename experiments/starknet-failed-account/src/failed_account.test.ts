@@ -8,10 +8,13 @@ import {
   counterAddress,
   config,
 } from "starknet-test-helpers";
+import { failedAccountAddress, deployFailedAccount } from "./failed_account";
+import { Account, RpcProvider } from "starknet";
 
 describe("sessionkey management", () => {
   let env: string;
-  let counterContract: Counter;
+  let counter: Counter;
+  let failedAccount: Account;
 
   beforeAll(() => {
     env = "devnet";
@@ -28,95 +31,144 @@ describe("sessionkey management", () => {
     default_timeout
   );
 
-  // it(
-  //   "deploys the counter contract",
-  //   async () => {
-  //     const a = testAccounts[0];
-  //     const c = await deployCounterContract(a);
-  //     expect(c.address).toEqual(counterAddress(a.address));
-  //     counterContract = {
-  //       classHash: classHash("Counter"),
-  //       address: counterAddress(a.address),
-  //     };
-  //   },
-  //   timeout
-  // );
+  it(
+    "deploys the Counter contract",
+    async () => {
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      const c = await deployCounter(account, account.address);
+      expect(c.address).toEqual(
+        await counterAddress(account.address, account.address)
+      );
+      counter = new Counter(c.address, testAccounts(conf)[0]);
+    },
+    default_timeout
+  );
 
-  // it(
-  //   "deploys the FailedAccount class",
-  //   async () => {
-  //     const a = testAccounts[0];
-  //     const c = await deployClass(a, "FailedAccount");
-  //     expect(c.classHash).toEqual(classHash("FailedAccount"));
-  //   },
-  //   timeout
-  // );
+  it(
+    "declares the FailedAccount class",
+    async () => {
+      const conf = config(env);
+      const a = testAccounts(conf)[0];
+      const c = await declareClass(a, "FailedAccount");
+      expect(c.classHash).toEqual(classHash("FailedAccount"));
+    },
+    default_timeout
+  );
 
-  // it(
-  //   "deploys the account contract",
-  //   async () => {
-  //     const a = testAccounts[0];
-  //     const publicKey = targetAccountConfigs[0].publicKey;
-  //     const c = await deployAccount(a, "FailedAccount", publicKey);
-  //     expect(c).toEqual(accountAddress("FailedAccount", publicKey));
-  //   },
-  //   timeout
-  // );
+  it(
+    "deploys the account",
+    async () => {
+      const conf = config(env);
+      const a = testAccounts(conf)[0];
+      const publicKey = conf.accounts[0].publicKey;
+      const c = await deployFailedAccount(a, publicKey);
+      expect(c).toEqual(failedAccountAddress(conf.accounts[0].publicKey));
+      failedAccount = new Account(
+        new RpcProvider({ nodeUrl: conf.providerURL }),
+        failedAccountAddress(conf.accounts[0].publicKey),
+        conf.accounts[0].privateKey
+      );
+    },
+    default_timeout
+  );
 
-  // it(
-  //   "resets the counter with owner",
-  //   async () => {
-  //     const a = testAccounts[0];
-  //     await reset(a, counterContract.address);
-  //   },
-  //   timeout
-  // );
+  it(
+    "resets the counter",
+    async () => {
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      if (!counter) {
+        throw new Error("Counter not deployed");
+      }
+      const { transaction_hash } = await counter.reset();
+      const receipt = await account.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
 
-  // it(
-  //   "reads the counter",
-  //   async () => {
-  //     const a = testAccounts[0];
-  //     const c = await get(a, counterContract.address);
-  //     expect(c).toBe(0n);
-  //   },
-  //   timeout
-  // );
+  it(
+    "increments the counter from FailedAccount and succeed",
+    async () => {
+      if (!counter) {
+        throw new Error("Counter not deployed");
+      }
+      if (!failedAccount) {
+        throw new Error("failedAccount not installed");
+      }
+      const counterWithFailedAccount = new Counter(
+        counter.address,
+        failedAccount
+      );
+      const { transaction_hash } = await counterWithFailedAccount.increment();
+      const receipt = await failedAccount.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
 
-  // it(
-  //   "increments the counter and succeed",
-  //   async () => {
-  //     const a = targetAccounts[0];
-  //     const c = await increment(a, counterContract.address, 1);
-  //     expect(c.isSuccess()).toBe(true);
-  //   },
-  //   timeout
-  // );
+  it(
+    "reads the counter",
+    async () => {
+      if (!counter) {
+        throw new Error("Counter not deployed");
+      }
+      const c = await counter.get();
+      expect(c).toBeGreaterThan(0n);
+    },
+    default_timeout
+  );
 
-  // it(
-  //   "increments the counter and fail",
-  //   async () => {
-  //     const a = new Account(
-  //       provider(altURL),
-  //       targetAccountConfigs[0].address,
-  //       targetAccountConfigs[0].privateKey
-  //     );
-  //     try {
-  //       await increment(a, counterContract.address, 1);
-  //       expect(true).toBe(false);
-  //     } catch (e) {
-  //       expect(e).toBeDefined();
-  //     }
-  //   },
-  //   timeout
-  // );
+  it(
+    "resets the counter",
+    async () => {
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      if (!counter) {
+        throw new Error("Counter not deployed");
+      }
+      const { transaction_hash } = await counter.reset();
+      const receipt = await account.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
 
-  // it(
-  //   "reads the counter",
-  //   async () => {
-  //     const a = testAccounts[0];
-  //     const c = await get(a, counterContract.address);
-  //     expect(c).toBe(1n);
-  //   },
-  //   timeout
-  // );
+  it(
+    "increments the counter from FailedAccount and fails",
+    async () => {
+      if (!counter) {
+        throw new Error("Counter not deployed");
+      }
+      if (!failedAccount) {
+        throw new Error("failedAccount not installed");
+      }
+      const counterWithFailedAccount = new Counter(
+        counter.address,
+        failedAccount
+      );
+      try {
+        const { transaction_hash } = await counterWithFailedAccount.increment();
+        const receipt =
+          await failedAccount.waitForTransaction(transaction_hash);
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e).toBeDefined();
+      }
+    },
+    default_timeout
+  );
+
+  it(
+    "reads the counter",
+    async () => {
+      if (!counter) {
+        throw new Error("Counter not deployed");
+      }
+      const c = await counter.get();
+      expect(c).toBe(0n);
+    },
+    default_timeout
+  );
 });

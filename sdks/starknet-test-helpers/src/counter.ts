@@ -57,7 +57,8 @@ export class Counter extends Contract {
    */
   async increment() {
     let transferCall: Call = this.populate("increment", {});
-    return await this.execute(transferCall);
+    let account = this.providerOrAccount as Account;
+    return await account.execute(transferCall);
   }
 
   /**
@@ -67,7 +68,8 @@ export class Counter extends Contract {
    */
   async increment_by(value: number) {
     let transferCall: Call = this.populate("increment_by", { value });
-    return await this.execute(transferCall);
+    let account = this.providerOrAccount as Account;
+    return await account.execute(transferCall);
   }
 
   /**
@@ -84,7 +86,8 @@ export class Counter extends Contract {
       const transferCall: Call = this.populate("increment_by", { value });
       transferCalls.push(transferCall);
     }
-    return await this.execute(transferCalls);
+    let account = this.providerOrAccount as Account;
+    return await account.execute(transferCalls);
   }
 
   /**
@@ -97,7 +100,8 @@ export class Counter extends Contract {
       throw new Error("args should not be empty");
     }
     let transferCall: Call = this.populate("increment_by_array", { args });
-    return await this.execute(transferCall);
+    let account = this.providerOrAccount as Account;
+    return await account.execute(transferCall);
   }
 
   /**
@@ -107,14 +111,7 @@ export class Counter extends Contract {
    */
   async reset() {
     let transferCall: Call = this.populate("reset", {});
-    return await this.execute(transferCall);
-  }
-
-  /**
-   * Gets the current value of the counter.
-   * @returns A promise that contains the counter value.
-   */
-  async get(): Promise<bigint> {
-    return await this.get();
+    let account = this.providerOrAccount as Account;
+    return await account.execute(transferCall);
   }
 }
