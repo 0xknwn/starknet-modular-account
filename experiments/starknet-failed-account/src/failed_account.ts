@@ -1,66 +1,37 @@
-import { ethTransfer } from "./utils";
-import { classHash } from "./class";
-import { hash, Account, CallData } from "starknet";
-import { initial_EthTransfer } from "./constants";
+import { Account, CallData } from "starknet";
 import { ABI as AccountABI } from "./abi/FailedAccount";
+import { accountAddress, deployAccount } from "starknet-test-helpers";
 
-// accountAddress compute the account address from the account public key.
-export const accountAddress = (
-  name: string = "FailedAccount",
-  publicKey: string
-): string => {
-  if (name !== "FailedAccount") {
-    throw new Error(`Unsupported account class: ${name}`);
-  }
-  const AccountClassHash = classHash(name);
-  const calldata = [publicKey];
-  return hash.calculateContractAddressFromHash(
-    publicKey,
-    AccountClassHash,
-    calldata,
-    0
-  );
-};
-
-export const deployAccount = async (
-  deployerAccount: Account,
-  name: string = "FailedAccount",
-  publicKey: string
-) => {
-  if (name !== "FailedAccount") {
-    throw new Error(`Unsupported account class: ${name}`);
-  }
-  const computedClassHash = classHash(name);
-  const AccountAddress = accountAddress(name, publicKey);
-  try {
-    const deployedClassHash =
-      await deployerAccount.getClassHashAt(AccountAddress);
-    if (deployedClassHash !== computedClassHash) {
-      throw new Error(
-        `Class mismatch: expect ${computedClassHash}, got ${deployedClassHash}`
-      );
-    }
-    return AccountAddress;
-  } catch (e) {}
-  const tx = await ethTransfer(
-    deployerAccount,
-    AccountAddress,
-    initial_EthTransfer
-  );
-  if (!tx.isSuccess()) {
-    throw new Error(`Failed to transfer eth to account: ${tx.statusReceipt}`);
-  }
+/**
+ * Generates a failed account address based on the provided public key.
+ * @param publicKey - The public key associated with the account.
+ * @returns The generated account address.
+ */
+export const failedAccountAddress = (publicKey: string): string => {
   const calldata = new CallData(AccountABI).compile("constructor", {
     public_key: publicKey,
   });
-  const { transaction_hash } = await deployerAccount.deployAccount({
-    classHash: computedClassHash,
-    constructorCalldata: calldata,
-    addressSalt: publicKey,
+  return accountAddress("FailedAccount", publicKey, calldata);
+};
+
+/**
+ * Deploys a failing account on the StarkNet network.
+ *
+ * @param deployerAccount - The account used to deploy the simple account.
+ * @param publicKey - The public key associated with the simple account.
+ * @returns A promise that resolves to the deployed simple account.
+ */
+export const deployFailedAccount = async (
+  deployerAccount: Account,
+  publicKey: string
+) => {
+  const callData = new CallData(AccountABI).compile("constructor", {
+    public_key: publicKey,
   });
-  const txReceipt = await deployerAccount.waitForTransaction(transaction_hash);
-  if (!txReceipt.isSuccess()) {
-    throw new Error(`Failed to deploy account: ${txReceipt.status}`);
-  }
-  return AccountAddress;
+  return await deployAccount(
+    deployerAccount,
+    "FailedAccount",
+    publicKey,
+    callData
+  );
 };

@@ -16,6 +16,7 @@
   "author": "0xknwn",
   "license": "MIT",
   "workspaces": [
+    "experiments/starknet-failed-account",
     "sdks/starknet-test-helpers",
     "sdks/starknet-account",
     "sdks/starknet-module-sessionkey"

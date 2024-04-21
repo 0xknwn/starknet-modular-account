@@ -1,2 +1,1 @@
-import "starknet-test-helpers";
-console.log("Hello from CLI!");
+export * from "./failed_account";

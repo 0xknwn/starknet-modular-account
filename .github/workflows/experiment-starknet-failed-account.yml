@@ -1,5 +1,16 @@
 name: starknet-failed-account tests
-on: workflow_dispatch
+# on: workflow_dispatch
+on:
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - '**'
+  push:
+    branches:
+      - 'develop'
+    paths:
+      - '**'
 
 jobs:
   test:
