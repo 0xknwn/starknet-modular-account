@@ -327,9 +327,7 @@ describe("sessionkey management", () => {
       const { transaction_hash } =
         await counterWithSmartrAccountAndModule.increment();
       const receipt =
-        await counterWithSmartrAccountAndModule.waitForTransaction(
-          transaction_hash
-        );
+        await smartrAccountWithSessionKey.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
     },
     default_timeout
