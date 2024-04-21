@@ -12,8 +12,8 @@ export const __module_validate__ =
 
 export class SessionKeyGrantor extends Signer {
   validatorGrantorClass: string;
-  constructor(validatorGrantorClass: string, pk?: Uint8Array | string) {
-    super(pk);
+  constructor(validatorGrantorClass: string, privateKey: Uint8Array | string) {
+    super(privateKey);
     this.validatorGrantorClass = validatorGrantorClass;
   }
 

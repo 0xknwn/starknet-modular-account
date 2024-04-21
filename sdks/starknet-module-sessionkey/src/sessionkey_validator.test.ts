@@ -272,7 +272,7 @@ describe("sessionkey management", () => {
     const conf = config(env);
     let grantor = new SessionKeyGrantor(
       classHash("CoreValidator"),
-      conf.accounts[0].publicKey
+      conf.accounts[0].privateKey
     );
     let signature = await grantor.sign(sessionKeyModule);
     expect(signature.length).toEqual(2);

@@ -8,7 +8,7 @@
     "build:abi:SessionKeyValidator": "npx abi-wan-kanabi --input ../../target/dev/smartr_SessionKeyValidator.contract_class.json --output ./src/abi/SessionKeyValidator.ts",
     "build:abi": "mkdir -p src/abi && npm run build:abi:SessionKeyValidator",
     "doc": "typedoc && mkdir -p ../../docs/starknet-module-sessionkey && cp -R docs/modules.md ../../docs/starknet-module-sessionkey/",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand --verbose"
   },
   "author": "0xknwn",
   "license": "MIT",
