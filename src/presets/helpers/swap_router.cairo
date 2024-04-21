@@ -181,15 +181,12 @@ mod tests {
         let owner = contract_address_const::<'owner'>();
         let contract = declare("SwapRouter").unwrap();
         let (contract_address, _) = contract.deploy(@array!['owner']).unwrap();
-
         let token_a = contract_address_const::<'token_a'>();
         let token_b = contract_address_const::<'token_b'>();
-
         let dispatcher = ISwapRouterDispatcher { contract_address };
         start_prank(CheatTarget::One(contract_address), owner);
         dispatcher.set_tokens(token_a, token_b);
         stop_prank(CheatTarget::One(contract_address));
-
         let addr_a = dispatcher.get_token_a();
         assert_eq!(addr_a, token_a, "token should be 'token_a'");
         let addr_b = dispatcher.get_token_b();
