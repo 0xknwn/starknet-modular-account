@@ -145,7 +145,6 @@ export class SmartrAccount extends Account {
    * Executes a set of transactions on the StarkNet network.
    *
    * @param transactions - An array of transactions to be executed.
-   * @param abis - Optional argument that can be an array of ABIs.
    * @param transactionsDetail - Optional object containing additional details for the transactions.
    * @returns A Promise that resolves to an InvokeFunctionResponse object representing the result of the execution.
    *
@@ -154,6 +153,15 @@ export class SmartrAccount extends Account {
     transactions: AllowArray<Call>,
     transactionsDetail?: UniversalDetails
   ): Promise<InvokeFunctionResponse>;
+  /**
+   * Executes a set of transactions on the StarkNet network.
+   *
+   * @param transactions - An array of transactions to be executed.
+   * @param abis - Optional argument that can be an array of ABIs.
+   * @param transactionsDetail - Optional object containing additional details for the transactions.
+   * @returns A Promise that resolves to an InvokeFunctionResponse object representing the result of the execution.
+   *
+   */
   public async execute(
     transactions: AllowArray<Call>,
     abis?: Abi[],
