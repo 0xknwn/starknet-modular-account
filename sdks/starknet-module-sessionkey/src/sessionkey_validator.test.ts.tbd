@@ -22,7 +22,10 @@ import {
 import { Multisig } from "./multisig";
 import { add_module, is_module, remove_module } from "./module";
 import { timeout } from "./constants";
-import { SessionKeyModule, SessionKeyGrantor } from "./sessionkey_validator";
+import {
+  SessionKeyModule,
+  SessionKeyGrantor,
+} from "./sessionkey_validator.ts.tbd";
 import { Account } from "starknet";
 import { hash_auth_message } from "./message";
 

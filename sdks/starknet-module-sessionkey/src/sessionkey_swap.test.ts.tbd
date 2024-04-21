@@ -25,11 +25,14 @@ import {
   balance_of,
   swap,
   swap_minimum_at,
-} from "./sessionkey_swap";
+} from "./sessionkey_swap.ts.tbd";
 import { Multisig } from "./multisig";
 import { add_module, is_module, remove_module } from "./module";
 import { timeout } from "./constants";
-import { SessionKeyModule, SessionKeyGrantor } from "./sessionkey_validator";
+import {
+  SessionKeyModule,
+  SessionKeyGrantor,
+} from "./sessionkey_validator.ts.tbd";
 import { Account, ec, hash, num } from "starknet";
 import type { Uint256 } from "starknet";
 import { hash_auth_message } from "./message";

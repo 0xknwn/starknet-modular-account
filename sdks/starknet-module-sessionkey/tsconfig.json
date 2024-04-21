@@ -4,5 +4,8 @@
     "rootDir": "src",
     "outDir": "dist"
   },
-  "references": [{ "path": "../starknet-test-helpers" }]
+  "references": [
+    { "path": "../starknet-test-helpers" },
+    { "path": "../starknet-account" }
+  ]
 }

@@ -17,7 +17,8 @@
   "license": "MIT",
   "workspaces": [
     "sdks/starknet-test-helpers",
-    "sdks/starknet-account"
+    "sdks/starknet-account",
+    "sdks/starknet-module-sessionkey"
   ],
   "devDependencies": {
     "@types/jest": "^29.5.12",
