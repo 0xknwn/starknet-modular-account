@@ -109,8 +109,6 @@ describe("multiple signature", () => {
   it(
     "checks the SmartAccount threshhold",
     async () => {
-      const conf = config(env);
-      const a = testAccounts(conf)[0];
       const c = await smartrAccount.get_threshold();
       expect(c).toEqual(1n);
     },
@@ -186,291 +184,339 @@ describe("multiple signature", () => {
     },
     default_timeout
   );
+
+  it(
+    "checks the SmartAccount threshhold",
+    async () => {
+      const c = await smartrAccount.get_threshold();
+      expect(c).toEqual(1n);
+    },
+    default_timeout
+  );
+
+  it(
+    "adds a 2nd public key to the account",
+    async () => {
+      const conf = config(env);
+      const { transaction_hash } = await smartrAccount.add_public_key(
+        conf.accounts[1].publicKey
+      );
+      const receipt = await smartrAccount.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
+
+  it(
+    "checks the new public key with the account",
+    async () => {
+      const c = await smartrAccount.get_public_keys();
+      expect(Array.isArray(c)).toBe(true);
+      expect(c.length).toEqual(2);
+      const conf = config(env);
+      expect(`0x${c[1].toString(16)}`).toEqual(conf.accounts[1].publicKey);
+    },
+    default_timeout
+  );
+
+  it(
+    "resets the counter with owner",
+    async () => {
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      const { transaction_hash } = await counterContract.reset();
+      const receipt = await account.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
+
+  it(
+    "increments the counter with newly added owner",
+    async () => {
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      const conf = config(env);
+      const p = new RpcProvider({ nodeUrl: conf.providerURL });
+      const altSmartrAccount = new SmartrAccount(p, smartrAccount.address, [
+        conf.accounts[1].privateKey,
+      ]);
+      const counterFromAltSmartrAccount = new Counter(
+        counterContract.address,
+        altSmartrAccount
+      );
+      const { transaction_hash } =
+        await counterFromAltSmartrAccount.increment();
+      const receipt =
+        await altSmartrAccount.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
+
+  it(
+    "reads the counter",
+    async () => {
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      const c = await counterContract.get();
+      expect(c).toBe(1n);
+    },
+    default_timeout
+  );
+
+  it(
+    "resets the counter with owner",
+    async () => {
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      const { transaction_hash } = await counterContract.reset();
+      const receipt = await account.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
+
+  it(
+    "updates the account threshold to 2",
+    async () => {
+      const { transaction_hash } = await smartrAccount.set_threshold(2n);
+      const receipt = await smartrAccount.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
+
+  it(
+    "adds a 3rd public key to the account",
+    async () => {
+      const conf = config(env);
+      const p = new RpcProvider({ nodeUrl: conf.providerURL });
+      const altSmartrAccount = new SmartrAccount(p, smartrAccount.address, [
+        conf.accounts[0].privateKey,
+        conf.accounts[1].privateKey,
+      ]);
+      const { transaction_hash } = await altSmartrAccount.add_public_key(
+        conf.accounts[2].publicKey
+      );
+      const receipt =
+        await altSmartrAccount.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
+
+  it(
+    "checks the new public key with the account",
+    async () => {
+      const c = await smartrAccount.get_public_keys();
+      expect(Array.isArray(c)).toBe(true);
+      expect(c.length).toEqual(3);
+      const conf = config(env);
+      expect(`0x${c[2].toString(16)}`).toEqual(conf.accounts[2].publicKey);
+    },
+    default_timeout
+  );
+
+  it(
+    "increments the counter with 2 of 3 signers",
+    async () => {
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      const conf = config(env);
+      const p = new RpcProvider({ nodeUrl: conf.providerURL });
+      const altSmartrAccount = new SmartrAccount(p, smartrAccount.address, [
+        conf.accounts[1].privateKey,
+        conf.accounts[2].privateKey,
+      ]);
+      const counterFromAltSmartrAccount = new Counter(
+        counterContract.address,
+        altSmartrAccount
+      );
+      const { transaction_hash } =
+        await counterFromAltSmartrAccount.increment();
+      const receipt =
+        await altSmartrAccount.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
+
+  it(
+    "reads the counter",
+    async () => {
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      const c = await counterContract.get();
+      expect(c).toBe(1n);
+    },
+    default_timeout
+  );
+
+  it(
+    "increments the counter with 1 of 3 signers and fails",
+    async () => {
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      const conf = config(env);
+      const p = new RpcProvider({ nodeUrl: conf.providerURL });
+      const altSmartrAccount = new SmartrAccount(p, smartrAccount.address, [
+        conf.accounts[0].privateKey,
+      ]);
+      const counterFromAltSmartrAccount = new Counter(
+        counterContract.address,
+        altSmartrAccount
+      );
+      try {
+        const { transaction_hash } =
+          await counterFromAltSmartrAccount.increment();
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e).toBeDefined();
+      }
+    },
+    default_timeout
+  );
+
+  it(
+    "resets the counter with owner",
+    async () => {
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      const { transaction_hash } = await counterContract.reset();
+      const receipt = await account.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
+
+  it(
+    "updates the account threshold to 1",
+    async () => {
+      const conf = config(env);
+      const p = new RpcProvider({ nodeUrl: conf.providerURL });
+      const altSmartrAccount = new SmartrAccount(p, smartrAccount.address, [
+        conf.accounts[1].privateKey,
+        conf.accounts[2].privateKey,
+      ]);
+      const { transaction_hash } = await altSmartrAccount.set_threshold(1n);
+      const receipt =
+        await altSmartrAccount.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
+
+  it(
+    "checks the SmartAccount threshhold is back to 1",
+    async () => {
+      const c = await smartrAccount.get_threshold();
+      expect(c).toEqual(1n);
+    },
+    default_timeout
+  );
+
+  it(
+    "increments the counter from SmartrAccount and succeed",
+    async () => {
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      if (!smartrAccount) {
+        throw new Error("SmartrAccount not installed");
+      }
+      const counterWithSmartrAccount = new Counter(
+        counterContract.address,
+        smartrAccount
+      );
+      const { transaction_hash } = await counterWithSmartrAccount.increment();
+      const receipt = await smartrAccount.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
+
+  it(
+    "removes the 2nd public key from the account",
+    async () => {
+      const conf = config(env);
+      const { transaction_hash } = await smartrAccount.remove_public_key(
+        conf.accounts[1].publicKey
+      );
+      const receipt = await smartrAccount.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
+
+  it(
+    "checks the public key with the account are 2",
+    async () => {
+      const c = await smartrAccount.get_public_keys();
+      expect(Array.isArray(c)).toBe(true);
+      expect(c.length).toEqual(2);
+      const conf = config(env);
+      expect(`0x${c[1].toString(16)}`).toEqual(conf.accounts[2].publicKey);
+    },
+    default_timeout
+  );
+
+  it(
+    "removes the ex-3rd public key from the account",
+    async () => {
+      const conf = config(env);
+      const { transaction_hash } = await smartrAccount.remove_public_key(
+        conf.accounts[2].publicKey
+      );
+      const receipt = await smartrAccount.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
+
+  it(
+    "checks the public key with the account are 1",
+    async () => {
+      const c = await smartrAccount.get_public_keys();
+      expect(Array.isArray(c)).toBe(true);
+      expect(c.length).toEqual(1);
+      const conf = config(env);
+      expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
+    },
+    default_timeout
+  );
+
+  it(
+    "increments the counter from SmartrAccount and succeed",
+    async () => {
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      if (!smartrAccount) {
+        throw new Error("SmartrAccount not installed");
+      }
+      const counterWithSmartrAccount = new Counter(
+        counterContract.address,
+        smartrAccount
+      );
+      const { transaction_hash } = await counterWithSmartrAccount.increment();
+      const receipt = await smartrAccount.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
 });
-
-//   it(
-//     "checks the account threshold",
-//     async () => {
-//       const conf = config(env);
-//       const p = provider(conf.providerURL);
-//       const a = new Multisig(p, targetAccounts[0].address, [
-//         targetAccounts[0].privateKey,
-//       ]);
-//       const c = await get_threshold(a);
-//       expect(c).toEqual(1n);
-//     },
-//     timeout
-//   );
-
-//   it(
-//     "resets the counter with owner",
-//     async () => {
-//       const a = testAccounts[0];
-//       await reset(a, counterContract.address);
-//     },
-//     timeout
-//   );
-
-//   it(
-//     "reads the counter",
-//     async () => {
-//       const a = testAccounts[0];
-//       const c = await get(a, counterContract.address);
-//       expect(c).toBe(0n);
-//     },
-//     timeout
-//   );
-
-//   it(
-//     "increments the counter",
-//     async () => {
-//       const conf = config(env);
-//       const p = provider(conf.providerURL);
-//       const a = new Multisig(p, targetAccounts[0].address, [
-//         targetAccounts[0].privateKey,
-//       ]);
-//       const c = await increment(a, counterContract.address, 1);
-//       expect(c.isSuccess()).toEqual(true);
-//     },
-//     timeout
-//   );
-
-//   it(
-//     "reads the counter",
-//     async () => {
-//       const a = testAccounts[0];
-//       const c = await get(a, counterContract.address);
-//       expect(c).toBe(1n);
-//     },
-//     timeout
-//   );
-
-//   it(
-//     "adds a 2nd public key to the account",
-//     async () => {
-//       const conf = config(env);
-//       const p = provider(conf.providerURL);
-//       const a = new Multisig(p, targetAccounts[0].address, [
-//         targetAccounts[0].privateKey,
-//       ]);
-//       await add_public_key(a, conf.accounts[1].publicKey);
-//     },
-//     timeout
-//   );
-
-//   it(
-//     "checks the new public key with the account",
-//     async () => {
-//       const conf = config(env);
-//       const p = provider(conf.providerURL);
-//       const a = new Multisig(p, targetAccounts[0].address, [
-//         targetAccounts[0].privateKey,
-//       ]);
-//       const c = await get_public_keys(a);
-//       expect(Array.isArray(c)).toBe(true);
-//       expect(c.length).toEqual(2);
-//       expect(`0x${c[1].toString(16)}`).toEqual(conf.accounts[1].publicKey);
-//     },
-//     timeout
-//   );
-
-//   it(
-//     "resets the counter with owner",
-//     async () => {
-//       const a = testAccounts[0];
-//       await reset(a, counterContract.address);
-//     },
-//     timeout
-//   );
-
-//   it(
-//     "increments the counter with newly added private key",
-//     async () => {
-//       const conf = config(env);
-//       const p = provider(conf.providerURL);
-//       const a = new Multisig(p, targetAccounts[0].address, [
-//         conf.accounts[1].privateKey,
-//       ]);
-//       const c = await increment(a, counterContract.address, 1);
-//       expect(c.isSuccess()).toEqual(true);
-//     },
-//     timeout
-//   );
-
-//   it(
-//     "updates the account threshold to 2",
-//     async () => {
-//       const conf = config(env);
-//       const p = provider(conf.providerURL);
-//       const a = new Multisig(p, targetAccounts[0].address, [
-//         targetAccounts[0].privateKey,
-//       ]);
-//       const c = await set_threshold(a, 2n);
-//       expect(c.isSuccess()).toEqual(true);
-//     },
-//     timeout
-//   );
-
-//   it(
-//     "adds a 3rd public key to the account",
-//     async () => {
-//       const conf = config(env);
-//       const p = provider(conf.providerURL);
-//       const a = new Multisig(p, targetAccounts[0].address, [
-//         targetAccounts[0].privateKey,
-//         conf.accounts[1].privateKey,
-//       ]);
-//       await add_public_key(a, conf.accounts[2].publicKey);
-//     },
-//     timeout
-//   );
-
-//   it(
-//     "checks the new public key with the account",
-//     async () => {
-//       const conf = config(env);
-//       const p = provider(conf.providerURL);
-//       const a = new Multisig(p, targetAccounts[0].address, [
-//         targetAccounts[0].privateKey,
-//       ]);
-//       const c = await get_public_keys(a);
-//       expect(Array.isArray(c)).toBe(true);
-//       expect(c.length).toEqual(3);
-//       expect(`0x${c[2].toString(16)}`).toEqual(conf.accounts[2].publicKey);
-//     },
-//     timeout
-//   );
-
-//   it(
-//     "increments the counter with 2 of 3 signers",
-//     async () => {
-//       const conf = config(env);
-//       const p = provider(conf.providerURL);
-//       const a = new Multisig(p, targetAccounts[0].address, [
-//         conf.accounts[1].privateKey,
-//         conf.accounts[2].privateKey,
-//       ]);
-//       const c1 = await increment(a, counterContract.address, 1);
-//       expect(c1.isSuccess()).toEqual(true);
-//       const c2 = await get(testAccounts[0], counterContract.address);
-//       expect(c2).toBe(2n);
-//     },
-//     timeout
-//   );
-
-//   it(
-//     "increments the counter with 1 signer and fails",
-//     async () => {
-//       const conf = config(env);
-//       const p = provider(conf.providerURL);
-//       const a = new Multisig(p, targetAccounts[0].address, [
-//         targetAccounts[0].privateKey,
-//       ]);
-//       try {
-//         const c1 = await increment(a, counterContract.address, 1);
-//         expect(false).toBe(true);
-//       } catch (e) {
-//         expect(e).toBeDefined();
-//       }
-//       const c2 = await get(testAccounts[0], counterContract.address);
-//       expect(c2).toBe(2n);
-//     },
-//     timeout
-//   );
-
-//   it(
-//     "updates the account threshold back to 1",
-//     async () => {
-//       const conf = config(env);
-//       const p = provider(conf.providerURL);
-//       const a = new Multisig(p, targetAccounts[0].address, [
-//         targetAccounts[0].privateKey,
-//         conf.accounts[1].privateKey,
-//       ]);
-//       const c = await set_threshold(a, 1n);
-//       expect(c.isSuccess()).toEqual(true);
-//     },
-//     timeout
-//   );
-
-//   it(
-//     "checks the account threshold is 1",
-//     async () => {
-//       const conf = config(env);
-//       const p = provider(conf.providerURL);
-//       const a = new Multisig(p, targetAccounts[0].address, [
-//         targetAccounts[0].privateKey,
-//         conf.accounts[1].privateKey,
-//       ]);
-//       const c = await get_threshold(a);
-//       expect(c).toEqual(1n);
-//     },
-//     timeout
-//   );
-
-//   it(
-//     "increments the counter with one signer",
-//     async () => {
-//       const conf = config(env);
-//       const p = provider(conf.providerURL);
-//       const a = new Multisig(p, targetAccounts[0].address, [
-//         targetAccounts[0].privateKey,
-//       ]);
-//       const c1 = await increment(a, counterContract.address, 1);
-//       expect(c1.isSuccess()).toEqual(true);
-//       const c2 = await get(testAccounts[0], counterContract.address);
-//       expect(c2).toBe(3n);
-//     },
-//     timeout
-//   );
-
-//   it(
-//     "removes a public key from the account",
-//     async () => {
-//       const conf = config(env);
-//       const p = provider(conf.providerURL);
-//       const a = new Multisig(p, targetAccounts[0].address, [
-//         targetAccounts[0].privateKey,
-//       ]);
-//       await remove_public_key(a, conf.accounts[2].publicKey);
-//       const c = await get_public_keys(a);
-//       expect(Array.isArray(c)).toBe(true);
-//       expect(c.length).toEqual(2);
-//       expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
-//     },
-//     timeout
-//   );
-
-//   it(
-//     "removes a public key from the account again",
-//     async () => {
-//       const conf = config(env);
-//       const p = provider(conf.providerURL);
-//       const a = new Multisig(p, targetAccounts[0].address, [
-//         targetAccounts[0].privateKey,
-//       ]);
-//       await remove_public_key(a, conf.accounts[1].publicKey);
-//       const c = await get_public_keys(a);
-//       expect(Array.isArray(c)).toBe(true);
-//       expect(c.length).toEqual(1);
-//       expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
-//     },
-//     timeout
-//   );
-
-//   it(
-//     "increments the counter with 1 signer and succeeds",
-//     async () => {
-//       const conf = config(env);
-//       const p = provider(conf.providerURL);
-//       const a = new Multisig(p, targetAccounts[0].address, [
-//         targetAccounts[0].privateKey,
-//       ]);
-//       const c1 = await increment(a, counterContract.address, 1);
-//       expect(c1.isSuccess()).toEqual(true);
-//       const c2 = await get(testAccounts[0], counterContract.address);
-//       expect(c2).toBe(4n);
-//     },
-//     timeout
-//   );
-// });
