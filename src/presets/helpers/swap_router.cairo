@@ -162,7 +162,6 @@ use snforge_std::errors::{SyscallResultStringErrorTrait, PanicDataOrString};
 mod tests {
     use super::{SwapRouter, ISwapRouterDispatcher, ISwapRouterDispatcherTrait};
     use snforge_std::{declare, ContractClassTrait};
-    use starknet::{SyscallResultTrait, ContractAddress, get_caller_address};
     use snforge_std::{start_prank, stop_prank, CheatTarget};
     use starknet::contract_address_const;
 
