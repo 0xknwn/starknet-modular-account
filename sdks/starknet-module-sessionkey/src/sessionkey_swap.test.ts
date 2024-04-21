@@ -392,4 +392,33 @@ describe("sessionkey swap", () => {
     },
     default_timeout
   );
+
+  it(
+    "removes the module from the account",
+    async () => {
+      if (!smartrAccount) {
+        throw new Error("SmartrAccount is not deployed");
+      }
+      const { transaction_hash } = await smartrAccount.remove_module(
+        classHash("SessionKeyValidator")
+      );
+      const receipt = await smartrAccount.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
+
+  it(
+    "checks the SessionKeyValidator is not installed",
+    async () => {
+      if (!smartrAccount) {
+        throw new Error("SmartrAccount is not deployed");
+      }
+      const output = await smartrAccount.is_module(
+        classHash("SessionKeyValidator")
+      );
+      expect(output).toBe(false);
+    },
+    default_timeout
+  );
 });
