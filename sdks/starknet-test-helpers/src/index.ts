@@ -1,4 +1,4 @@
-export { default_timeout } from "./parameters";
+export * from "./parameters";
 export { accountAddress, deployAccount } from "./contract";
 export * from "./class";
 export * from "./counter";

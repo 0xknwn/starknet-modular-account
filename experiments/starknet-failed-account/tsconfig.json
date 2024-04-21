@@ -4,5 +4,9 @@
     "rootDir": "src",
     "outDir": "dist"
   },
-  "references": [{ "path": "../../sdks/starknet-test-helpers" }]
-}
+  "references": [{ "path": "../../sdks/starknet-test-helpers" }],
+  "typedocOptions": {
+    "entryPoints": ["src/index.ts"],
+    "out": "docs",
+    "plugin": "typedoc-plugin-markdown"
+  }}

@@ -1,6 +1,4 @@
-import { classHash } from "./class";
-import { hash, Account, CallData, Contract } from "starknet";
-import { initial_EthTransfer } from "./parameters";
+import { Account, CallData} from "starknet";
 import { ABI as AccountABI } from "./abi/SimpleAccount";
 import { accountAddress, deployAccount } from "./contract";
 

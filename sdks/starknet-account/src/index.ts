@@ -1,2 +1,2 @@
-import "starknet-test-helpers";
-console.log("Hello from Web!");
+export * from "./message";
+export * from "./smartr_account";

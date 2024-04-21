@@ -1,5 +1,9 @@
 import { deployClass } from "./class";
-import { accountAddress, deployAccount, upgrade } from "./smartr_account";
+import {
+  accountAddress,
+  deployAccount,
+  upgrade,
+} from "./smartr_account.ts.tbd";
 import { config, provider, testAccount, type AccountConfig } from "./utils";
 import { classHash } from "./class";
 import { Account } from "starknet";

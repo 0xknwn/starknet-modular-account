@@ -1,19 +1,11 @@
 import { Signer } from "starknet";
-import { hash_auth_message } from "./message";
-import { signatureToHexArray } from "./multisig";
 
-export type Authorization = {
-  accountAddress: string;
-  chainId: string;
-  selector: string;
-  validatorClass: string;
-  authKey: string;
-  expires: string;
-  root: string;
-  hash?: string;
-  grantorClass?: string;
-  signature: string[];
-};
+import {
+  AccountModuleInterface,
+  signatureToHexArray,
+  Authorization,
+  hash_auth_message,
+} from "@0xknwn/starknet-account";
 
 export const __module_validate__ =
   "0x119c88dea7ff05dbe71c36247fc6682116f6dafa24089373d49aca7b2657017";
@@ -25,7 +17,7 @@ export class SessionKeyGrantor extends Signer {
     this.validatorGrantorClass = validatorGrantorClass;
   }
 
-  sign = async (module: SessionKeyModule) => {
+  async sign(module: SessionKeyModule) {
     const request = await module.request(this.validatorGrantorClass);
     if (!request.hash) {
       throw new Error("hash not set");
@@ -34,10 +26,10 @@ export class SessionKeyGrantor extends Signer {
     let sig = signatureToHexArray(signature);
 
     return sig;
-  };
+  }
 }
 
-export class SessionKeyModule {
+export class SessionKeyModule implements AccountModuleInterface {
   protected auth: Authorization;
 
   constructor(
@@ -60,7 +52,7 @@ export class SessionKeyModule {
     };
   }
 
-  public request = async (grantorClass: string) => {
+  async request(grantorClass: string) {
     if (this.auth.grantorClass && this.auth.grantorClass !== grantorClass) {
       throw new Error("reset grantor before requesting again");
     }
@@ -79,23 +71,23 @@ export class SessionKeyModule {
       hash: hash,
     };
     return auth;
-  };
+  }
 
-  public add_signature = async (signature: string[]) => {
+  async add_signature(signature: string[]) {
     if (!this.auth.signature) {
       this.auth.signature = [];
     }
     this.auth.signature?.push(...signature);
-  };
+  }
 
-  public reset = async (signature: string[]) => {
+  async reset(signature: string[]) {
     delete this.auth.grantorClass;
     if (!this.auth.signature) {
       this.auth.signature = [];
     }
-  };
+  }
 
-  public prefix = () => {
+  prefix() {
     if (!this.auth.grantorClass) {
       throw new Error("grantor should be set before prefixing");
     }
@@ -120,5 +112,5 @@ export class SessionKeyModule {
       contractAddress: this.auth.accountAddress,
       calldata,
     };
-  };
+  }
 }

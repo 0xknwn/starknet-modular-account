@@ -8,14 +8,18 @@
     "build:abi:SessionKeyValidator": "npx abi-wan-kanabi --input ./target/dev/smartr_SessionKeyValidator.contract_class.json --output ./__integration__/abi/SessionKeyValidator.ts",
     "build:abi": "npm run build:abi:FailedAccount && npm run build:abi:SessionKeyValidator",
     "build:scarb": "scarb build",
-    "doc": "mdbook serve --open -d book",
+    "doc": "npm run doc -ws --if-present",
+    "mdbook": "mdbook serve --open -d book",
     "resource:scarb": "scarb run resource",
     "test:scarb": "scarb run test"
   },
   "author": "0xknwn",
   "license": "MIT",
   "workspaces": [
-    "sdks/starknet-test-helpers"
+    "experiments/starknet-failed-account",
+    "sdks/starknet-test-helpers",
+    "sdks/starknet-account",
+    "sdks/starknet-module-sessionkey"
   ],
   "devDependencies": {
     "@types/jest": "^29.5.12",

@@ -1,6 +1,8 @@
 {
   "files": [],
   "references": [
-    { "path": "sdks/starknet-test-helpers" }
+    { "path": "sdks/starknet-test-helpers" },
+    { "path": "sdks/starknet-account" },
+    { "path": "sdks/starknet-module-sessionkey" }
   ]
 }

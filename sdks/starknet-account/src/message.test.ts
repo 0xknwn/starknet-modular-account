@@ -1,15 +1,10 @@
 import { hash, ec, num } from "starknet";
 import { hash_auth_message } from "./message";
-import { testAccount, config } from "./utils";
-import { Account } from "starknet";
 
-describe.skip("message management", () => {
-  let env: string;
-  let testAccounts: Account[];
+describe("message management", () => {
+  let env = "devnet";
   beforeAll(() => {
     env = "devnet";
-    const conf = config(env);
-    testAccounts = [testAccount(0, conf), testAccount(1, conf)];
   });
 
   it("computes the hash with computeHashOnElements", async () => {
