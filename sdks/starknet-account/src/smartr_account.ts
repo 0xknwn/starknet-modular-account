@@ -22,6 +22,8 @@ import type {
   ArraySignatureType,
   Signature,
   WeierstrassSignatureType,
+  AccountInvocations,
+  getSimulateTransactionOptions,
 } from "starknet";
 
 export type Authorization = {
@@ -139,6 +141,17 @@ export class SmartrAccount extends Account {
         : pkOrSigner
     );
     this.module = module;
+  }
+
+  /**
+   * @param invocations Invocations
+   * @param options blockIdentifier and flags to skip validation and fee charges
+   */
+  public async getSimulateTransaction(
+    invocations: AccountInvocations,
+    options: getSimulateTransactionOptions = {}
+  ) {
+    return super.getSimulateTransaction(invocations, options);
   }
 
   /**
