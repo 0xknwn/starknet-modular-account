@@ -1,125 +1,192 @@
-import { deployClass, classHash } from "./class";
 import {
-  accountAddress,
-  deployAccount,
-  get_threshold,
-  get_public_keys,
-  add_public_key,
-  set_threshold,
-  remove_public_key,
-} from "./smartr_account.ts.tbd";
-// import {
-//   config,
-//   testAccount,
-//   provider,
-//   type AccountConfig,
-//   type ContractConfig,
-import { config } from "starknet-test-helpers";
-import {
-  reset,
-  increment,
-  get,
-  deployCounterContract,
+  declareClass,
+  classHash,
+  deployCounter,
+  testAccounts,
+  default_timeout,
+  Counter,
   counterAddress,
-} from "./counter";
-import { Multisig } from "./multisig.ts.tbd";
-import { timeout } from "./constants";
-import { Account } from "starknet";
+  config,
+} from "starknet-test-helpers";
+import {
+  SmartrAccount,
+  deploySmartrAccount,
+  smartrAccountAddress,
+} from "./smartr_account";
+import { RpcProvider } from "starknet";
 
-// describe.skip("multiple signatures", () => {
-//   let env: string;
-//   let testAccounts: Account[];
-//   let targetAccounts: AccountConfig[];
-//   let counterContract: ContractConfig;
-//   beforeAll(() => {
-//     env = "devnet";
-//     const conf = config(env);
-//     testAccounts = [testAccount(0, conf), testAccount(1, conf)];
-//     targetAccounts = [
-//       {
-//         classHash: classHash("SmartrAccount"),
-//         address: accountAddress("SmartrAccount", conf.accounts[0].publicKey),
-//         publicKey: conf.accounts[0].publicKey,
-//         privateKey: conf.accounts[0].privateKey,
-//       },
-//     ];
-//   });
+describe("multiple signature", () => {
+  let env: string;
+  let counterContract: Counter;
+  let smartrAccount: SmartrAccount;
 
-//   it(
-//     "deploys the Counter class",
-//     async () => {
-//       const a = testAccounts[0];
-//       const c = await deployClass(a, "Counter");
-//       expect(c.classHash).toEqual(classHash("Counter"));
-//     },
-//     timeout
-//   );
+  beforeAll(() => {
+    env = "devnet";
+  });
 
-//   it(
-//     "deploys the counter contract",
-//     async () => {
-//       const a = testAccounts[0];
-//       const c = await deployCounterContract(a);
-//       expect(c.address).toEqual(counterAddress(a.address));
-//       counterContract = {
-//         classHash: classHash("Counter"),
-//         address: counterAddress(a.address),
-//       };
-//     },
-//     timeout
-//   );
+  it(
+    "declare the Counter class",
+    async () => {
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      const c = await declareClass(account, "Counter");
+      expect(c.classHash).toEqual(classHash("Counter"));
+    },
+    default_timeout
+  );
 
-//   it(
-//     "deploys the CoreValidator class",
-//     async () => {
-//       const a = testAccounts[0];
-//       const c = await deployClass(a, "CoreValidator");
-//       expect(c.classHash).toEqual(classHash("CoreValidator"));
-//     },
-//     timeout
-//   );
+  it(
+    "deploys the Counter contract",
+    async () => {
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      const c = await deployCounter(account, account.address);
+      expect(c.address).toEqual(
+        await counterAddress(account.address, account.address)
+      );
+      counterContract = new Counter(c.address, testAccounts(conf)[0]);
+    },
+    default_timeout
+  );
 
-//   it(
-//     "deploys the Account class",
-//     async () => {
-//       const a = testAccounts[0];
-//       const c = await deployClass(a, "SmartrAccount");
-//       expect(c.classHash).toEqual(classHash("SmartrAccount"));
-//     },
-//     timeout
-//   );
+  it(
+    "deploys the coreValidator class",
+    async () => {
+      const conf = config(env);
+      const a = testAccounts(conf)[0];
+      const c = await declareClass(a, "CoreValidator");
+      expect(c.classHash).toEqual(classHash("CoreValidator"));
+    },
+    default_timeout
+  );
 
-//   it(
-//     "deploys the account contract",
-//     async () => {
-//       const conf = config(env);
-//       const a = testAccounts[0];
-//       const publicKey = conf.accounts[0].publicKey;
-//       const c = await deployAccount(
-//         a,
-//         "SmartrAccount",
-//         await a.signer.getPubKey()
-//       );
-//       expect(c).toEqual(accountAddress("SmartrAccount", publicKey));
-//     },
-//     timeout
-//   );
+  it(
+    "deploys the SmartrAccount class",
+    async () => {
+      const conf = config(env);
+      const a = testAccounts(conf)[0];
+      const c = await declareClass(a, "SmartrAccount");
+      expect(c.classHash).toEqual(classHash("SmartrAccount"));
+    },
+    default_timeout
+  );
 
-//   it(
-//     "checks the account public keys",
-//     async () => {
-//       const conf = config(env);
-//       const p = provider(conf.providerURL);
-//       const a = new Multisig(p, targetAccounts[0].address, [
-//         conf.accounts[0].privateKey,
-//       ]);
-//       const c = await get_public_keys(a);
-//       expect(Array.isArray(c)).toBe(true);
-//       expect(c.length).toEqual(1);
-//       expect(`0x${c[0].toString(16)}`).toEqual(targetAccounts[0].publicKey);
-//     },
-//     timeout
-//   );
+  it(
+    "deploys a SmartrAccount account",
+    async () => {
+      const conf = config(env);
+      const a = testAccounts(conf)[0];
+      const p = new RpcProvider({ nodeUrl: conf.providerURL });
+      const publicKey = conf.accounts[0].publicKey;
+      const privateKey = conf.accounts[0].privateKey;
+      const coreValidatorAddress = classHash("CoreValidator");
+      const accountAddress = await deploySmartrAccount(
+        a,
+        publicKey,
+        coreValidatorAddress
+      );
+      expect(accountAddress).toEqual(
+        smartrAccountAddress(publicKey, coreValidatorAddress)
+      );
+      smartrAccount = new SmartrAccount(p, accountAddress, [privateKey]);
+    },
+    default_timeout
+  );
+
+  it(
+    "checks the SmartAccount public keys",
+    async () => {
+      const conf = config(env);
+      const a = testAccounts(conf)[0];
+      const c = await smartrAccount.get_public_keys();
+      expect(Array.isArray(c)).toBe(true);
+      expect(c.length).toEqual(1);
+      expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
+    },
+    default_timeout
+  );
+
+  it(
+    "checks the SmartAccount threshhold",
+    async () => {
+      const conf = config(env);
+      const a = testAccounts(conf)[0];
+      const c = await smartrAccount.get_threshold();
+      expect(c).toEqual(1n);
+    },
+    default_timeout
+  );
+
+  it(
+    "resets the counter",
+    async () => {
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      const { transaction_hash } = await counterContract.reset();
+      const receipt = await account.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
+
+  it(
+    "increments the counter from SmartrAccount and succeed",
+    async () => {
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      if (!smartrAccount) {
+        throw new Error("SmartrAccount not installed");
+      }
+      const counterWithSmartrAccount = new Counter(
+        counterContract.address,
+        smartrAccount
+      );
+      const { transaction_hash } = await counterWithSmartrAccount.increment();
+      const receipt = await smartrAccount.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
+
+  it(
+    "reads the counter",
+    async () => {
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      const c = await counterContract.get();
+      expect(c).toBeGreaterThan(0n);
+    },
+    default_timeout
+  );
+
+  it(
+    "resets the counter from SmartrAccount and fails",
+    async () => {
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      if (!smartrAccount) {
+        throw new Error("SmartrAccount not installed");
+      }
+      const counterWithSmartrAccount = new Counter(
+        counterContract.address,
+        smartrAccount
+      );
+      try {
+        await counterWithSmartrAccount.reset();
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e).toBeDefined();
+      }
+    },
+    default_timeout
+  );
+});
 
 //   it(
 //     "checks the account threshold",

@@ -110,6 +110,8 @@ export const deploySmartrAccount = async (
  * Represents a SmartrAccount.
  */
 export class SmartrAccount extends Account {
+  // @todo: move back to one signer and add methods to exchange transactions
+  // between account and add signature with the transaction...
   public signers: Array<SignerInterface>;
 
   public module: AccountModuleInterface | undefined;
@@ -139,6 +141,15 @@ export class SmartrAccount extends Account {
     this.module = module;
   }
 
+  /**
+   * Executes a set of transactions on the StarkNet network.
+   *
+   * @param transactions - An array of transactions to be executed.
+   * @param abis - Optional argument that can be an array of ABIs.
+   * @param transactionsDetail - Optional object containing additional details for the transactions.
+   * @returns A Promise that resolves to an InvokeFunctionResponse object representing the result of the execution.
+   *
+   */
   public async execute(
     transactions: AllowArray<Call>,
     transactionsDetail?: UniversalDetails
@@ -228,9 +239,7 @@ export class SmartrAccount extends Account {
     const upgradeCall: Call = contract.populate("upgrade", {
       new_class_hash: classHash,
     });
-    const { transaction_hash: transferTxHash } =
-      await this.execute(upgradeCall);
-    return await this.waitForTransaction(transferTxHash);
+    return await this.execute(upgradeCall);
   }
 
   /**
@@ -267,9 +276,7 @@ export class SmartrAccount extends Account {
     const transferCall: Call = contract.populate("add_public_key", {
       new_public_key: new_public_key,
     });
-    const { transaction_hash: transferTxHash } =
-      await this.execute(transferCall);
-    return await this.waitForTransaction(transferTxHash);
+    return await this.execute(transferCall);
   }
 
   /**
@@ -284,9 +291,7 @@ export class SmartrAccount extends Account {
     const transferCall: Call = contract.populate("remove_public_key", {
       old_public_key: old_public_key,
     });
-    const { transaction_hash: transferTxHash } =
-      await this.execute(transferCall);
-    return await this.waitForTransaction(transferTxHash);
+    return await this.execute(transferCall);
   }
 
   /**
@@ -301,9 +306,7 @@ export class SmartrAccount extends Account {
     const transferCall: Call = contract.populate("set_threshold", {
       new_threshold: new_threshold,
     });
-    const { transaction_hash: transferTxHash } =
-      await this.execute(transferCall);
-    return await this.waitForTransaction(transferTxHash);
+    return this.execute(transferCall);
   }
 
   async is_module(class_hash: string) {
@@ -319,10 +322,9 @@ export class SmartrAccount extends Account {
     );
     const transferCall: Call = contract.populate("add_module", {
       class_hash: class_hash,
+      args: [],
     });
-    const { transaction_hash: transferTxHash } =
-      await this.execute(transferCall);
-    return await this.waitForTransaction(transferTxHash);
+    return await this.execute(transferCall);
   }
 
   async remove_module(class_hash: string) {
@@ -332,8 +334,6 @@ export class SmartrAccount extends Account {
     const transferCall: Call = contract.populate("remove_module", {
       class_hash: class_hash,
     });
-    const { transaction_hash: transferTxHash } =
-      await this.execute(transferCall);
-    return await this.waitForTransaction(transferTxHash);
+    return await this.execute(transferCall);
   }
 }
