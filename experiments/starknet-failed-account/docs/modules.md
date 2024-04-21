@@ -32,7 +32,7 @@ A promise that resolves to the deployed simple account.
 
 #### Defined in
 
-[failed_account.ts:24](https://github.com/0xknwn/starknet-modular-account/blob/b76bb78aa843ce964124b1969ab22ae685561d0d/experiments/starknet-failed-account/src/failed_account.ts#L24)
+[failed_account.ts:24](https://github.com/0xknwn/starknet-modular-account/blob/c2960301b1b70ffa10998e408ff45f6e7b591a27/experiments/starknet-failed-account/src/failed_account.ts#L24)
 
 ___
 
@@ -56,4 +56,4 @@ The generated account address.
 
 #### Defined in
 
-[failed_account.ts:10](https://github.com/0xknwn/starknet-modular-account/blob/b76bb78aa843ce964124b1969ab22ae685561d0d/experiments/starknet-failed-account/src/failed_account.ts#L10)
+[failed_account.ts:10](https://github.com/0xknwn/starknet-modular-account/blob/c2960301b1b70ffa10998e408ff45f6e7b591a27/experiments/starknet-failed-account/src/failed_account.ts#L10)

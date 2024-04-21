@@ -21,4 +21,4 @@
 
 #### Defined in
 
-[sdks/starknet-module-sessionkey/src/sessionkey_validator.ts:10](https://github.com/0xknwn/starknet-modular-account/blob/b76bb78aa843ce964124b1969ab22ae685561d0d/sdks/starknet-module-sessionkey/src/sessionkey_validator.ts#L10)
+[sdks/starknet-module-sessionkey/src/sessionkey_validator.ts:10](https://github.com/0xknwn/starknet-modular-account/blob/c2960301b1b70ffa10998e408ff45f6e7b591a27/sdks/starknet-module-sessionkey/src/sessionkey_validator.ts#L10)
