@@ -162,35 +162,33 @@ use snforge_std::errors::{SyscallResultStringErrorTrait, PanicDataOrString};
 mod tests {
     use super::{SwapRouter, ISwapRouterDispatcher, ISwapRouterDispatcherTrait};
     use snforge_std::{declare, ContractClassTrait};
-    use starknet::{SyscallResultTrait, ContractAddress, get_caller_address};
     use snforge_std::{start_prank, stop_prank, CheatTarget};
+    use starknet::contract_address_const;
 
     #[test]
     #[should_panic(expected: ('Pausable: paused',))]
     fn test_faucet() {
-        let owner: ContractAddress = 'owner'.try_into().unwrap();
         let contract = declare("SwapRouter").unwrap();
         let (contract_address, _) = contract.deploy(@array!['owner']).unwrap();
         let dispatcher = ISwapRouterDispatcher { contract_address };
-        start_prank(CheatTarget::One(contract_address), owner);
         let status = dispatcher.faucet(100000);
         assert_eq!(status, true, "status should be true");
     }
 
     #[test]
     fn test_set_tokens() {
-        let owner: ContractAddress = 'owner'.try_into().unwrap();
-        let token_a: ContractAddress = 'token_a'.try_into().unwrap();
-        let token_b: ContractAddress = 'token_b'.try_into().unwrap();
+        let owner = contract_address_const::<'owner'>();
         let contract = declare("SwapRouter").unwrap();
         let (contract_address, _) = contract.deploy(@array!['owner']).unwrap();
+        let token_a = contract_address_const::<'token_a'>();
+        let token_b = contract_address_const::<'token_b'>();
         let dispatcher = ISwapRouterDispatcher { contract_address };
         start_prank(CheatTarget::One(contract_address), owner);
         dispatcher.set_tokens(token_a, token_b);
-        let addr_a = dispatcher.get_token_a().try_into().unwrap();
-        let addr_b = dispatcher.get_token_b().try_into().unwrap();
         stop_prank(CheatTarget::One(contract_address));
-        assert_eq!(addr_a, 'token_a', "token should be 'token_a'");
-        assert_eq!(addr_b, 'token_b', "token should be 'token_b'");
+        let addr_a = dispatcher.get_token_a();
+        assert_eq!(addr_a, token_a, "token should be 'token_a'");
+        let addr_b = dispatcher.get_token_b();
+        assert_eq!(addr_b, token_b, "token should be 'token_b'");
     }
 }
