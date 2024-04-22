@@ -6,6 +6,8 @@
     - [SmartrAccount class](./starknet-account/classes/SmartrAccount.md)
     - [AccountModuleInterface interface](./starknet-account/interfaces/AccountModuleInterface.md)
   - [@0xknwn/starknet-module-sessionkey](./starknet-module-sessionkey/modules.md)
+    - [SessionKeyGrantor class](./starknet-module-sessionkey/classes/SessionKeyGrantor.md)
+    - [SessionKeyModule class](./starknet-module-sessionkey/classes/SessionKeyModule.md)
   - [starknet-test-helpers](./starknet-test-helpers/modules.md)
     - [Counter class](./starknet-test-helpers/classes/Counter.md)
     - [ERC20 class](./starknet-test-helpers/classes/ERC20.md)
