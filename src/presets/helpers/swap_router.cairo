@@ -1,9 +1,7 @@
 use starknet::ContractAddress;
 
 #[starknet::interface]
-trait ISwapRouter<TContractState
-
-> {
+trait ISwapRouter<TContractState> {
     fn faucet(ref self: TContractState, amount: u256) -> bool;
     fn get_conversion_rate(self: @TContractState) -> u256;
     fn get_token_a(self: @TContractState) -> ContractAddress;
@@ -212,9 +210,13 @@ mod tests {
         let (swaprouter_address, _) = swaprouter_class.deploy(@array!['owner']).unwrap();
         let swaprouter_address_felt: felt252 = swaprouter_address.try_into().unwrap();
         let token_a_class = declare("TokenA").unwrap();
-        let (token_a_address, _) = token_a_class.deploy(@array![swaprouter_address_felt, 'owner']).unwrap();
+        let (token_a_address, _) = token_a_class
+            .deploy(@array![swaprouter_address_felt, 'owner'])
+            .unwrap();
         let token_b_class = declare("TokenB").unwrap();
-        let (token_b_address, _) = token_b_class.deploy(@array![swaprouter_address_felt, 'owner']).unwrap();
+        let (token_b_address, _) = token_b_class
+            .deploy(@array![swaprouter_address_felt, 'owner'])
+            .unwrap();
         let swaprouter = ISwapRouterDispatcher { contract_address: swaprouter_address };
         let token_a = IERC20Dispatcher { contract_address: token_a_address };
         let token_b = IERC20Dispatcher { contract_address: token_b_address };
@@ -228,9 +230,17 @@ mod tests {
         let balance = token_a.balance_of(owner);
         assert_eq!(balance, 2000000000000000000, "balance should be 2000000000000000000");
         let mut router_balance_token_a = token_a.balance_of(swaprouter_address);
-        assert_eq!(router_balance_token_a, 999998000000000000000000, "balance should be 999998000000000000000000");
+        assert_eq!(
+            router_balance_token_a,
+            999998000000000000000000,
+            "balance should be 999998000000000000000000"
+        );
         let mut router_balance_token_b = token_b.balance_of(swaprouter_address);
-        assert_eq!(router_balance_token_b, 1000000000000000000000000, "balance should be 1000000000000000000000000");
+        assert_eq!(
+            router_balance_token_b,
+            1000000000000000000000000,
+            "balance should be 1000000000000000000000000"
+        );
 
         start_prank(CheatTarget::One(token_a_address), owner);
         token_a.approve(swaprouter_address, 1000000000000000000);
