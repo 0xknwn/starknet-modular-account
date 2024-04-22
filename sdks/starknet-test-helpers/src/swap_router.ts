@@ -116,9 +116,12 @@ export class SwapRouter extends Contract {
    */
   async swap(tokenAAddress: string, amount: Uint256) {
     const a = this.providerOrAccount as Account;
+    if (!a.address) {
+      throw new Error("Account address is undefined");
+    }
     const tokenAContract = new ERC20(tokenAAddress, a);
     let approveCall: Call = tokenAContract.populate("approve", {
-      spender: a.address,
+      spender: this.address,
       amount,
     });
     let swapCall: Call = this.populate("swap", {

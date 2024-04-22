@@ -189,7 +189,7 @@ describe("swap router", () => {
     default_timeout
   );
 
-  it.skip(
+  it(
     "swaps tokenA for tokenB",
     async () => {
       const conf = config(env);
@@ -204,7 +204,7 @@ describe("swap router", () => {
     default_timeout
   );
 
-  it.skip(
+  it(
     "checks the account has been funded with tokenB",
     async () => {
       if (tokenBInitialBalance === undefined) {

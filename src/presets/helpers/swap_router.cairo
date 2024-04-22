@@ -248,10 +248,5 @@ mod tests {
 
         let new_balance_b = token_b.balance_of(owner);
         assert_eq!(new_balance_b, 1000000000000000000, "balance should be 1000000000000000000");
-
-        // let addr_a = dispatcher.get_token_a();
-        // assert_eq!(addr_a, token_a, "token should be 'token_a'");
-        // let addr_b = dispatcher.get_token_b();
-        // assert_eq!(addr_b, token_b, "token should be 'token_b'");
     }
 }
