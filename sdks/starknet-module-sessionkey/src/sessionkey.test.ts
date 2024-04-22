@@ -1,17 +1,12 @@
 import {
-  classHash,
   declareClass,
-  config,
+  classHash,
+  deployCounter,
   testAccounts,
-  tokenAAddress,
-  deployTokenA,
-  tokenBAddress,
-  deployTokenB,
-  swapRouterAddress,
-  deploySwapRouter,
-  SwapRouter,
-  ERC20,
   default_timeout,
+  Counter,
+  counterAddress,
+  config,
 } from "starknet-test-helpers";
 import {
   SmartrAccount,
@@ -19,27 +14,19 @@ import {
   smartrAccountAddress,
   hash_auth_message,
 } from "@0xknwn/starknet-account";
-import { cairo, RpcProvider } from "starknet";
-import { SessionKeyModule, SessionKeyGrantor } from "./sessionkey_validator";
+import { RpcProvider } from "starknet";
+import { SessionKeyModule, SessionKeyGrantor } from "./sessionkey";
 
-describe("sessionkey swap", () => {
+describe("sessionkey management", () => {
   let env: string;
-  let altProviderURL: string;
-  let swapRouterContract: SwapRouter;
-  let swapRouterWithSmartAccountContract: SwapRouter;
-  let tokenA: ERC20, tokenB: ERC20;
-  let tokenAInitialBalance: bigint, tokenBInitialBalance: bigint;
+  let counterContract: Counter;
   let smartrAccount: SmartrAccount;
-  let sessionKeyModule: SessionKeyModule;
   let smartrAccountWithSessionKey: SmartrAccount;
   let connectedChain: string;
+  let sessionKeyModule: SessionKeyModule;
 
   beforeAll(() => {
     env = "devnet";
-    const conf = config(env);
-    if (!altProviderURL) {
-      altProviderURL = conf.providerURL;
-    }
   });
 
   it(
@@ -53,119 +40,32 @@ describe("sessionkey swap", () => {
   );
 
   it(
-    "declares the SwapRouter class",
+    "declare the Counter class",
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "SwapRouter");
-      expect(c.classHash).toEqual(classHash("SwapRouter"));
+      const account = testAccounts(conf)[0];
+      const c = await declareClass(account, "Counter");
+      expect(c.classHash).toEqual(classHash("Counter"));
     },
     default_timeout
   );
 
   it(
-    "deploys the SwapRouter contract",
+    "deploys the Counter contract",
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await deploySwapRouter(a, a.address);
-      let routerAddress = await swapRouterAddress(a.address, a.address);
-      swapRouterContract = new SwapRouter(routerAddress, a);
-      expect(c.address).toEqual(routerAddress);
-    },
-    default_timeout
-  );
-
-  it(
-    "declares the TokenA class",
-    async () => {
-      const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "TokenA");
-      expect(c.classHash).toEqual(classHash("TokenA"));
-    },
-    default_timeout
-  );
-
-  it(
-    "deploys the TokenA contract",
-    async () => {
-      const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await deployTokenA(a, swapRouterContract.address, a.address);
-      tokenA = new ERC20(
-        await tokenAAddress(a.address, swapRouterContract.address, a.address),
-        a
-      );
+      const account = testAccounts(conf)[0];
+      const c = await deployCounter(account, account.address);
       expect(c.address).toEqual(
-        await tokenAAddress(a.address, swapRouterContract.address, a.address)
+        await counterAddress(account.address, account.address)
       );
+      counterContract = new Counter(c.address, testAccounts(conf)[0]);
     },
     default_timeout
   );
 
   it(
-    "declares the TokenB class",
-    async () => {
-      const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "TokenB");
-      expect(c.classHash).toEqual(classHash("TokenB"));
-    },
-    default_timeout
-  );
-
-  it(
-    "deploys the TokenB contract",
-    async () => {
-      const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await deployTokenB(a, swapRouterContract.address, a.address);
-      tokenB = new ERC20(
-        await tokenBAddress(a.address, swapRouterContract.address, a.address),
-        a
-      );
-      expect(c.address).toEqual(
-        await tokenBAddress(a.address, swapRouterContract.address, a.address)
-      );
-    },
-    default_timeout
-  );
-
-  it(
-    "sets the tokens in the SwapRouter",
-    async () => {
-      const is_paused = await swapRouterContract.is_paused();
-      if (!is_paused) {
-        // the tokens have not already been configure
-        return;
-      }
-      const receipt = await swapRouterContract.set_tokens(
-        tokenA.address,
-        tokenB.address
-      );
-      expect(receipt.isSuccess()).toBe(true);
-    },
-    default_timeout
-  );
-
-  it(
-    "checks tokenA and tokenB initial account balance",
-    async () => {
-      const conf = config(env);
-      const a = testAccounts(conf)[0];
-      let balance = await tokenA.balance_of(a.address);
-      expect(balance).toBeGreaterThanOrEqual(0n);
-      tokenAInitialBalance = balance;
-      balance = await tokenB.balance_of(a.address);
-      expect(balance).toBeGreaterThanOrEqual(0n);
-      tokenBInitialBalance = balance;
-    },
-    default_timeout
-  );
-
-  it(
-    "declares the coreValidator class",
+    "deploys the coreValidator class",
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
@@ -176,7 +76,7 @@ describe("sessionkey swap", () => {
   );
 
   it(
-    "declares the SmartrAccount class",
+    "deploys the SmartrAccount class",
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
@@ -233,6 +133,53 @@ describe("sessionkey swap", () => {
   );
 
   it(
+    "resets the counter",
+    async () => {
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      const { transaction_hash } = await counterContract.reset();
+      const receipt = await account.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
+
+  it(
+    "increments the counter from SmartrAccount and succeed",
+    async () => {
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      if (!smartrAccount) {
+        throw new Error("SmartrAccount not installed");
+      }
+      const counterWithSmartrAccount = new Counter(
+        counterContract.address,
+        smartrAccount
+      );
+      const { transaction_hash } = await counterWithSmartrAccount.increment();
+      const receipt = await smartrAccount.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
+
+  it(
+    "reads the counter",
+    async () => {
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      const c = await counterContract.get();
+      expect(c).toBeGreaterThan(0n);
+    },
+    default_timeout
+  );
+
+  it(
     "deploys the SessionKeyValidator class",
     async () => {
       const conf = config(env);
@@ -268,6 +215,21 @@ describe("sessionkey swap", () => {
         classHash("SessionKeyValidator")
       );
       expect(output).toBe(true);
+    },
+    default_timeout
+  );
+
+  it(
+    "resets the counter",
+    async () => {
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      const { transaction_hash } = await counterContract.reset();
+      const receipt = await account.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
     },
     default_timeout
   );
@@ -333,62 +295,52 @@ describe("sessionkey swap", () => {
   });
 
   it(
-    "requests tokenA to the faucet",
+    "resets and read the counter from owner account",
     async () => {
       const conf = config(env);
-      swapRouterWithSmartAccountContract = new SwapRouter(
-        swapRouterContract.address,
+      const a = testAccounts(conf)[0];
+      const c1 = await counterContract.get();
+      if (c1 !== 0n) {
+        let { transaction_hash } = await counterContract.reset();
+        let receipt = await a.waitForTransaction(transaction_hash);
+        expect(receipt.isSuccess()).toBe(true);
+      }
+      const c2 = await counterContract.get();
+      expect(c2).toBe(0n);
+    },
+    default_timeout
+  );
+
+  it(
+    "increments the counter from SmartrAccount with Module and succeed",
+    async () => {
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      if (!smartrAccountWithSessionKey) {
+        throw new Error("SmartrAccount with SessionKey not installed");
+      }
+      const counterWithSmartrAccountAndModule = new Counter(
+        counterContract.address,
         smartrAccountWithSessionKey
       );
-      const receipt = await swapRouterWithSmartAccountContract.faucet(
-        cairo.uint256(2n * 10n ** 18n)
-      );
+      const { transaction_hash } =
+        await counterWithSmartrAccountAndModule.increment();
+      const receipt =
+        await smartrAccountWithSessionKey.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
     },
     default_timeout
   );
 
   it(
-    "checks the account has been funded with tokenA",
+    "reads the counter",
     async () => {
-      if (tokenAInitialBalance === undefined) {
-        throw new Error("tokenAInitialBalance is undefined");
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
       }
-      const conf = config(env);
-      let balance = await tokenA.balance_of(
-        smartrAccountWithSessionKey.address
-      );
-      expect(balance - tokenAInitialBalance).toBeGreaterThanOrEqual(
-        2000000000000000000n
-      );
-    },
-    default_timeout
-  );
-
-  it.skip(
-    "swaps tokenA for tokenB",
-    async () => {
-      // @todo: fix this test and/or the swap function
-      let receipt = await swapRouterWithSmartAccountContract.swap(
-        tokenA.address,
-        cairo.uint256(10n ** 15n)
-      );
-      expect(receipt.isSuccess()).toBe(true);
-    },
-    default_timeout
-  );
-
-  it.skip(
-    "checks the account has been funded with tokenB",
-    async () => {
-      if (tokenBInitialBalance === undefined) {
-        throw new Error("tokenAInitialBalance is undefined");
-      }
-      const conf = config(env);
-      let balance = await tokenB.balance_of(
-        smartrAccountWithSessionKey.address
-      );
-      expect(balance - tokenBInitialBalance).toBeGreaterThanOrEqual(10n ** 15n);
+      const c = await counterContract.get();
+      expect(c).toBeGreaterThan(0n);
     },
     default_timeout
   );
