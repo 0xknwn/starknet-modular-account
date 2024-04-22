@@ -1,7 +1,9 @@
 use starknet::ContractAddress;
 
 #[starknet::interface]
-trait ISwapRouter<TContractState> {
+trait ISwapRouter<TContractState
+
+> {
     fn faucet(ref self: TContractState, amount: u256) -> bool;
     fn get_conversion_rate(self: @TContractState) -> u256;
     fn get_token_a(self: @TContractState) -> ContractAddress;
@@ -90,9 +92,9 @@ mod SwapRouter {
             let caller = get_caller_address();
             let swaprouter = get_contract_address();
             IERC20Dispatcher { contract_address: tokenA }.transfer_from(caller, swaprouter, amount);
-            let amountB: u256 = amount * self.tokenConversionRate.read() / 1000000000000000000;
+            // let amountB: u256 = amount * self.tokenConversionRate.read() / 1000000000000000000;
             let tokenB: ContractAddress = self.tokenBAddress.read();
-            IERC20Dispatcher { contract_address: tokenB }.transfer(caller, amountB);
+            IERC20Dispatcher { contract_address: tokenB }.transfer(caller, amount);
         }
 
         fn set_conversion_rate(ref self: ContractState, rate: u256) {
@@ -116,16 +118,20 @@ mod SwapRouter {
         fn swap(ref self: ContractState, amount: u256) {
             self.pausable.assert_not_paused();
             let tokenA = self.tokenAAddress.read();
+            let tokenB = self.tokenBAddress.read();
             let caller = get_caller_address();
             let swaprouter = get_contract_address();
+            let dispatchera = IERC20Dispatcher { contract_address: tokenA };
+            let dispatcherb = IERC20Dispatcher { contract_address: tokenB };
+            let allowed = dispatchera.allowance(caller, swaprouter);
+            assert(allowed >= amount, 'Amount exceeds allowance');
             // @todo: check why the estimateFee fails on this line
             // Contract error: {"revert_error":"Error in the called contract (0x064b48806902a367c8598f4f95c305e8c1a1acba5f082d294a43793113115691):\nError at pc=0:4835:\nGot an exception while executing a hint.\nCairo traceback (most recent call last):\nUnknown location (pc=0:67)\nUnknown location (pc=0:1835)\nUnknown location (pc=0:2554)\nUnknown location (pc=0:3436)\nUnknown location (pc=0:4054)\nUnknown location (pc=0:4040)\n\nError in the called contract (0x05e59eeb9b47cde522762e280b064a0e8761cd965b99e859017f8243e4e05eda):\nError at pc=0:5904:\nGot an exception while executing a hint: Execution failed. Failure reason: 0x753235365f737562204f766572666c6f77 ('u256_sub Overflow').\nCairo traceback (most recent call last):\nUnknown location (pc=0:1516)\nUnknown location (pc=0:4827)\n\nError in the called contract (0x06c1310199a2c2739d580d98716f7e8261b2580c583b78b8db7fa54040e39e15):\nExecution failed. Failure reason: 0x753235365f737562204f766572666c6f77 ('u256_sub Overflow').\n"}
-            IERC20Dispatcher { contract_address: tokenA }.transfer_from(caller, swaprouter, amount);
-            let amountB = amount;
+            dispatchera.transfer_from(caller, swaprouter, amount);
             // @todo: reenable the conversion rate
             // let amountB: u256 = amount * self.tokenConversionRate.read() / 1000000000000000000;
-            let tokenB = self.tokenBAddress.read();
-            IERC20Dispatcher { contract_address: tokenB }.transfer(caller, amountB);
+            let transfer = dispatcherb.transfer(caller, amount);
+            assert(transfer, 'Transfer failed');
         }
 
         fn faucet(ref self: ContractState, amount: u256) -> bool {
@@ -133,7 +139,8 @@ mod SwapRouter {
             assert(amount <= (2 * 1000000000000000000), 'Amount too high');
             let tokenA: ContractAddress = self.tokenAAddress.read();
             let caller = get_caller_address();
-            IERC20Dispatcher { contract_address: tokenA }.transfer(caller, amount)
+            let tokena = IERC20Dispatcher { contract_address: tokenA };
+            tokena.transfer(caller, amount)
         }
 
         // Set the tokens to be swapped
@@ -161,13 +168,15 @@ mod SwapRouter {
     }
 }
 
-use snforge_std::errors::{SyscallResultStringErrorTrait, PanicDataOrString};
+// use snforge_std::errors::{SyscallResultStringErrorTrait, PanicDataOrString};
 #[cfg(test)]
 mod tests {
     use super::{SwapRouter, ISwapRouterDispatcher, ISwapRouterDispatcherTrait};
     use snforge_std::{declare, ContractClassTrait};
     use snforge_std::{start_prank, stop_prank, CheatTarget};
     use starknet::contract_address_const;
+    use core::traits::Into;
+    use openzeppelin::token::erc20::interface::{IERC20DispatcherTrait, IERC20Dispatcher};
 
     #[test]
     #[should_panic(expected: ('Pausable: paused',))]
@@ -194,5 +203,50 @@ mod tests {
         assert_eq!(addr_a, token_a, "token should be 'token_a'");
         let addr_b = dispatcher.get_token_b();
         assert_eq!(addr_b, token_b, "token should be 'token_b'");
+    }
+
+    #[test]
+    fn test_simple_swap() {
+        let owner = contract_address_const::<'owner'>();
+        let swaprouter_class = declare("SwapRouter").unwrap();
+        let (swaprouter_address, _) = swaprouter_class.deploy(@array!['owner']).unwrap();
+        let swaprouter_address_felt: felt252 = swaprouter_address.try_into().unwrap();
+        let token_a_class = declare("TokenA").unwrap();
+        let (token_a_address, _) = token_a_class.deploy(@array![swaprouter_address_felt, 'owner']).unwrap();
+        let token_b_class = declare("TokenB").unwrap();
+        let (token_b_address, _) = token_b_class.deploy(@array![swaprouter_address_felt, 'owner']).unwrap();
+        let swaprouter = ISwapRouterDispatcher { contract_address: swaprouter_address };
+        let token_a = IERC20Dispatcher { contract_address: token_a_address };
+        let token_b = IERC20Dispatcher { contract_address: token_b_address };
+
+        start_prank(CheatTarget::One(swaprouter_address), owner);
+        swaprouter.set_tokens(token_a_address, token_b_address);
+        let status = swaprouter.faucet(2000000000000000000);
+        assert_eq!(status, true, "status should be true");
+        stop_prank(CheatTarget::One(swaprouter_address));
+
+        let balance = token_a.balance_of(owner);
+        assert_eq!(balance, 2000000000000000000, "balance should be 2000000000000000000");
+        let mut router_balance_token_a = token_a.balance_of(swaprouter_address);
+        assert_eq!(router_balance_token_a, 999998000000000000000000, "balance should be 999998000000000000000000");
+        let mut router_balance_token_b = token_b.balance_of(swaprouter_address);
+        assert_eq!(router_balance_token_b, 1000000000000000000000000, "balance should be 1000000000000000000000000");
+
+        start_prank(CheatTarget::One(token_a_address), owner);
+        token_a.approve(swaprouter_address, 1000000000000000000);
+        stop_prank(CheatTarget::One(token_a_address));
+
+        let allowed = token_a.allowance(owner, swaprouter_address);
+        assert_eq!(allowed, 1000000000000000000, "balance should be 1000000000000000000");
+
+        start_prank(CheatTarget::One(swaprouter_address), owner);
+        swaprouter.swap(1000000000000000000_u256);
+        stop_prank(CheatTarget::One(swaprouter_address));
+
+        let new_balance_a = token_a.balance_of(owner);
+        assert_eq!(new_balance_a, 1000000000000000000, "balance should be 1000000000000000000");
+
+        let new_balance_b = token_b.balance_of(owner);
+        assert_eq!(new_balance_b, 1000000000000000000, "balance should be 1000000000000000000");
     }
 }
