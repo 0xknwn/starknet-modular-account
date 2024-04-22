@@ -161,13 +161,15 @@ mod SwapRouter {
     }
 }
 
-use snforge_std::errors::{SyscallResultStringErrorTrait, PanicDataOrString};
+// use snforge_std::errors::{SyscallResultStringErrorTrait, PanicDataOrString};
 #[cfg(test)]
 mod tests {
     use super::{SwapRouter, ISwapRouterDispatcher, ISwapRouterDispatcherTrait};
     use snforge_std::{declare, ContractClassTrait};
     use snforge_std::{start_prank, stop_prank, CheatTarget};
     use starknet::contract_address_const;
+    use core::traits::Into;
+    use openzeppelin::token::erc20::interface::{IERC20DispatcherTrait, IERC20Dispatcher};
 
     #[test]
     #[should_panic(expected: ('Pausable: paused',))]
@@ -194,5 +196,35 @@ mod tests {
         assert_eq!(addr_a, token_a, "token should be 'token_a'");
         let addr_b = dispatcher.get_token_b();
         assert_eq!(addr_b, token_b, "token should be 'token_b'");
+    }
+
+    #[test]
+    fn test_simple_swap() {
+        let owner = contract_address_const::<'owner'>();
+        let swaprouter_class = declare("SwapRouter").unwrap();
+        let (swaprouter_address, _) = swaprouter_class.deploy(@array!['owner']).unwrap();
+        let swaprouter_address_felt: felt252 = swaprouter_address.try_into().unwrap();
+        let token_a_class = declare("TokenA").unwrap();
+        let (token_a_address, _) = token_a_class.deploy(@array![swaprouter_address_felt, 'owner']).unwrap();
+        let token_b_class = declare("TokenB").unwrap();
+        let (token_b_address, _) = token_b_class.deploy(@array![swaprouter_address_felt, 'owner']).unwrap();
+        let swaprouter = ISwapRouterDispatcher { contract_address: swaprouter_address };
+        let token_a = IERC20Dispatcher { contract_address: token_a_address };
+
+        start_prank(CheatTarget::One(swaprouter_address), owner);
+        swaprouter.set_tokens(token_a_address, token_b_address);
+        let status = swaprouter.faucet(2000000000000000000);
+        assert_eq!(status, true, "status should be true");
+        let balance = token_a.balance_of(owner);
+        assert_eq!(balance, 2000000000000000000, "balance should be 2000000000000000000");
+        token_a.approve(swaprouter_address, 1000000000000000000);
+        swaprouter.swap(1000000000000000000);
+        stop_prank(CheatTarget::One(swaprouter_address));
+
+        // swaprouter.swap(100000);
+        // let addr_a = dispatcher.get_token_a();
+        // assert_eq!(addr_a, token_a, "token should be 'token_a'");
+        // let addr_b = dispatcher.get_token_b();
+        // assert_eq!(addr_b, token_b, "token should be 'token_b'");
     }
 }
