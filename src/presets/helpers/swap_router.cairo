@@ -210,6 +210,7 @@ mod tests {
         let (token_b_address, _) = token_b_class.deploy(@array![swaprouter_address_felt, 'owner']).unwrap();
         let swaprouter = ISwapRouterDispatcher { contract_address: swaprouter_address };
         let token_a = IERC20Dispatcher { contract_address: token_a_address };
+        let token_b = IERC20Dispatcher { contract_address: token_b_address };
 
         start_prank(CheatTarget::One(swaprouter_address), owner);
         swaprouter.set_tokens(token_a_address, token_b_address);
@@ -217,7 +218,14 @@ mod tests {
         assert_eq!(status, true, "status should be true");
         let balance = token_a.balance_of(owner);
         assert_eq!(balance, 2000000000000000000, "balance should be 2000000000000000000");
+        let router_balance_token_a = token_a.balance_of(swaprouter_address);
+        assert_eq!(router_balance_token_a, 999998000000000000000000, "balance should be 999998000000000000000000");
+        let router_balance_token_b = token_b.balance_of(swaprouter_address);
+        assert_eq!(router_balance_token_b, 1000000000000000000000000, "balance should be 1000000000000000000000000");
         token_a.approve(swaprouter_address, 1000000000000000000);
+        let allowed = token_a.allowance(owner, swaprouter_address);
+        assert_eq!(allowed, 1000000000000000000, "balance should be 1000000000000000000");
+
         swaprouter.swap(1000000000000000000);
         stop_prank(CheatTarget::One(swaprouter_address));
 

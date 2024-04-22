@@ -4,7 +4,6 @@
 #[starknet::contract]
 mod TokenB {
     use openzeppelin::access::ownable::OwnableComponent;
-    use openzeppelin::security::pausable::PausableComponent;
     use openzeppelin::token::erc20::ERC20Component;
     use openzeppelin::token::erc20::interface;
     use openzeppelin::upgrades::UpgradeableComponent;
@@ -13,19 +12,15 @@ mod TokenB {
     use starknet::ContractAddress;
 
     component!(path: ERC20Component, storage: erc20, event: ERC20Event);
-    component!(path: PausableComponent, storage: pausable, event: PausableEvent);
     component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
     component!(path: UpgradeableComponent, storage: upgradeable, event: UpgradeableEvent);
 
     #[abi(embed_v0)]
     impl ERC20MetadataImpl = ERC20Component::ERC20MetadataImpl<ContractState>;
     #[abi(embed_v0)]
-    impl PausableImpl = PausableComponent::PausableImpl<ContractState>;
-    #[abi(embed_v0)]
     impl OwnableMixinImpl = OwnableComponent::OwnableMixinImpl<ContractState>;
 
     impl ERC20InternalImpl = ERC20Component::InternalImpl<ContractState>;
-    impl PausableInternalImpl = PausableComponent::InternalImpl<ContractState>;
     impl OwnableInternalImpl = OwnableComponent::InternalImpl<ContractState>;
     impl UpgradeableInternalImpl = UpgradeableComponent::InternalImpl<ContractState>;
 
@@ -33,8 +28,6 @@ mod TokenB {
     struct Storage {
         #[substorage(v0)]
         erc20: ERC20Component::Storage,
-        #[substorage(v0)]
-        pausable: PausableComponent::Storage,
         #[substorage(v0)]
         ownable: OwnableComponent::Storage,
         #[substorage(v0)]
@@ -46,8 +39,6 @@ mod TokenB {
     enum Event {
         #[flat]
         ERC20Event: ERC20Component::Event,
-        #[flat]
-        PausableEvent: PausableComponent::Event,
         #[flat]
         OwnableEvent: OwnableComponent::Event,
         #[flat]
@@ -79,7 +70,6 @@ mod TokenB {
         }
 
         fn transfer(ref self: ContractState, recipient: ContractAddress, amount: u256) -> bool {
-            self.pausable.assert_not_paused();
             self.erc20.transfer(recipient, amount)
         }
 
@@ -89,12 +79,10 @@ mod TokenB {
             recipient: ContractAddress,
             amount: u256,
         ) -> bool {
-            self.pausable.assert_not_paused();
             self.erc20.transfer_from(sender, recipient, amount)
         }
 
         fn approve(ref self: ContractState, spender: ContractAddress, amount: u256) -> bool {
-            self.pausable.assert_not_paused();
             self.erc20.approve(spender, amount)
         }
     }
@@ -116,22 +104,6 @@ mod TokenB {
             amount: u256,
         ) -> bool {
             self.transfer_from(sender, recipient, amount)
-        }
-    }
-
-    #[generate_trait]
-    #[abi(per_item)]
-    impl ExternalImpl of ExternalTrait {
-        #[external(v0)]
-        fn pause(ref self: ContractState) {
-            self.ownable.assert_only_owner();
-            self.pausable._pause();
-        }
-
-        #[external(v0)]
-        fn unpause(ref self: ContractState) {
-            self.ownable.assert_only_owner();
-            self.pausable._unpause();
         }
     }
 
