@@ -8,5 +8,6 @@ dist
 /index.html
 /docs/starknet-test-helpers
 /docs/starknet-account
+/docs/starknet-module-sessionkey
 /.env.*
 /!.env.template.json

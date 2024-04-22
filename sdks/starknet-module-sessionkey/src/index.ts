@@ -1,1 +1,1 @@
-export * from "./sessionkey_validator";
+export * from "./sessionkey";
