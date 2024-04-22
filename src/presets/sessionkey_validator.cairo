@@ -8,7 +8,9 @@ mod SessionKeyValidator {
     use openzeppelin::introspection::src5::SRC5Component;
     use smartr::account::AccountComponent;
     use smartr::message::hash_auth_message;
-    use smartr::module::{ValidatorComponent, IValidator, IValidatorDispatcherTrait, IValidatorLibraryDispatcher};
+    use smartr::module::{
+        ValidatorComponent, IValidator, IValidatorDispatcherTrait, IValidatorLibraryDispatcher
+    };
     use starknet::{get_caller_address, get_contract_address, get_tx_info};
     use starknet::account::Call;
     use starknet::class_hash::ClassHash;
