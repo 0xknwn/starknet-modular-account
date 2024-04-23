@@ -141,16 +141,16 @@ mod SessionKeyValidator {
             }
 
             // Check the authz signature is valid
-            let _auth_hash = hash_auth_message(
+            let auth_hash = hash_auth_message(
                 account_address, validator_class, grantor_class, authz_key, expires, root, chain_id
             );
 
             // check the sessionkey has not been blocked
-            let is_disabled = self.Sessionkey_disabled.read(_auth_hash);
+            let is_disabled = self.Sessionkey_disabled.read(auth_hash);
             assert(!is_disabled, Errors::DISABLED_SESSION);
 
             IValidatorLibraryDispatcher { class_hash: grantor_class }
-                .is_valid_signature(_auth_hash, signature)
+                .is_valid_signature(auth_hash, signature)
         }
 
         fn initialize(ref self: ContractState, args: Array<felt252>) {}
