@@ -1,4 +1,4 @@
-import { Signer } from "starknet";
+import { Signer, Call } from "starknet";
 
 import {
   AccountModuleInterface,
@@ -6,6 +6,7 @@ import {
   Authorization,
   hash_auth_message,
 } from "@0xknwn/starknet-account";
+import { PolicyManager } from "./policies";
 
 export const __module_validate__ =
   "0x119c88dea7ff05dbe71c36247fc6682116f6dafa24089373d49aca7b2657017";
@@ -31,6 +32,7 @@ export class SessionKeyGrantor extends Signer {
 
 export class SessionKeyModule implements AccountModuleInterface {
   protected auth: Authorization;
+  protected policyManager?: PolicyManager;
 
   constructor(
     authKey: string,
@@ -38,8 +40,13 @@ export class SessionKeyModule implements AccountModuleInterface {
     validatorClassHash: string,
     chainId: string = "0x1",
     expires: string = "0x0",
-    root: string = "0x0"
+    policyManager?: PolicyManager
   ) {
+    let root = "0x0";
+    if (policyManager) {
+      root = policyManager.getRoot();
+      this.policyManager = policyManager;
+    }
     this.auth = {
       accountAddress,
       validatorClass: validatorClassHash,
@@ -87,7 +94,7 @@ export class SessionKeyModule implements AccountModuleInterface {
     }
   }
 
-  prefix() {
+  prefix(calls: Call[] | Call) {
     if (!this.auth.grantorClass) {
       throw new Error("grantor should be set before prefixing");
     }
@@ -106,7 +113,27 @@ export class SessionKeyModule implements AccountModuleInterface {
       );
       calldata = calldata.concat(this.auth.signature);
     }
-    calldata.unshift(`0x${calldata.length.toString(16)}`);
+    // calldata = calldata.concat(`0x${calldata.length.toString(16)}`);
+    if (!Array.isArray(calls)) {
+      calls = [calls];
+    }
+    let proof_number = 0;
+    for (let call of calls) {
+      console.log(call);
+      let contractAddress = call.contractAddress;
+      let selector = call.entrypoint;
+      const proof = this.policyManager?.getProof({ contractAddress, selector });
+      if (proof_number === 0) {
+        if (!proof) {
+          calldata = calldata.concat(`0x0`);
+        } else {
+          calldata = calldata.concat(`0x${proof.length.toString(16)}`);
+        }
+      }
+      if (proof) {
+        calldata = calldata.concat(...proof);
+      }
+    }
     return {
       entrypoint: "__module_validate__",
       contractAddress: this.auth.accountAddress,
