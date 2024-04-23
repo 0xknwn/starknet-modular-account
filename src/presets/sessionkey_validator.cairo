@@ -27,6 +27,7 @@ mod SessionKeyValidator {
         pub const INVALID_MODULE_VALIDATE: felt252 = 'Missing __module_validate__';
         pub const INVALID_MODULE_CALLDATA: felt252 = 'Invalid module calldata';
         pub const MODULE_NOT_INSTALLED: felt252 = 'Module not installed';
+        pub const DISABLED_SESSION: felt252 = 'sessionkey has been disabled';
         pub const INVALID_SESSION_EXPIRATION: felt252 = 'expires should be set';
         pub const INVALID_SESSION_EXPIRED: felt252 = 'sessionkey has expired';
         pub const INVALID_SESSION_PROOF: felt252 = 'Invalid sessionkey proof';
@@ -104,14 +105,10 @@ mod SessionKeyValidator {
                 i += 1;
             };
 
-            // @todo: enable this check
             // checks the module is installed in the account
             let installed = self.account.Account_modules.read(validator_class);
             assert(installed, Errors::MODULE_NOT_INSTALLED);
 
-            // @todo: check the sessionkey has not been blocked
-
-            // @todo: enable this check
             // checks expires is in the future
             let expired_u64 = expires.try_into().unwrap();
             let timestamp = get_block_timestamp();
@@ -147,6 +144,11 @@ mod SessionKeyValidator {
             let _auth_hash = hash_auth_message(
                 account_address, validator_class, grantor_class, authz_key, expires, root, chain_id
             );
+
+            // check the sessionkey has not been blocked
+            let is_disabled = self.Sessionkey_disabled.read(_auth_hash);
+            assert(!is_disabled, Errors::DISABLED_SESSION);
+
             IValidatorLibraryDispatcher { class_hash: grantor_class }
                 .is_valid_signature(_auth_hash, signature)
         }
@@ -158,12 +160,14 @@ mod SessionKeyValidator {
 
     #[storage]
     struct Storage {
+        Sessionkey_disabled: LegacyMap<felt252, bool>,
         #[substorage(v0)]
         validator: ValidatorComponent::Storage,
         #[substorage(v0)]
         src5: SRC5Component::Storage,
         #[substorage(v0)]
         account: AccountComponent::Storage,
+
     }
 
     #[event]
