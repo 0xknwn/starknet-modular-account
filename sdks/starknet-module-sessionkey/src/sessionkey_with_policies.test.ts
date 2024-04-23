@@ -8,6 +8,7 @@ import {
   counterAddress,
   config,
 } from "starknet-test-helpers";
+import { PolicyManager } from "./policies";
 import {
   SmartrAccount,
   deploySmartrAccount,
@@ -241,13 +242,20 @@ describe("sessionkey management", () => {
         expect(connectedChain).toBeDefined();
         return;
       }
+      const policyManager = new PolicyManager([
+        { contractAddress: counterContract.address, selector: "increment" },
+        { contractAddress: counterContract.address, selector: "increment_by" },
+      ]);
       const conf = config(env);
       sessionKeyModule = new SessionKeyModule(
         conf.accounts[1].publicKey,
         smartrAccount.address,
         classHash("SessionKeyValidator"),
-        connectedChain
+        connectedChain,
+        "0x0",
+        policyManager
       );
+      let root = policyManager.getRoot();
       let r = await sessionKeyModule.request(classHash("CoreValidator"));
       expect(r.hash).toBe(
         hash_auth_message(
@@ -256,7 +264,7 @@ describe("sessionkey management", () => {
           classHash("CoreValidator"),
           conf.accounts[1].publicKey,
           "0x0",
-          "0x0",
+          root,
           connectedChain
         )
       );

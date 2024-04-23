@@ -113,7 +113,6 @@ export class SessionKeyModule implements AccountModuleInterface {
       );
       calldata = calldata.concat(this.auth.signature);
     }
-    // calldata = calldata.concat(`0x${calldata.length.toString(16)}`);
     if (!Array.isArray(calls)) {
       calls = [calls];
     }
@@ -134,6 +133,7 @@ export class SessionKeyModule implements AccountModuleInterface {
         calldata = calldata.concat(...proof);
       }
     }
+    calldata.unshift(`0x${calldata.length.toString(16)}`);
     return {
       entrypoint: "__module_validate__",
       contractAddress: this.auth.accountAddress,
