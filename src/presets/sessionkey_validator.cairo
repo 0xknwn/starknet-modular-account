@@ -119,11 +119,11 @@ mod SessionKeyValidator {
             // checks, if root is set, calls merkle proofs match the root
             if root != 0 {
                 let mut j = 1;
-                let mut proof_len: usize = *authz.at(signature_len + 7);
-                let proof_start = signature_len + 8
-                assert(current_proof_len > 0, Errors::INVALID_SESSION_PROOF_LEN);
+                let proof_len_felt = *authz.at(signature_len + 7);
+                let proof_len: usize = proof_len_felt.try_into().unwrap();
+                let mut proof_start = signature_len + 8;
                 while j < calls_len {
-                    assert (proof_len < authz_len - proof_start, Errors::INVALID_SESSION_PROOF_LEN);
+                    assert(proof_len < authz_len - proof_start, Errors::INVALID_SESSION_PROOF_LEN);
                     let account_address: ContractAddress = *calls.at(j).to;
                     let account_address_felt: felt252 = account_address.try_into().unwrap();
                     let selector = *calls.at(j).selector;
