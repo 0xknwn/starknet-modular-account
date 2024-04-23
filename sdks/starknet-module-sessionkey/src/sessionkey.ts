@@ -113,24 +113,29 @@ export class SessionKeyModule implements AccountModuleInterface {
       );
       calldata = calldata.concat(this.auth.signature);
     }
-    if (!Array.isArray(calls)) {
-      calls = [calls];
-    }
-    let proof_number = 0;
-    for (let call of calls) {
-      console.log(call);
-      let contractAddress = call.contractAddress;
-      let selector = call.entrypoint;
-      const proof = this.policyManager?.getProof({ contractAddress, selector });
-      if (proof_number === 0) {
-        if (!proof) {
-          calldata = calldata.concat(`0x0`);
-        } else {
-          calldata = calldata.concat(`0x${proof.length.toString(16)}`);
-        }
+    if (this.auth.root !== "0x0") {
+      if (!Array.isArray(calls)) {
+        calls = [calls];
       }
-      if (proof) {
-        calldata = calldata.concat(...proof);
+      let proof_number = 0;
+      for (let call of calls) {
+        console.log(call);
+        let contractAddress = call.contractAddress;
+        let selector = call.entrypoint;
+        const proof = this.policyManager?.getProof({
+          contractAddress,
+          selector,
+        });
+        if (proof_number === 0) {
+          if (!proof) {
+            calldata = calldata.concat(`0x0`);
+          } else {
+            calldata = calldata.concat(`0x${proof.length.toString(16)}`);
+          }
+        }
+        if (proof) {
+          calldata = calldata.concat(...proof);
+        }
       }
     }
     calldata.unshift(`0x${calldata.length.toString(16)}`);
