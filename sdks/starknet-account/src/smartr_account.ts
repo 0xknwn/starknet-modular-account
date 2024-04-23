@@ -43,7 +43,7 @@ export interface AccountModuleInterface {
   request(grantorClass: string): Promise<Authorization>;
   add_signature(signature: string[]): Promise<void>;
   reset(signature: string[]): Promise<void>;
-  prefix(): Call;
+  prefix(calls: Call[] | Call): Call;
 }
 
 export const signatureToHexArray = (
@@ -198,7 +198,7 @@ export class SmartrAccount extends Account {
     );
 
     if (this.module) {
-      calls.unshift(this.module.prefix());
+      calls.unshift(this.module.prefix(transactions));
     }
 
     const estimate = await this.getUniversalSuggestedFee(

@@ -242,11 +242,13 @@ describe("sessionkey management", () => {
         return;
       }
       const conf = config(env);
+      let next_timestamp = BigInt(Math.floor(Date.now() / 1000) + 24 * 60 * 60);
       sessionKeyModule = new SessionKeyModule(
         conf.accounts[1].publicKey,
         smartrAccount.address,
         classHash("SessionKeyValidator"),
-        connectedChain
+        connectedChain,
+        `0x${next_timestamp.toString(16)}`
       );
       let r = await sessionKeyModule.request(classHash("CoreValidator"));
       expect(r.hash).toBe(
@@ -255,7 +257,7 @@ describe("sessionkey management", () => {
           classHash("SessionKeyValidator"),
           classHash("CoreValidator"),
           conf.accounts[1].publicKey,
-          "0x0",
+          `0x${next_timestamp.toString(16)}`,
           "0x0",
           connectedChain
         )

@@ -2,6 +2,7 @@
 
 #[starknet::contract]
 mod SessionKeyValidator {
+    use core::pedersen::pedersen;
     use core::traits::Into;
     use openzeppelin::account::utils::{is_valid_stark_signature};
     use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
@@ -11,7 +12,8 @@ mod SessionKeyValidator {
     use smartr::module::{
         ValidatorComponent, IValidator, IValidatorDispatcherTrait, IValidatorLibraryDispatcher
     };
-    use starknet::{get_caller_address, get_contract_address, get_tx_info};
+    use smartr::module::merkle_tree::is_valid_root;
+    use starknet::{get_caller_address, get_contract_address, get_tx_info, get_block_timestamp};
     use starknet::account::Call;
     use starknet::class_hash::ClassHash;
     use starknet::ContractAddress;
@@ -24,6 +26,12 @@ mod SessionKeyValidator {
         pub const INVALID_TX_VERSION: felt252 = 'Invalid transaction version';
         pub const INVALID_MODULE_VALIDATE: felt252 = 'Missing __module_validate__';
         pub const INVALID_MODULE_CALLDATA: felt252 = 'Invalid module calldata';
+        pub const MODULE_NOT_INSTALLED: felt252 = 'Module not installed';
+        pub const DISABLED_SESSION: felt252 = 'sessionkey has been disabled';
+        pub const INVALID_SESSION_EXPIRATION: felt252 = 'expires should be set';
+        pub const INVALID_SESSION_EXPIRED: felt252 = 'sessionkey has expired';
+        pub const INVALID_SESSION_PROOF: felt252 = 'Invalid sessionkey proof';
+        pub const INVALID_SESSION_PROOF_LEN: felt252 = 'Invalid sessionkey proof length';
         pub const INVALID_MODULE_SIGNATURE: felt252 = 'Invalid module signature';
         pub const INVALID_MODULE_VALIDATOR: felt252 = 'Invalid Core Validator';
     }
@@ -56,7 +64,8 @@ mod SessionKeyValidator {
             let tx_signature = tx_info.signature;
 
             // Parse the authz prefix
-            assert(calls.len() > 1, Errors::INVALID_MODULE_VALIDATE);
+            let calls_len = calls.len();
+            assert(calls_len > 1, Errors::INVALID_MODULE_VALIDATE);
             let account_address: ContractAddress = *calls.at(0).to;
             let selector = *calls.at(0).selector;
             assert(selector == selector!("__module_validate__"), Errors::INVALID_MODULE_VALIDATE);
@@ -67,10 +76,12 @@ mod SessionKeyValidator {
             let validator_class: ClassHash = validator_class_felt.try_into().unwrap();
             let grantor_class_felt = *authz.at(2);
             let grantor_class: ClassHash = grantor_class_felt.try_into().unwrap();
+
             // @todo: unblock the core validator check
             let core_validator: ClassHash = self.account.Account_core_validator.read();
             let core_validator_felt: felt252 = core_validator.try_into().unwrap();
             assert(grantor_class_felt == core_validator_felt, grantor_class_felt);
+
             let authz_key = *authz.at(3);
             let expires = *authz.at(4);
             let root = *authz.at(5);
@@ -86,7 +97,7 @@ mod SessionKeyValidator {
             let signature_len: usize = signature_len_felt.try_into().unwrap();
             let authz_len = authz.len();
             let computed_len: usize = signature_len + 7;
-            assert(authz_len == computed_len, Errors::INVALID_MODULE_CALLDATA);
+            assert(computed_len <= authz_len, Errors::INVALID_MODULE_CALLDATA);
             let mut signature = ArrayTrait::<felt252>::new();
             let mut i: usize = 0;
             while i < signature_len {
@@ -94,17 +105,52 @@ mod SessionKeyValidator {
                 i += 1;
             };
 
-            // @todo: add other validity checks, including
-            // - module is installed in the account
-            // - expires is in the future
-            // - calls are valids and matches the merkle proof
+            // checks the module is installed in the account
+            let installed = self.account.Account_modules.read(validator_class);
+            assert(installed, Errors::MODULE_NOT_INSTALLED);
+
+            // checks expires is in the future
+            let expired_u64 = expires.try_into().unwrap();
+            let timestamp = get_block_timestamp();
+            assert(expired_u64 > 0_u64, Errors::INVALID_SESSION_EXPIRATION);
+            assert(expired_u64 > timestamp, Errors::INVALID_SESSION_EXPIRED);
+
+            // checks, if root is set, calls merkle proofs match the root
+            if root != 0 {
+                let mut j = 1;
+                let proof_len_felt = *authz.at(signature_len + 7);
+                let proof_len: usize = proof_len_felt.try_into().unwrap();
+                let mut proof_start = signature_len + 8;
+                while j < calls_len {
+                    assert(proof_len < authz_len + 1 - proof_start, Errors::INVALID_SESSION_PROOF_LEN);
+                    let account_address: ContractAddress = *calls.at(j).to;
+                    let account_address_felt: felt252 = account_address.try_into().unwrap();
+                    let selector = *calls.at(j).selector;
+                    let leaf = pedersen(account_address_felt, selector);
+                    let mut proof: Array<felt252> = ArrayTrait::<felt252>::new();
+                    let mut k = 0;
+                    while k < proof_len {
+                        proof.append(*authz.at(proof_start + k));
+                        k += 1;
+                    };
+                    let is_proof_valid = is_valid_root(leaf, root, proof);
+                    assert(is_proof_valid, Errors::INVALID_SESSION_PROOF);
+                    proof_start += proof_len;
+                    j += 1;
+                };
+            }
 
             // Check the authz signature is valid
-            let _auth_hash = hash_auth_message(
+            let auth_hash = hash_auth_message(
                 account_address, validator_class, grantor_class, authz_key, expires, root, chain_id
             );
+
+            // check the sessionkey has not been blocked
+            let is_disabled = self.Sessionkey_disabled.read(auth_hash);
+            assert(!is_disabled, Errors::DISABLED_SESSION);
+
             IValidatorLibraryDispatcher { class_hash: grantor_class }
-                .is_valid_signature(_auth_hash, signature)
+                .is_valid_signature(auth_hash, signature)
         }
 
         fn initialize(ref self: ContractState, args: Array<felt252>) {}
@@ -114,12 +160,14 @@ mod SessionKeyValidator {
 
     #[storage]
     struct Storage {
+        Sessionkey_disabled: LegacyMap<felt252, bool>,
         #[substorage(v0)]
         validator: ValidatorComponent::Storage,
         #[substorage(v0)]
         src5: SRC5Component::Storage,
         #[substorage(v0)]
         account: AccountComponent::Storage,
+
     }
 
     #[event]

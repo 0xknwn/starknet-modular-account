@@ -115,10 +115,7 @@ mod tests {
                 0x49b2777d6f4f3301c487cc4506b7fbb5a2758e99ee1c34211a74a7e288b1ccb
             ]
         );
-        assert!(
-            is_valid,
-            "root should match the proof"
-        );
+        assert!(is_valid, "root should match the proof");
     }
 
     #[test]
@@ -134,9 +131,6 @@ mod tests {
                 0x49b2777d6f4f3301c487cc4506b7fbb5a2758e99ee1c34211a74a7e288b1ccb
             ]
         );
-        assert!(
-            !is_valid,
-            "root should not match the proof"
-        );
+        assert!(!is_valid, "root should not match the proof");
     }
 }
