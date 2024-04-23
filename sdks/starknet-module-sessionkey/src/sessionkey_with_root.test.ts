@@ -247,13 +247,13 @@ describe("sessionkey management", () => {
         { contractAddress: counterContract.address, selector: "increment_by" },
       ]);
       const conf = config(env);
-      let next_timestamp = Math.floor(Date.now() / 1000) + 24 * 60 * 60;
+      let next_timestamp = BigInt(Math.floor(Date.now() / 1000) + 24 * 60 * 60);
       sessionKeyModule = new SessionKeyModule(
         conf.accounts[1].publicKey,
         smartrAccount.address,
         classHash("SessionKeyValidator"),
         connectedChain,
-        "0x0",
+        `0x${next_timestamp.toString(16)}`,
         policyManager
       );
       let root = policyManager.getRoot();
@@ -264,7 +264,7 @@ describe("sessionkey management", () => {
           classHash("SessionKeyValidator"),
           classHash("CoreValidator"),
           conf.accounts[1].publicKey,
-          "0x0",
+          `0x${next_timestamp.toString(16)}`,
           root,
           connectedChain
         )

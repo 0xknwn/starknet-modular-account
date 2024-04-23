@@ -38,8 +38,8 @@ export class SessionKeyModule implements AccountModuleInterface {
     authKey: string,
     accountAddress: string,
     validatorClassHash: string,
-    chainId: string = "0x1",
-    expires: string = "0x0",
+    chainId: string,
+    expires: string,
     policyManager?: PolicyManager
   ) {
     let root = "0x0";
@@ -119,7 +119,6 @@ export class SessionKeyModule implements AccountModuleInterface {
       }
       let proof_number = 0;
       for (let call of calls) {
-        console.log(call);
         let contractAddress = call.contractAddress;
         let selector = call.entrypoint;
         const proof = this.policyManager?.getProof({

@@ -13,7 +13,7 @@ mod SessionKeyValidator {
         ValidatorComponent, IValidator, IValidatorDispatcherTrait, IValidatorLibraryDispatcher
     };
     use smartr::module::merkle_tree::is_valid_root;
-    use starknet::{get_caller_address, get_contract_address, get_tx_info};
+    use starknet::{get_caller_address, get_contract_address, get_tx_info, get_block_timestamp};
     use starknet::account::Call;
     use starknet::class_hash::ClassHash;
     use starknet::ContractAddress;
@@ -113,8 +113,10 @@ mod SessionKeyValidator {
 
             // @todo: enable this check
             // checks expires is in the future
-            // assert(expires > 0, Errors::INVALID_SESSION_EXPIRATION);
-            // assert(expires > tx_info.timestamp, Errors::INVALID_SESSION_EXPIRED);
+            let expired_u64 = expires.try_into().unwrap();
+            let timestamp = get_block_timestamp();
+            assert(expired_u64 > 0_u64, Errors::INVALID_SESSION_EXPIRATION);
+            assert(expired_u64 > timestamp, Errors::INVALID_SESSION_EXPIRED);
 
             // checks, if root is set, calls merkle proofs match the root
             if root != 0 {
