@@ -1,5 +1,5 @@
 import { PolicyManager } from "./policies";
-import { hash } from "starknet";
+import { hash, ec } from "starknet";
 
 describe("policy management", () => {
   let env: string;
@@ -40,5 +40,22 @@ describe("policy management", () => {
       "0x676838e752ad734562c31908f80c11ede81299ee8f8dca23b56f3940ab4eac4",
       "0xe7770d576068ef5d86313eb46719ba3c063186c4bf4a210f6aa241fb307220",
     ]);
+  });
+
+  it("check proof matches", async () => {
+    const v = ec.starkCurve.pedersen(
+      "0x22b0eb356391ceaceb2eacb91020519d25e37454bc90dca8cc90f18f12e041d",
+      "0x7a44dde9fea32737a5cf3f9683b3235138654aa2d189f6fe44af37a61dc60d"
+    );
+    expect(v).toBe(
+      "0x619bb1d6b999733261f77da5e4a7c17490e2cebee0634ea4fa246a03dfe545e"
+    );
+    const w = ec.starkCurve.pedersen(
+      v,
+      "0x7f667c5eade89360abf17e94c16eb3569d0722812c5dff1e551611e02ba6301"
+    );
+    expect(w).toBe(
+      "0x27483a1ea35e8bfeb07f2c90f4c4049fdae3b9cc5f9ddd68be0680add00b695"
+    );
   });
 });

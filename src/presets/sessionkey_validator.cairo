@@ -96,7 +96,7 @@ mod SessionKeyValidator {
             let signature_len: usize = signature_len_felt.try_into().unwrap();
             let authz_len = authz.len();
             let computed_len: usize = signature_len + 7;
-            assert(authz_len == computed_len, Errors::INVALID_MODULE_CALLDATA);
+            assert(computed_len <= authz_len, Errors::INVALID_MODULE_CALLDATA);
             let mut signature = ArrayTrait::<felt252>::new();
             let mut i: usize = 0;
             while i < signature_len {
@@ -106,8 +106,8 @@ mod SessionKeyValidator {
 
             // @todo: enable this check
             // checks the module is installed in the account
-            // let installed = self.account.Account_modules.read(class_hash);
-            // assert(installed, Errors::MODULE_NOT_INSTALLED);
+            let installed = self.account.Account_modules.read(validator_class);
+            assert(installed, Errors::MODULE_NOT_INSTALLED);
 
             // @todo: check the sessionkey has not been blocked
 
@@ -123,7 +123,7 @@ mod SessionKeyValidator {
                 let proof_len: usize = proof_len_felt.try_into().unwrap();
                 let mut proof_start = signature_len + 8;
                 while j < calls_len {
-                    assert(proof_len < authz_len - proof_start, Errors::INVALID_SESSION_PROOF_LEN);
+                    assert(proof_len < authz_len + 1 - proof_start, Errors::INVALID_SESSION_PROOF_LEN);
                     let account_address: ContractAddress = *calls.at(j).to;
                     let account_address_felt: felt252 = account_address.try_into().unwrap();
                     let selector = *calls.at(j).selector;
