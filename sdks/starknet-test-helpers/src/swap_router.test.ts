@@ -213,7 +213,6 @@ describe("swap router", () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
       let balance = await tokenB.balance_of(a.address);
-      console.log(balance, tokenBInitialBalance);
       expect(balance - tokenBInitialBalance).toBeGreaterThanOrEqual(10n ** 15n);
     },
     default_timeout

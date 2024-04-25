@@ -88,7 +88,7 @@ describe("account management", () => {
       expect(accountAddress).toEqual(
         smartrAccountAddress(publicKey, coreValidatorAddress)
       );
-      smartrAccount = new SmartrAccount(p, accountAddress, [privateKey]);
+      smartrAccount = new SmartrAccount(p, accountAddress, privateKey);
     },
     default_timeout
   );
@@ -107,7 +107,7 @@ describe("account management", () => {
   );
 
   it(
-    "checks the SmartAccount threshhold",
+    "checks the SmartAccount threshold",
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];

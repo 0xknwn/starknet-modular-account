@@ -122,7 +122,7 @@ describe("sessionkey management", () => {
   );
 
   it(
-    "checks the SmartAccount threshhold",
+    "checks the SmartAccount threshold",
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];

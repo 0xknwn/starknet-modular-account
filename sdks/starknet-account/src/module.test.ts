@@ -59,7 +59,7 @@ describe("module management", () => {
       expect(accountAddress).toEqual(
         smartrAccountAddress(publicKey, coreValidatorAddress)
       );
-      smartrAccount = new SmartrAccount(p, accountAddress, [privateKey]);
+      smartrAccount = new SmartrAccount(p, accountAddress, privateKey);
     },
     default_timeout
   );

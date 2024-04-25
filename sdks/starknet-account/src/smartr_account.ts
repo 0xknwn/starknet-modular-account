@@ -22,10 +22,7 @@ import type {
   ArraySignatureType,
   Signature,
   WeierstrassSignatureType,
-  Invocation,
   InvocationsDetailsWithNonce,
-  // AccountInvocations,
-  // getSimulateTransactionOptions,
 } from "starknet";
 
 export type Authorization = {
@@ -116,14 +113,12 @@ export const deploySmartrAccount = async (
 export class SmartrAccount extends Account {
   // @todo: move back to one signer and add methods to exchange transactions
   // between account and add signature with the transaction...
-  public signers: Array<SignerInterface>;
-
   public module: AccountModuleInterface | undefined;
 
   constructor(
     providerOrOptions: ProviderOptions | ProviderInterface,
     address: string,
-    pkOrSigners: Array<Uint8Array> | Array<string> | Array<SignerInterface>,
+    pkOrSigner: Uint8Array | string | SignerInterface,
     module: AccountModuleInterface | undefined = undefined,
     cairoVersion?: CairoVersion,
     transactionVersion:
@@ -133,36 +128,26 @@ export class SmartrAccount extends Account {
     super(
       providerOrOptions,
       address,
-      pkOrSigners[0],
+      pkOrSigner,
       cairoVersion,
       transactionVersion
-    );
-    this.signers = pkOrSigners.map((pkOrSigner) =>
-      pkOrSigner instanceof Uint8Array || typeof pkOrSigner === "string"
-        ? new Signer(pkOrSigner)
-        : pkOrSigner
     );
     this.module = module;
   }
 
-  // Note: buildInvocation does not return the invocation data, in oarticular not the
-  // nonce, version, fee or chainId
-
   /**
-   * generate the Payload to set of transactions on the StarkNet network.
+   * generates the details, i.e nonce, version, fee, module prefix, to execute
+   * transactions on the StarkNet network.
    *
    * @param transactions - An array of transactions to be executed.
    * @param transactionsDetail - Optional object containing additional details for the transactions.
-   * @returns A Promise that resolves to an InvokeFunctionResponse object representing the result of the execution.
+   * @returns A Promise that resolves to the transaction details.
    *
    */
   public async prepareMultisig(
     transactions: AllowArray<Call>,
     transactionsDetail?: UniversalDetails
-  ): Promise<{
-    invocation: Invocation;
-    details: InvocationsDetailsWithNonce;
-  }> {
+  ): Promise<InvocationsDetailsWithNonce> {
     const details: UniversalDetails = transactionsDetail ?? {};
     const calls = Array.isArray(transactions) ? transactions : [transactions];
     const nonce = num.toBigInt(details.nonce ?? (await this.getNonce()));
@@ -187,63 +172,98 @@ export class SmartrAccount extends Account {
       }
     );
 
-    const calldata = transaction.getExecuteCalldata(
-      calls,
-      await this.getCairoVersion()
-    );
-
     return {
-      invocation: { contractAddress: this.address, calldata, signature: [] },
-      details: {
-        ...stark.v3Details(details),
-        resourceBounds: estimate.resourceBounds,
-        nonce,
-        maxFee: estimate.maxFee,
-        version,
-      },
+      ...stark.v3Details(details),
+      resourceBounds: estimate.resourceBounds,
+      nonce,
+      maxFee: estimate.maxFee,
+      version,
     };
   }
 
+  /**
+   * Signs a set of transactions to be executed on the StarkNet network.
+   *
+   * @param transactions - An array of transactions to be executed.
+   * @param transactionsDetail - Optional object containing additional details for the transactions.
+   * @returns A Promise that resolves to the signature of the transactions.
+   *
+   */
   public async signMultisig(
-    invocation: Invocation,
+    transactions: Array<Call>,
     details: InvocationsDetailsWithNonce
-  ): Promise<{
-    invocation: Invocation;
-    details: InvocationsDetailsWithNonce;
-  }> {
+  ): Promise<ArraySignatureType> {
+    const version = stark.toTransactionVersion(
+      this.getPreferredVersion(
+        RPC.ETransactionVersion.V1,
+        RPC.ETransactionVersion.V3
+      ),
+      details.version
+    );
     const chainId = await this.getChainId();
 
-    if (!details.version || details.version !== RPC.ETransactionVersion.V3) {
-      throw new Error("Multisig only supports V3 transaction version");
+    if (
+      !details.version ||
+      (details.version !== RPC.ETransactionVersion.V3 &&
+        details.version !== RPC.ETransactionVersion.V1)
+    ) {
+      throw new Error(`version ${details.version} is not supported`);
     }
-    const signerDetails: InvocationsSignerDetails = {
+    const signerDetails = {
+      ...details,
+      walletAddress: this.address,
+      version,
+      chainId,
+      cairoVersion: await this.getCairoVersion(),
+    } as InvocationsSignerDetails;
+
+    const sign = await this.signer.signTransaction(transactions, signerDetails);
+    const signature = signatureToHexArray(sign);
+    return signature;
+  }
+
+  /**
+   * Executes a set of transactions, assuming they have been signed by all
+   * parties.
+   *
+   * @param transactions - An array of transactions to be executed.
+   * @param transactionsDetail - Optional object containing additional details
+   * for the transactions.
+   * @param signature - The signature of the transactions.
+   * @returns A Promise that resolves to the transactions invocation response.
+   *
+   */
+  public async executeMultisig(
+    transactions: Array<Call>,
+    details: InvocationsDetailsWithNonce,
+    signature: ArraySignatureType
+  ): Promise<InvokeFunctionResponse> {
+    const version = stark.toTransactionVersion(
+      this.getPreferredVersion(
+        RPC.ETransactionVersion.V1,
+        RPC.ETransactionVersion.V3
+      ), // TODO: does this depend on cairo version ?
+      details.version
+    );
+
+    const chainId = await this.getChainId();
+
+    const signerDetails = {
       ...details,
       walletAddress: this.address,
       chainId,
       cairoVersion: await this.getCairoVersion(),
-      version: this.getPreferredVersion(
-        RPC.ETransactionVersion.V1,
-        RPC.ETransactionVersion.V3
-      ),
-    };
+    } as InvocationsSignerDetails;
 
-    let signatures = [] as ArraySignatureType;
-      const s = signatureToHexArray(
-        await this.signer.signTransaction(invocation, signerDetails)
-      );
-      signatures = signatures.concat(s);
+    const calldata = transaction.getExecuteCalldata(
+      transactions,
+      await this.getCairoVersion()
+    );
 
-    return await {
-      invocation,
-      details,
-    };
-  }
-
-  public async executeMultisig(
-    invocation: Invocation,
-    details: InvocationsDetailsWithNonce
-  ): Promise<InvokeFunctionResponse> {
-    return this.invokeFunction(invocation, details);
+    return this.invokeFunction(
+      { contractAddress: this.address, calldata, signature },
+      signerDetails
+    );
   }
 
   /**
@@ -315,13 +335,9 @@ export class SmartrAccount extends Account {
       cairoVersion: await this.getCairoVersion(),
     };
 
-    let signatures = [] as ArraySignatureType;
-    for await (const signer of this.signers) {
-      const s = signatureToHexArray(
-        await signer.signTransaction(calls, signerDetails)
-      );
-      signatures = signatures.concat(s);
-    }
+    const signature = signatureToHexArray(
+      await this.signer.signTransaction(calls, signerDetails)
+    );
 
     const calldata = transaction.getExecuteCalldata(
       calls,
@@ -329,7 +345,7 @@ export class SmartrAccount extends Account {
     );
 
     return this.invokeFunction(
-      { contractAddress: this.address, calldata, signature: signatures },
+      { contractAddress: this.address, calldata, signature },
       {
         ...stark.v3Details(details),
         resourceBounds: estimate.resourceBounds,
@@ -382,13 +398,21 @@ export class SmartrAccount extends Account {
    * @param new_public_key - The new public key to add.
    * @returns A promise that resolves to the transaction receipt.
    */
-  async addPublicKey(new_public_key: string) {
+  async addPublicKey(
+    new_public_key: string,
+    execute?: true
+  ): Promise<InvokeFunctionResponse>;
+  async addPublicKey(new_public_key: string, execute: false): Promise<Call[]>;
+  async addPublicKey(new_public_key: string, execute: boolean = true) {
     const contract = new Contract(SmartrAccountABI, this.address, this).typedv2(
       SmartrAccountABI
     );
     const transferCall: Call = contract.populate("add_public_key", {
       new_public_key: new_public_key,
     });
+    if (!execute) {
+      return [transferCall];
+    }
     return await this.execute(transferCall);
   }
 
@@ -397,13 +421,24 @@ export class SmartrAccount extends Account {
    * @param old_public_key - The public key to remove.
    * @returns A promise that resolves to the transaction receipt.
    */
-  async removePublicKey(old_public_key: string) {
+  async removePublicKey(
+    old_public_key: string,
+    execute?: true
+  ): Promise<InvokeFunctionResponse>;
+  async removePublicKey(
+    old_public_key: string,
+    execute: false
+  ): Promise<Call[]>;
+  async removePublicKey(old_public_key: string, execute: boolean = true) {
     const contract = new Contract(SmartrAccountABI, this.address, this).typedv2(
       SmartrAccountABI
     );
     const transferCall: Call = contract.populate("remove_public_key", {
       old_public_key: old_public_key,
     });
+    if (!execute) {
+      return [transferCall];
+    }
     return await this.execute(transferCall);
   }
 
@@ -412,13 +447,21 @@ export class SmartrAccount extends Account {
    * @param new_threshold - The new threshold value.
    * @returns A promise that resolves to the transaction receipt.
    */
-  async setThreshold(new_threshold: bigint) {
+  async setThreshold(
+    new_threshold: bigint,
+    execute?: true
+  ): Promise<InvokeFunctionResponse>;
+  async setThreshold(new_threshold: bigint, execute: false): Promise<Call[]>;
+  async setThreshold(new_threshold: bigint, execute: boolean = true) {
     const contract = new Contract(SmartrAccountABI, this.address, this).typedv2(
       SmartrAccountABI
     );
     const transferCall: Call = contract.populate("set_threshold", {
       new_threshold: new_threshold,
     });
+    if (!execute) {
+      return [transferCall];
+    }
     return this.execute(transferCall);
   }
 
@@ -429,7 +472,12 @@ export class SmartrAccount extends Account {
     return await contract.is_module(class_hash);
   }
 
-  async addModule(class_hash: string) {
+  async addModule(
+    class_hash: string,
+    execute?: true
+  ): Promise<InvokeFunctionResponse>;
+  async addModule(class_hash: string, execute: false): Promise<Call[]>;
+  async addModule(class_hash: string, execute: boolean = true) {
     const contract = new Contract(SmartrAccountABI, this.address, this).typedv2(
       SmartrAccountABI
     );
@@ -437,16 +485,27 @@ export class SmartrAccount extends Account {
       class_hash: class_hash,
       args: [],
     });
+    if (!execute) {
+      return [transferCall];
+    }
     return await this.execute(transferCall);
   }
 
-  async removeModule(class_hash: string) {
+  async removeModule(
+    class_hash: string,
+    execute?: true
+  ): Promise<InvokeFunctionResponse>;
+  async removeModule(class_hash: string, execute: false): Promise<Call[]>;
+  async removeModule(class_hash: string, execute: boolean = true) {
     const contract = new Contract(SmartrAccountABI, this.address, this).typedv2(
       SmartrAccountABI
     );
     const transferCall: Call = contract.populate("remove_module", {
       class_hash: class_hash,
     });
+    if (!execute) {
+      return [transferCall];
+    }
     return await this.execute(transferCall);
   }
 }

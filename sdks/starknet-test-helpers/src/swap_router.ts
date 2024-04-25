@@ -127,7 +127,6 @@ export class SwapRouter extends Contract {
     let swapCall: Call = this.populate("swap", {
       amount,
     });
-    // console.log(swapCall);
     const { transaction_hash: transferTxHash } = await a.execute([
       approveCall,
       swapCall,
