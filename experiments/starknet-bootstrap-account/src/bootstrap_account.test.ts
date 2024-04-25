@@ -72,4 +72,20 @@ describe("bootstrapping an account", () => {
     },
     default_timeout
   );
+
+  it(
+    "checks the account class is now SimpleAccount",
+    async () => {
+      const conf = config(env);
+      const a = testAccounts(conf)[0];
+      const accountClass = await a.getClassHashAt(
+        bootstrapAccountAddress(
+          conf.accounts[0].publicKey,
+          classHash("SimpleAccount")
+        )
+      );
+      expect(accountClass).toEqual(classHash("SimpleAccount"));
+    },
+    default_timeout
+  );
 });
