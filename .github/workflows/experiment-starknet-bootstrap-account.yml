@@ -1,4 +1,4 @@
-name: starknet-failed-account tests
+name: starknet-bootstrap-account tests
 on: workflow_dispatch
 
 jobs:
