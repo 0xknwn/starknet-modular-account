@@ -34,7 +34,6 @@ export const deployBootstrapAccount = async (
     public_key: publicKey,
     target_class: targetClass,
   });
-  console.log(callData);
   return await deployAccount(
     deployerAccount,
     "BootstrapAccount",
