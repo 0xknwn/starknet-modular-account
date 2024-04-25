@@ -4,7 +4,7 @@
 #[starknet::contract]
 mod TokenA {
     use openzeppelin::access::ownable::OwnableComponent;
-    use openzeppelin::token::erc20::ERC20Component;
+    use openzeppelin::token::erc20::{ERC20Component, ERC20HooksEmptyImpl};
     use openzeppelin::token::erc20::interface;
     use openzeppelin::upgrades::UpgradeableComponent;
     use openzeppelin::upgrades::interface::IUpgradeable;
