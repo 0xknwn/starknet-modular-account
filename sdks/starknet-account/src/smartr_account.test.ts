@@ -98,7 +98,7 @@ describe("account management", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await smartrAccount.get_public_keys();
+      const c = await smartrAccount.getPublicKeys();
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(1);
       expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
@@ -111,7 +111,7 @@ describe("account management", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await smartrAccount.get_threshold();
+      const c = await smartrAccount.getThreshold();
       expect(c).toEqual(1n);
     },
     default_timeout
