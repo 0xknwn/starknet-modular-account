@@ -113,7 +113,7 @@ describe("sessionkey management", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await smartrAccount.get_public_keys();
+      const c = await smartrAccount.getPublicKeys();
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(1);
       expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
@@ -126,7 +126,7 @@ describe("sessionkey management", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await smartrAccount.get_threshold();
+      const c = await smartrAccount.getThreshold();
       expect(c).toEqual(1n);
     },
     default_timeout
@@ -196,7 +196,7 @@ describe("sessionkey management", () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
       }
-      const { transaction_hash } = await smartrAccount.add_module(
+      const { transaction_hash } = await smartrAccount.addModule(
         classHash("SessionKeyValidator")
       );
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
@@ -211,7 +211,7 @@ describe("sessionkey management", () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
       }
-      const output = await smartrAccount.is_module(
+      const output = await smartrAccount.isModule(
         classHash("SessionKeyValidator")
       );
       expect(output).toBe(true);
@@ -353,7 +353,7 @@ describe("sessionkey management", () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
       }
-      const { transaction_hash } = await smartrAccount.remove_module(
+      const { transaction_hash } = await smartrAccount.removeModule(
         classHash("SessionKeyValidator")
       );
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
@@ -368,7 +368,7 @@ describe("sessionkey management", () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
       }
-      const output = await smartrAccount.is_module(
+      const output = await smartrAccount.isModule(
         classHash("SessionKeyValidator")
       );
       expect(output).toBe(false);

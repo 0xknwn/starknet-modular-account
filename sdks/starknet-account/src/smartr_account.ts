@@ -267,7 +267,7 @@ export class SmartrAccount extends Account {
    * Retrieves the public keys associated with the SmartrAccount.
    * @returns A promise that resolves to the public keys.
    */
-  async get_public_keys() {
+  async getPublicKeys() {
     const contract = new Contract(SmartrAccountABI, this.address, this).typedv2(
       SmartrAccountABI
     );
@@ -278,7 +278,7 @@ export class SmartrAccount extends Account {
    * Retrieves the threshold value of the SmartrAccount.
    * @returns A promise that resolves to the threshold value.
    */
-  async get_threshold() {
+  async getThreshold() {
     const contract = new Contract(SmartrAccountABI, this.address, this).typedv2(
       SmartrAccountABI
     );
@@ -290,7 +290,7 @@ export class SmartrAccount extends Account {
    * @param new_public_key - The new public key to add.
    * @returns A promise that resolves to the transaction receipt.
    */
-  async add_public_key(new_public_key: string) {
+  async addPublicKey(new_public_key: string) {
     const contract = new Contract(SmartrAccountABI, this.address, this).typedv2(
       SmartrAccountABI
     );
@@ -305,7 +305,7 @@ export class SmartrAccount extends Account {
    * @param old_public_key - The public key to remove.
    * @returns A promise that resolves to the transaction receipt.
    */
-  async remove_public_key(old_public_key: string) {
+  async removePublicKey(old_public_key: string) {
     const contract = new Contract(SmartrAccountABI, this.address, this).typedv2(
       SmartrAccountABI
     );
@@ -320,7 +320,7 @@ export class SmartrAccount extends Account {
    * @param new_threshold - The new threshold value.
    * @returns A promise that resolves to the transaction receipt.
    */
-  async set_threshold(new_threshold: bigint) {
+  async setThreshold(new_threshold: bigint) {
     const contract = new Contract(SmartrAccountABI, this.address, this).typedv2(
       SmartrAccountABI
     );
@@ -330,14 +330,14 @@ export class SmartrAccount extends Account {
     return this.execute(transferCall);
   }
 
-  async is_module(class_hash: string) {
+  async isModule(class_hash: string) {
     const contract = new Contract(SmartrAccountABI, this.address, this).typedv2(
       SmartrAccountABI
     );
     return await contract.is_module(class_hash);
   }
 
-  async add_module(class_hash: string) {
+  async addModule(class_hash: string) {
     const contract = new Contract(SmartrAccountABI, this.address, this).typedv2(
       SmartrAccountABI
     );
@@ -348,7 +348,7 @@ export class SmartrAccount extends Account {
     return await this.execute(transferCall);
   }
 
-  async remove_module(class_hash: string) {
+  async removeModule(class_hash: string) {
     const contract = new Contract(SmartrAccountABI, this.address, this).typedv2(
       SmartrAccountABI
     );

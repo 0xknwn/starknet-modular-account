@@ -98,7 +98,7 @@ describe("multiple signature", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await smartrAccount.get_public_keys();
+      const c = await smartrAccount.getPublicKeys();
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(1);
       expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
@@ -109,7 +109,7 @@ describe("multiple signature", () => {
   it(
     "checks the SmartAccount threshhold",
     async () => {
-      const c = await smartrAccount.get_threshold();
+      const c = await smartrAccount.getThreshold();
       expect(c).toEqual(1n);
     },
     default_timeout
@@ -188,7 +188,7 @@ describe("multiple signature", () => {
   it(
     "checks the SmartAccount threshhold",
     async () => {
-      const c = await smartrAccount.get_threshold();
+      const c = await smartrAccount.getThreshold();
       expect(c).toEqual(1n);
     },
     default_timeout
@@ -198,7 +198,7 @@ describe("multiple signature", () => {
     "adds a 2nd public key to the account",
     async () => {
       const conf = config(env);
-      const { transaction_hash } = await smartrAccount.add_public_key(
+      const { transaction_hash } = await smartrAccount.addPublicKey(
         conf.accounts[1].publicKey
       );
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
@@ -210,7 +210,7 @@ describe("multiple signature", () => {
   it(
     "checks the new public key with the account",
     async () => {
-      const c = await smartrAccount.get_public_keys();
+      const c = await smartrAccount.getPublicKeys();
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(2);
       const conf = config(env);
@@ -288,7 +288,7 @@ describe("multiple signature", () => {
   it(
     "updates the account threshold to 2",
     async () => {
-      const { transaction_hash } = await smartrAccount.set_threshold(2n);
+      const { transaction_hash } = await smartrAccount.setThreshold(2n);
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
     },
@@ -304,7 +304,7 @@ describe("multiple signature", () => {
         conf.accounts[0].privateKey,
         conf.accounts[1].privateKey,
       ]);
-      const { transaction_hash } = await altSmartrAccount.add_public_key(
+      const { transaction_hash } = await altSmartrAccount.addPublicKey(
         conf.accounts[2].publicKey
       );
       const receipt =
@@ -317,7 +317,7 @@ describe("multiple signature", () => {
   it(
     "checks the new public key with the account",
     async () => {
-      const c = await smartrAccount.get_public_keys();
+      const c = await smartrAccount.getPublicKeys();
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(3);
       const conf = config(env);
@@ -413,7 +413,7 @@ describe("multiple signature", () => {
         conf.accounts[1].privateKey,
         conf.accounts[2].privateKey,
       ]);
-      const { transaction_hash } = await altSmartrAccount.set_threshold(1n);
+      const { transaction_hash } = await altSmartrAccount.setThreshold(1n);
       const receipt =
         await altSmartrAccount.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
@@ -424,7 +424,7 @@ describe("multiple signature", () => {
   it(
     "checks the SmartAccount threshhold is back to 1",
     async () => {
-      const c = await smartrAccount.get_threshold();
+      const c = await smartrAccount.getThreshold();
       expect(c).toEqual(1n);
     },
     default_timeout
@@ -454,7 +454,7 @@ describe("multiple signature", () => {
     "removes the 2nd public key from the account",
     async () => {
       const conf = config(env);
-      const { transaction_hash } = await smartrAccount.remove_public_key(
+      const { transaction_hash } = await smartrAccount.removePublicKey(
         conf.accounts[1].publicKey
       );
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
@@ -466,7 +466,7 @@ describe("multiple signature", () => {
   it(
     "checks the public key with the account are 2",
     async () => {
-      const c = await smartrAccount.get_public_keys();
+      const c = await smartrAccount.getPublicKeys();
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(2);
       const conf = config(env);
@@ -479,7 +479,7 @@ describe("multiple signature", () => {
     "removes the ex-3rd public key from the account",
     async () => {
       const conf = config(env);
-      const { transaction_hash } = await smartrAccount.remove_public_key(
+      const { transaction_hash } = await smartrAccount.removePublicKey(
         conf.accounts[2].publicKey
       );
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
@@ -491,7 +491,7 @@ describe("multiple signature", () => {
   it(
     "checks the public key with the account are 1",
     async () => {
-      const c = await smartrAccount.get_public_keys();
+      const c = await smartrAccount.getPublicKeys();
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(1);
       const conf = config(env);

@@ -69,7 +69,7 @@ describe("module management", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await smartrAccount.get_public_keys();
+      const c = await smartrAccount.getPublicKeys();
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(1);
       expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
@@ -83,7 +83,7 @@ describe("module management", () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
       }
-      const output = await smartrAccount.is_module("0x0");
+      const output = await smartrAccount.isModule("0x0");
       expect(output).toBe(false);
     },
     default_timeout
@@ -106,7 +106,7 @@ describe("module management", () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
       }
-      const { transaction_hash } = await smartrAccount.add_module(
+      const { transaction_hash } = await smartrAccount.addModule(
         classHash("SimpleValidator")
       );
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
@@ -121,7 +121,7 @@ describe("module management", () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
       }
-      const output = await smartrAccount.is_module(
+      const output = await smartrAccount.isModule(
         classHash("SimpleValidator")
       );
       expect(output).toBe(true);
@@ -136,7 +136,7 @@ describe("module management", () => {
         throw new Error("SmartrAccount is not deployed");
       }
       try {
-        await smartrAccount.add_module(classHash("SimpleValidator"));
+        await smartrAccount.addModule(classHash("SimpleValidator"));
         expect(true).toBe(false);
       } catch (e) {
         expect(e).toBeDefined();
@@ -151,7 +151,7 @@ describe("module management", () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
       }
-      const { transaction_hash } = await smartrAccount.remove_module(
+      const { transaction_hash } = await smartrAccount.removeModule(
         classHash("SimpleValidator")
       );
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
@@ -166,7 +166,7 @@ describe("module management", () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
       }
-      const output = await smartrAccount.is_module(
+      const output = await smartrAccount.isModule(
         classHash("SimpleValidator")
       );
       expect(output).toBe(false);
