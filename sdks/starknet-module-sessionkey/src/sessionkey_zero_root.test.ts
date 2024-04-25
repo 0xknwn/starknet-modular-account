@@ -103,7 +103,7 @@ describe("sessionkey management", () => {
       expect(accountAddress).toEqual(
         smartrAccountAddress(publicKey, coreValidatorAddress)
       );
-      smartrAccount = new SmartrAccount(p, accountAddress, [privateKey]);
+      smartrAccount = new SmartrAccount(p, accountAddress, privateKey);
     },
     default_timeout
   );
@@ -291,7 +291,7 @@ describe("sessionkey management", () => {
     smartrAccountWithSessionKey = new SmartrAccount(
       p,
       smartrAccount.address,
-      [conf.accounts[1].privateKey],
+      conf.accounts[1].privateKey,
       sessionKeyModule
     );
   });
