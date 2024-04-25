@@ -203,7 +203,7 @@ describe("sessionkey swap", () => {
       expect(accountAddress).toEqual(
         smartrAccountAddress(publicKey, coreValidatorAddress)
       );
-      smartrAccount = new SmartrAccount(p, accountAddress, [privateKey]);
+      smartrAccount = new SmartrAccount(p, accountAddress, privateKey);
     },
     default_timeout
   );
@@ -222,7 +222,7 @@ describe("sessionkey swap", () => {
   );
 
   it(
-    "checks the SmartAccount threshhold",
+    "checks the SmartAccount threshold",
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
@@ -329,7 +329,7 @@ describe("sessionkey swap", () => {
     smartrAccountWithSessionKey = new SmartrAccount(
       p,
       smartrAccount.address,
-      [conf.accounts[1].privateKey],
+      conf.accounts[1].privateKey,
       sessionKeyModule
     );
   });

@@ -7,18 +7,21 @@ import {
   Counter,
   counterAddress,
   config,
+  CounterABI,
 } from "starknet-test-helpers";
 import {
   SmartrAccount,
   deploySmartrAccount,
   smartrAccountAddress,
 } from "./smartr_account";
-import { RpcProvider } from "starknet";
+import { Contract, RpcProvider } from "starknet";
 
 describe("multiple signature", () => {
   let env: string;
   let counterContract: Counter;
   let smartrAccount: SmartrAccount;
+  let smartrAccount2: SmartrAccount;
+  let smartrAccount3: SmartrAccount;
 
   beforeAll(() => {
     env = "devnet";
@@ -88,7 +91,7 @@ describe("multiple signature", () => {
       expect(accountAddress).toEqual(
         smartrAccountAddress(publicKey, coreValidatorAddress)
       );
-      smartrAccount = new SmartrAccount(p, accountAddress, [privateKey]);
+      smartrAccount = new SmartrAccount(p, accountAddress, privateKey);
     },
     default_timeout
   );
@@ -107,7 +110,7 @@ describe("multiple signature", () => {
   );
 
   it(
-    "checks the SmartAccount threshhold",
+    "checks the SmartAccount threshold",
     async () => {
       const c = await smartrAccount.getThreshold();
       expect(c).toEqual(1n);
@@ -186,7 +189,7 @@ describe("multiple signature", () => {
   );
 
   it(
-    "checks the SmartAccount threshhold",
+    "checks the SmartAccount threshold",
     async () => {
       const c = await smartrAccount.getThreshold();
       expect(c).toEqual(1n);
@@ -203,6 +206,12 @@ describe("multiple signature", () => {
       );
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
+      const p = new RpcProvider({ nodeUrl: conf.providerURL });
+      smartrAccount2 = new SmartrAccount(
+        p,
+        smartrAccount.address,
+        conf.accounts[1].privateKey
+      );
     },
     default_timeout
   );
@@ -240,19 +249,18 @@ describe("multiple signature", () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
       }
+      if (!smartrAccount2) {
+        throw new Error("SmartrAccount not installed");
+      }
       const conf = config(env);
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
-      const altSmartrAccount = new SmartrAccount(p, smartrAccount.address, [
-        conf.accounts[1].privateKey,
-      ]);
       const counterFromAltSmartrAccount = new Counter(
         counterContract.address,
-        altSmartrAccount
+        smartrAccount2
       );
       const { transaction_hash } =
         await counterFromAltSmartrAccount.increment();
-      const receipt =
-        await altSmartrAccount.waitForTransaction(transaction_hash);
+      const receipt = await smartrAccount2.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
     },
     default_timeout
@@ -300,16 +308,28 @@ describe("multiple signature", () => {
     async () => {
       const conf = config(env);
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
-      const altSmartrAccount = new SmartrAccount(p, smartrAccount.address, [
-        conf.accounts[0].privateKey,
-        conf.accounts[1].privateKey,
-      ]);
-      const { transaction_hash } = await altSmartrAccount.addPublicKey(
-        conf.accounts[2].publicKey
+      const transactions = await smartrAccount.addPublicKey(
+        conf.accounts[2].publicKey,
+        false
       );
-      const receipt =
-        await altSmartrAccount.waitForTransaction(transaction_hash);
+      const detail = await smartrAccount.prepareMultisig(transactions);
+      const signature1 = await smartrAccount.signMultisig(transactions, detail);
+      const signature2 = await smartrAccount2.signMultisig(
+        transactions,
+        detail
+      );
+      const { transaction_hash } = await smartrAccount.executeMultisig(
+        transactions,
+        detail,
+        [...signature1, ...signature2]
+      );
+      const receipt = await smartrAccount.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
+      smartrAccount3 = new SmartrAccount(
+        p,
+        smartrAccount.address,
+        conf.accounts[2].privateKey
+      );
     },
     default_timeout
   );
@@ -334,18 +354,21 @@ describe("multiple signature", () => {
       }
       const conf = config(env);
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
-      const altSmartrAccount = new SmartrAccount(p, smartrAccount.address, [
-        conf.accounts[1].privateKey,
-        conf.accounts[2].privateKey,
-      ]);
-      const counterFromAltSmartrAccount = new Counter(
-        counterContract.address,
-        altSmartrAccount
+      const counter = new Contract(CounterABI, counterContract.address, p);
+      const transaction = counter.populate("increment", []);
+      const transactions = [transaction];
+      const detail = await smartrAccount.prepareMultisig(transactions);
+      const signature1 = await smartrAccount.signMultisig(transactions, detail);
+      const signature2 = await smartrAccount2.signMultisig(
+        transactions,
+        detail
       );
-      const { transaction_hash } =
-        await counterFromAltSmartrAccount.increment();
-      const receipt =
-        await altSmartrAccount.waitForTransaction(transaction_hash);
+      const { transaction_hash } = await smartrAccount.executeMultisig(
+        transactions,
+        detail,
+        [...signature1, ...signature2]
+      );
+      const receipt = await smartrAccount.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
     },
     default_timeout
@@ -370,15 +393,13 @@ describe("multiple signature", () => {
         throw new Error("Counter not deployed");
       }
       const conf = config(env);
-      const p = new RpcProvider({ nodeUrl: conf.providerURL });
-      const altSmartrAccount = new SmartrAccount(p, smartrAccount.address, [
-        conf.accounts[0].privateKey,
-      ]);
+      // @todo manage the 2 account to run this
       const counterFromAltSmartrAccount = new Counter(
         counterContract.address,
-        altSmartrAccount
+        smartrAccount
       );
       try {
+        // @todo: change this to 1n
         const { transaction_hash } =
           await counterFromAltSmartrAccount.increment();
         expect(true).toBe(false);
@@ -407,22 +428,26 @@ describe("multiple signature", () => {
   it(
     "updates the account threshold to 1",
     async () => {
-      const conf = config(env);
-      const p = new RpcProvider({ nodeUrl: conf.providerURL });
-      const altSmartrAccount = new SmartrAccount(p, smartrAccount.address, [
-        conf.accounts[1].privateKey,
-        conf.accounts[2].privateKey,
-      ]);
-      const { transaction_hash } = await altSmartrAccount.setThreshold(1n);
-      const receipt =
-        await altSmartrAccount.waitForTransaction(transaction_hash);
+      const transactions = await smartrAccount.setThreshold(1n, false);
+      const detail = await smartrAccount.prepareMultisig(transactions);
+      const signature1 = await smartrAccount.signMultisig(transactions, detail);
+      const signature2 = await smartrAccount2.signMultisig(
+        transactions,
+        detail
+      );
+      const { transaction_hash } = await smartrAccount.executeMultisig(
+        transactions,
+        detail,
+        [...signature1, ...signature2]
+      );
+      const receipt = await smartrAccount.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
     },
     default_timeout
   );
 
   it(
-    "checks the SmartAccount threshhold is back to 1",
+    "checks the SmartAccount threshold is back to 1",
     async () => {
       const c = await smartrAccount.getThreshold();
       expect(c).toEqual(1n);
@@ -439,11 +464,7 @@ describe("multiple signature", () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount not installed");
       }
-      const counterWithSmartrAccount = new Counter(
-        counterContract.address,
-        smartrAccount
-      );
-      const { transaction_hash } = await counterWithSmartrAccount.increment();
+      const { transaction_hash } = await counterContract.increment();
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
     },
@@ -506,14 +527,7 @@ describe("multiple signature", () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
       }
-      if (!smartrAccount) {
-        throw new Error("SmartrAccount not installed");
-      }
-      const counterWithSmartrAccount = new Counter(
-        counterContract.address,
-        smartrAccount
-      );
-      const { transaction_hash } = await counterWithSmartrAccount.increment();
+      const { transaction_hash } = await counterContract.increment();
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
     },
