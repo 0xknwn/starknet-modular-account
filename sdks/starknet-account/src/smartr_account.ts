@@ -22,8 +22,10 @@ import type {
   ArraySignatureType,
   Signature,
   WeierstrassSignatureType,
-  AccountInvocations,
-  getSimulateTransactionOptions,
+  Invocation,
+  InvocationsDetailsWithNonce,
+  // AccountInvocations,
+  // getSimulateTransactionOptions,
 } from "starknet";
 
 export type Authorization = {
@@ -143,15 +145,105 @@ export class SmartrAccount extends Account {
     this.module = module;
   }
 
+  // Note: buildInvocation does not return the invocation data, in oarticular not the
+  // nonce, version, fee or chainId
+
   /**
-   * @param invocations Invocations
-   * @param options blockIdentifier and flags to skip validation and fee charges
+   * generate the Payload to set of transactions on the StarkNet network.
+   *
+   * @param transactions - An array of transactions to be executed.
+   * @param transactionsDetail - Optional object containing additional details for the transactions.
+   * @returns A Promise that resolves to an InvokeFunctionResponse object representing the result of the execution.
+   *
    */
-  public async getSimulateTransaction(
-    invocations: AccountInvocations,
-    options: getSimulateTransactionOptions = {}
-  ) {
-    return super.getSimulateTransaction(invocations, options);
+  public async prepareMultisig(
+    transactions: AllowArray<Call>,
+    transactionsDetail?: UniversalDetails
+  ): Promise<{
+    invocation: Invocation;
+    details: InvocationsDetailsWithNonce;
+  }> {
+    const details: UniversalDetails = transactionsDetail ?? {};
+    const calls = Array.isArray(transactions) ? transactions : [transactions];
+    const nonce = num.toBigInt(details.nonce ?? (await this.getNonce()));
+    const version = stark.toTransactionVersion(
+      this.getPreferredVersion(
+        RPC.ETransactionVersion.V1,
+        RPC.ETransactionVersion.V3
+      ),
+      details.version
+    );
+
+    if (this.module) {
+      calls.unshift(this.module.prefix(transactions));
+    }
+
+    const estimate = await this.getUniversalSuggestedFee(
+      version,
+      { type: TransactionType.INVOKE, payload: calls },
+      {
+        ...details,
+        version,
+      }
+    );
+
+    const calldata = transaction.getExecuteCalldata(
+      calls,
+      await this.getCairoVersion()
+    );
+
+    return {
+      invocation: { contractAddress: this.address, calldata, signature: [] },
+      details: {
+        ...stark.v3Details(details),
+        resourceBounds: estimate.resourceBounds,
+        nonce,
+        maxFee: estimate.maxFee,
+        version,
+      },
+    };
+  }
+
+  public async signMultisig(
+    invocation: Invocation,
+    details: InvocationsDetailsWithNonce
+  ): Promise<{
+    invocation: Invocation;
+    details: InvocationsDetailsWithNonce;
+  }> {
+    const chainId = await this.getChainId();
+
+    if (!details.version || details.version !== RPC.ETransactionVersion.V3) {
+      throw new Error("Multisig only supports V3 transaction version");
+    }
+    const signerDetails: InvocationsSignerDetails = {
+      ...details,
+      walletAddress: this.address,
+      chainId,
+      cairoVersion: await this.getCairoVersion(),
+      version: this.getPreferredVersion(
+        RPC.ETransactionVersion.V1,
+        RPC.ETransactionVersion.V3
+      ),
+    };
+
+    let signatures = [] as ArraySignatureType;
+      const s = signatureToHexArray(
+        await this.signer.signTransaction(invocation, signerDetails)
+      );
+      signatures = signatures.concat(s);
+
+    return await {
+      invocation,
+      details,
+    };
+  }
+
+  public async executeMultisig(
+    invocation: Invocation,
+    details: InvocationsDetailsWithNonce
+  ): Promise<InvokeFunctionResponse> {
+    return this.invokeFunction(invocation, details);
   }
 
   /**
