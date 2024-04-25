@@ -3,6 +3,8 @@
   "references": [
     { "path": "sdks/starknet-test-helpers" },
     { "path": "sdks/starknet-account" },
-    { "path": "sdks/starknet-module-sessionkey" }
+    { "path": "sdks/starknet-module-sessionkey" },
+    { "path": "experiments/starknet-failed-account" },
+    { "path": "experiments/starknet-bootstrap-account" }
   ]
 }

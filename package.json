@@ -1,6 +1,6 @@
 {
   "name": "starknet-modular-account",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "a modular account for starknet",
   "scripts": {
     "build": "tsc --build",
@@ -17,6 +17,7 @@
   "license": "MIT",
   "workspaces": [
     "experiments/starknet-failed-account",
+    "experiments/starknet-bootstrap-account",
     "sdks/starknet-test-helpers",
     "sdks/starknet-account",
     "sdks/starknet-module-sessionkey"

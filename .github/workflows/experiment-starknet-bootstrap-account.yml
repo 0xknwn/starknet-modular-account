@@ -1,0 +1,19 @@
+name: starknet-failed-account tests
+# on: workflow_dispatch
+on:
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - '**'
+  push:
+    branches:
+      - 'develop'
+    paths:
+      - '**'
+
+jobs:
+  test:
+    uses: ./.github/workflows/_sdks_jest.yml
+    with:
+      workspace: "starknet-bootstrap-account"

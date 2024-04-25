@@ -1,0 +1,18 @@
+{
+  "name": "starknet-bootstrap-account",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build:abi:BootstrapAccount": "npx abi-wan-kanabi --input ../../target/dev/smartr_BootstrapAccount.contract_class.json --output ./src/abi/BootstrapAccount.ts",
+    "build:abi": "mkdir -p src/abi && npm run build:abi:BootstrapAccount",
+    "doc": "typedoc",
+    "test": "jest --runInBand"
+  },
+  "author": "0xknwn",
+  "license": "MIT",
+  "dependencies": {
+    "starknet-test-helpers": "^0.1.0"
+  }
+}
