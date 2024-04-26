@@ -1,6 +1,3 @@
-// SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts for Cairo v0.10.0 (account/account.cairo)
-
 /// # Account Component
 ///
 /// The Account component enables contracts to behave as accounts.
@@ -12,6 +9,7 @@ pub mod AccountComponent {
     use super::interface;
     use smartr::store::Felt252ArrayStore;
     use smartr::module::{IValidatorDispatcherTrait, IValidatorLibraryDispatcher};
+    use smartr::module::{IConfigureDispatcherTrait, IConfigureLibraryDispatcher};
     use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
     use openzeppelin::account::utils::{execute_calls, is_valid_stark_signature};
     use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SRC5InternalTrait;
@@ -302,13 +300,21 @@ pub mod AccountComponent {
             self.Account_core_validator.read()
         }
 
-        fn read_on_module(
-            self: @ComponentState<TContractState>, class_hash: ClassHash, calls: Array<Call>
-        ) {}
+        fn call_on_module(
+            self: @ComponentState<TContractState>, class_hash: ClassHash, call: Call
+        ) -> Array<felt252> {
+            let is_module = self.is_module(class_hash);
+            assert(is_module, Errors::MODULE_NOT_INSTALLED);
+            IConfigureLibraryDispatcher { class_hash }.call(call)
+        }
 
         fn execute_on_module(
-            ref self: ComponentState<TContractState>, class_hash: ClassHash, calls: Array<Call>
-        ) {}
+            ref self: ComponentState<TContractState>, class_hash: ClassHash, call: Call
+        ) -> Array<felt252> {
+            let is_module = self.is_module(class_hash);
+            assert(is_module, Errors::MODULE_NOT_INSTALLED);
+            IConfigureLibraryDispatcher { class_hash }.execute(call)
+        }
     }
 
     #[generate_trait]
@@ -326,8 +332,9 @@ pub mod AccountComponent {
             let mut src5_component = get_dep_component_mut!(ref self, SRC5);
             src5_component.register_interface(interface::ISRC6_ID);
             assert(core_validator != 0, Errors::INVALID_SIGNATURE);
-            let core_validator_adddress: ClassHash = core_validator.try_into().unwrap();
-            self.Account_core_validator.write(core_validator_adddress);
+            let core_validator_address: ClassHash = core_validator.try_into().unwrap();
+            self.Account_core_validator.write(core_validator_address);
+            self.Account_modules.write(core_validator_address, true);
             self._init_public_key(public_key);
         }
 
