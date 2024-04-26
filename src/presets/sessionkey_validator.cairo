@@ -122,7 +122,9 @@ mod SessionKeyValidator {
                 let proof_len: usize = proof_len_felt.try_into().unwrap();
                 let mut proof_start = signature_len + 8;
                 while j < calls_len {
-                    assert(proof_len < authz_len + 1 - proof_start, Errors::INVALID_SESSION_PROOF_LEN);
+                    assert(
+                        proof_len < authz_len + 1 - proof_start, Errors::INVALID_SESSION_PROOF_LEN
+                    );
                     let account_address: ContractAddress = *calls.at(j).to;
                     let account_address_felt: felt252 = account_address.try_into().unwrap();
                     let selector = *calls.at(j).selector;
@@ -167,7 +169,6 @@ mod SessionKeyValidator {
         src5: SRC5Component::Storage,
         #[substorage(v0)]
         account: AccountComponent::Storage,
-
     }
 
     #[event]
