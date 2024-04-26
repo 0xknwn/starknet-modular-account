@@ -59,7 +59,5 @@ pub trait IModule<TState> {
     fn get_core_module(self: @TState) -> ClassHash;
     fn is_module(self: @TState, class_hash: ClassHash) -> bool;
     fn call_on_module(self: @TState, class_hash: ClassHash, call: Call) -> Array<felt252>;
-    fn execute_on_module(
-        ref self: TState, class_hash: ClassHash, call: Call
-    ) -> Array<felt252>;
+    fn execute_on_module(ref self: TState, class_hash: ClassHash, call: Call) -> Array<felt252>;
 }

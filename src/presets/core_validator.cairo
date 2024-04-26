@@ -44,26 +44,25 @@ mod CoreValidator {
     #[abi(embed_v0)]
     impl ConfigureImpl of IConfigure<ContractState> {
         fn call(self: @ContractState, call: Call) -> Array<felt252> {
-          let mut output = ArrayTrait::<felt252>::new();
-          let mut found = false;
-          if call.selector == selector!("get_public_keys") {
-            found = true;
-            let keys = self.account.get_public_keys();
-            let mut i = 0;
-            while i < keys.len() {
-              output.append(*keys.at(i));
-              i += 1;
+            let mut output = ArrayTrait::<felt252>::new();
+            let mut found = false;
+            if call.selector == selector!("get_public_keys") {
+                found = true;
+                let keys = self.account.get_public_keys();
+                let mut i = 0;
+                while i < keys.len() {
+                    output.append(*keys.at(i));
+                    i += 1;
+                }
             }
-          } 
-          if !found {
-            assert(false, 'Invalid selector');
-          }
-          output
+            if !found {
+                assert(false, 'Invalid selector');
+            }
+            output
         }
 
         fn execute(ref self: ContractState, call: Call) -> Array<felt252> {
             array![]
         }
     }
-
 }
