@@ -14,6 +14,12 @@ pub trait IValidator<TState> {
     fn initialize(ref self: TState, args: Array<felt252>);
 }
 
+#[starknet::interface]
+pub trait IConfigure<TState> {
+    fn call(self: @TState, call: Call) -> Array<felt252>;
+    fn execute(ref self: TState, call: Call) -> Array<felt252>;
+}
+
 #[starknet::component]
 pub mod ValidatorComponent {
     use openzeppelin::account::utils::is_valid_stark_signature;
@@ -22,7 +28,7 @@ pub mod ValidatorComponent {
     use openzeppelin::introspection::src5::SRC5Component;
     use starknet::get_caller_address;
     use starknet::get_contract_address;
-    use super::{IValidator, IValidator_ID};
+    use super::{IValidator, IValidator_ID, IConfigure};
     use starknet::class_hash::ClassHash;
     use starknet::account::Call;
     use smartr::store::Felt252ArrayStore;
@@ -75,6 +81,22 @@ pub mod ValidatorComponent {
 
         fn initialize(ref self: ComponentState<TContractState>, args: Array<felt252>) {
             self.Account_modules_initialize.write(0x7, 0x8);
+        }
+    }
+
+    #[embeddable_as(ConfigureImpl)]
+    pub impl Configure<
+        TContractState,
+        +HasComponent<TContractState>,
+        +SRC5Component::HasComponent<TContractState>,
+        +AccountComponent::HasComponent<TContractState>,
+        +Drop<TContractState>
+    > of IConfigure<ComponentState<TContractState>> {
+        fn call(self: @ComponentState<TContractState>, call: Call) -> Array<felt252> {
+            array![]
+        }
+        fn execute(ref self: ComponentState<TContractState>, call: Call) -> Array<felt252> {
+            array![]
         }
     }
 
