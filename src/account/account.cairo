@@ -311,6 +311,7 @@ pub mod AccountComponent {
         fn execute_on_module(
             ref self: ComponentState<TContractState>, class_hash: ClassHash, call: Call
         ) -> Array<felt252> {
+            self.assert_only_self();
             let is_module = self.is_module(class_hash);
             assert(is_module, Errors::MODULE_NOT_INSTALLED);
             IConfigureLibraryDispatcher { class_hash }.execute(call)

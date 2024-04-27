@@ -69,3 +69,36 @@ fn test_account_module_call() {
     assert_eq!(result.len(), 1, "result len should be 1");
     assert_eq!(*result.at(0), publicKey, "result[0] should be 0x1");
 }
+
+#[test]
+fn test_account_module_execute() {
+    let core_validator_class = declare("CoreValidator").unwrap();
+    let core_validator_class_felt: felt252 = core_validator_class.class_hash.into();
+    let account_class = declare("SmartrAccount").unwrap();
+    let publicKey = 0x39d9e6ce352ad4530a0ef5d5a18fd3303c3606a7fa6ac5b620020ad681cc33b;
+    let constructorCallData = array![core_validator_class_felt, publicKey];
+    let deployerAddress: ContractAddress = 0x0.try_into().unwrap();
+    let computed_account_address: ContractAddress = compute_contract_address(
+        deployerAddress, publicKey, account_class.class_hash, constructorCallData
+    );
+    let (account_address, _) = account_class
+        .deploy_at(@array![core_validator_class_felt, publicKey], computed_account_address)
+        .unwrap();
+    let account = IModuleDispatcher { contract_address: account_address };
+
+    let add_public_key_call = Call {
+        selector: selector!("add_public_key"),
+        to: account_address,
+        calldata: (array!['public_key']).span(),
+    };
+    start_prank(CheatTarget::One(account_address), account_address);
+    let result = account.execute_on_module(core_validator_class.class_hash, add_public_key_call);
+    stop_prank(CheatTarget::One(account_address));
+    assert_eq!(result.len(), 0, "result len should be 0");
+    let get_public_keys_call = Call {
+        selector: selector!("get_public_keys"), to: account_address, calldata: (array![]).span(),
+    };
+    let result = account.call_on_module(core_validator_class.class_hash, get_public_keys_call);
+    assert_eq!(result.len(), 2, "result len should be 2");
+    assert_eq!(*result.at(1), 'public_key', "result[1] should be 'public_key'");
+}

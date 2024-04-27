@@ -62,7 +62,20 @@ mod CoreValidator {
         }
 
         fn execute(ref self: ContractState, call: Call) -> Array<felt252> {
-            array![]
+            let mut output = ArrayTrait::<felt252>::new();
+            let mut found = false;
+            if call.selector == selector!("add_public_key") {
+                found = true;
+                if call.calldata.len() != 1 {
+                    assert(false, 'Invalid payload');
+                }
+                let key = *call.calldata.at(0);
+                self.account.add_public_key(key);
+            }
+            if !found {
+                assert(false, 'Invalid selector');
+            }
+            output
         }
     }
 }
