@@ -19,13 +19,108 @@ export const ABI = [
     ]
   },
   {
+    "type": "enum",
+    "name": "core::bool",
+    "variants": [
+      {
+        "name": "False",
+        "type": "()"
+      },
+      {
+        "name": "True",
+        "type": "()"
+      }
+    ]
+  },
+  {
     "type": "interface",
     "name": "smartr::presets::helpers::swap_router::ISwapRouter",
     "items": [
       {
         "type": "function",
-        "name": "swap",
+        "name": "faucet",
         "inputs": [
+          {
+            "name": "amount",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "get_conversion_rate",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_token_a",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_token_b",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "set_conversion_rate",
+        "inputs": [
+          {
+            "name": "rate",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "set_tokens",
+        "inputs": [
+          {
+            "name": "tokenAAddress",
+            "type": "core::starknet::contract_address::ContractAddress"
+          },
+          {
+            "name": "tokenBAddress",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "swap_maximum_at",
+        "inputs": [
+          {
+            "name": "rate",
+            "type": "core::integer::u256"
+          },
           {
             "name": "amount",
             "type": "core::integer::u256"
@@ -52,66 +147,11 @@ export const ABI = [
       },
       {
         "type": "function",
-        "name": "swap_maximum_at",
-        "inputs": [
-          {
-            "name": "rate",
-            "type": "core::integer::u256"
-          },
-          {
-            "name": "amount",
-            "type": "core::integer::u256"
-          }
-        ],
-        "outputs": [],
-        "state_mutability": "external"
-      },
-      {
-        "type": "function",
-        "name": "set_conversion_rate",
-        "inputs": [
-          {
-            "name": "rate",
-            "type": "core::integer::u256"
-          }
-        ],
-        "outputs": [],
-        "state_mutability": "external"
-      },
-      {
-        "type": "function",
-        "name": "get_conversion_rate",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::integer::u256"
-          }
-        ],
-        "state_mutability": "view"
-      },
-      {
-        "type": "function",
-        "name": "faucet",
+        "name": "swap",
         "inputs": [
           {
             "name": "amount",
             "type": "core::integer::u256"
-          }
-        ],
-        "outputs": [],
-        "state_mutability": "external"
-      },
-      {
-        "type": "function",
-        "name": "set_tokens",
-        "inputs": [
-          {
-            "name": "tokenAAddress",
-            "type": "core::starknet::contract_address::ContractAddress"
-          },
-          {
-            "name": "tokenBAddress",
-            "type": "core::starknet::contract_address::ContractAddress"
           }
         ],
         "outputs": [],
@@ -187,20 +227,6 @@ export const ABI = [
     "type": "impl",
     "name": "PausableImpl",
     "interface_name": "openzeppelin::security::interface::IPausable"
-  },
-  {
-    "type": "enum",
-    "name": "core::bool",
-    "variants": [
-      {
-        "name": "False",
-        "type": "()"
-      },
-      {
-        "name": "True",
-        "type": "()"
-      }
-    ]
   },
   {
     "type": "interface",

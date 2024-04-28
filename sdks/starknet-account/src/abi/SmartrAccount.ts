@@ -383,18 +383,22 @@ export const ABI = [
       },
       {
         "type": "function",
-        "name": "read_on_module",
+        "name": "call_on_module",
         "inputs": [
           {
             "name": "class_hash",
             "type": "core::starknet::class_hash::ClassHash"
           },
           {
-            "name": "calls",
-            "type": "core::array::Array::<core::starknet::account::Call>"
+            "name": "call",
+            "type": "core::starknet::account::Call"
           }
         ],
-        "outputs": [],
+        "outputs": [
+          {
+            "type": "core::array::Array::<core::felt252>"
+          }
+        ],
         "state_mutability": "view"
       },
       {
@@ -406,11 +410,15 @@ export const ABI = [
             "type": "core::starknet::class_hash::ClassHash"
           },
           {
-            "name": "calls",
-            "type": "core::array::Array::<core::starknet::account::Call>"
+            "name": "call",
+            "type": "core::starknet::account::Call"
           }
         ],
-        "outputs": [],
+        "outputs": [
+          {
+            "type": "core::array::Array::<core::felt252>"
+          }
+        ],
         "state_mutability": "external"
       }
     ]

@@ -1,8 +1,8 @@
 export const ABI = [
   {
     "type": "impl",
-    "name": "ConfigureImpl",
-    "interface_name": "smartr::module::validator::IConfigure"
+    "name": "ValidatorImpl",
+    "interface_name": "smartr::module::validator::IValidator"
   },
   {
     "type": "struct",
@@ -31,49 +31,6 @@ export const ABI = [
         "type": "core::array::Span::<core::felt252>"
       }
     ]
-  },
-  {
-    "type": "interface",
-    "name": "smartr::module::validator::IConfigure",
-    "items": [
-      {
-        "type": "function",
-        "name": "call",
-        "inputs": [
-          {
-            "name": "call",
-            "type": "core::starknet::account::Call"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "core::array::Array::<core::felt252>"
-          }
-        ],
-        "state_mutability": "view"
-      },
-      {
-        "type": "function",
-        "name": "execute",
-        "inputs": [
-          {
-            "name": "call",
-            "type": "core::starknet::account::Call"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "core::array::Array::<core::felt252>"
-          }
-        ],
-        "state_mutability": "external"
-      }
-    ]
-  },
-  {
-    "type": "impl",
-    "name": "ValidatorImpl",
-    "interface_name": "smartr::module::validator::IValidator"
   },
   {
     "type": "interface",
@@ -126,75 +83,6 @@ export const ABI = [
           {
             "name": "args",
             "type": "core::array::Array::<core::felt252>"
-          }
-        ],
-        "outputs": [],
-        "state_mutability": "external"
-      }
-    ]
-  },
-  {
-    "type": "impl",
-    "name": "PublicKeysImpl",
-    "interface_name": "smartr::account::interface::IPublicKeys"
-  },
-  {
-    "type": "interface",
-    "name": "smartr::account::interface::IPublicKeys",
-    "items": [
-      {
-        "type": "function",
-        "name": "add_public_key",
-        "inputs": [
-          {
-            "name": "new_public_key",
-            "type": "core::felt252"
-          }
-        ],
-        "outputs": [],
-        "state_mutability": "external"
-      },
-      {
-        "type": "function",
-        "name": "get_public_keys",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::array::Array::<core::felt252>"
-          }
-        ],
-        "state_mutability": "view"
-      },
-      {
-        "type": "function",
-        "name": "get_threshold",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::integer::u8"
-          }
-        ],
-        "state_mutability": "view"
-      },
-      {
-        "type": "function",
-        "name": "remove_public_key",
-        "inputs": [
-          {
-            "name": "old_public_key",
-            "type": "core::felt252"
-          }
-        ],
-        "outputs": [],
-        "state_mutability": "external"
-      },
-      {
-        "type": "function",
-        "name": "set_threshold",
-        "inputs": [
-          {
-            "name": "new_threshold",
-            "type": "core::integer::u8"
           }
         ],
         "outputs": [],
@@ -257,7 +145,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::presets::core_validator::CoreValidator::Event",
+    "name": "smartr::presets::sessionkey_validator::SessionKeyValidator::Event",
     "kind": "enum",
     "variants": [
       {
