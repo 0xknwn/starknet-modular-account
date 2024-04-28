@@ -4,12 +4,12 @@ import { ABI as SmartrAccountABI } from "./abi/SmartrAccount";
 import {
   SignerInterface,
   ProviderInterface,
-  Signer,
   RPC,
   stark,
   transaction,
   num,
   TransactionType,
+  selector,
 } from "starknet";
 import type {
   ProviderOptions,
@@ -354,6 +354,77 @@ export class SmartrAccount extends Account {
         version,
       }
     );
+  }
+
+  /**
+   * Execute a transaction on the module account.
+   * @param module_class_hash - The installed module class_hash.
+   * @param module_entrypoint - The module entrypoint to execute.
+   * @param calldata - The entrypoint calldata.
+   * @param execute - If true, the transaction is executed, otherwise it is returned.
+   * @returns A promise that resolves to the transaction receipt.
+   */
+  async executeOnModule(
+    module_class_hash: string,
+    module_entrypoint: string,
+    calldata: string[],
+    execute?: true
+  ): Promise<InvokeFunctionResponse>;
+  async executeOnModule(
+    module_class_hash: string,
+    module_entrypoint: string,
+    calldata: string[],
+    execute: false
+  ): Promise<Call[]>;
+  async executeOnModule(
+    module_class_hash: string,
+    module_entrypoint: string,
+    calldata: string[],
+    execute: boolean = true
+  ) {
+    const contract = new Contract(SmartrAccountABI, this.address, this).typedv2(
+      SmartrAccountABI
+    );
+    if (!module_entrypoint.startsWith("0x")) {
+      module_entrypoint = selector.getSelectorFromName(module_entrypoint);
+    }
+    const transferCall: Call = contract.populate("execute_on_module", {
+      class_hash: module_class_hash,
+      call: {
+        selector: module_entrypoint,
+        to: this.address,
+        calldata,
+      },
+    });
+    if (!execute) {
+      return [transferCall];
+    }
+    return await this.execute(transferCall);
+  }
+
+  /**
+   * Call an entrypoint on the module account.
+   * @param module_class_hash - The installed module class_hash.
+   * @param module_entrypoint - The module entrypoint to call.
+   * @param calldata - The entrypoint calldata.
+   * @returns A promise that resolves to the transaction receipt.
+   */
+  async callOnModule(
+    module_class_hash: string,
+    module_entrypoint: string,
+    calldata: string[]
+  ) {
+    const contract = new Contract(SmartrAccountABI, this.address, this).typedv2(
+      SmartrAccountABI
+    );
+    if (!module_entrypoint.startsWith("0x")) {
+      module_entrypoint = selector.getSelectorFromName(module_entrypoint);
+    }
+    return await contract.call_on_module(module_class_hash, {
+      selector: module_entrypoint,
+      to: this.address,
+      calldata,
+    });
   }
 
   /**
