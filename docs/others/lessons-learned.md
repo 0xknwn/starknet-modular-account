@@ -67,8 +67,8 @@ a lot of scenarios.
 
 [starknet-plugin-account](https://github.com/argentlabs/starknet-plugin-account)
 provides a lot of ideas even if the code is obsolete. One of the questions is
-why did the implementation stop. It could not be figured out from the repository
-and some of the hypothesis we could make is:
+"why did the implementation stop?". It could not be figured out from the
+repository and some of the hypothesis we could make is:
 
 - it has hit a technical issue that would prevent the development of such a
   solution
@@ -81,34 +81,32 @@ and some of the hypothesis we could make is:
 - the move toward cairo 1.0+ would have make it stop for a while and it did not
   restart because of people's mind/priorities have changed
 
-On the technical side:
+On the technical side, reviewing the code:
 
 - [starknet-plugin-account](https://github.com/argentlabs/starknet-plugin-account)
-  relies on the signature to pass values to the `__validate__` entrypoint. For
-  instance:
+  relies on the signature to pass values to the `__validate__` entrypoint, which
+  is not the case with `starknet-modular-account` for now. The way it works is:
   - the plugin class hash is passed as the first value of the signature making
     it possible to find the plugin. It make it mandatory to pass a parameter
     that could be 0x0 or the original signer class hash that would have to be
     protected with a prior registration.
   - the class hash from the original signer is part of the session key token
     making is possible to check the validity of the token (authn)
-  - the authorization associated with the execution with a merkle root value and
-    the proofs that are necessary to check the execution is valid.
-
-- the implementation of public call to the plugin does not look finalized. This
-  will have to be investigated further more but the fact there is no failback
-  function with Starknet contracts/libraries could be a concern to cover this
-  scenario. A poor man's solution would be:
-  - have a `Array<felt252>` for in/out parameters for those functions so that
-    we could build something. That would make the solution opaque but, at least,
-    do-able
-  - have a hardcoded function in the plugin to which we would pass the function
-    `selector!` and would call the plugin function
-  - have a proxy function in the account side that would call the hardcoded
-    function in the plugin, assuming the signature is valid.
 
 > **NOTE** relying on the signature for the validation makes a lot of sense
 > because, that is the purpose of it after all.
+
+Beside this difference, there are also a few other questions/issues to
+investigate to make sure we can cover all the feature of the account:
+- the implementation of `read_on_plugin` has not been done despite part of the
+  readme.
+- the contract includes the `__default__` and `__l1_default__` entrypoints. They
+  seem to be some failabck function that do not look to be working anymore.
+  Maybe it was working at the time.
+- the account was implementing the `supportsInterface`. How useful is it? Should
+  we implement that also
+- last but not least the account was providing a getter function for a name and
+  version. This would be useful both for the account and for the modules.
 
 ## Questions
 
