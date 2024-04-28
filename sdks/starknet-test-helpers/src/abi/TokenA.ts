@@ -1,6 +1,91 @@
 export const ABI = [
   {
     "type": "impl",
+    "name": "UpgradeableImpl",
+    "interface_name": "openzeppelin::upgrades::interface::IUpgradeable"
+  },
+  {
+    "type": "interface",
+    "name": "openzeppelin::upgrades::interface::IUpgradeable",
+    "items": [
+      {
+        "type": "function",
+        "name": "upgrade",
+        "inputs": [
+          {
+            "name": "new_class_hash",
+            "type": "core::starknet::class_hash::ClassHash"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      }
+    ]
+  },
+  {
+    "type": "impl",
+    "name": "ERC20MetadataImpl",
+    "interface_name": "openzeppelin::token::erc20::interface::IERC20Metadata"
+  },
+  {
+    "type": "struct",
+    "name": "core::byte_array::ByteArray",
+    "members": [
+      {
+        "name": "data",
+        "type": "core::array::Array::<core::bytes_31::bytes31>"
+      },
+      {
+        "name": "pending_word",
+        "type": "core::felt252"
+      },
+      {
+        "name": "pending_word_len",
+        "type": "core::integer::u32"
+      }
+    ]
+  },
+  {
+    "type": "interface",
+    "name": "openzeppelin::token::erc20::interface::IERC20Metadata",
+    "items": [
+      {
+        "type": "function",
+        "name": "name",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::byte_array::ByteArray"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "symbol",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::byte_array::ByteArray"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "decimals",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u8"
+          }
+        ],
+        "state_mutability": "view"
+      }
+    ]
+  },
+  {
+    "type": "impl",
     "name": "ERC20Impl",
     "interface_name": "openzeppelin::token::erc20::interface::IERC20"
   },
@@ -151,189 +236,6 @@ export const ABI = [
   },
   {
     "type": "impl",
-    "name": "ERC20CamelOnlyImpl",
-    "interface_name": "openzeppelin::token::erc20::interface::IERC20CamelOnly"
-  },
-  {
-    "type": "interface",
-    "name": "openzeppelin::token::erc20::interface::IERC20CamelOnly",
-    "items": [
-      {
-        "type": "function",
-        "name": "totalSupply",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::integer::u256"
-          }
-        ],
-        "state_mutability": "view"
-      },
-      {
-        "type": "function",
-        "name": "balanceOf",
-        "inputs": [
-          {
-            "name": "account",
-            "type": "core::starknet::contract_address::ContractAddress"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "core::integer::u256"
-          }
-        ],
-        "state_mutability": "view"
-      },
-      {
-        "type": "function",
-        "name": "transferFrom",
-        "inputs": [
-          {
-            "name": "sender",
-            "type": "core::starknet::contract_address::ContractAddress"
-          },
-          {
-            "name": "recipient",
-            "type": "core::starknet::contract_address::ContractAddress"
-          },
-          {
-            "name": "amount",
-            "type": "core::integer::u256"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "core::bool"
-          }
-        ],
-        "state_mutability": "external"
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "pause",
-    "inputs": [],
-    "outputs": [],
-    "state_mutability": "external"
-  },
-  {
-    "type": "function",
-    "name": "unpause",
-    "inputs": [],
-    "outputs": [],
-    "state_mutability": "external"
-  },
-  {
-    "type": "impl",
-    "name": "UpgradeableImpl",
-    "interface_name": "openzeppelin::upgrades::interface::IUpgradeable"
-  },
-  {
-    "type": "interface",
-    "name": "openzeppelin::upgrades::interface::IUpgradeable",
-    "items": [
-      {
-        "type": "function",
-        "name": "upgrade",
-        "inputs": [
-          {
-            "name": "new_class_hash",
-            "type": "core::starknet::class_hash::ClassHash"
-          }
-        ],
-        "outputs": [],
-        "state_mutability": "external"
-      }
-    ]
-  },
-  {
-    "type": "impl",
-    "name": "ERC20MetadataImpl",
-    "interface_name": "openzeppelin::token::erc20::interface::IERC20Metadata"
-  },
-  {
-    "type": "struct",
-    "name": "core::byte_array::ByteArray",
-    "members": [
-      {
-        "name": "data",
-        "type": "core::array::Array::<core::bytes_31::bytes31>"
-      },
-      {
-        "name": "pending_word",
-        "type": "core::felt252"
-      },
-      {
-        "name": "pending_word_len",
-        "type": "core::integer::u32"
-      }
-    ]
-  },
-  {
-    "type": "interface",
-    "name": "openzeppelin::token::erc20::interface::IERC20Metadata",
-    "items": [
-      {
-        "type": "function",
-        "name": "name",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::byte_array::ByteArray"
-          }
-        ],
-        "state_mutability": "view"
-      },
-      {
-        "type": "function",
-        "name": "symbol",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::byte_array::ByteArray"
-          }
-        ],
-        "state_mutability": "view"
-      },
-      {
-        "type": "function",
-        "name": "decimals",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::integer::u8"
-          }
-        ],
-        "state_mutability": "view"
-      }
-    ]
-  },
-  {
-    "type": "impl",
-    "name": "PausableImpl",
-    "interface_name": "openzeppelin::security::interface::IPausable"
-  },
-  {
-    "type": "interface",
-    "name": "openzeppelin::security::interface::IPausable",
-    "items": [
-      {
-        "type": "function",
-        "name": "is_paused",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::bool"
-          }
-        ],
-        "state_mutability": "view"
-      }
-    ]
-  },
-  {
-    "type": "impl",
     "name": "OwnableMixinImpl",
     "interface_name": "openzeppelin::access::ownable::interface::OwnableABI"
   },
@@ -469,47 +371,6 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::security::pausable::PausableComponent::Paused",
-    "kind": "struct",
-    "members": [
-      {
-        "name": "account",
-        "type": "core::starknet::contract_address::ContractAddress",
-        "kind": "data"
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "name": "openzeppelin::security::pausable::PausableComponent::Unpaused",
-    "kind": "struct",
-    "members": [
-      {
-        "name": "account",
-        "type": "core::starknet::contract_address::ContractAddress",
-        "kind": "data"
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "name": "openzeppelin::security::pausable::PausableComponent::Event",
-    "kind": "enum",
-    "variants": [
-      {
-        "name": "Paused",
-        "type": "openzeppelin::security::pausable::PausableComponent::Paused",
-        "kind": "nested"
-      },
-      {
-        "name": "Unpaused",
-        "type": "openzeppelin::security::pausable::PausableComponent::Unpaused",
-        "kind": "nested"
-      }
-    ]
-  },
-  {
-    "type": "event",
     "name": "openzeppelin::access::ownable::ownable::OwnableComponent::OwnershipTransferred",
     "kind": "struct",
     "members": [
@@ -591,11 +452,6 @@ export const ABI = [
       {
         "name": "ERC20Event",
         "type": "openzeppelin::token::erc20::erc20::ERC20Component::Event",
-        "kind": "flat"
-      },
-      {
-        "name": "PausableEvent",
-        "type": "openzeppelin::security::pausable::PausableComponent::Event",
         "kind": "flat"
       },
       {
