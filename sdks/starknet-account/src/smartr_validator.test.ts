@@ -81,28 +81,15 @@ describe("call and execute on validator", () => {
     "adds a SmartAccount public keys",
     async () => {
       const conf = config(env);
-      const p = new RpcProvider({ nodeUrl: conf.providerURL });
-
-      const account = new Contract(
-        SmartAccountABI,
-        smartrAccount.address,
-        p
-      ).typedv2(SmartAccountABI);
-
       const calldata = new CallData(CoreValidatorABI);
       const data = calldata.compile("add_public_key", {
         new_public_key: conf.accounts[1].publicKey,
       });
-
-      const transferCall: Call = account.populate("execute_on_module", {
-        class_hash: classHash("CoreValidator"),
-        call: {
-          selector: selector.getSelectorFromName("add_public_key"),
-          to: smartrAccount.address,
-          calldata: data,
-        },
-      });
-      const { transaction_hash } = await smartrAccount.execute(transferCall);
+      const { transaction_hash } = await smartrAccount.executeOnModule(
+        classHash("CoreValidator"),
+        "add_public_key",
+        data
+      );
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
     },
@@ -113,21 +100,60 @@ describe("call and execute on validator", () => {
     "checks the SmartAccount new public keys",
     async () => {
       const conf = config(env);
-      const p = new RpcProvider({ nodeUrl: conf.providerURL });
-      const account = new Contract(
-        SmartAccountABI,
-        smartrAccount.address,
-        p
-      ).typedv2(SmartAccountABI);
-      const command = await account.call_on_module(classHash("CoreValidator"), {
-        selector: selector.getSelectorFromName("get_public_keys"),
-        to: smartrAccount.address,
-        calldata: [],
+
+      const calldata = new CallData(CoreValidatorABI);
+      const data = calldata.compile("add_public_key", {
+        new_public_key: conf.accounts[1].publicKey,
       });
-      expect(Array.isArray(command)).toBe(true);
-      expect(command.length).toEqual(2);
-      expect(`0x${num.toBigInt(command[1]).toString(16)}`).toEqual(
+      const output = await smartrAccount.callOnModule(
+        classHash("CoreValidator"),
+        "get_public_keys",
+        data
+      );
+      expect(Array.isArray(output)).toBe(true);
+      expect(output.length).toEqual(2);
+      expect(`0x${num.toBigInt(output[1]).toString(16)}`).toEqual(
         conf.accounts[1].publicKey
+      );
+    },
+    default_timeout
+  );
+
+  it(
+    "removes a SmartAccount public keys",
+    async () => {
+      const conf = config(env);
+      const calldata = new CallData(CoreValidatorABI);
+      const data = calldata.compile("remove_public_key", {
+        old_public_key: conf.accounts[1].publicKey,
+      });
+      const { transaction_hash } = await smartrAccount.executeOnModule(
+        classHash("CoreValidator"),
+        "remove_public_key",
+        data
+      );
+      const receipt = await smartrAccount.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
+
+  it(
+    "checks the SmartAccount new public keys",
+    async () => {
+      const conf = config(env);
+
+      const calldata = new CallData(CoreValidatorABI);
+      const data = calldata.compile("get_public_keys", {});
+      const output = await smartrAccount.callOnModule(
+        classHash("CoreValidator"),
+        "get_public_keys",
+        data
+      );
+      expect(Array.isArray(output)).toBe(true);
+      expect(output.length).toEqual(1);
+      expect(`0x${num.toBigInt(output[0]).toString(16)}`).toEqual(
+        conf.accounts[0].publicKey
       );
     },
     default_timeout

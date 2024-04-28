@@ -72,6 +72,14 @@ mod CoreValidator {
                 let key = *call.calldata.at(0);
                 self.account.add_public_key(key);
             }
+            if call.selector == selector!("remove_public_key") {
+                found = true;
+                if call.calldata.len() != 1 {
+                    assert(false, 'Invalid payload');
+                }
+                let key = *call.calldata.at(0);
+                self.account.remove_public_key(key);
+            }
             if !found {
                 assert(false, 'Invalid selector');
             }
