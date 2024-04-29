@@ -93,7 +93,7 @@ mod CoreValidator {
                     assert(false, 'Invalid payload');
                 }
                 let new_threshold_felt = *call.calldata.at(0);
-                let new_threshold: u8 = new_threshold_felt.into();
+                let new_threshold: u8 = new_threshold_felt.try_into().unwrap();
                 self.account.set_threshold(new_threshold);
             }
             if !found {

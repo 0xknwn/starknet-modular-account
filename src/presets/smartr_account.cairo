@@ -20,8 +20,6 @@ mod SmartrAccount {
     #[abi(embed_v0)]
     impl DeployableImpl = AccountComponent::DeployableImpl<ContractState>;
     #[abi(embed_v0)]
-    impl PublicKeysImpl = AccountComponent::PublicKeysImpl<ContractState>;
-    #[abi(embed_v0)]
     impl SRC6CamelOnlyImpl = AccountComponent::SRC6CamelOnlyImpl<ContractState>;
     #[abi(embed_v0)]
     impl ModuleImpl = AccountComponent::ModuleImpl<ContractState>;
