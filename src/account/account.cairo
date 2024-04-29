@@ -8,7 +8,10 @@ use super::interface;
 pub mod AccountComponent {
     use super::interface;
     use smartr::store::Felt252ArrayStore;
-    use smartr::module::{ICoreValidatorDispatcherTrait, ICoreValidatorLibraryDispatcher, IValidatorDispatcherTrait, IValidatorLibraryDispatcher};
+    use smartr::module::{
+        ICoreValidatorDispatcherTrait, ICoreValidatorLibraryDispatcher, IValidatorDispatcherTrait,
+        IValidatorLibraryDispatcher
+    };
     use smartr::module::{IConfigureDispatcherTrait, IConfigureLibraryDispatcher};
     use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
     use openzeppelin::account::utils::{execute_calls, is_valid_stark_signature};
@@ -192,9 +195,7 @@ pub mod AccountComponent {
             self.assert_only_self();
         }
 
-        fn add_module(
-            ref self: ComponentState<TContractState>, class_hash: ClassHash
-        ) {
+        fn add_module(ref self: ComponentState<TContractState>, class_hash: ClassHash) {
             self.assert_only_self();
             let installed = self.Account_modules.read(class_hash);
             assert(!installed, Errors::MODULE_ALREADY_INSTALLED);
@@ -289,13 +290,13 @@ pub mod AccountComponent {
         fn notify_owner_addition(
             ref self: ComponentState<TContractState>, owner_public_key: felt252
         ) {
-          self.emit(OwnerAdded { new_owner_guid: owner_public_key });
+            self.emit(OwnerAdded { new_owner_guid: owner_public_key });
         }
 
         fn notify_owner_removal(
             ref self: ComponentState<TContractState>, owner_public_key: felt252
         ) {
-          self.emit(OwnerRemoved { removed_owner_guid: owner_public_key });
+            self.emit(OwnerRemoved { removed_owner_guid: owner_public_key });
         }
     }
 }
