@@ -181,75 +181,6 @@ export const ABI = [
   },
   {
     "type": "impl",
-    "name": "PublicKeysImpl",
-    "interface_name": "smartr::account::interface::IPublicKeys"
-  },
-  {
-    "type": "interface",
-    "name": "smartr::account::interface::IPublicKeys",
-    "items": [
-      {
-        "type": "function",
-        "name": "add_public_key",
-        "inputs": [
-          {
-            "name": "new_public_key",
-            "type": "core::felt252"
-          }
-        ],
-        "outputs": [],
-        "state_mutability": "external"
-      },
-      {
-        "type": "function",
-        "name": "get_public_keys",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::array::Array::<core::felt252>"
-          }
-        ],
-        "state_mutability": "view"
-      },
-      {
-        "type": "function",
-        "name": "get_threshold",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::integer::u8"
-          }
-        ],
-        "state_mutability": "view"
-      },
-      {
-        "type": "function",
-        "name": "remove_public_key",
-        "inputs": [
-          {
-            "name": "old_public_key",
-            "type": "core::felt252"
-          }
-        ],
-        "outputs": [],
-        "state_mutability": "external"
-      },
-      {
-        "type": "function",
-        "name": "set_threshold",
-        "inputs": [
-          {
-            "name": "new_threshold",
-            "type": "core::integer::u8"
-          }
-        ],
-        "outputs": [],
-        "state_mutability": "external"
-      }
-    ]
-  },
-  {
-    "type": "impl",
     "name": "SRC6CamelOnlyImpl",
     "interface_name": "smartr::account::interface::ISRC6CamelOnly"
   },
@@ -321,10 +252,6 @@ export const ABI = [
           {
             "name": "class_hash",
             "type": "core::starknet::class_hash::ClassHash"
-          },
-          {
-            "name": "args",
-            "type": "core::array::Array::<core::felt252>"
           }
         ],
         "outputs": [],

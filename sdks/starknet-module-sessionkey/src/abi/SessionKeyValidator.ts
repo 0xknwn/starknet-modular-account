@@ -75,18 +75,6 @@ export const ABI = [
           }
         ],
         "state_mutability": "view"
-      },
-      {
-        "type": "function",
-        "name": "initialize",
-        "inputs": [
-          {
-            "name": "args",
-            "type": "core::array::Array::<core::felt252>"
-          }
-        ],
-        "outputs": [],
-        "state_mutability": "external"
       }
     ]
   },
