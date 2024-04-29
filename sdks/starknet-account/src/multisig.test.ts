@@ -256,7 +256,7 @@ describe("multiple signature", () => {
         data
       );
       expect(Array.isArray(c)).toBe(true);
-      expect(c.length).toEqual(1);
+      expect(c.length).toEqual(2);
       expect(`0x${c[1].toString(16)}`).toEqual(conf.accounts[1].publicKey);
     },
     default_timeout
