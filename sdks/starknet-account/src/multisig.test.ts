@@ -22,7 +22,6 @@ describe("multiple signature", () => {
   let counterContract: Counter;
   let smartrAccount: SmartrAccount;
   let smartrAccount2: SmartrAccount;
-  let smartrAccount3: SmartrAccount;
 
   beforeAll(() => {
     env = "devnet";
@@ -373,11 +372,6 @@ describe("multiple signature", () => {
       );
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
-      smartrAccount3 = new SmartrAccount(
-        p,
-        smartrAccount.address,
-        conf.accounts[2].privateKey
-      );
     },
     default_timeout
   );
