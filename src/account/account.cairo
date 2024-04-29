@@ -255,6 +255,8 @@ pub mod AccountComponent {
             src5_component.register_interface(interface::ISRC6_ID);
             assert(core_validator != 0, Errors::INVALID_SIGNATURE);
             let core_validator_address: ClassHash = core_validator.try_into().unwrap();
+            self.Account_core_validator.write(core_validator_address);
+            self.Account_modules.write(core_validator_address, true);
             let core = ICoreValidatorLibraryDispatcher { class_hash: core_validator_address };
             core.initialize(public_key);
         }

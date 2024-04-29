@@ -16,6 +16,8 @@ mod CoreValidator {
     #[abi(embed_v0)]
     impl ValidatorImpl = ValidatorComponent::ValidatorImpl<ContractState>;
     #[abi(embed_v0)]
+    impl CoreValidatorImpl = ValidatorComponent::CoreValidatorImpl<ContractState>;
+    #[abi(embed_v0)]
     impl PublicKeysImpl = ValidatorComponent::PublicKeysImpl<ContractState>;
 
     impl ValidatorInternalImpl = ValidatorComponent::InternalImpl<ContractState>;
