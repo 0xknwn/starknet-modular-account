@@ -16,7 +16,7 @@ mod CoreValidator {
     #[abi(embed_v0)]
     impl ValidatorImpl = ValidatorComponent::ValidatorImpl<ContractState>;
     #[abi(embed_v0)]
-    impl PublicKeysImpl = AccountComponent::PublicKeysImpl<ContractState>;
+    impl PublicKeysImpl = ValidatorComponent::PublicKeysImpl<ContractState>;
 
     impl ValidatorInternalImpl = ValidatorComponent::InternalImpl<ContractState>;
 
@@ -49,7 +49,7 @@ mod CoreValidator {
             let mut found = false;
             if call.selector == selector!("get_public_keys") {
                 found = true;
-                let keys = self.account.get_public_keys();
+                let keys = self.validator.get_public_keys();
                 let mut i = 0;
                 while i < keys.len() {
                     output.append(*keys.at(i));
@@ -58,7 +58,7 @@ mod CoreValidator {
             }
             if call.selector == selector!("get_threshold") {
                 found = true;
-                let threshold = self.account.get_threshold();
+                let threshold = self.validator.get_threshold();
                 let threshold_felt: felt252 = threshold.into();
                 output.append(threshold_felt);
             }
@@ -77,7 +77,7 @@ mod CoreValidator {
                     assert(false, 'Invalid payload');
                 }
                 let key = *call.calldata.at(0);
-                self.account.add_public_key(key);
+                self.validator.add_public_key(key);
             }
             if call.selector == selector!("remove_public_key") {
                 found = true;
@@ -85,7 +85,7 @@ mod CoreValidator {
                     assert(false, 'Invalid payload');
                 }
                 let key = *call.calldata.at(0);
-                self.account.remove_public_key(key);
+                self.validator.remove_public_key(key);
             }
             if call.selector == selector!("set_threshold") {
                 found = true;
@@ -94,7 +94,7 @@ mod CoreValidator {
                 }
                 let new_threshold_felt = *call.calldata.at(0);
                 let new_threshold: u8 = new_threshold_felt.try_into().unwrap();
-                self.account.set_threshold(new_threshold);
+                self.validator.set_threshold(new_threshold);
             }
             if !found {
                 assert(false, 'Invalid selector');

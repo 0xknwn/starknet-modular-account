@@ -1,6 +1,3 @@
-// SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts for Cairo v0.10.0 (account/interface.cairo)
-
 use openzeppelin::account::utils::secp256k1::Secp256k1PointSerde;
 use starknet::ContractAddress;
 use starknet::account::Call;
@@ -33,15 +30,6 @@ pub trait IDeployable<TState> {
         core_validator: felt252,
         public_key: felt252
     ) -> felt252;
-}
-
-#[starknet::interface]
-pub trait IPublicKeys<TState> {
-    fn add_public_key(ref self: TState, new_public_key: felt252);
-    fn get_public_keys(self: @TState) -> Array<felt252>;
-    fn get_threshold(self: @TState) -> u8;
-    fn remove_public_key(ref self: TState, old_public_key: felt252);
-    fn set_threshold(ref self: TState, new_threshold: u8);
 }
 
 #[starknet::interface]
