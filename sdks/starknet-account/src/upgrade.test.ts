@@ -12,7 +12,8 @@ import {
   deploySmartrAccount,
   smartrAccountAddress,
 } from "./smartr_account";
-import { RpcProvider, Contract, Account, Call } from "starknet";
+import { RpcProvider, Contract, Account, type Call, CallData } from "starknet";
+import { ABI as CoreValidatorABI } from "./abi/CoreValidator";
 
 describe("upgrade management", () => {
   let env: string;
@@ -81,7 +82,13 @@ describe("upgrade management", () => {
     "checks the SmartAccount public keys",
     async () => {
       const conf = config(env);
-      const c = await smartrAccount.getPublicKeys();
+      const calldata = new CallData(CoreValidatorABI);
+      const data = calldata.compile("get_public_keys", {});
+      const c = await smartrAccount.callOnModule(
+        classHash("CoreValidator"),
+        "get_public_keys",
+        data
+      );
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(1);
       expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
@@ -128,7 +135,7 @@ describe("upgrade management", () => {
         smartrAccount.address,
         smartrAccount
       );
-      const c = await contract.get_public_key();
+      const c = await contract.call("get_public_key");
       expect(`0x${c.toString(16)}`).toEqual(conf.accounts[0].publicKey);
     },
     default_timeout

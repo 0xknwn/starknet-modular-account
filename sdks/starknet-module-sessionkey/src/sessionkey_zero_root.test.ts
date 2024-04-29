@@ -14,8 +14,9 @@ import {
   smartrAccountAddress,
   hash_auth_message,
 } from "@0xknwn/starknet-account";
-import { RpcProvider } from "starknet";
+import { RpcProvider, CallData } from "starknet";
 import { SessionKeyModule, SessionKeyGrantor } from "./sessionkey";
+import { ABI as CoreValidatorABI } from "./abi/CoreValidator";
 
 describe("sessionkey management", () => {
   let env: string;
@@ -112,8 +113,13 @@ describe("sessionkey management", () => {
     "checks the SmartAccount public keys",
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await smartrAccount.getPublicKeys();
+      const calldata = new CallData(CoreValidatorABI);
+      const data = calldata.compile("get_public_keys", {});
+      const c = await smartrAccount.callOnModule(
+        classHash("CoreValidator"),
+        "get_public_keys",
+        data
+      );
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(1);
       expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
@@ -124,10 +130,16 @@ describe("sessionkey management", () => {
   it(
     "checks the SmartAccount threshold",
     async () => {
-      const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await smartrAccount.getThreshold();
-      expect(c).toEqual(1n);
+      const calldata = new CallData(CoreValidatorABI);
+      const data = calldata.compile("get_threshold", {});
+      const c = await smartrAccount.callOnModule(
+        classHash("CoreValidator"),
+        "get_threshold",
+        data
+      );
+      expect(Array.isArray(c)).toBe(true);
+      expect(c.length).toEqual(1);
+      expect(`${c[0].toString(10)}`).toEqual("1");
     },
     default_timeout
   );

@@ -10,7 +10,8 @@ import {
   deploySmartrAccount,
   smartrAccountAddress,
 } from "./smartr_account";
-import { RpcProvider } from "starknet";
+import { RpcProvider, CallData } from "starknet";
+import { ABI as CoreValidatorABI } from "./abi/CoreValidator";
 
 describe("module management", () => {
   let env: string;
@@ -69,7 +70,13 @@ describe("module management", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await smartrAccount.getPublicKeys();
+      const calldata = new CallData(CoreValidatorABI);
+      const data = calldata.compile("get_public_keys", {});
+      const c = await smartrAccount.callOnModule(
+        classHash("CoreValidator"),
+        "get_public_keys",
+        data
+      );
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(1);
       expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
@@ -121,9 +128,7 @@ describe("module management", () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
       }
-      const output = await smartrAccount.isModule(
-        classHash("SimpleValidator")
-      );
+      const output = await smartrAccount.isModule(classHash("SimpleValidator"));
       expect(output).toBe(true);
     },
     default_timeout
@@ -166,9 +171,7 @@ describe("module management", () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
       }
-      const output = await smartrAccount.isModule(
-        classHash("SimpleValidator")
-      );
+      const output = await smartrAccount.isModule(classHash("SimpleValidator"));
       expect(output).toBe(false);
     },
     default_timeout

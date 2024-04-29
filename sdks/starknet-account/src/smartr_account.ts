@@ -45,6 +45,11 @@ export interface AccountModuleInterface {
   prefix(calls: Call[] | Call): Call;
 }
 
+/**
+ * Generates a signature represented as an array of hexadecimal.
+ * @param signature - The signature to handle.
+ * @returns The signature as an array.
+ */
 export const signatureToHexArray = (
   signature: Signature
 ): ArraySignatureType => {
@@ -357,12 +362,14 @@ export class SmartrAccount extends Account {
   }
 
   /**
-   * Execute a transaction on the module account.
+   * Execute or build a transaction on the module account.
    * @param module_class_hash - The installed module class_hash.
    * @param module_entrypoint - The module entrypoint to execute.
    * @param calldata - The entrypoint calldata.
-   * @param execute - If true, the transaction is executed, otherwise it is returned.
-   * @returns A promise that resolves to the transaction receipt.
+   * @param execute - If true, the transaction is executed, otherwise it is
+   * built and returned so that it can be used in a multicall.
+   * @returns A promise that resolves to the transaction receipt if executes is
+   * true, otherwise it returns the transaction call.
    */
   async executeOnModule(
     module_class_hash: string,
@@ -407,7 +414,7 @@ export class SmartrAccount extends Account {
    * @param module_class_hash - The installed module class_hash.
    * @param module_entrypoint - The module entrypoint to call.
    * @param calldata - The entrypoint calldata.
-   * @returns A promise that resolves to the transaction receipt.
+   * @returns A promise that resolves to the call output.
    */
   async callOnModule(
     module_class_hash: string,
@@ -430,7 +437,8 @@ export class SmartrAccount extends Account {
   /**
    * Upgrades the SmartrAccount to a new class.
    * @param classHash - The hash of the new class.
-   * @returns A promise that resolves to the transaction receipt.
+   * @returns A promise that resolves to the transaction receipt if executes is
+   * true, otherwise it returns the transaction call.
    */
   async upgrade(classHash: string) {
     const contract = new Contract(SmartrAccountABI, this.address, this).typedv2(
@@ -443,99 +451,10 @@ export class SmartrAccount extends Account {
   }
 
   /**
-   * Retrieves the public keys associated with the SmartrAccount.
-   * @returns A promise that resolves to the public keys.
+   * Call an entrypoint on the module account.
+   * @param class_hash - the module to test
+   * @returns A promise that is true if the module is installed with the account.
    */
-  async getPublicKeys() {
-    const contract = new Contract(SmartrAccountABI, this.address, this).typedv2(
-      SmartrAccountABI
-    );
-    return await contract.get_public_keys();
-  }
-
-  /**
-   * Retrieves the threshold value of the SmartrAccount.
-   * @returns A promise that resolves to the threshold value.
-   */
-  async getThreshold() {
-    const contract = new Contract(SmartrAccountABI, this.address, this).typedv2(
-      SmartrAccountABI
-    );
-    return await contract.get_threshold();
-  }
-
-  /**
-   * Adds a new public key to the SmartrAccount.
-   * @param new_public_key - The new public key to add.
-   * @returns A promise that resolves to the transaction receipt.
-   */
-  async addPublicKey(
-    new_public_key: string,
-    execute?: true
-  ): Promise<InvokeFunctionResponse>;
-  async addPublicKey(new_public_key: string, execute: false): Promise<Call[]>;
-  async addPublicKey(new_public_key: string, execute: boolean = true) {
-    const contract = new Contract(SmartrAccountABI, this.address, this).typedv2(
-      SmartrAccountABI
-    );
-    const transferCall: Call = contract.populate("add_public_key", {
-      new_public_key: new_public_key,
-    });
-    if (!execute) {
-      return [transferCall];
-    }
-    return await this.execute(transferCall);
-  }
-
-  /**
-   * Removes a public key from the SmartrAccount.
-   * @param old_public_key - The public key to remove.
-   * @returns A promise that resolves to the transaction receipt.
-   */
-  async removePublicKey(
-    old_public_key: string,
-    execute?: true
-  ): Promise<InvokeFunctionResponse>;
-  async removePublicKey(
-    old_public_key: string,
-    execute: false
-  ): Promise<Call[]>;
-  async removePublicKey(old_public_key: string, execute: boolean = true) {
-    const contract = new Contract(SmartrAccountABI, this.address, this).typedv2(
-      SmartrAccountABI
-    );
-    const transferCall: Call = contract.populate("remove_public_key", {
-      old_public_key: old_public_key,
-    });
-    if (!execute) {
-      return [transferCall];
-    }
-    return await this.execute(transferCall);
-  }
-
-  /**
-   * Sets a new threshold value for the SmartrAccount.
-   * @param new_threshold - The new threshold value.
-   * @returns A promise that resolves to the transaction receipt.
-   */
-  async setThreshold(
-    new_threshold: bigint,
-    execute?: true
-  ): Promise<InvokeFunctionResponse>;
-  async setThreshold(new_threshold: bigint, execute: false): Promise<Call[]>;
-  async setThreshold(new_threshold: bigint, execute: boolean = true) {
-    const contract = new Contract(SmartrAccountABI, this.address, this).typedv2(
-      SmartrAccountABI
-    );
-    const transferCall: Call = contract.populate("set_threshold", {
-      new_threshold: new_threshold,
-    });
-    if (!execute) {
-      return [transferCall];
-    }
-    return this.execute(transferCall);
-  }
-
   async isModule(class_hash: string) {
     const contract = new Contract(SmartrAccountABI, this.address, this).typedv2(
       SmartrAccountABI
@@ -543,6 +462,14 @@ export class SmartrAccount extends Account {
     return await contract.is_module(class_hash);
   }
 
+  /**
+   * Add a module to an account.
+   * @param class_hash - the module to add
+   * @param execute - If true, the transaction is executed, otherwise it is
+   * built and returned so that it can be used in a multicall.
+   * @returns A promise that resolves to the transaction receipt if executes is
+   * true, otherwise it returns the transaction call.
+   */
   async addModule(
     class_hash: string,
     execute?: true
@@ -562,6 +489,14 @@ export class SmartrAccount extends Account {
     return await this.execute(transferCall);
   }
 
+  /**
+   * remove a module from an account.
+   * @param class_hash - the module to remove
+   * @param execute - If true, the transaction is executed, otherwise it is
+   * built and returned so that it can be used in a multicall.
+   * @returns A promise that resolves to the transaction receipt if executes is
+   * true, otherwise it returns the transaction call.
+   */
   async removeModule(
     class_hash: string,
     execute?: true
