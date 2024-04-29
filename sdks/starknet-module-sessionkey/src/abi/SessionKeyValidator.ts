@@ -1,6 +1,59 @@
 export const ABI = [
   {
     "type": "impl",
+    "name": "DisableSessionKeyImpl",
+    "interface_name": "smartr::presets::sessionkey_validator::IDisableSessionKey"
+  },
+  {
+    "type": "enum",
+    "name": "core::bool",
+    "variants": [
+      {
+        "name": "False",
+        "type": "()"
+      },
+      {
+        "name": "True",
+        "type": "()"
+      }
+    ]
+  },
+  {
+    "type": "interface",
+    "name": "smartr::presets::sessionkey_validator::IDisableSessionKey",
+    "items": [
+      {
+        "type": "function",
+        "name": "disable_session_key",
+        "inputs": [
+          {
+            "name": "sessionkey",
+            "type": "core::felt252"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "is_disabled_session_key",
+        "inputs": [
+          {
+            "name": "sessionkey",
+            "type": "core::felt252"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "view"
+      }
+    ]
+  },
+  {
+    "type": "impl",
     "name": "ValidatorImpl",
     "interface_name": "smartr::module::validator::IValidator"
   },

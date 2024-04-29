@@ -17,6 +17,7 @@ import {
 import { RpcProvider, CallData } from "starknet";
 import { SessionKeyModule, SessionKeyGrantor } from "./sessionkey";
 import { ABI as CoreValidatorABI } from "./abi/CoreValidator";
+import { ABI as SessionKeyValidatorABI } from "./abi/SessionKeyValidator";
 
 describe("sessionkey management", () => {
   let env: string;
@@ -343,6 +344,70 @@ describe("sessionkey management", () => {
       const receipt =
         await smartrAccountWithSessionKey.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
+
+  it(
+    "disables the sessionkey",
+    async () => {
+      const conf = config(env);
+      const calldata = new CallData(SessionKeyValidatorABI);
+      const sessionkey = await sessionKeyModule.get_session_key();
+      const data = calldata.compile("disable_session_key", {
+        sessionkey,
+      });
+      const { transaction_hash } = await smartrAccount.executeOnModule(
+        classHash("SessionKeyValidator"),
+        "disable_session_key",
+        data
+      );
+      const receipt = await smartrAccount.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
+
+  it(
+    "checks the sessionkey is disabled",
+    async () => {
+      const conf = config(env);
+      const calldata = new CallData(SessionKeyValidatorABI);
+      const sessionkey = await sessionKeyModule.get_session_key();
+      const data = calldata.compile("is_disabled_session_key", {
+        sessionkey,
+      });
+      const output = await smartrAccount.callOnModule(
+        classHash("SessionKeyValidator"),
+        "is_disabled_session_key",
+        data
+      );
+      expect(output.length).toBe(1);
+      expect(output[0]).toBe(1n);
+    },
+    default_timeout
+  );
+
+  it(
+    "increments the counter from SmartrAccount with Module and fails",
+    async () => {
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      if (!smartrAccountWithSessionKey) {
+        throw new Error("SmartrAccount with SessionKey not installed");
+      }
+      const counterWithSmartrAccountAndModule = new Counter(
+        counterContract.address,
+        smartrAccountWithSessionKey
+      );
+      try {
+        const { transaction_hash } =
+          await counterWithSmartrAccountAndModule.increment();
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e).toBeDefined();
+      }
     },
     default_timeout
   );

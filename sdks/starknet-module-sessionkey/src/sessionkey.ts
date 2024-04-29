@@ -80,6 +80,21 @@ export class SessionKeyModule implements AccountModuleInterface {
     return auth;
   }
 
+  async get_session_key() {
+    if (!this.auth.grantorClass) {
+      throw new Error("grantor should be set before requesting session key");
+    }
+    return hash_auth_message(
+      this.auth.accountAddress,
+      this.auth.validatorClass,
+      this.auth.grantorClass,
+      this.auth.authKey,
+      this.auth.expires,
+      this.auth.root,
+      this.auth.chainId
+    );
+  }
+
   async add_signature(signature: string[]) {
     if (!this.auth.signature) {
       this.auth.signature = [];

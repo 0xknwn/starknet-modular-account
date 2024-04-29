@@ -1,5 +1,11 @@
 // SPDX-License-Identifier: MIT
 
+#[starknet::interface]
+pub trait IDisableSessionKey<TState> {
+    fn disable_session_key(ref self: TState, sessionkey: felt252);
+    fn is_disabled_session_key(self: @TState, sessionkey: felt252) -> bool;
+}
+
 #[starknet::contract]
 mod SessionKeyValidator {
     use core::pedersen::pedersen;
@@ -9,6 +15,8 @@ mod SessionKeyValidator {
     use openzeppelin::introspection::src5::SRC5Component;
     use smartr::account::AccountComponent;
     use smartr::message::hash_auth_message;
+    use super::{IDisableSessionKeyDispatcherTrait, IDisableSessionKey};
+    use smartr::module::IConfigure;
     use smartr::module::{
         ValidatorComponent, IValidator, IValidatorDispatcherTrait, IValidatorLibraryDispatcher
     };
@@ -34,6 +42,17 @@ mod SessionKeyValidator {
         pub const INVALID_SESSION_PROOF_LEN: felt252 = 'Invalid sessionkey proof length';
         pub const INVALID_MODULE_SIGNATURE: felt252 = 'Invalid module signature';
         pub const INVALID_MODULE_VALIDATOR: felt252 = 'Invalid Core Validator';
+    }
+
+    #[abi(embed_v0)]
+    impl DisableSessionKeyImpl of IDisableSessionKey<ContractState> {
+        fn disable_session_key(ref self: ContractState, sessionkey: felt252) {
+            self.Sessionkey_disabled.write(sessionkey, true);
+        }
+
+        fn is_disabled_session_key(self: @ContractState, sessionkey: felt252) -> bool {
+            self.Sessionkey_disabled.read(sessionkey)
+        }
     }
 
     #[abi(embed_v0)]
@@ -179,4 +198,47 @@ mod SessionKeyValidator {
         #[flat]
         AccountEvent: AccountComponent::Event,
     }
+
+    #[abi(embed_v0)]
+    impl ConfigureImpl of IConfigure<ContractState> {
+        fn call(self: @ContractState, call: Call) -> Array<felt252> {
+            let mut output = ArrayTrait::<felt252>::new();
+            let mut found = false;
+            if call.selector == selector!("is_disabled_session_key") {
+                found = true;
+                if call.calldata.len() != 1 {
+                    assert(false, 'Invalid payload');
+                }
+                let key = *call.calldata.at(0);
+                let is_disabled = self.is_disabled_session_key(key);
+                if is_disabled {
+                    output.append(1);
+                } else {
+                    output.append(0);
+                }
+            }
+            if !found {
+                assert(false, 'Invalid selector');
+            }
+            output
+        }
+
+        fn execute(ref self: ContractState, call: Call) -> Array<felt252> {
+            let mut output = ArrayTrait::<felt252>::new();
+            let mut found = false;
+            if call.selector == selector!("disable_session_key") {
+                found = true;
+                if call.calldata.len() != 1 {
+                    assert(false, 'Invalid payload');
+                }
+                let key = *call.calldata.at(0);
+                self.disable_session_key(key);
+            }
+            if !found {
+                assert(false, 'Invalid selector');
+            }
+            output
+        }
+    }
+
 }
