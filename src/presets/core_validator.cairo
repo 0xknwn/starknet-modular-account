@@ -2,6 +2,7 @@
 
 #[starknet::contract]
 mod CoreValidator {
+    use core::traits::Into;
     use smartr::module::ValidatorComponent;
     use openzeppelin::introspection::src5::SRC5Component;
     use smartr::account::AccountComponent;
@@ -55,6 +56,12 @@ mod CoreValidator {
                     i += 1;
                 }
             }
+            if call.selector == selector!("get_threshold") {
+                found = true;
+                let threshold = self.account.get_threshold();
+                let threshold_felt: felt252 = threshold.into();
+                output.append(threshold_felt);
+            }
             if !found {
                 assert(false, 'Invalid selector');
             }
@@ -79,6 +86,15 @@ mod CoreValidator {
                 }
                 let key = *call.calldata.at(0);
                 self.account.remove_public_key(key);
+            }
+            if call.selector == selector!("set_threshold") {
+                found = true;
+                if call.calldata.len() != 1 {
+                    assert(false, 'Invalid payload');
+                }
+                let new_threshold_felt = *call.calldata.at(0);
+                let new_threshold: u8 = new_threshold_felt.into();
+                self.account.set_threshold(new_threshold);
             }
             if !found {
                 assert(false, 'Invalid selector');
