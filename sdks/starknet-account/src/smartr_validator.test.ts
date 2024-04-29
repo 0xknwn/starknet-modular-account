@@ -1,11 +1,8 @@
 import {
   declareClass,
   classHash,
-  deployCounter,
   testAccounts,
   default_timeout,
-  Counter,
-  counterAddress,
   config,
 } from "starknet-test-helpers";
 import {
@@ -13,17 +10,8 @@ import {
   deploySmartrAccount,
   smartrAccountAddress,
 } from "./smartr_account";
-import { ABI as SmartAccountABI } from "./abi/SmartrAccount";
 import { ABI as CoreValidatorABI } from "./abi/CoreValidator";
-import {
-  Contract,
-  RpcProvider,
-  selector,
-  num,
-  CallData,
-  type Call,
-} from "starknet";
-import { contractAddress } from "starknet-test-helpers/src/contract";
+import { RpcProvider, num, CallData } from "starknet";
 
 describe("call and execute on validator", () => {
   let env: string;
@@ -102,9 +90,7 @@ describe("call and execute on validator", () => {
       const conf = config(env);
 
       const calldata = new CallData(CoreValidatorABI);
-      const data = calldata.compile("add_public_key", {
-        new_public_key: conf.accounts[1].publicKey,
-      });
+      const data = calldata.compile("get_public_keys", {});
       const output = await smartrAccount.callOnModule(
         classHash("CoreValidator"),
         "get_public_keys",

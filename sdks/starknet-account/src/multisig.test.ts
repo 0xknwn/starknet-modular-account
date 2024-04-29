@@ -14,14 +14,14 @@ import {
   deploySmartrAccount,
   smartrAccountAddress,
 } from "./smartr_account";
-import { Contract, RpcProvider } from "starknet";
+import { Contract, RpcProvider, CallData } from "starknet";
+import { ABI as CoreValidatorABI } from "./abi/CoreValidator";
 
 describe("multiple signature", () => {
   let env: string;
   let counterContract: Counter;
   let smartrAccount: SmartrAccount;
   let smartrAccount2: SmartrAccount;
-  let smartrAccount3: SmartrAccount;
 
   beforeAll(() => {
     env = "devnet";
@@ -100,8 +100,13 @@ describe("multiple signature", () => {
     "checks the SmartAccount public keys",
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await smartrAccount.getPublicKeys();
+      const calldata = new CallData(CoreValidatorABI);
+      const data = calldata.compile("get_public_keys", {});
+      const c = await smartrAccount.callOnModule(
+        classHash("CoreValidator"),
+        "get_public_keys",
+        data
+      );
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(1);
       expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
@@ -112,8 +117,16 @@ describe("multiple signature", () => {
   it(
     "checks the SmartAccount threshold",
     async () => {
-      const c = await smartrAccount.getThreshold();
-      expect(c).toEqual(1n);
+      const calldata = new CallData(CoreValidatorABI);
+      const data = calldata.compile("get_threshold", {});
+      const c = await smartrAccount.callOnModule(
+        classHash("CoreValidator"),
+        "get_threshold",
+        data
+      );
+      expect(Array.isArray(c)).toBe(true);
+      expect(c.length).toEqual(1);
+      expect(`${c[0].toString(10)}`).toEqual("1");
     },
     default_timeout
   );
@@ -191,8 +204,16 @@ describe("multiple signature", () => {
   it(
     "checks the SmartAccount threshold",
     async () => {
-      const c = await smartrAccount.getThreshold();
-      expect(c).toEqual(1n);
+      const calldata = new CallData(CoreValidatorABI);
+      const data = calldata.compile("get_threshold", {});
+      const c = await smartrAccount.callOnModule(
+        classHash("CoreValidator"),
+        "get_threshold",
+        data
+      );
+      expect(Array.isArray(c)).toBe(true);
+      expect(c.length).toEqual(1);
+      expect(`${c[0].toString(10)}`).toEqual("1");
     },
     default_timeout
   );
@@ -201,8 +222,14 @@ describe("multiple signature", () => {
     "adds a 2nd public key to the account",
     async () => {
       const conf = config(env);
-      const { transaction_hash } = await smartrAccount.addPublicKey(
-        conf.accounts[1].publicKey
+      const calldata = new CallData(CoreValidatorABI);
+      const data = calldata.compile("add_public_key", {
+        new_public_key: conf.accounts[1].publicKey,
+      });
+      const { transaction_hash } = await smartrAccount.executeOnModule(
+        classHash("CoreValidator"),
+        "add_public_key",
+        data
       );
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
@@ -219,10 +246,16 @@ describe("multiple signature", () => {
   it(
     "checks the new public key with the account",
     async () => {
-      const c = await smartrAccount.getPublicKeys();
+      const conf = config(env);
+      const calldata = new CallData(CoreValidatorABI);
+      const data = calldata.compile("get_public_keys", {});
+      const c = await smartrAccount.callOnModule(
+        classHash("CoreValidator"),
+        "get_public_keys",
+        data
+      );
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(2);
-      const conf = config(env);
       expect(`0x${c[1].toString(16)}`).toEqual(conf.accounts[1].publicKey);
     },
     default_timeout
@@ -296,7 +329,15 @@ describe("multiple signature", () => {
   it(
     "updates the account threshold to 2",
     async () => {
-      const { transaction_hash } = await smartrAccount.setThreshold(2n);
+      const calldata = new CallData(CoreValidatorABI);
+      const data = calldata.compile("set_threshold", {
+        new_threshold: 2,
+      });
+      const { transaction_hash } = await smartrAccount.executeOnModule(
+        classHash("CoreValidator"),
+        "set_threshold",
+        data
+      );
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
     },
@@ -308,8 +349,14 @@ describe("multiple signature", () => {
     async () => {
       const conf = config(env);
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
-      const transactions = await smartrAccount.addPublicKey(
-        conf.accounts[2].publicKey,
+      const calldata = new CallData(CoreValidatorABI);
+      const data = calldata.compile("add_public_key", {
+        new_public_key: conf.accounts[2].publicKey,
+      });
+      const transactions = await smartrAccount.executeOnModule(
+        classHash("CoreValidator"),
+        "add_public_key",
+        data,
         false
       );
       const detail = await smartrAccount.prepareMultisig(transactions);
@@ -325,11 +372,6 @@ describe("multiple signature", () => {
       );
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
-      smartrAccount3 = new SmartrAccount(
-        p,
-        smartrAccount.address,
-        conf.accounts[2].privateKey
-      );
     },
     default_timeout
   );
@@ -337,10 +379,16 @@ describe("multiple signature", () => {
   it(
     "checks the new public key with the account",
     async () => {
-      const c = await smartrAccount.getPublicKeys();
+      const conf = config(env);
+      const calldata = new CallData(CoreValidatorABI);
+      const data = calldata.compile("get_public_keys", {});
+      const c = await smartrAccount.callOnModule(
+        classHash("CoreValidator"),
+        "get_public_keys",
+        data
+      );
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(3);
-      const conf = config(env);
       expect(`0x${c[2].toString(16)}`).toEqual(conf.accounts[2].publicKey);
     },
     default_timeout
@@ -428,7 +476,16 @@ describe("multiple signature", () => {
   it(
     "updates the account threshold to 1",
     async () => {
-      const transactions = await smartrAccount.setThreshold(1n, false);
+      const calldata = new CallData(CoreValidatorABI);
+      const data = calldata.compile("set_threshold", {
+        new_threshold: 1,
+      });
+      const transactions = await smartrAccount.executeOnModule(
+        classHash("CoreValidator"),
+        "set_threshold",
+        data,
+        false
+      );
       const detail = await smartrAccount.prepareMultisig(transactions);
       const signature1 = await smartrAccount.signMultisig(transactions, detail);
       const signature2 = await smartrAccount2.signMultisig(
@@ -449,8 +506,16 @@ describe("multiple signature", () => {
   it(
     "checks the SmartAccount threshold is back to 1",
     async () => {
-      const c = await smartrAccount.getThreshold();
-      expect(c).toEqual(1n);
+      const calldata = new CallData(CoreValidatorABI);
+      const data = calldata.compile("get_threshold", {});
+      const c = await smartrAccount.callOnModule(
+        classHash("CoreValidator"),
+        "get_threshold",
+        data
+      );
+      expect(Array.isArray(c)).toBe(true);
+      expect(c.length).toEqual(1);
+      expect(`${c[0].toString(10)}`).toEqual("1");
     },
     default_timeout
   );
@@ -475,8 +540,14 @@ describe("multiple signature", () => {
     "removes the 2nd public key from the account",
     async () => {
       const conf = config(env);
-      const { transaction_hash } = await smartrAccount.removePublicKey(
-        conf.accounts[1].publicKey
+      const calldata = new CallData(CoreValidatorABI);
+      const data = calldata.compile("remove_public_key", {
+        old_public_key: conf.accounts[1].publicKey,
+      });
+      const { transaction_hash } = await smartrAccount.executeOnModule(
+        classHash("CoreValidator"),
+        "remove_public_key",
+        data
       );
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
@@ -487,7 +558,13 @@ describe("multiple signature", () => {
   it(
     "checks the public key with the account are 2",
     async () => {
-      const c = await smartrAccount.getPublicKeys();
+      const calldata = new CallData(CoreValidatorABI);
+      const data = calldata.compile("get_public_keys", {});
+      const c = await smartrAccount.callOnModule(
+        classHash("CoreValidator"),
+        "get_public_keys",
+        data
+      );
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(2);
       const conf = config(env);
@@ -500,8 +577,14 @@ describe("multiple signature", () => {
     "removes the ex-3rd public key from the account",
     async () => {
       const conf = config(env);
-      const { transaction_hash } = await smartrAccount.removePublicKey(
-        conf.accounts[2].publicKey
+      const calldata = new CallData(CoreValidatorABI);
+      const data = calldata.compile("remove_public_key", {
+        old_public_key: conf.accounts[2].publicKey,
+      });
+      const { transaction_hash } = await smartrAccount.executeOnModule(
+        classHash("CoreValidator"),
+        "remove_public_key",
+        data
       );
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
@@ -512,7 +595,13 @@ describe("multiple signature", () => {
   it(
     "checks the public key with the account are 1",
     async () => {
-      const c = await smartrAccount.getPublicKeys();
+      const calldata = new CallData(CoreValidatorABI);
+      const data = calldata.compile("get_public_keys", {});
+      const c = await smartrAccount.callOnModule(
+        classHash("CoreValidator"),
+        "get_public_keys",
+        data
+      );
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(1);
       const conf = config(env);
