@@ -481,7 +481,6 @@ export class SmartrAccount extends Account {
     );
     const transferCall: Call = contract.populate("add_module", {
       class_hash: class_hash,
-      args: [],
     });
     if (!execute) {
       return [transferCall];

@@ -118,14 +118,25 @@ export const ABI = [
           }
         ],
         "state_mutability": "view"
-      },
+      }
+    ]
+  },
+  {
+    "type": "impl",
+    "name": "CoreValidatorImpl",
+    "interface_name": "smartr::module::validator::ICoreValidator"
+  },
+  {
+    "type": "interface",
+    "name": "smartr::module::validator::ICoreValidator",
+    "items": [
       {
         "type": "function",
         "name": "initialize",
         "inputs": [
           {
-            "name": "args",
-            "type": "core::array::Array::<core::felt252>"
+            "name": "public_key",
+            "type": "core::felt252"
           }
         ],
         "outputs": [],
@@ -136,11 +147,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "PublicKeysImpl",
-    "interface_name": "smartr::account::interface::IPublicKeys"
+    "interface_name": "smartr::module::validator::IPublicKeys"
   },
   {
     "type": "interface",
-    "name": "smartr::account::interface::IPublicKeys",
+    "name": "smartr::module::validator::IPublicKeys",
     "items": [
       {
         "type": "function",

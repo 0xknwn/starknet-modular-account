@@ -29,8 +29,6 @@ mod SimpleValidator {
         fn validate(self: @ContractState, grantor_class: ClassHash, calls: Array<Call>) -> felt252 {
             starknet::VALIDATED
         }
-
-        fn initialize(ref self: ContractState, args: Array<felt252>) {}
     }
 
     impl ValidatorInternalImpl = ValidatorComponent::InternalImpl<ContractState>;

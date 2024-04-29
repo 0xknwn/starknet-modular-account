@@ -1,6 +1,3 @@
-// SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts for Cairo v0.10.0 (account/interface.cairo)
-
 use openzeppelin::account::utils::secp256k1::Secp256k1PointSerde;
 use starknet::ContractAddress;
 use starknet::account::Call;
@@ -36,15 +33,6 @@ pub trait IDeployable<TState> {
 }
 
 #[starknet::interface]
-pub trait IPublicKeys<TState> {
-    fn add_public_key(ref self: TState, new_public_key: felt252);
-    fn get_public_keys(self: @TState) -> Array<felt252>;
-    fn get_threshold(self: @TState) -> u8;
-    fn remove_public_key(ref self: TState, old_public_key: felt252);
-    fn set_threshold(ref self: TState, new_threshold: u8);
-}
-
-#[starknet::interface]
 pub trait ISRC6CamelOnly<TState> {
     fn isValidSignature(self: @TState, hash: felt252, signature: Array<felt252>) -> felt252;
 }
@@ -53,7 +41,7 @@ pub trait ISRC6CamelOnly<TState> {
 pub trait IModule<TState> {
     // @todo: discuss this function and how fragile it is
     fn __module_validate__(self: @TState, calldata: Array<felt252>);
-    fn add_module(ref self: TState, class_hash: ClassHash, args: Array<felt252>);
+    fn add_module(ref self: TState, class_hash: ClassHash);
     fn remove_module(ref self: TState, class_hash: ClassHash);
     fn update_core_module(ref self: TState, class_hash: ClassHash);
     fn get_core_module(self: @TState) -> ClassHash;

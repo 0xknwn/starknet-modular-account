@@ -8,7 +8,7 @@ use super::interface;
 pub mod AccountComponent {
     use super::interface;
     use smartr::store::Felt252ArrayStore;
-    use smartr::module::{IValidatorDispatcherTrait, IValidatorLibraryDispatcher};
+    use smartr::module::{ICoreValidatorDispatcherTrait, ICoreValidatorLibraryDispatcher, IValidatorDispatcherTrait, IValidatorLibraryDispatcher};
     use smartr::module::{IConfigureDispatcherTrait, IConfigureLibraryDispatcher};
     use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
     use openzeppelin::account::utils::{execute_calls, is_valid_stark_signature};
@@ -25,14 +25,8 @@ pub mod AccountComponent {
 
     #[storage]
     struct Storage {
-        // Account_public_key is maintained only to allow upgrading to the
-        // Openzeppelin account. It should *NOT* be used for any other purpose.
-        Account_public_key: felt252,
         Account_core_validator: ClassHash,
-        Account_public_keys: Array<felt252>,
-        Account_threshold: u8,
         Account_modules: LegacyMap<ClassHash, bool>,
-        Account_modules_initialize: LegacyMap<felt252, felt252>
     }
 
     #[event]
@@ -57,7 +51,6 @@ pub mod AccountComponent {
     pub mod Errors {
         pub const INVALID_CALLER: felt252 = 'Account: invalid caller';
         pub const INVALID_SIGNATURE: felt252 = 'Account: invalid signature';
-        pub const REGISTERED_KEY: felt252 = 'Account: key already registered';
         pub const KEY_NOT_FOUND: felt252 = 'Account: key not found';
         pub const MISSING_KEYS: felt252 = 'Account: not enough keys';
         pub const INVALID_TX_VERSION: felt252 = 'Account: invalid tx version';
@@ -173,75 +166,6 @@ pub mod AccountComponent {
         }
     }
 
-    #[embeddable_as(PublicKeysImpl)]
-    pub impl PublicKeys<
-        TContractState,
-        +HasComponent<TContractState>,
-        +SRC5Component::HasComponent<TContractState>,
-        +Drop<TContractState>
-    > of interface::IPublicKeys<ComponentState<TContractState>> {
-        /// Add a key to the current public keys of the account.
-        fn add_public_key(ref self: ComponentState<TContractState>, new_public_key: felt252) {
-            self.assert_only_self();
-            let mut public_keys = self.Account_public_keys.read();
-            let public_keys_snapshot = @public_keys;
-            let mut i: usize = 0;
-            let len = public_keys_snapshot.len();
-            while i < len {
-                let public_key = public_keys_snapshot.at(i);
-                assert(*public_key != new_public_key, Errors::REGISTERED_KEY);
-                i += 1;
-            };
-            public_keys.append(new_public_key);
-            self.Account_public_keys.write(public_keys);
-            self.emit(OwnerAdded { new_owner_guid: new_public_key });
-        }
-
-        /// Returns the current public keys of the account.
-        fn get_public_keys(self: @ComponentState<TContractState>) -> Array<felt252> {
-            self.Account_public_keys.read()
-        }
-
-        fn get_threshold(self: @ComponentState<TContractState>) -> u8 {
-            self.Account_threshold.read()
-        }
-
-        /// Remove a key from the current public keys of the account.
-        fn remove_public_key(ref self: ComponentState<TContractState>, old_public_key: felt252) {
-            self.assert_only_self();
-            /// @todo: make sure the key to be removed is not used as part of
-            // the signature otherwise the account could be locked.
-            let mut public_keys = ArrayTrait::<felt252>::new();
-            let mut is_found = false;
-            let previous_public_keys = self.Account_public_keys.read();
-            let len = previous_public_keys.len();
-            let threshold: u32 = self.Account_threshold.read().into();
-            assert(len > threshold, Errors::MISSING_KEYS);
-            let mut i: u32 = 0;
-            while i < len {
-                let public_key = *previous_public_keys.at(i);
-                if public_key == old_public_key {
-                    is_found = true;
-                } else {
-                    public_keys.append(public_key);
-                }
-                i += 1;
-            };
-            assert(is_found, Errors::KEY_NOT_FOUND);
-            self.Account_public_keys.write(public_keys);
-            self.emit(OwnerRemoved { removed_owner_guid: old_public_key });
-        }
-
-        fn set_threshold(ref self: ComponentState<TContractState>, new_threshold: u8) {
-            self.assert_only_self();
-            let public_keys = self.Account_public_keys.read();
-            let len = public_keys.len();
-            let threshold: u32 = new_threshold.into();
-            assert(threshold <= len, Errors::THRESHOLD_TOO_BIG);
-            self.Account_threshold.write(new_threshold);
-        }
-    }
-
     /// Adds camelCase support for `ISRC6`.
     #[embeddable_as(SRC6CamelOnlyImpl)]
     impl SRC6CamelOnly<
@@ -269,15 +193,12 @@ pub mod AccountComponent {
         }
 
         fn add_module(
-            ref self: ComponentState<TContractState>, class_hash: ClassHash, args: Array<felt252>
+            ref self: ComponentState<TContractState>, class_hash: ClassHash
         ) {
             self.assert_only_self();
             let installed = self.Account_modules.read(class_hash);
             assert(!installed, Errors::MODULE_ALREADY_INSTALLED);
             self.Account_modules.write(class_hash, true);
-            if args.len() > 0 {
-                IValidatorLibraryDispatcher { class_hash: class_hash }.initialize(args)
-            }
         }
 
         fn remove_module(ref self: ComponentState<TContractState>, class_hash: ClassHash) {
@@ -336,7 +257,8 @@ pub mod AccountComponent {
             let core_validator_address: ClassHash = core_validator.try_into().unwrap();
             self.Account_core_validator.write(core_validator_address);
             self.Account_modules.write(core_validator_address, true);
-            self._init_public_key(public_key);
+            let core = ICoreValidatorLibraryDispatcher { class_hash: core_validator_address };
+            core.initialize(public_key);
         }
 
         /// Validates that the caller is the account itself. Otherwise it reverts.
@@ -364,16 +286,16 @@ pub mod AccountComponent {
                 .is_valid_signature(tx_hash, sig)
         }
 
-        /// Sets the public key without validating the caller.
-        /// The usage of this method outside the `set_public_key` function is discouraged.
-        ///
-        /// Emits an `OwnerAdded` event.
-        fn _init_public_key(ref self: ComponentState<TContractState>, new_public_key: felt252) {
-            let mut new_public_keys = ArrayTrait::<felt252>::new();
-            new_public_keys.append(new_public_key);
-            self.Account_public_keys.write(new_public_keys);
-            self.Account_threshold.write(1);
-            self.emit(OwnerAdded { new_owner_guid: new_public_key });
+        fn notify_owner_addition(
+            ref self: ComponentState<TContractState>, owner_public_key: felt252
+        ) {
+          self.emit(OwnerAdded { new_owner_guid: owner_public_key });
+        }
+
+        fn notify_owner_removal(
+            ref self: ComponentState<TContractState>, owner_public_key: felt252
+        ) {
+          self.emit(OwnerRemoved { removed_owner_guid: owner_public_key });
         }
     }
 }
