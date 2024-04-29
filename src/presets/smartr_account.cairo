@@ -60,10 +60,6 @@ mod SmartrAccount {
     impl UpgradeableImpl of IUpgradeable<ContractState> {
         fn upgrade(ref self: ContractState, new_class_hash: ClassHash) {
             self.account.assert_only_self();
-            let public_keys: Array<felt252> = self.account.Account_public_keys.read();
-            assert(!public_keys.is_empty(), Errors::INVALID_SIGNATURE);
-            let public_key = *public_keys.at(0);
-            self.account.Account_public_key.write(public_key);
             self.upgradeable._upgrade(new_class_hash);
         }
     }

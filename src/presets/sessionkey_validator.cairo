@@ -154,8 +154,6 @@ mod SessionKeyValidator {
             IValidatorLibraryDispatcher { class_hash: grantor_class }
                 .is_valid_signature(auth_hash, signature)
         }
-
-        fn initialize(ref self: ContractState, args: Array<felt252>) {}
     }
 
     impl ValidatorInternalImpl = ValidatorComponent::InternalImpl<ContractState>;

@@ -8,10 +8,14 @@ pub const IValidator_ID: felt252 =
     0x12872aa2454ea533052814f27445df0e498eeccaf2035b018153efff642d34d;
 
 #[starknet::interface]
+pub trait ICoreValidator<TState> {
+    fn initialize(ref self: TState, public_key: felt252);
+}
+
+#[starknet::interface]
 pub trait IValidator<TState> {
     fn is_valid_signature(self: @TState, hash: felt252, signature: Array<felt252>) -> felt252;
     fn validate(self: @TState, grantor_class: ClassHash, calls: Array<Call>) -> felt252;
-    fn initialize(ref self: TState, args: Array<felt252>);
 }
 
 #[starknet::interface]
@@ -37,7 +41,7 @@ pub mod ValidatorComponent {
     use openzeppelin::introspection::src5::SRC5Component;
     use starknet::get_caller_address;
     use starknet::get_contract_address;
-    use super::{IValidator, IValidator_ID, IConfigure};
+    use super::{IValidator, ICoreValidator, IValidator_ID, IConfigure};
     use starknet::class_hash::ClassHash;
     use starknet::account::Call;
     use smartr::store::Felt252ArrayStore;
@@ -68,6 +72,21 @@ pub mod ValidatorComponent {
     #[derive(Drop, PartialEq, starknet::Event)]
     pub enum Event {}
 
+    #[embeddable_as(CoreValidatorImpl)]
+    pub impl CoreValidator<
+        TContractState,
+        +HasComponent<TContractState>,
+        +SRC5Component::HasComponent<TContractState>,
+        +AccountComponent::HasComponent<TContractState>,
+        +Drop<TContractState>
+    > of ICoreValidator<ComponentState<TContractState>> {
+        fn initialize(ref self: ComponentState<TContractState>, public_key: felt252) {
+            self.Account_public_key.write(public_key);
+            self.Account_public_keys.write(array![public_key]);
+            self.Account_threshold.write(1);
+        }
+    }
+
     #[embeddable_as(ValidatorImpl)]
     pub impl Validator<
         TContractState,
@@ -91,10 +110,6 @@ pub mod ValidatorComponent {
             self: @ComponentState<TContractState>, grantor_class: ClassHash, calls: Array<Call>
         ) -> felt252 {
             starknet::VALIDATED
-        }
-
-        fn initialize(ref self: ComponentState<TContractState>, args: Array<felt252>) {
-            self.Account_modules_initialize.write(0x7, 0x8);
         }
     }
 
@@ -196,8 +211,8 @@ pub mod ValidatorComponent {
         fn initializer(ref self: ComponentState<TContractState>, public_key: felt252) {
             let mut src5_component = get_dep_component_mut!(ref self, SRC5);
             src5_component.register_interface(IValidator_ID);
-            let mut account_component = get_dep_component_mut!(ref self, AccountInternalImpl);
-            account_component._init_public_key(public_key);
+            self.Account_public_key.write(public_key);
+            self.Account_public_keys.write(array![public_key]);
         }
 
         /// Validates that the caller is the account itself. Otherwise it reverts.

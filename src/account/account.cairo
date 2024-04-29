@@ -8,7 +8,7 @@ use super::interface;
 pub mod AccountComponent {
     use super::interface;
     use smartr::store::Felt252ArrayStore;
-    use smartr::module::{IValidatorDispatcherTrait, IValidatorLibraryDispatcher};
+    use smartr::module::{ICoreValidatorDispatcherTrait, ICoreValidatorLibraryDispatcher, IValidatorDispatcherTrait, IValidatorLibraryDispatcher};
     use smartr::module::{IConfigureDispatcherTrait, IConfigureLibraryDispatcher};
     use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
     use openzeppelin::account::utils::{execute_calls, is_valid_stark_signature};
@@ -25,14 +25,8 @@ pub mod AccountComponent {
 
     #[storage]
     struct Storage {
-        // Account_public_key is maintained only to allow upgrading to the
-        // Openzeppelin account. It should *NOT* be used for any other purpose.
-        Account_public_key: felt252,
         Account_core_validator: ClassHash,
-        Account_public_keys: Array<felt252>,
-        Account_threshold: u8,
         Account_modules: LegacyMap<ClassHash, bool>,
-        Account_modules_initialize: LegacyMap<felt252, felt252>
     }
 
     #[event]
@@ -199,15 +193,12 @@ pub mod AccountComponent {
         }
 
         fn add_module(
-            ref self: ComponentState<TContractState>, class_hash: ClassHash, args: Array<felt252>
+            ref self: ComponentState<TContractState>, class_hash: ClassHash
         ) {
             self.assert_only_self();
             let installed = self.Account_modules.read(class_hash);
             assert(!installed, Errors::MODULE_ALREADY_INSTALLED);
             self.Account_modules.write(class_hash, true);
-            if args.len() > 0 {
-                IValidatorLibraryDispatcher { class_hash: class_hash }.initialize(args)
-            }
         }
 
         fn remove_module(ref self: ComponentState<TContractState>, class_hash: ClassHash) {
@@ -264,9 +255,8 @@ pub mod AccountComponent {
             src5_component.register_interface(interface::ISRC6_ID);
             assert(core_validator != 0, Errors::INVALID_SIGNATURE);
             let core_validator_address: ClassHash = core_validator.try_into().unwrap();
-            self.Account_core_validator.write(core_validator_address);
-            self.Account_modules.write(core_validator_address, true);
-            self._init_public_key(public_key);
+            let core = ICoreValidatorLibraryDispatcher { class_hash: core_validator_address };
+            core.initialize(public_key);
         }
 
         /// Validates that the caller is the account itself. Otherwise it reverts.
@@ -292,18 +282,6 @@ pub mod AccountComponent {
             let core_validator = self.Account_core_validator.read();
             IValidatorLibraryDispatcher { class_hash: core_validator }
                 .is_valid_signature(tx_hash, sig)
-        }
-
-        /// Sets the public key without validating the caller.
-        /// The usage of this method outside the `set_public_key` function is discouraged.
-        ///
-        /// Emits an `OwnerAdded` event.
-        fn _init_public_key(ref self: ComponentState<TContractState>, new_public_key: felt252) {
-            let mut new_public_keys = ArrayTrait::<felt252>::new();
-            new_public_keys.append(new_public_key);
-            self.Account_public_keys.write(new_public_keys);
-            self.Account_threshold.write(1);
-            self.emit(OwnerAdded { new_owner_guid: new_public_key });
         }
 
         fn notify_owner_addition(

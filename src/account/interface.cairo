@@ -41,7 +41,7 @@ pub trait ISRC6CamelOnly<TState> {
 pub trait IModule<TState> {
     // @todo: discuss this function and how fragile it is
     fn __module_validate__(self: @TState, calldata: Array<felt252>);
-    fn add_module(ref self: TState, class_hash: ClassHash, args: Array<felt252>);
+    fn add_module(ref self: TState, class_hash: ClassHash);
     fn remove_module(ref self: TState, class_hash: ClassHash);
     fn update_core_module(ref self: TState, class_hash: ClassHash);
     fn get_core_module(self: @TState) -> ClassHash;
