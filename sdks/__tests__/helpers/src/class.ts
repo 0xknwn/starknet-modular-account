@@ -53,7 +53,9 @@ export const declareClass = async (
 
   const compiledTestSierra = json.parse(
     fs
-      .readFileSync(`../../target/dev/smartr_${className}.contract_class.json`)
+      .readFileSync(
+        `../../../target/dev/smartr_${className}.contract_class.json`
+      )
       .toString("ascii")
   );
   const compiledTestCasm = json.parse(
