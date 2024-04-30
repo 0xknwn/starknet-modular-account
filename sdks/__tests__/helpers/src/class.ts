@@ -17,7 +17,7 @@ import {
  *
  */
 export const classHash = (className: string): string => {
-  const f = `../../target/dev/smartr_${className}.contract_class.json`;
+  const f = `../../../target/dev/smartr_${className}.contract_class.json`;
   const contract: CompiledContract = json.parse(
     fs.readFileSync(f).toString("ascii")
   );
@@ -59,7 +59,7 @@ export const declareClass = async (
   const compiledTestCasm = json.parse(
     fs
       .readFileSync(
-        `../../target/dev/smartr_${className}.compiled_contract_class.json`
+        `../../../target/dev/smartr_${className}.compiled_contract_class.json`
       )
       .toString("ascii")
   );
