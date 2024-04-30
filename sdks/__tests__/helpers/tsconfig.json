@@ -1,12 +1,14 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist"
   },
-  "references": [{ "path": "../../sdks/__tests__/helpers" }],
+  "include": ["**/*.ts"],
+  "exclude": ["dist"],
   "typedocOptions": {
     "entryPoints": ["src/index.ts"],
     "out": "docs",
     "plugin": "typedoc-plugin-markdown"
-  }}
+  }
+}

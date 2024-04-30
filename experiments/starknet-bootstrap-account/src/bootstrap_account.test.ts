@@ -7,7 +7,7 @@ import {
   Counter,
   counterAddress,
   config,
-} from "starknet-test-helpers";
+} from "tests-starknet-helpers";
 import {
   bootstrapAccountAddress,
   deployBootstrapAccount,

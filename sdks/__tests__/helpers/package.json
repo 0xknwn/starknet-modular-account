@@ -1,0 +1,20 @@
+{
+  "name": "tests-starknet-helpers",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "devDependencies": {},
+  "scripts": {
+    "build:abi:Counter": "npx abi-wan-kanabi --input ../../../target/dev/smartr_Counter.contract_class.json --output ./src/abi/Counter.ts",
+    "build:abi:SimpleAccount": "npx abi-wan-kanabi --input ../../../target/dev/smartr_SimpleAccount.contract_class.json --output ./src/abi/SimpleAccount.ts",
+    "build:abi:SwapRouter": "npx abi-wan-kanabi --input ../../../target/dev/smartr_SwapRouter.contract_class.json --output ./src/abi/SwapRouter.ts",
+    "build:abi:TokenA": "npx abi-wan-kanabi --input ../../../target/dev/smartr_TokenA.contract_class.json --output ./src/abi/TokenA.ts",
+    "build:abi:TokenB": "npx abi-wan-kanabi --input ../../../target/dev/smartr_TokenB.contract_class.json --output ./src/abi/TokenB.ts",
+    "build:abi": "mkdir -p src/abi && npm run build:abi:Counter && npm run build:abi:SimpleAccount && npm run build:abi:SwapRouter && npm run build:abi:TokenA && npm run build:abi:TokenB",
+    "doc": "typedoc && mkdir -p ../../../docs/tests-starknet-helpers && cp -R docs/modules.md docs/classes ../../../docs/tests-starknet-helpers/",
+    "test": "jest --runInBand --verbose"
+  },
+  "author": "0xknwn",
+  "license": "MIT"
+}

@@ -1,12 +1,17 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist"
   },
-  "references": [{ "path": "../../sdks/__tests__/helpers" }],
+  "references": [
+    { "path": "../helpers" },
+    { "path": "../../account" },
+    { "path": "../../module-sessionkey" },
+  ],
   "typedocOptions": {
     "entryPoints": ["src/index.ts"],
     "out": "docs",
     "plugin": "typedoc-plugin-markdown"
-  }}
+  }
+}

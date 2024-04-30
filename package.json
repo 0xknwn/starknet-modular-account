@@ -4,10 +4,8 @@
   "description": "a modular account for starknet",
   "scripts": {
     "build": "tsc --build",
-    "build:abi:FailedAccount": "npx abi-wan-kanabi --input ./target/dev/smartr_FailedAccount.contract_class.json --output ./__integration__/abi/FailedAccount.ts",
-    "build:abi:SessionKeyValidator": "npx abi-wan-kanabi --input ./target/dev/smartr_SessionKeyValidator.contract_class.json --output ./__integration__/abi/SessionKeyValidator.ts",
-    "build:abi": "npm run build:abi:FailedAccount && npm run build:abi:SessionKeyValidator",
     "build:scarb": "scarb build",
+    "clean": "tsc --build --clean",
     "doc": "npm run doc -ws --if-present",
     "mdbook": "mdbook serve --open -d book",
     "resource:scarb": "scarb run resource",
@@ -18,9 +16,11 @@
   "workspaces": [
     "experiments/starknet-failed-account",
     "experiments/starknet-bootstrap-account",
-    "sdks/starknet-test-helpers",
-    "sdks/starknet-account",
-    "sdks/starknet-module-sessionkey"
+    "sdks/__tests__/account",
+    "sdks/__tests__/helpers",
+    "sdks/__tests__/module-sessionkey",
+    "sdks/account",
+    "sdks/module-sessionkey"
   ],
   "devDependencies": {
     "@types/jest": "^29.5.12",
