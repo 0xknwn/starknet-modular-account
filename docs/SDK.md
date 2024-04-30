@@ -13,4 +13,5 @@ part of the integration tests and not yet available on
   - [starknet-test-helpers](./starknet-test-helpers/modules.md) is a set of
     Contracts and Library helpers that are used to test the main modules.
 
-> This section should document should provide simple tutorials about modules.
+> This section provides a set of tutorials about how to use the account and
+> modules .
