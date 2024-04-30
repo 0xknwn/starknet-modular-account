@@ -190,7 +190,7 @@ export class SmartrAccount extends Account {
    * Signs a set of transactions to be executed on the StarkNet network.
    *
    * @param transactions - An array of transactions to be executed.
-   * @param transactionsDetail - Optional object containing additional details for the transactions.
+   * @param details - Optional object containing additional details for the transactions.
    * @returns A Promise that resolves to the signature of the transactions.
    *
    */
@@ -232,7 +232,7 @@ export class SmartrAccount extends Account {
    * parties.
    *
    * @param transactions - An array of transactions to be executed.
-   * @param transactionsDetail - Optional object containing additional details
+   * @param details - Optional object containing additional details
    * for the transactions.
    * @param signature - The signature of the transactions.
    * @returns A Promise that resolves to the transactions invocation response.
