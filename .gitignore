@@ -6,7 +6,7 @@ dist
 *.tsbuildinfo
 /book
 /index.html
-/docs/starknet-test-helpers
+/docs/tests-starknet-helpers
 /docs/starknet-account
 /docs/starknet-module-sessionkey
 /.env.*

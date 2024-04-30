@@ -7,7 +7,7 @@ import {
   Counter,
   counterAddress,
   config,
-} from "starknet-test-helpers";
+} from "tests-starknet-helpers";
 import { failedAccountAddress, deployFailedAccount } from "./failed_account";
 import { Account, RpcProvider } from "starknet";
 
@@ -150,8 +150,9 @@ describe("sessionkey management", () => {
       );
       try {
         const { transaction_hash } = await counterWithFailedAccount.increment();
-        const receipt =
-          await failedAccount.waitForTransaction(transaction_hash);
+        const receipt = await failedAccount.waitForTransaction(
+          transaction_hash
+        );
         expect(true).toBe(false);
       } catch (e) {
         expect(e).toBeDefined();

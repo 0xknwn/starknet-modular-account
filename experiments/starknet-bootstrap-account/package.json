@@ -13,6 +13,6 @@
   "author": "0xknwn",
   "license": "MIT",
   "dependencies": {
-    "starknet-test-helpers": "^0.1.0"
+    "tests-starknet-helpers": "^0.1.0"
   }
 }

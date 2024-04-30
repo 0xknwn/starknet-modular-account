@@ -1,6 +1,6 @@
 import { Account, CallData } from "starknet";
 import { ABI as AccountABI } from "./abi/BootstrapAccount";
-import { accountAddress, deployAccount } from "starknet-test-helpers";
+import { accountAddress, deployAccount } from "tests-starknet-helpers";
 
 /**
  * Generates a Bootstrap account address based on the provided public key.
