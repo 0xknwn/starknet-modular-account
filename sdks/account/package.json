@@ -1,6 +1,6 @@
 {
   "name": "@0xknwn/starknet-modular-account",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,11 +9,9 @@
     "build:abi:SmartrAccount": "npx abi-wan-kanabi --input ../../target/dev/smartr_SmartrAccount.contract_class.json --output ./src/abi/SmartrAccount.ts",
     "build:abi": "mkdir -p src/abi && npm run build:abi:SmartrAccount && npm run build:abi:CoreValidator",
     "build": "tsc --build",
+    "registry": "npm publish --access=public",
     "doc": "typedoc && mkdir -p ../../docs/starknet-account && cp -R docs/modules.md docs/classes ./docs/interfaces ../../docs/starknet-account/"
   },
   "author": "0xknwn",
-  "license": "MIT",
-  "dependencies": {
-    "tests-starknet-helpers": "^0.1.0"
-  }
+  "license": "MIT"
 }
