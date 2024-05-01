@@ -1,6 +1,6 @@
 {
   "name": "starknet-modular-account",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "description": "a modular account for starknet",
   "scripts": {
     "build": "tsc --build",
@@ -8,6 +8,7 @@
     "clean": "tsc --build --clean",
     "doc": "npm run doc -ws --if-present",
     "mdbook": "mdbook serve --open -d book",
+    "registry": "npm run registry -ws --if-present",
     "resource:scarb": "scarb run resource",
     "test:scarb": "scarb run test"
   },

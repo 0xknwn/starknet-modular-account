@@ -1,6 +1,6 @@
 {
   "name": "@0xknwn/starknet-module-sessionkey",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,11 +9,9 @@
     "build:abi:SessionKeyValidator": "npx abi-wan-kanabi --input ../../target/dev/smartr_SessionKeyValidator.contract_class.json --output ./src/abi/SessionKeyValidator.ts",
     "build:abi": "mkdir -p src/abi && npm run build:abi:SessionKeyValidator && npm run build:abi:CoreValidator",
     "doc": "typedoc && mkdir -p ../../docs/starknet-module-sessionkey && cp -R docs/modules.md docs/classes ../../docs/starknet-module-sessionkey/",
+    "registry": "npm publish --access=public",
     "test": "jest --runInBand --verbose"
   },
   "author": "0xknwn",
-  "license": "MIT",
-  "dependencies": {
-    "tests-starknet-helpers": "^0.1.0"
-  }
+  "license": "MIT"
 }
