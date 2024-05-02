@@ -1,13 +1,15 @@
 import {
-  declareClass,
-  classHash,
+  declareClass as declareHelperClass,
+  classHash as helperClassHash,
   testAccounts,
   default_timeout,
-  Counter,
   config,
   SimpleAccountABI,
+  initial_EthTransfer,
 } from "tests-starknet-helpers";
 import {
+  declareClass as declareAccountClass,
+  classHash as accountClassHash,
   SmartrAccount,
   deploySmartrAccount,
   smartrAccountAddress,
@@ -28,8 +30,8 @@ describe("upgrade management", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "SimpleAccount");
-      expect(c.classHash).toEqual(classHash("SimpleAccount"));
+      const c = await declareHelperClass(a, "SimpleAccount");
+      expect(c.classHash).toEqual(helperClassHash("SimpleAccount"));
     },
     default_timeout
   );
@@ -39,8 +41,8 @@ describe("upgrade management", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "CoreValidator");
-      expect(c.classHash).toEqual(classHash("CoreValidator"));
+      const c = await declareAccountClass(a, "CoreValidator");
+      expect(c.classHash).toEqual(accountClassHash("CoreValidator"));
     },
     default_timeout
   );
@@ -50,8 +52,8 @@ describe("upgrade management", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "SmartrAccount");
-      expect(c.classHash).toEqual(classHash("SmartrAccount"));
+      const c = await declareAccountClass(a, "SmartrAccount");
+      expect(c.classHash).toEqual(accountClassHash("SmartrAccount"));
     },
     default_timeout
   );
@@ -64,11 +66,12 @@ describe("upgrade management", () => {
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
       const publicKey = conf.accounts[0].publicKey;
       const privateKey = conf.accounts[0].privateKey;
-      const coreValidatorAddress = classHash("CoreValidator");
+      const coreValidatorAddress = accountClassHash("CoreValidator");
       const accountAddress = await deploySmartrAccount(
         a,
         publicKey,
-        coreValidatorAddress
+        coreValidatorAddress,
+        initial_EthTransfer
       );
       expect(accountAddress).toEqual(
         smartrAccountAddress(publicKey, coreValidatorAddress)
@@ -85,7 +88,7 @@ describe("upgrade management", () => {
       const calldata = new CallData(CoreValidatorABI);
       const data = calldata.compile("get_public_keys", {});
       const c = await smartrAccount.callOnModule(
-        classHash("CoreValidator"),
+        accountClassHash("CoreValidator"),
         "get_public_keys",
         data
       );
@@ -100,7 +103,7 @@ describe("upgrade management", () => {
     "checks the account class hash",
     async () => {
       const c = await smartrAccount.getClassHashAt(smartrAccount.address);
-      expect(c).toEqual(classHash("SmartrAccount"));
+      expect(c).toEqual(accountClassHash("SmartrAccount"));
     },
     default_timeout
   );
@@ -109,7 +112,7 @@ describe("upgrade management", () => {
     "upgrades the account with SimpleAccount",
     async () => {
       const { transaction_hash } = await smartrAccount.upgrade(
-        classHash("SimpleAccount")
+        helperClassHash("SimpleAccount")
       );
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toEqual(true);
@@ -121,7 +124,7 @@ describe("upgrade management", () => {
     "checks the account class hash",
     async () => {
       const c = await smartrAccount.getClassHashAt(smartrAccount.address);
-      expect(c).toEqual(classHash("SimpleAccount"));
+      expect(c).toEqual(helperClassHash("SimpleAccount"));
     },
     default_timeout
   );
@@ -157,7 +160,7 @@ describe("upgrade management", () => {
         smartrAccount
       );
       const call: Call = contract.populate("upgrade", {
-        new_class_hash: classHash("SmartrAccount"),
+        new_class_hash: accountClassHash("SmartrAccount"),
       });
 
       const { transaction_hash } = await a.execute(call);
@@ -171,7 +174,7 @@ describe("upgrade management", () => {
     "checks the account class hash",
     async () => {
       const c = await smartrAccount.getClassHashAt(smartrAccount.address);
-      expect(c).toEqual(classHash("SmartrAccount"));
+      expect(c).toEqual(accountClassHash("SmartrAccount"));
     },
     default_timeout
   );

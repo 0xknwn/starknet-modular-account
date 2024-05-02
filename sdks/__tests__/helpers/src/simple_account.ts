@@ -1,7 +1,6 @@
 import { Account, CallData } from "starknet";
 import { ABI as SimpleAccountABI } from "./abi/SimpleAccount";
 import { accountAddress, deployAccount } from "./contract";
-
 export { SimpleAccountABI };
 
 /**
