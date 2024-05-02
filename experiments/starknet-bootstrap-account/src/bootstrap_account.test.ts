@@ -4,16 +4,14 @@ import {
   testAccounts,
   default_timeout,
   config,
+  initial_EthTransfer,
+  ETH,
 } from "tests-starknet-helpers";
-import {
-  bootstrapAccountAddress,
-  deployBootstrapAccount,
-} from "./bootstrap_account";
-import {
-  classHash as bootstrapClassHash,
-  declareClass as declareBootstrapClass,
-} from "./class";
-import { Account, RpcProvider } from "starknet";
+import { bootstrapAccountAddress } from "./bootstrap_account";
+import { classHash, declareClass as declareBootstrapClass } from "./class";
+import { deployAccount } from "./contract";
+import { Account, RpcProvider, CallData } from "starknet";
+import { ABI as AccountABI } from "./abi/BootstrapAccount";
 
 describe("bootstrapping an account", () => {
   let env: string;
@@ -40,35 +38,56 @@ describe("bootstrapping an account", () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
       const c = await declareBootstrapClass(a, "BootstrapAccount");
-      expect(c.classHash).toEqual(bootstrapClassHash("BootstrapAccount"));
+      expect(c.classHash).toEqual(classHash("BootstrapAccount"));
     },
     default_timeout
   );
 
   it(
-    "deploys the account",
+    "sends ETH to the BootstrapAccount address",
+    async () => {
+      const conf = config(env);
+      const sender = testAccounts(conf)[0];
+      const p = new RpcProvider({ nodeUrl: conf.providerURL });
+      const publicKey = conf.accounts[0].publicKey;
+      const privateKey = conf.accounts[0].privateKey;
+      const address = bootstrapAccountAddress(
+        publicKey,
+        helperClassHash("SimpleAccount")
+      );
+      const { transaction_hash } = await ETH(sender).transfer(
+        address,
+        initial_EthTransfer
+      );
+      let receipt = await sender.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toEqual(true);
+      account = new Account(p, address, privateKey);
+    },
+    default_timeout
+  );
+
+  it(
+    "deploys the BootstrapAccount account",
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
       const publicKey = conf.accounts[0].publicKey;
-      const c = await deployBootstrapAccount(
-        a,
+      const calldata = new CallData(AccountABI).compile("constructor", {
+        public_key: publicKey,
+        target_class: helperClassHash("SimpleAccount"),
+      });
+
+      const address = await deployAccount(
+        account,
+        "BootstrapAccount",
         publicKey,
-        helperClassHash("SimpleAccount")
+        calldata
       );
-      expect(c).toEqual(
+      expect(address).toEqual(
         bootstrapAccountAddress(
           conf.accounts[0].publicKey,
           helperClassHash("SimpleAccount")
         )
-      );
-      account = new Account(
-        new RpcProvider({ nodeUrl: conf.providerURL }),
-        bootstrapAccountAddress(
-          conf.accounts[0].publicKey,
-          helperClassHash("SimpleAccount")
-        ),
-        conf.accounts[0].privateKey
       );
     },
     default_timeout

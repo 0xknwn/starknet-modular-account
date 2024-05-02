@@ -21,8 +21,9 @@ export class ERC20 extends Contract {
    * @param address - The address to retrieve the balance for.
    * @returns A promise that resolves to the balance of the address as a bigint.
    */
-  async balanceOf(address: string): Promise<bigint> {
-    return this.balanceOf(address);
+  async balanceOf(address: string) {
+    const ETH = new Contract(ERC20ABI, address, this.providerOrAccount);
+    return await ETH.call("balance_of", [address]);
   }
 
   /**

@@ -1,5 +1,5 @@
-import { RpcProvider, Account } from "starknet";
-import { ERC20 } from "./erc20";
+import { RpcProvider, Account, Contract } from "starknet";
+import { ABI as ERC20ABI } from "./abi/ERC20";
 
 const ethAddress =
   "0x49D36570D4E46F48E99674BD3FCC84644DDD6B96F7C741B1562B82F9E004DC7";
@@ -21,11 +21,11 @@ export const udcAddress = BigInt(
  * @returns An instance of the STARK contract.
  */
 export const STRK = (provider: RpcProvider | Account) =>
-  new ERC20(strkAddress, provider);
+  new Contract(ERC20ABI, strkAddress, provider);
 
 /**
 /**
  * Represents an instance of the ETH contract.
  */
 export const ETH = (provider: RpcProvider | Account) =>
-  new ERC20(ethAddress, provider);
+  new Contract(ERC20ABI, ethAddress, provider);

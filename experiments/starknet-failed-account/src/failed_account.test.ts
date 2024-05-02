@@ -7,11 +7,14 @@ import {
   Counter,
   counterAddress,
   config,
+  ETH,
+  initial_EthTransfer,
 } from "tests-starknet-helpers";
 import {
   classHash as failedClassHash,
   declareClass as declareFailedClass,
 } from "./class";
+import { deployAccount } from "./contract";
 import { failedAccountAddress, deployFailedAccount } from "./failed_account";
 import { Account, RpcProvider } from "starknet";
 
@@ -61,18 +64,38 @@ describe("sessionkey management", () => {
   );
 
   it(
-    "deploys the account",
+    "sends ETH to the FailedAccount address",
+    async () => {
+      const conf = config(env);
+      const sender = testAccounts(conf)[0];
+      const p = new RpcProvider({ nodeUrl: conf.providerURL });
+      const publicKey = conf.accounts[0].publicKey;
+      const privateKey = conf.accounts[0].privateKey;
+      const address = failedAccountAddress(publicKey);
+      const { transaction_hash } = await ETH(sender).transfer(
+        address,
+        initial_EthTransfer
+      );
+      let receipt = await sender.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toEqual(true);
+      failedAccount = new Account(p, address, privateKey);
+    },
+    default_timeout
+  );
+
+  it(
+    "deploys the FailedAccount account",
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
       const publicKey = conf.accounts[0].publicKey;
-      const c = await deployFailedAccount(a, publicKey);
-      expect(c).toEqual(failedAccountAddress(conf.accounts[0].publicKey));
-      failedAccount = new Account(
-        new RpcProvider({ nodeUrl: conf.providerURL }),
-        failedAccountAddress(conf.accounts[0].publicKey),
-        conf.accounts[0].privateKey
+      const address = await deployAccount(
+        failedAccount,
+        "FailedAccount",
+        publicKey,
+        [publicKey]
       );
+      expect(address).toEqual(failedAccount.address);
     },
     default_timeout
   );

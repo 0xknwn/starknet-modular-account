@@ -1,6 +1,4 @@
-import { classHash } from "./class";
-import { accountAddress, deployAccount } from "./contract";
-import { Call, CallData, Account, Contract } from "starknet";
+import { Call, Account, Contract } from "starknet";
 import { ABI as SmartrAccountABI } from "./abi/SmartrAccount";
 import {
   SignerInterface,
@@ -11,7 +9,6 @@ import {
   num,
   TransactionType,
   selector,
-  Uint256,
 } from "starknet";
 import type {
   ProviderOptions,
@@ -69,51 +66,6 @@ export const signatureToHexArray = (
       "Signature need to be weierstrass.SignatureType or an array for custom"
     );
   }
-};
-
-/**
- * Generates a smartr account address based on the provided public key and
- * core validator class hash.
- * @param public_key - The public key associated with the account.
- * @param core_validator - the core validator module class hash.
- * @returns The generated account address.
- */
-export const smartrAccountAddress = (
-  public_key: string,
-  core_validator: string
-): string => {
-  const calldata = new CallData(SmartrAccountABI).compile("constructor", {
-    public_key,
-    core_validator,
-  });
-  return accountAddress("SmartrAccount", public_key, calldata);
-};
-
-/**
- * Deploys a smartr account on the StarkNet network.
- *
- * @param deployerAccount - The account used to deploy the smartr account.
- * @param public_key - The public key associated with the account.
- * @param core_validator - the core validator module class hash.
- * @returns A promise that resolves to the deployed smartr account.
- */
-export const deploySmartrAccount = async (
-  deployerAccount: Account,
-  public_key: string,
-  core_validator: string,
-  initial_EthTransfer: Uint256
-) => {
-  const callData = new CallData(SmartrAccountABI).compile("constructor", {
-    public_key,
-    core_validator,
-  });
-  return await deployAccount(
-    deployerAccount,
-    "SmartrAccount",
-    public_key,
-    callData,
-    initial_EthTransfer
-  );
 };
 
 /**

@@ -12,6 +12,9 @@
     "registry": "npm publish --access=public",
     "doc": "typedoc && mkdir -p ../../docs/starknet-account && cp -R docs/modules.md docs/classes ./docs/interfaces ../../docs/starknet-account/"
   },
+  "peerDependencies": {
+    "starknet": "6.8.0"
+  },
   "author": "0xknwn",
   "license": "MIT"
 }
