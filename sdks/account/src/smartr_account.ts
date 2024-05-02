@@ -1,3 +1,4 @@
+import { classHash } from "./class";
 import { accountAddress, deployAccount } from "./contract";
 import { Call, CallData, Account, Contract } from "starknet";
 import { ABI as SmartrAccountABI } from "./abi/SmartrAccount";

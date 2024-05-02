@@ -8,7 +8,7 @@ import {
   counterAddress,
   config,
   CounterABI,
-  initial_EthTransfer
+  initial_EthTransfer,
 } from "tests-starknet-helpers";
 import {
   declareClass as declareAccountClass,

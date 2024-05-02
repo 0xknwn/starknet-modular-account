@@ -1,7 +1,6 @@
-import { Contract, Account, hash, ec, Uint256 } from "starknet";
+import { Account, hash, ec, Uint256 } from "starknet";
 import { udcAddress, ETH } from "./protocol";
-import { type Abi } from "starknet";
-
+import { classHash } from "./class";
 /**
  * Calculates the contract address for a given contract name, deployer address,
  * and constructor call data.
@@ -35,53 +34,17 @@ export const contractAddress = async (
  * `scarb build` command at the root of the project.
  */
 export const accountAddress = (
-  class_hash: string,
+  accountName: "SmartrAccount",
   publicKey: string,
   constructorCallData: string[]
 ): string => {
+  const class_hash = classHash(accountName);
   return hash.calculateContractAddressFromHash(
     publicKey,
     class_hash,
     constructorCallData,
     0
   );
-};
-
-/**
- * Deploys a contract on Starknet.
- *
- * @param class_hash - The class hash of the contract.
- * @param deployerAccount - The account that will deploy the contract.
- * @param constructorCalldata - The constructor calldata for the contract.
- * @returns A Promise that resolves to a Contract instance representing the deployed contract.
- */
-export const deployContract = async (
-  class_hash: string,
-  ABI: Abi,
-  deployerAccount: Account,
-  constructorCalldata: any[]
-): Promise<Contract> => {
-  // check if the contract is already deployed and if it has been, return the
-  // contract instance, otherwise continue with the deployment
-  try {
-    let address = await contractAddress(
-      class_hash,
-      deployerAccount.address,
-      constructorCalldata
-    );
-    const v = await deployerAccount.getContractVersion(address);
-    if (v.cairo == "1" && v.compiler == "2") {
-      return new Contract(ABI, address, deployerAccount);
-    }
-  } catch (e) {}
-
-  const deployResponse = await deployerAccount.deployContract({
-    classHash: class_hash,
-    constructorCalldata: constructorCalldata,
-    salt: "0x0",
-  });
-  await deployerAccount.waitForTransaction(deployResponse.transaction_hash);
-  return new Contract(ABI, deployResponse.contract_address, deployerAccount);
 };
 
 /**
@@ -96,25 +59,28 @@ export const deployContract = async (
  */
 export const deployAccount = async (
   deployerAccount: Account,
-  class_hash: string,
+  accountName: "SmartrAccount",
   publicKey: string,
   constructorCalldata: any[],
   initial_EthTransfer: Uint256
 ) => {
   const computedAccountAddress = accountAddress(
-    class_hash,
+    accountName,
     publicKey,
     constructorCalldata
   );
+
   // check if the account is already deployed and if it has been, return the
   // account instance, otherwise continue with the deployment
   try {
     const deployedClassHash = await deployerAccount.getClassHashAt(
       computedAccountAddress
     );
-    if (deployedClassHash !== class_hash) {
+    if (deployedClassHash !== classHash(accountName)) {
       throw new Error(
-        `Class mismatch: expect ${class_hash}, got ${deployedClassHash}`
+        `Class mismatch: expect ${classHash(
+          accountName
+        )}, got ${deployedClassHash}`
       );
     }
     return computedAccountAddress;
@@ -135,7 +101,7 @@ export const deployAccount = async (
   // deploy the account and return the associated address
   const { transaction_hash: tx, contract_address: account_address } =
     await deployerAccount.deployAccount({
-      classHash: class_hash,
+      classHash: classHash(accountName),
       constructorCalldata,
       addressSalt: publicKey,
     });
