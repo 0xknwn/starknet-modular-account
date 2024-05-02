@@ -1,6 +1,6 @@
 {
   "name": "starknet-modular-account",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "a modular account for starknet",
   "scripts": {
     "artifacts:artifacts": "cp -R target/dev/smartr_CoreValidator.* target/dev/smartr_SimpleValidator.* target/dev/smartr_SmartrAccount.* target/dev/smartr_SessionKeyValidator.* artifacts/.",
@@ -39,7 +39,8 @@
     "artifacts:tokenb": "npm run artifacts:tokenb:compile && npm run artifacts:tokenb:contract",
     "artifacts": "npm run artifacts:artifacts && npm run artifacts:bootstrap && npm run artifacts:corevalidator && npm run artifacts:counter && npm run artifacts:failedaccount && npm run artifacts:sessionkeyvalidator && npm run artifacts:simpleaccount && npm run artifacts:smartraccount && npm run artifacts:swaprouter && npm run artifacts:tokena && npm run artifacts:tokenb",
     "build": "tsc --build",
-    "build:scarb": "scarb build && npm run artifacts",
+    "build:abi": "npm run build:abi -ws --if-present",
+    "build:scarb": "scarb build",
     "clean": "tsc --build --clean",
     "doc": "npm run doc -ws --if-present",
     "mdbook": "mdbook serve --open -d book",
