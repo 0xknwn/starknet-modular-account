@@ -9,7 +9,6 @@
     "build:abi:SmartrAccount": "npx abi-wan-kanabi --input ../../target/dev/smartr_SmartrAccount.contract_class.json --output ./src/abi/SmartrAccount.ts",
     "build:abi": "mkdir -p src/abi && npm run build:abi:SmartrAccount && npm run build:abi:CoreValidator",
     "build": "tsc --build",
-    "copy:artifacts": "mkdir -p dist && cp -R ./src/artifacts dist/",
     "registry": "npm publish --access=public",
     "doc": "typedoc && mkdir -p ../../docs/starknet-account && cp -R docs/modules.md docs/classes ./docs/interfaces ../../docs/starknet-account/"
   },

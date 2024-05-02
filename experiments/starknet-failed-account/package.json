@@ -7,7 +7,6 @@
   "scripts": {
     "build:abi:FailedAccount": "npx abi-wan-kanabi --input ../../target/dev/smartr_FailedAccount.contract_class.json --output ./src/abi/FailedAccount.ts",
     "build:abi": "mkdir -p src/abi && npm run build:abi:FailedAccount",
-    "copy:artifacts": "mkdir -p dist && cp -R ./src/artifacts dist/",
     "doc": "typedoc",
     "test": "jest --runInBand"
   },

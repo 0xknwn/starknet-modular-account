@@ -19,7 +19,13 @@ export const classHash = (
     | "TokenA"
     | "TokenB" = "Counter"
 ) => {
-  const f = path.join("artifacts", `smartr_${className}.contract_class.json`);
+  const f = path.join(
+    "src",
+    "artifacts",
+    `smartr_${className}.contract_class.json`
+  );
+  const v = fs.realpathSync(".");
+  console.log(v);
   const contract: CompiledContract = json.parse(
     fs.readFileSync(f).toString("ascii")
   );
@@ -61,7 +67,7 @@ export const declareClass = async (
   const compiledTestSierra = json.parse(
     fs
       .readFileSync(
-        path.join("artifacts", `smartr_${className}.contract_class.json`)
+        path.join("src", "artifacts", `smartr_${className}.contract_class.json`)
       )
       .toString("ascii")
   );
@@ -69,6 +75,7 @@ export const declareClass = async (
     fs
       .readFileSync(
         path.join(
+          "src",
           "artifacts",
           `smartr_${className}.compiled_contract_class.json`
         )

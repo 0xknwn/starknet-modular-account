@@ -12,7 +12,6 @@
     "build:abi:TokenA": "npx abi-wan-kanabi --input ../../../target/dev/smartr_TokenA.contract_class.json --output ./src/abi/TokenA.ts",
     "build:abi:TokenB": "npx abi-wan-kanabi --input ../../../target/dev/smartr_TokenB.contract_class.json --output ./src/abi/TokenB.ts",
     "build:abi": "mkdir -p src/abi && npm run build:abi:Counter && npm run build:abi:SimpleAccount && npm run build:abi:SwapRouter && npm run build:abi:TokenA && npm run build:abi:TokenB",
-    "copy:artifacts": "mkdir -p dist && cp -R ./src/artifacts dist/",
     "doc": "typedoc && mkdir -p ../../../docs/tests-starknet-helpers && cp -R docs/modules.md docs/classes ../../../docs/tests-starknet-helpers/",
     "test": "jest --runInBand --verbose"
   },

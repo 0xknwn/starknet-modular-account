@@ -13,9 +13,8 @@ import { hash, json, CompiledContract, Account } from "starknet";
  */
 export const classHash = (className: "SessionKeyValidator"): string => {
   const f = `smartr_${className}.contract_class.json`;
-  const artifactsPath = fs.realpathSync("artifacts");
   const contract: CompiledContract = json.parse(
-    fs.readFileSync(path.join(artifactsPath, f)).toString("ascii")
+    fs.readFileSync(path.join("src", "artifacts", f)).toString("ascii")
   );
   return hash.computeContractClassHash(contract);
 };
@@ -50,7 +49,7 @@ export const declareClass = async (
   const compiledTestSierra = json.parse(
     fs
       .readFileSync(
-        path.join("artifacts", `smartr_${className}.contract_class.json`)
+        path.join("src", "artifacts", `smartr_${className}.contract_class.json`)
       )
       .toString("ascii")
   );
@@ -58,6 +57,7 @@ export const declareClass = async (
     fs
       .readFileSync(
         path.join(
+          "src",
           "artifacts",
           `smartr_${className}.compiled_contract_class.json`
         )

@@ -8,7 +8,6 @@
     "build:abi:CoreValidator": "npx abi-wan-kanabi --input ../../target/dev/smartr_CoreValidator.contract_class.json --output ./src/abi/CoreValidator.ts",
     "build:abi:SessionKeyValidator": "npx abi-wan-kanabi --input ../../target/dev/smartr_SessionKeyValidator.contract_class.json --output ./src/abi/SessionKeyValidator.ts",
     "build:abi": "mkdir -p src/abi && npm run build:abi:SessionKeyValidator && npm run build:abi:CoreValidator",
-    "copy:artifacts": "mkdir -p dist && cp -R ./src/artifacts dist/",
     "doc": "typedoc && mkdir -p ../../docs/starknet-module-sessionkey && cp -R docs/modules.md docs/classes ../../docs/starknet-module-sessionkey/",
     "registry": "npm publish --access=public",
     "test": "jest --runInBand --verbose"

@@ -9,7 +9,7 @@
     "artifacts:account": "cp target/dev/smartr_CoreValidator.* target/dev/smartr_SimpleValidator.* target/dev/smartr_SmartrAccount.* sdks/account/src/artifacts/",
     "artifacts:sessionkey": "cp target/dev/smartr_SessionKeyValidator.* sdks/module-sessionkey/src/artifacts/",
     "artifacts:tests": "cp target/dev/smartr_Counter.* target/dev/smartr_SimpleAccount.* target/dev/smartr_SwapRouter.* target/dev/smartr_TokenA.* target/dev/smartr_TokenB.* sdks/__tests__/helpers/src/artifacts/",
-    "build": "npm run copy:artifacts -ws --if-present && tsc --build",
+    "build": "tsc --build",
     "build:scarb": "scarb build && npm run artifacts",
     "clean": "tsc --build --clean",
     "doc": "npm run doc -ws --if-present",
