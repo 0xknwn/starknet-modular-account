@@ -43,6 +43,7 @@
     "clean": "tsc --build --clean",
     "doc": "npm run doc -ws --if-present",
     "mdbook": "mdbook serve --open -d book",
+    "prepare": "node scripts/update-versions.js",
     "registry": "npm run registry -ws --if-present",
     "resource:scarb": "scarb run resource",
     "test:scarb": "scarb run test"
