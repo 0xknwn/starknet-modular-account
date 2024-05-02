@@ -20,11 +20,11 @@
     - [SmartrAccount class](./starknet-account/classes/SmartrAccount.md)
     - [AccountModuleInterface interface](./starknet-account/interfaces/AccountModuleInterface.md)
   - [@0xknwn/starknet-module-sessionkey](./starknet-module-sessionkey/modules.md)
+    - [PolicyManager class](./starknet-module-sessionkey/classes/PolicyManager.md)
     - [SessionKeyGrantor class](./starknet-module-sessionkey/classes/SessionKeyGrantor.md)
     - [SessionKeyModule class](./starknet-module-sessionkey/classes/SessionKeyModule.md)
   - [tests-starknet-helpers](./tests-starknet-helpers/modules.md)
     - [Counter class](./tests-starknet-helpers/classes/Counter.md)
-    - [ERC20 class](./tests-starknet-helpers/classes/ERC20.md)
     - [SwapRouter class](./tests-starknet-helpers/classes/SwapRouter.md)
 - [How to contribute]()
   - [Contributing](./CONTRIBUTING.md)
@@ -32,4 +32,3 @@
   - [Bibliography](./BIBLIOGRAPHY.md)
   - [Code of Conduct](./CODE-OF-CONDUCT.md)
   - [MIT License](./LICENSE.md)
-

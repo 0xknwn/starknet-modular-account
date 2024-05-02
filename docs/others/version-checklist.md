@@ -43,7 +43,7 @@ git fetch -p
 git checkout develop
 git pull
 git reset --hard v0.1.5
-npm run register
+npm run registry
 ```
 
 10. review the documentation and make sure it is still up to date
