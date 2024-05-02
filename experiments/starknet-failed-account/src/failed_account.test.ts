@@ -1,6 +1,6 @@
 import {
-  declareClass,
-  classHash,
+  declareClass as declareHelperClass,
+  classHash as helperClassHash,
   deployCounter,
   testAccounts,
   default_timeout,
@@ -8,6 +8,10 @@ import {
   counterAddress,
   config,
 } from "tests-starknet-helpers";
+import {
+  classHash as failedClassHash,
+  declareClass as declareFailedClass,
+} from "./class";
 import { failedAccountAddress, deployFailedAccount } from "./failed_account";
 import { Account, RpcProvider } from "starknet";
 
@@ -25,8 +29,8 @@ describe("sessionkey management", () => {
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
-      const c = await declareClass(account, "Counter");
-      expect(c.classHash).toEqual(classHash("Counter"));
+      const c = await declareHelperClass(account, "Counter");
+      expect(c.classHash).toEqual(helperClassHash("Counter"));
     },
     default_timeout
   );
@@ -50,8 +54,8 @@ describe("sessionkey management", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "FailedAccount");
-      expect(c.classHash).toEqual(classHash("FailedAccount"));
+      const c = await declareFailedClass(a, "FailedAccount");
+      expect(c.classHash).toEqual(failedClassHash("FailedAccount"));
     },
     default_timeout
   );

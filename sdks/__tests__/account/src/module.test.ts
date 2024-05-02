@@ -1,11 +1,12 @@
 import {
-  declareClass,
-  classHash,
   testAccounts,
   default_timeout,
   config,
+  initial_EthTransfer,
 } from "tests-starknet-helpers";
 import {
+  declareClass as declareAccountClass,
+  classHash as accountClassHash,
   SmartrAccount,
   deploySmartrAccount,
   smartrAccountAddress,
@@ -26,8 +27,8 @@ describe("module management", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "CoreValidator");
-      expect(c.classHash).toEqual(classHash("CoreValidator"));
+      const c = await declareAccountClass(a, "CoreValidator");
+      expect(c.classHash).toEqual(accountClassHash("CoreValidator"));
     },
     default_timeout
   );
@@ -37,8 +38,8 @@ describe("module management", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "SmartrAccount");
-      expect(c.classHash).toEqual(classHash("SmartrAccount"));
+      const c = await declareAccountClass(a, "SmartrAccount");
+      expect(c.classHash).toEqual(accountClassHash("SmartrAccount"));
     },
     default_timeout
   );
@@ -51,11 +52,12 @@ describe("module management", () => {
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
       const publicKey = conf.accounts[0].publicKey;
       const privateKey = conf.accounts[0].privateKey;
-      const coreValidatorAddress = classHash("CoreValidator");
+      const coreValidatorAddress = accountClassHash("CoreValidator");
       const accountAddress = await deploySmartrAccount(
         a,
         publicKey,
-        coreValidatorAddress
+        coreValidatorAddress,
+        initial_EthTransfer
       );
       expect(accountAddress).toEqual(
         smartrAccountAddress(publicKey, coreValidatorAddress)
@@ -73,7 +75,7 @@ describe("module management", () => {
       const calldata = new CallData(CoreValidatorABI);
       const data = calldata.compile("get_public_keys", {});
       const c = await smartrAccount.callOnModule(
-        classHash("CoreValidator"),
+        accountClassHash("CoreValidator"),
         "get_public_keys",
         data
       );
@@ -101,8 +103,8 @@ describe("module management", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "SimpleValidator");
-      expect(c.classHash).toEqual(classHash("SimpleValidator"));
+      const c = await declareAccountClass(a, "SimpleValidator");
+      expect(c.classHash).toEqual(accountClassHash("SimpleValidator"));
     },
     default_timeout
   );
@@ -114,7 +116,7 @@ describe("module management", () => {
         throw new Error("SmartrAccount is not deployed");
       }
       const { transaction_hash } = await smartrAccount.addModule(
-        classHash("SimpleValidator")
+        accountClassHash("SimpleValidator")
       );
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
@@ -128,7 +130,7 @@ describe("module management", () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
       }
-      const output = await smartrAccount.isModule(classHash("SimpleValidator"));
+      const output = await smartrAccount.isModule(accountClassHash("SimpleValidator"));
       expect(output).toBe(true);
     },
     default_timeout
@@ -141,7 +143,7 @@ describe("module management", () => {
         throw new Error("SmartrAccount is not deployed");
       }
       try {
-        await smartrAccount.addModule(classHash("SimpleValidator"));
+        await smartrAccount.addModule(accountClassHash("SimpleValidator"));
         expect(true).toBe(false);
       } catch (e) {
         expect(e).toBeDefined();
@@ -157,7 +159,7 @@ describe("module management", () => {
         throw new Error("SmartrAccount is not deployed");
       }
       const { transaction_hash } = await smartrAccount.removeModule(
-        classHash("SimpleValidator")
+        accountClassHash("SimpleValidator")
       );
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
@@ -171,7 +173,7 @@ describe("module management", () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
       }
-      const output = await smartrAccount.isModule(classHash("SimpleValidator"));
+      const output = await smartrAccount.isModule(accountClassHash("SimpleValidator"));
       expect(output).toBe(false);
     },
     default_timeout

@@ -1,6 +1,6 @@
 import {
-  classHash,
-  declareClass,
+  declareClass as declareHelperClass,
+  classHash as helperClassHash,
   config,
   testAccounts,
   tokenAAddress,
@@ -12,8 +12,11 @@ import {
   SwapRouter,
   ERC20,
   default_timeout,
+  initial_EthTransfer,
 } from "tests-starknet-helpers";
 import {
+  declareClass as declareAccountClass,
+  classHash as accountClassHash,
   SmartrAccount,
   deploySmartrAccount,
   smartrAccountAddress,
@@ -23,6 +26,8 @@ import { cairo, RpcProvider, CallData } from "starknet";
 import {
   SessionKeyModule,
   SessionKeyGrantor,
+  declareClass as declareSessionkeyClass,
+  classHash as sessionkeyClassHash,
 } from "@0xknwn/starknet-module-sessionkey";
 import { CoreValidatorABI } from "@0xknwn/starknet-modular-account";
 
@@ -61,8 +66,8 @@ describe("sessionkey swap", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "SwapRouter");
-      expect(c.classHash).toEqual(classHash("SwapRouter"));
+      const c = await declareHelperClass(a, "SwapRouter");
+      expect(c.classHash).toEqual(helperClassHash("SwapRouter"));
     },
     default_timeout
   );
@@ -85,8 +90,8 @@ describe("sessionkey swap", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "TokenA");
-      expect(c.classHash).toEqual(classHash("TokenA"));
+      const c = await declareHelperClass(a, "TokenA");
+      expect(c.classHash).toEqual(helperClassHash("TokenA"));
     },
     default_timeout
   );
@@ -113,8 +118,8 @@ describe("sessionkey swap", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "TokenB");
-      expect(c.classHash).toEqual(classHash("TokenB"));
+      const c = await declareHelperClass(a, "TokenB");
+      expect(c.classHash).toEqual(helperClassHash("TokenB"));
     },
     default_timeout
   );
@@ -173,8 +178,8 @@ describe("sessionkey swap", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "CoreValidator");
-      expect(c.classHash).toEqual(classHash("CoreValidator"));
+      const c = await declareAccountClass(a, "CoreValidator");
+      expect(c.classHash).toEqual(accountClassHash("CoreValidator"));
     },
     default_timeout
   );
@@ -184,8 +189,8 @@ describe("sessionkey swap", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "SmartrAccount");
-      expect(c.classHash).toEqual(classHash("SmartrAccount"));
+      const c = await declareAccountClass(a, "SmartrAccount");
+      expect(c.classHash).toEqual(accountClassHash("SmartrAccount"));
     },
     default_timeout
   );
@@ -198,11 +203,12 @@ describe("sessionkey swap", () => {
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
       const publicKey = conf.accounts[0].publicKey;
       const privateKey = conf.accounts[0].privateKey;
-      const coreValidatorAddress = classHash("CoreValidator");
+      const coreValidatorAddress = accountClassHash("CoreValidator");
       const accountAddress = await deploySmartrAccount(
         a,
         publicKey,
-        coreValidatorAddress
+        coreValidatorAddress,
+        initial_EthTransfer
       );
       expect(accountAddress).toEqual(
         smartrAccountAddress(publicKey, coreValidatorAddress)
@@ -219,7 +225,7 @@ describe("sessionkey swap", () => {
       const calldata = new CallData(CoreValidatorABI);
       const data = calldata.compile("get_public_keys", {});
       const c = await smartrAccount.callOnModule(
-        classHash("CoreValidator"),
+        accountClassHash("CoreValidator"),
         "get_public_keys",
         data
       );
@@ -236,7 +242,7 @@ describe("sessionkey swap", () => {
       const calldata = new CallData(CoreValidatorABI);
       const data = calldata.compile("get_threshold", {});
       const c = await smartrAccount.callOnModule(
-        classHash("CoreValidator"),
+        accountClassHash("CoreValidator"),
         "get_threshold",
         data
       );
@@ -252,8 +258,8 @@ describe("sessionkey swap", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "SessionKeyValidator");
-      expect(c.classHash).toEqual(classHash("SessionKeyValidator"));
+      const c = await declareSessionkeyClass(a, "SessionKeyValidator");
+      expect(c.classHash).toEqual(sessionkeyClassHash("SessionKeyValidator"));
     },
     default_timeout
   );
@@ -265,7 +271,7 @@ describe("sessionkey swap", () => {
         throw new Error("SmartrAccount is not deployed");
       }
       const { transaction_hash } = await smartrAccount.addModule(
-        classHash("SessionKeyValidator")
+        sessionkeyClassHash("SessionKeyValidator")
       );
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
@@ -280,7 +286,7 @@ describe("sessionkey swap", () => {
         throw new Error("SmartrAccount is not deployed");
       }
       const output = await smartrAccount.isModule(
-        classHash("SessionKeyValidator")
+        sessionkeyClassHash("SessionKeyValidator")
       );
       expect(output).toBe(true);
     },
@@ -299,16 +305,16 @@ describe("sessionkey swap", () => {
       sessionKeyModule = new SessionKeyModule(
         conf.accounts[1].publicKey,
         smartrAccount.address,
-        classHash("SessionKeyValidator"),
+        sessionkeyClassHash("SessionKeyValidator"),
         connectedChain,
         `0x${next_timestamp.toString(16)}`
       );
-      let r = await sessionKeyModule.request(classHash("CoreValidator"));
+      let r = await sessionKeyModule.request(accountClassHash("CoreValidator"));
       expect(r.hash).toBe(
         hash_auth_message(
           smartrAccount.address,
-          classHash("SessionKeyValidator"),
-          classHash("CoreValidator"),
+          sessionkeyClassHash("SessionKeyValidator"),
+          accountClassHash("CoreValidator"),
           conf.accounts[1].publicKey,
           `0x${next_timestamp.toString(16)}`,
           "0x0",
@@ -326,7 +332,7 @@ describe("sessionkey swap", () => {
     }
     const conf = config(env);
     let grantor = new SessionKeyGrantor(
-      classHash("CoreValidator"),
+      accountClassHash("CoreValidator"),
       conf.accounts[0].privateKey
     );
     let signature = await grantor.sign(sessionKeyModule);
@@ -417,7 +423,7 @@ describe("sessionkey swap", () => {
         throw new Error("SmartrAccount is not deployed");
       }
       const { transaction_hash } = await smartrAccount.removeModule(
-        classHash("SessionKeyValidator")
+        sessionkeyClassHash("SessionKeyValidator")
       );
       const receipt = await smartrAccount.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
@@ -432,7 +438,7 @@ describe("sessionkey swap", () => {
         throw new Error("SmartrAccount is not deployed");
       }
       const output = await smartrAccount.isModule(
-        classHash("SessionKeyValidator")
+        sessionkeyClassHash("SessionKeyValidator")
       );
       expect(output).toBe(false);
     },

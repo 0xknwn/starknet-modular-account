@@ -1,17 +1,18 @@
 import {
-  declareClass,
-  classHash,
-  deployCounter,
+  declareClass as declareHelperClass,
+  classHash as helperClassHash,
   testAccounts,
   default_timeout,
-  Counter,
-  counterAddress,
   config,
 } from "tests-starknet-helpers";
 import {
   bootstrapAccountAddress,
   deployBootstrapAccount,
 } from "./bootstrap_account";
+import {
+  classHash as bootstrapClassHash,
+  declareClass as declareBootstrapClass,
+} from "./class";
 import { Account, RpcProvider } from "starknet";
 
 describe("bootstrapping an account", () => {
@@ -27,8 +28,8 @@ describe("bootstrapping an account", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "SimpleAccount");
-      expect(c.classHash).toEqual(classHash("SimpleAccount"));
+      const c = await declareHelperClass(a, "SimpleAccount");
+      expect(c.classHash).toEqual(helperClassHash("SimpleAccount"));
     },
     default_timeout
   );
@@ -38,8 +39,8 @@ describe("bootstrapping an account", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "BootstrapAccount");
-      expect(c.classHash).toEqual(classHash("BootstrapAccount"));
+      const c = await declareBootstrapClass(a, "BootstrapAccount");
+      expect(c.classHash).toEqual(bootstrapClassHash("BootstrapAccount"));
     },
     default_timeout
   );
@@ -53,19 +54,19 @@ describe("bootstrapping an account", () => {
       const c = await deployBootstrapAccount(
         a,
         publicKey,
-        classHash("SimpleAccount")
+        helperClassHash("SimpleAccount")
       );
       expect(c).toEqual(
         bootstrapAccountAddress(
           conf.accounts[0].publicKey,
-          classHash("SimpleAccount")
+          helperClassHash("SimpleAccount")
         )
       );
       account = new Account(
         new RpcProvider({ nodeUrl: conf.providerURL }),
         bootstrapAccountAddress(
           conf.accounts[0].publicKey,
-          classHash("SimpleAccount")
+          helperClassHash("SimpleAccount")
         ),
         conf.accounts[0].privateKey
       );
@@ -81,10 +82,10 @@ describe("bootstrapping an account", () => {
       const accountClass = await a.getClassHashAt(
         bootstrapAccountAddress(
           conf.accounts[0].publicKey,
-          classHash("SimpleAccount")
+          helperClassHash("SimpleAccount")
         )
       );
-      expect(accountClass).toEqual(classHash("SimpleAccount"));
+      expect(accountClass).toEqual(helperClassHash("SimpleAccount"));
     },
     default_timeout
   );

@@ -1,11 +1,6 @@
 import fs from "fs";
-import {
-  hash,
-  json,
-  type CompiledSierra,
-  CompiledContract,
-  Account,
-} from "starknet";
+import path from "path";
+import { hash, json, CompiledContract, Account } from "starknet";
 
 /**
  * Computes the hash of the requested class that is part of the
@@ -16,8 +11,15 @@ import {
  * `scarb build` command at the root of the project.
  *
  */
-export const classHash = (className: string): string => {
-  const f = `../../../target/dev/smartr_${className}.contract_class.json`;
+export const classHash = (
+  className:
+    | "Counter"
+    | "SimpleAccount"
+    | "SwapRouter"
+    | "TokenA"
+    | "TokenB" = "Counter"
+) => {
+  const f = path.join("artifacts", `smartr_${className}.contract_class.json`);
   const contract: CompiledContract = json.parse(
     fs.readFileSync(f).toString("ascii")
   );
@@ -40,28 +42,36 @@ export const classHash = (className: string): string => {
  */
 export const declareClass = async (
   account: Account,
-  className: string = "SmartrAccount"
+  className:
+    | "Counter"
+    | "SimpleAccount"
+    | "SwapRouter"
+    | "TokenA"
+    | "TokenB" = "Counter"
 ) => {
-  const AccountClassHash = classHash(className);
+  const HelperClassHash = classHash(className);
 
   try {
-    await account.getClass(AccountClassHash);
+    await account.getClass(HelperClassHash);
     return {
-      classHash: AccountClassHash,
+      classHash: HelperClassHash,
     };
   } catch (e) {}
 
   const compiledTestSierra = json.parse(
     fs
       .readFileSync(
-        `../../../target/dev/smartr_${className}.contract_class.json`
+        path.join("artifacts", `smartr_${className}.contract_class.json`)
       )
       .toString("ascii")
   );
   const compiledTestCasm = json.parse(
     fs
       .readFileSync(
-        `../../../target/dev/smartr_${className}.compiled_contract_class.json`
+        path.join(
+          "artifacts",
+          `smartr_${className}.compiled_contract_class.json`
+        )
       )
       .toString("ascii")
   );

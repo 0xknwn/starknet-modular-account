@@ -1,4 +1,4 @@
-import { accountAddress, deployAccount } from "tests-starknet-helpers";
+import { accountAddress, deployAccount } from "./contract";
 import { Call, CallData, Account, Contract } from "starknet";
 import { ABI as SmartrAccountABI } from "./abi/SmartrAccount";
 import {
@@ -10,6 +10,7 @@ import {
   num,
   TransactionType,
   selector,
+  Uint256,
 } from "starknet";
 import type {
   ProviderOptions,
@@ -98,7 +99,8 @@ export const smartrAccountAddress = (
 export const deploySmartrAccount = async (
   deployerAccount: Account,
   public_key: string,
-  core_validator: string
+  core_validator: string,
+  initial_EthTransfer: Uint256
 ) => {
   const callData = new CallData(SmartrAccountABI).compile("constructor", {
     public_key,
@@ -108,7 +110,8 @@ export const deploySmartrAccount = async (
     deployerAccount,
     "SmartrAccount",
     public_key,
-    callData
+    callData,
+    initial_EthTransfer
   );
 };
 

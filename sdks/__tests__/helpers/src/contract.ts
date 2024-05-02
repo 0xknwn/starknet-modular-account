@@ -1,6 +1,5 @@
 import { classHash } from "./class";
 import { Contract, Account, hash, ec } from "starknet";
-import { ABI as CounterABI } from "./abi/Counter";
 import { udcAddress, ETH } from "./natives";
 import { initial_EthTransfer } from "./parameters";
 import { type Abi } from "starknet";
@@ -14,7 +13,7 @@ import { type Abi } from "starknet";
  * @returns The contract address.
  */
 export const contractAddress = async (
-  contractName: string,
+  contractName: "Counter" | "SwapRouter" | "TokenA" | "TokenB",
   deployerAddress: string,
   constructorCallData: string[]
 ): Promise<string> => {
@@ -39,7 +38,7 @@ export const contractAddress = async (
  * `scarb build` command at the root of the project.
  */
 export const accountAddress = (
-  accountName: string,
+  accountName: "SimpleAccount",
   publicKey: string,
   constructorCallData: string[]
 ): string => {
@@ -61,7 +60,7 @@ export const accountAddress = (
  * @returns A Promise that resolves to a Contract instance representing the deployed contract.
  */
 export const deployContract = async (
-  contractName: string,
+  contractName: "Counter" | "SwapRouter" | "TokenA" | "TokenB" = "Counter",
   ABI: Abi,
   deployerAccount: Account,
   constructorCalldata: any[]
@@ -87,11 +86,7 @@ export const deployContract = async (
     salt: "0x0",
   });
   await deployerAccount.waitForTransaction(deployResponse.transaction_hash);
-  return new Contract(
-    ABI,
-    deployResponse.contract_address,
-    deployerAccount
-  );
+  return new Contract(ABI, deployResponse.contract_address, deployerAccount);
 };
 
 /**
@@ -106,7 +101,7 @@ export const deployContract = async (
  */
 export const deployAccount = async (
   deployerAccount: Account,
-  accountName: string,
+  accountName: "SimpleAccount",
   publicKey: string,
   constructorCalldata: any[]
 ) => {

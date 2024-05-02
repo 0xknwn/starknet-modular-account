@@ -1,6 +1,6 @@
 import { Account, CallData } from "starknet";
 import { ABI as AccountABI } from "./abi/FailedAccount";
-import { accountAddress, deployAccount } from "tests-starknet-helpers";
+import { accountAddress, deployAccount } from "./contract";
 
 /**
  * Generates a failed account address based on the provided public key.

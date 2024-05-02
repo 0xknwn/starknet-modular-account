@@ -1,6 +1,6 @@
 import {
-  declareClass,
-  classHash,
+  declareClass as declareHelperClass,
+  classHash as helperClassHash,
   deployCounter,
   testAccounts,
   default_timeout,
@@ -8,8 +8,11 @@ import {
   counterAddress,
   config,
   CounterABI,
+  initial_EthTransfer
 } from "tests-starknet-helpers";
 import {
+  declareClass as declareAccountClass,
+  classHash as accountClassHash,
   SmartrAccount,
   deploySmartrAccount,
   smartrAccountAddress,
@@ -32,8 +35,8 @@ describe("multiple signature", () => {
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
-      const c = await declareClass(account, "Counter");
-      expect(c.classHash).toEqual(classHash("Counter"));
+      const c = await declareHelperClass(account, "Counter");
+      expect(c.classHash).toEqual(helperClassHash("Counter"));
     },
     default_timeout
   );
@@ -57,8 +60,8 @@ describe("multiple signature", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "CoreValidator");
-      expect(c.classHash).toEqual(classHash("CoreValidator"));
+      const c = await declareAccountClass(a, "CoreValidator");
+      expect(c.classHash).toEqual(accountClassHash("CoreValidator"));
     },
     default_timeout
   );
@@ -68,8 +71,8 @@ describe("multiple signature", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "SmartrAccount");
-      expect(c.classHash).toEqual(classHash("SmartrAccount"));
+      const c = await declareAccountClass(a, "SmartrAccount");
+      expect(c.classHash).toEqual(accountClassHash("SmartrAccount"));
     },
     default_timeout
   );
@@ -82,11 +85,12 @@ describe("multiple signature", () => {
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
       const publicKey = conf.accounts[0].publicKey;
       const privateKey = conf.accounts[0].privateKey;
-      const coreValidatorAddress = classHash("CoreValidator");
+      const coreValidatorAddress = accountClassHash("CoreValidator");
       const accountAddress = await deploySmartrAccount(
         a,
         publicKey,
-        coreValidatorAddress
+        coreValidatorAddress,
+        initial_EthTransfer
       );
       expect(accountAddress).toEqual(
         smartrAccountAddress(publicKey, coreValidatorAddress)
@@ -103,7 +107,7 @@ describe("multiple signature", () => {
       const calldata = new CallData(CoreValidatorABI);
       const data = calldata.compile("get_public_keys", {});
       const c = await smartrAccount.callOnModule(
-        classHash("CoreValidator"),
+        accountClassHash("CoreValidator"),
         "get_public_keys",
         data
       );
@@ -120,7 +124,7 @@ describe("multiple signature", () => {
       const calldata = new CallData(CoreValidatorABI);
       const data = calldata.compile("get_threshold", {});
       const c = await smartrAccount.callOnModule(
-        classHash("CoreValidator"),
+        accountClassHash("CoreValidator"),
         "get_threshold",
         data
       );
@@ -207,7 +211,7 @@ describe("multiple signature", () => {
       const calldata = new CallData(CoreValidatorABI);
       const data = calldata.compile("get_threshold", {});
       const c = await smartrAccount.callOnModule(
-        classHash("CoreValidator"),
+        accountClassHash("CoreValidator"),
         "get_threshold",
         data
       );
@@ -227,7 +231,7 @@ describe("multiple signature", () => {
         new_public_key: conf.accounts[1].publicKey,
       });
       const { transaction_hash } = await smartrAccount.executeOnModule(
-        classHash("CoreValidator"),
+        accountClassHash("CoreValidator"),
         "add_public_key",
         data
       );
@@ -250,7 +254,7 @@ describe("multiple signature", () => {
       const calldata = new CallData(CoreValidatorABI);
       const data = calldata.compile("get_public_keys", {});
       const c = await smartrAccount.callOnModule(
-        classHash("CoreValidator"),
+        accountClassHash("CoreValidator"),
         "get_public_keys",
         data
       );
@@ -334,7 +338,7 @@ describe("multiple signature", () => {
         new_threshold: 2,
       });
       const { transaction_hash } = await smartrAccount.executeOnModule(
-        classHash("CoreValidator"),
+        accountClassHash("CoreValidator"),
         "set_threshold",
         data
       );
@@ -354,7 +358,7 @@ describe("multiple signature", () => {
         new_public_key: conf.accounts[2].publicKey,
       });
       const transactions = await smartrAccount.executeOnModule(
-        classHash("CoreValidator"),
+        accountClassHash("CoreValidator"),
         "add_public_key",
         data,
         false
@@ -383,7 +387,7 @@ describe("multiple signature", () => {
       const calldata = new CallData(CoreValidatorABI);
       const data = calldata.compile("get_public_keys", {});
       const c = await smartrAccount.callOnModule(
-        classHash("CoreValidator"),
+        accountClassHash("CoreValidator"),
         "get_public_keys",
         data
       );
@@ -481,7 +485,7 @@ describe("multiple signature", () => {
         new_threshold: 1,
       });
       const transactions = await smartrAccount.executeOnModule(
-        classHash("CoreValidator"),
+        accountClassHash("CoreValidator"),
         "set_threshold",
         data,
         false
@@ -509,7 +513,7 @@ describe("multiple signature", () => {
       const calldata = new CallData(CoreValidatorABI);
       const data = calldata.compile("get_threshold", {});
       const c = await smartrAccount.callOnModule(
-        classHash("CoreValidator"),
+        accountClassHash("CoreValidator"),
         "get_threshold",
         data
       );
@@ -545,7 +549,7 @@ describe("multiple signature", () => {
         old_public_key: conf.accounts[1].publicKey,
       });
       const { transaction_hash } = await smartrAccount.executeOnModule(
-        classHash("CoreValidator"),
+        accountClassHash("CoreValidator"),
         "remove_public_key",
         data
       );
@@ -561,7 +565,7 @@ describe("multiple signature", () => {
       const calldata = new CallData(CoreValidatorABI);
       const data = calldata.compile("get_public_keys", {});
       const c = await smartrAccount.callOnModule(
-        classHash("CoreValidator"),
+        accountClassHash("CoreValidator"),
         "get_public_keys",
         data
       );
@@ -582,7 +586,7 @@ describe("multiple signature", () => {
         old_public_key: conf.accounts[2].publicKey,
       });
       const { transaction_hash } = await smartrAccount.executeOnModule(
-        classHash("CoreValidator"),
+        accountClassHash("CoreValidator"),
         "remove_public_key",
         data
       );
@@ -598,7 +602,7 @@ describe("multiple signature", () => {
       const calldata = new CallData(CoreValidatorABI);
       const data = calldata.compile("get_public_keys", {});
       const c = await smartrAccount.callOnModule(
-        classHash("CoreValidator"),
+        accountClassHash("CoreValidator"),
         "get_public_keys",
         data
       );

@@ -7,6 +7,7 @@
   "scripts": {
     "build:abi:BootstrapAccount": "npx abi-wan-kanabi --input ../../target/dev/smartr_BootstrapAccount.contract_class.json --output ./src/abi/BootstrapAccount.ts",
     "build:abi": "mkdir -p src/abi && npm run build:abi:BootstrapAccount",
+    "copy:artifacts": "mkdir -p dist && cp -R ./src/artifacts dist/",
     "doc": "typedoc",
     "test": "jest --runInBand"
   },
