@@ -1,8 +1,9 @@
 import { Contract, Call, Account, CallData } from "starknet";
 import { ABI as SwapRouterABI } from "./abi/SwapRouter";
 import { contractAddress, deployContract } from "./contract";
-import { ERC20 } from "./tokens";
 import { type Uint256 } from "starknet";
+import { ABI as TokenAABI } from "./abi/TokenA";
+import { ABI as TokenBABI } from "./abi/TokenB";
 /**
  * Retrieves the swap router address from its deployer and owner.
  * @param deployerAddress - The address of the deployer.
@@ -119,7 +120,7 @@ export class SwapRouter extends Contract {
     if (!a.address) {
       throw new Error("Account address is undefined");
     }
-    const tokenAContract = new ERC20(tokenAAddress, a);
+    const tokenAContract = new Contract(TokenAABI, tokenAAddress, a);
     let approveCall: Call = tokenAContract.populate("approve", {
       spender: this.address,
       amount,
@@ -143,7 +144,7 @@ export class SwapRouter extends Contract {
    */
   async swap_minimum_at(tokenAAddress: string, rate: string, amount: Uint256) {
     const a = this.providerOrAccount as Account;
-    const tokenAContract = new ERC20(tokenAAddress, a);
+    const tokenAContract = new Contract(TokenAABI, tokenAAddress, a);
     let approveCall: Call = tokenAContract.populate("approve", {
       spender: a.address,
       amount,
@@ -169,7 +170,7 @@ export class SwapRouter extends Contract {
    */
   async swap_maximum_at(tokenAAddress: string, rate: string, amount: Uint256) {
     const a = this.providerOrAccount as Account;
-    const tokenAContract = new ERC20(tokenAAddress, a);
+    const tokenAContract = new Contract(TokenAABI, tokenAAddress, a);
     let approveCall: Call = tokenAContract.populate("approve", {
       spender: a.address,
       amount,

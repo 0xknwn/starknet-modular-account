@@ -7,17 +7,18 @@ import {
   tokenBAddress,
   deployTokenB,
 } from "./tokens";
+import { ABI as TokenAABI } from "./abi/TokenA";
+import { ABI as TokenBABI } from "./abi/TokenB";
 import { swapRouterAddress, deploySwapRouter } from "./swap_router";
 import { default_timeout } from "./parameters";
-import { ec, hash, cairo, uint256 } from "starknet";
+import { ec, hash, cairo, Contract } from "starknet";
 import { SwapRouter } from "./swap_router";
-import { ERC20 } from "./tokens";
 
 describe("swap router", () => {
   let env: string;
   let altProviderURL: string;
   let swapRouterContract: SwapRouter;
-  let tokenA: ERC20, tokenB: ERC20;
+  let tokenA: Contract, tokenB: Contract;
   let tokenAInitialBalance: bigint, tokenBInitialBalance: bigint;
   beforeAll(() => {
     env = "devnet";
@@ -68,7 +69,8 @@ describe("swap router", () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
       const c = await deployTokenA(a, swapRouterContract.address, a.address);
-      tokenA = new ERC20(
+      tokenA = new Contract(
+        TokenAABI,
         await tokenAAddress(a.address, swapRouterContract.address, a.address),
         a
       );
@@ -96,7 +98,8 @@ describe("swap router", () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
       const c = await deployTokenB(a, swapRouterContract.address, a.address);
-      tokenB = new ERC20(
+      tokenB = new Contract(
+        TokenBABI,
         await tokenBAddress(a.address, swapRouterContract.address, a.address),
         a
       );

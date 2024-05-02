@@ -1,5 +1,5 @@
 import fs from "fs";
-import { RpcProvider, Account, Contract, Call } from "starknet";
+import { RpcProvider, Account } from "starknet";
 
 /**
  * Represents the configuration of an account.

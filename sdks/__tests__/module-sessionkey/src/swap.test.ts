@@ -10,19 +10,19 @@ import {
   swapRouterAddress,
   deploySwapRouter,
   SwapRouter,
-  ERC20,
   default_timeout,
   initial_EthTransfer,
+  ETH,
 } from "tests-starknet-helpers";
 import {
   declareClass as declareAccountClass,
   classHash as accountClassHash,
   SmartrAccount,
-  deploySmartrAccount,
-  smartrAccountAddress,
+  deployAccount,
+  accountAddress,
   hash_auth_message,
 } from "@0xknwn/starknet-modular-account";
-import { cairo, RpcProvider, CallData } from "starknet";
+import { cairo, RpcProvider, CallData, Contract } from "starknet";
 import {
   SessionKeyModule,
   SessionKeyGrantor,
@@ -36,7 +36,7 @@ describe("sessionkey swap", () => {
   let altProviderURL: string;
   let swapRouterContract: SwapRouter;
   let swapRouterWithSmartAccountContract: SwapRouter;
-  let tokenA: ERC20, tokenB: ERC20;
+  let tokenA: Contract, tokenB: Contract;
   let tokenAInitialBalance: bigint, tokenBInitialBalance: bigint;
   let smartrAccount: SmartrAccount;
   let sessionKeyModule: SessionKeyModule;
@@ -102,10 +102,7 @@ describe("sessionkey swap", () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
       const c = await deployTokenA(a, swapRouterContract.address, a.address);
-      tokenA = new ERC20(
-        await tokenAAddress(a.address, swapRouterContract.address, a.address),
-        a
-      );
+      tokenA = c;
       expect(c.address).toEqual(
         await tokenAAddress(a.address, swapRouterContract.address, a.address)
       );
@@ -130,10 +127,7 @@ describe("sessionkey swap", () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
       const c = await deployTokenB(a, swapRouterContract.address, a.address);
-      tokenB = new ERC20(
-        await tokenBAddress(a.address, swapRouterContract.address, a.address),
-        a
-      );
+      tokenB = c;
       expect(c.address).toEqual(
         await tokenBAddress(a.address, swapRouterContract.address, a.address)
       );
@@ -196,24 +190,47 @@ describe("sessionkey swap", () => {
   );
 
   it(
-    "deploys a SmartrAccount account",
+    "sends ETH to the account address",
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
+      const sender = testAccounts(conf)[0];
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
       const publicKey = conf.accounts[0].publicKey;
       const privateKey = conf.accounts[0].privateKey;
-      const coreValidatorAddress = accountClassHash("CoreValidator");
-      const accountAddress = await deploySmartrAccount(
-        a,
+      const coreValidatorClassHash = accountClassHash("CoreValidator");
+      const address = accountAddress("SmartrAccount", publicKey, [
+        coreValidatorClassHash,
         publicKey,
-        coreValidatorAddress,
+      ]);
+      const { transaction_hash } = await ETH(sender).transfer(
+        address,
         initial_EthTransfer
       );
-      expect(accountAddress).toEqual(
-        smartrAccountAddress(publicKey, coreValidatorAddress)
+      let receipt = await sender.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toEqual(true);
+      smartrAccount = new SmartrAccount(p, address, privateKey);
+    },
+    default_timeout
+  );
+
+  it(
+    "deploys a SmartrAccount account",
+    async () => {
+      const conf = config(env);
+      const publicKey = conf.accounts[0].publicKey;
+      const coreValidatorClassHash = accountClassHash("CoreValidator");
+      const address = await deployAccount(
+        smartrAccount,
+        "SmartrAccount",
+        publicKey,
+        [coreValidatorClassHash, publicKey]
       );
-      smartrAccount = new SmartrAccount(p, accountAddress, privateKey);
+      expect(address).toEqual(
+        accountAddress("SmartrAccount", publicKey, [
+          coreValidatorClassHash,
+          publicKey,
+        ])
+      );
     },
     default_timeout
   );

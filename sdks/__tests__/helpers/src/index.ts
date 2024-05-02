@@ -7,3 +7,4 @@ export * from "./simple_account";
 export * from "./swap_router";
 export * from "./tokens";
 export * from "./utils";
+export { ETH } from "./natives";

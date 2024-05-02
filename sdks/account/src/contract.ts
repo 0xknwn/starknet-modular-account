@@ -1,29 +1,7 @@
-import { Account, hash, ec, Uint256 } from "starknet";
-import { udcAddress, ETH } from "./protocol";
+import { Account, Contract, hash, num } from "starknet";
 import { classHash } from "./class";
-/**
- * Calculates the contract address for a given contract name, deployer address,
- * and constructor call data.
- * @param class_hash - The class hash of the contract.
- * @param deployerAddress - The address of the deployer.
- * @param constructorCallData - The constructor call data.
- * @returns The contract address.
- */
-export const contractAddress = async (
-  class_hash: string,
-  deployerAddress: string,
-  constructorCallData: string[]
-): Promise<string> => {
-  // see https://community.starknet.io/t/universal-deployer-contract-proposal/1864
-  // to understand the calculateContractAddressFromHash function works with the UDC
-  return hash.calculateContractAddressFromHash(
-    ec.starkCurve.pedersen(deployerAddress, 0),
-    class_hash,
-    constructorCallData,
-    udcAddress
-  );
-};
-
+import { ABI as ERC20ABI } from "./abi/ERC20";
+import { ethAddress } from "./natives";
 /**
  * Calculates the account address for a given account name, public key, and constructor call data.
  * @param class_hash - The class hash of the contract.
@@ -61,14 +39,18 @@ export const deployAccount = async (
   deployerAccount: Account,
   accountName: "SmartrAccount",
   publicKey: string,
-  constructorCalldata: any[],
-  initial_EthTransfer: Uint256
+  constructorCalldata: any[]
 ) => {
   const computedAccountAddress = accountAddress(
     accountName,
     publicKey,
     constructorCalldata
   );
+  if (computedAccountAddress !== deployerAccount.address) {
+    throw new Error(
+      "the deployer account should match the account being deployed"
+    );
+  }
 
   // check if the account is already deployed and if it has been, return the
   // account instance, otherwise continue with the deployment
@@ -86,15 +68,13 @@ export const deployAccount = async (
     return computedAccountAddress;
   } catch (e) {}
 
-  // transfer some eth to the account
-  const { transaction_hash } = await ETH(deployerAccount).transfer(
-    computedAccountAddress,
-    initial_EthTransfer
-  );
-  let receipt = await deployerAccount.waitForTransaction(transaction_hash);
-  if (!receipt.isSuccess()) {
+  // Check if the account has enough eth to deploy the account
+  const eth = new Contract(ERC20ABI, ethAddress, deployerAccount);
+  const result = await eth.call("balance_of", [computedAccountAddress]);
+  let balance = num.toBigInt(result.toString());
+  if (balance <= 10n ** 15n) {
     throw new Error(
-      `Failed to transfer eth to account: ${receipt.statusReceipt}`
+      `Insufficient balance to deploy account: ${balance.toString()}`
     );
   }
 
@@ -105,7 +85,7 @@ export const deployAccount = async (
       constructorCalldata,
       addressSalt: publicKey,
     });
-  receipt = await deployerAccount.waitForTransaction(tx);
+  const receipt = await deployerAccount.waitForTransaction(tx);
   if (!receipt.isSuccess()) {
     throw new Error(`Failed to deploy account: ${receipt.status}`);
   }
