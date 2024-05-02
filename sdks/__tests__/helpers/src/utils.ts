@@ -31,7 +31,19 @@ export type Config = {
  * @returns The configuration object.
  */
 export const config = (env: string = "devnet"): Config => {
-  return JSON.parse(fs.readFileSync(`../../../.env.${env}.json`, "utf-8"));
+  try {
+    return JSON.parse(fs.readFileSync(`../../../.env.${env}.json`, "utf-8"));
+  } catch (e) {
+    try {
+      return JSON.parse(fs.readFileSync(`../../.env.${env}.json`, "utf-8"));
+    } catch (e) {
+      try {
+        return JSON.parse(fs.readFileSync(`../.env.${env}.json`, "utf-8"));
+      } catch (e) {
+        return JSON.parse(fs.readFileSync(`./.env.${env}.json`, "utf-8"));
+      }
+    }
+  }
 };
 
 /**
