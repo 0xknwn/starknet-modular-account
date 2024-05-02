@@ -1,6 +1,14 @@
-import fs from "fs";
-import path from "path";
 import { hash, json, CompiledContract, Account } from "starknet";
+import { data as CounterContract } from "./artifacts/Counter-contract";
+import { data as CounterCompiled } from "./artifacts/Counter-compiled";
+import { data as SimpleAccountContract } from "./artifacts/SimpleAccount-contract";
+import { data as SimpleAccountCompiled } from "./artifacts/SimpleAccount-compiled";
+import { data as SwapRouterContract } from "./artifacts/SwapRouter-contract";
+import { data as SwapRouterCompiled } from "./artifacts/SwapRouter-compiled";
+import { data as TokenAContract } from "./artifacts/TokenA-contract";
+import { data as TokenACompiled } from "./artifacts/TokenA-compiled";
+import { data as TokenBContract } from "./artifacts/TokenB-contract";
+import { data as TokenBCompiled } from "./artifacts/TokenB-compiled";
 
 /**
  * Computes the hash of the requested class that is part of the
@@ -19,17 +27,32 @@ export const classHash = (
     | "TokenA"
     | "TokenB" = "Counter"
 ) => {
-  const f = path.join(
-    "src",
-    "artifacts",
-    `smartr_${className}.contract_class.json`
+  let contract: string = "";
+  switch (className) {
+    case "Counter":
+      contract = CounterContract;
+      break;
+    case "SimpleAccount":
+      contract = SimpleAccountContract;
+      break;
+    case "SwapRouter":
+      contract = SwapRouterContract;
+      break;
+    case "TokenA":
+      contract = TokenAContract;
+      break;
+    case "TokenB":
+      contract = TokenBContract;
+      break;
+    default:
+      throw new Error("Invalid class name");
+  }
+
+  const loadedContract: CompiledContract = json.parse(
+    Buffer.from(contract, "base64").toString("ascii")
   );
-  const v = fs.realpathSync(".");
-  console.log(v);
-  const contract: CompiledContract = json.parse(
-    fs.readFileSync(f).toString("ascii")
-  );
-  return hash.computeContractClassHash(contract);
+  const { computeContractClassHash } = hash;
+  return computeContractClassHash(loadedContract);
 };
 
 /**
@@ -64,23 +87,53 @@ export const declareClass = async (
     };
   } catch (e) {}
 
+  let contract: string = "";
+  switch (className) {
+    case "Counter":
+      contract = CounterContract;
+      break;
+    case "SimpleAccount":
+      contract = SimpleAccountContract;
+      break;
+    case "SwapRouter":
+      contract = SwapRouterContract;
+      break;
+    case "TokenA":
+      contract = TokenAContract;
+      break;
+    case "TokenB":
+      contract = TokenBContract;
+      break;
+    default:
+      throw new Error("Invalid class name");
+  }
+
+  let compiled: string = "";
+  switch (className) {
+    case "Counter":
+      compiled = CounterCompiled;
+      break;
+    case "SimpleAccount":
+      compiled = SimpleAccountCompiled;
+      break;
+    case "SwapRouter":
+      compiled = SwapRouterCompiled;
+      break;
+    case "TokenA":
+      compiled = TokenACompiled;
+      break;
+    case "TokenB":
+      compiled = TokenBCompiled;
+      break;
+    default:
+      throw new Error("Invalid class name");
+  }
+
   const compiledTestSierra = json.parse(
-    fs
-      .readFileSync(
-        path.join("src", "artifacts", `smartr_${className}.contract_class.json`)
-      )
-      .toString("ascii")
+    Buffer.from(contract, "base64").toString("ascii")
   );
   const compiledTestCasm = json.parse(
-    fs
-      .readFileSync(
-        path.join(
-          "src",
-          "artifacts",
-          `smartr_${className}.compiled_contract_class.json`
-        )
-      )
-      .toString("ascii")
+    Buffer.from(compiled, "base64").toString("ascii")
   );
   const declare = await account.declare({
     contract: compiledTestSierra,

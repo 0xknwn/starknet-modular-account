@@ -1,7 +1,6 @@
-import fs from "fs";
-import path from "path";
 import { hash, json, CompiledContract, Account } from "starknet";
-
+import { data as FailedAccountContract } from "./artifacts/FailedAccount-contract";
+import { data as FailedAccountCompiled } from "./artifacts/FailedAccount-compiled";
 /**
  * Computes the hash of the requested class that is part of the
  * 0xknwn/starknet-modular-account project.
@@ -12,16 +11,14 @@ import { hash, json, CompiledContract, Account } from "starknet";
  *
  */
 export const classHash = (className: "FailedAccount") => {
-  const f = `smartr_${className}.contract_class.json`;
-  const contract: CompiledContract = json.parse(
-    fs.readFileSync(path.join("src", "artifacts", f)).toString("ascii")
-  );
+  const f = Buffer.from(FailedAccountContract, "base64");
+  const contract: CompiledContract = json.parse(f.toString("ascii"));
   return hash.computeContractClassHash(contract);
 };
 
 /**
  * If not already declared, declare the requested class from the
- * 0xknwn/bootstrap-account project to the Starknet network used by the
+ * 0xknwn/Failed-account project to the Starknet network used by the
  * provided account.
  * @param account The starknet.js account used to declare the class.
  * @param className The name of the class to declare. Defaults to "SmartrAccount".
@@ -47,22 +44,10 @@ export const declareClass = async (
   } catch (e) {}
 
   const compiledTestSierra = json.parse(
-    fs
-      .readFileSync(
-        path.join("src", "artifacts", `smartr_${className}.contract_class.json`)
-      )
-      .toString("ascii")
+    Buffer.from(FailedAccountContract, "base64").toString("ascii")
   );
   const compiledTestCasm = json.parse(
-    fs
-      .readFileSync(
-        path.join(
-          "src",
-          "artifacts",
-          `smartr_${className}.compiled_contract_class.json`
-        )
-      )
-      .toString("ascii")
+    Buffer.from(FailedAccountCompiled, "base64").toString("ascii")
   );
   const declare = await account.declare({
     contract: compiledTestSierra,

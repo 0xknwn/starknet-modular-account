@@ -1,6 +1,6 @@
-import fs from "fs";
-import path from "path";
 import { hash, json, CompiledContract, Account } from "starknet";
+import { data as SessionKeyValidatorContract } from "./artifacts/SessionKeyValidator-contract";
+import { data as SessionKeyValidatorCompiled } from "./artifacts/SessionKeyValidator-compiled";
 
 /**
  * Computes the hash of the requested class that is part of the
@@ -11,12 +11,21 @@ import { hash, json, CompiledContract, Account } from "starknet";
  * `scarb build` command at the root of the project.
  *
  */
-export const classHash = (className: "SessionKeyValidator"): string => {
-  const f = `smartr_${className}.contract_class.json`;
-  const contract: CompiledContract = json.parse(
-    fs.readFileSync(path.join("src", "artifacts", f)).toString("ascii")
+export const classHash = (
+  className: "SessionKeyValidator" = "SessionKeyValidator"
+) => {
+  let contract: string = "";
+  switch (className) {
+    case "SessionKeyValidator":
+      contract = SessionKeyValidatorContract;
+      break;
+    default:
+      throw new Error("Invalid class name");
+  }
+  const loadedContract: CompiledContract = json.parse(
+    Buffer.from(contract, "base64").toString("ascii")
   );
-  return hash.computeContractClassHash(contract);
+  return hash.computeContractClassHash(loadedContract);
 };
 
 /**
@@ -37,32 +46,38 @@ export const declareClass = async (
   account: Account,
   className: "SessionKeyValidator" = "SessionKeyValidator"
 ) => {
-  const AccountClassHash = classHash(className);
+  const HelperClassHash = classHash(className);
 
   try {
-    await account.getClass(AccountClassHash);
+    await account.getClass(HelperClassHash);
     return {
-      classHash: AccountClassHash,
+      classHash: HelperClassHash,
     };
   } catch (e) {}
 
+  let contract: string = "";
+  switch (className) {
+    case "SessionKeyValidator":
+      contract = SessionKeyValidatorContract;
+      break;
+    default:
+      throw new Error("Invalid class name");
+  }
+
+  let compiled: string = "";
+  switch (className) {
+    case "SessionKeyValidator":
+      compiled = SessionKeyValidatorCompiled;
+      break;
+    default:
+      throw new Error("Invalid class name");
+  }
+
   const compiledTestSierra = json.parse(
-    fs
-      .readFileSync(
-        path.join("src", "artifacts", `smartr_${className}.contract_class.json`)
-      )
-      .toString("ascii")
+    Buffer.from(contract, "base64").toString("ascii")
   );
   const compiledTestCasm = json.parse(
-    fs
-      .readFileSync(
-        path.join(
-          "src",
-          "artifacts",
-          `smartr_${className}.compiled_contract_class.json`
-        )
-      )
-      .toString("ascii")
+    Buffer.from(compiled, "base64").toString("ascii")
   );
   const declare = await account.declare({
     contract: compiledTestSierra,

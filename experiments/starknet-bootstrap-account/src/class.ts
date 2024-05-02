@@ -1,7 +1,6 @@
-import fs from "fs";
-import path from "path";
 import { hash, json, CompiledContract, Account } from "starknet";
-
+import { data as BootstrapAccountContract } from "./artifacts/BootstrapAccount-contract";
+import { data as BootstrapAccountCompiled } from "./artifacts/BootstrapAccount-compiled";
 /**
  * Computes the hash of the requested class that is part of the
  * 0xknwn/starknet-modular-account project.
@@ -12,10 +11,8 @@ import { hash, json, CompiledContract, Account } from "starknet";
  *
  */
 export const classHash = (className: "BootstrapAccount") => {
-  const f = `smartr_${className}.contract_class.json`;
-  const contract: CompiledContract = json.parse(
-    fs.readFileSync(path.join("src", "artifacts", f)).toString("ascii")
-  );
+  const f = Buffer.from(BootstrapAccountContract, "base64");
+  const contract: CompiledContract = json.parse(f.toString("ascii"));
   return hash.computeContractClassHash(contract);
 };
 
@@ -47,21 +44,10 @@ export const declareClass = async (
   } catch (e) {}
 
   const compiledTestSierra = json.parse(
-    fs
-      .readFileSync(
-        path.join("src", "artifacts", `smartr_${className}.contract_class.json`)
-      )
-      .toString("ascii")
+    Buffer.from(BootstrapAccountContract, "base64").toString("ascii")
   );
   const compiledTestCasm = json.parse(
-    fs
-      .readFileSync(
-        path.join(
-          "src", "artifacts",
-          `smartr_${className}.compiled_contract_class.json`
-        )
-      )
-      .toString("ascii")
+    Buffer.from(BootstrapAccountCompiled, "base64").toString("ascii")
   );
   const declare = await account.declare({
     contract: compiledTestSierra,

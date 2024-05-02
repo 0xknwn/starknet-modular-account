@@ -28,7 +28,7 @@ describe("counter contract (helper)", () => {
     default_timeout
   );
 
-  it.skip(
+  it(
     "deploys the Counter contract",
     async () => {
       const conf = config(env);
@@ -42,7 +42,7 @@ describe("counter contract (helper)", () => {
     default_timeout
   );
 
-  it.skip(
+  it(
     "increments the counter",
     async () => {
       const conf = config(env);
@@ -58,7 +58,7 @@ describe("counter contract (helper)", () => {
     default_timeout
   );
 
-  it.skip(
+  it(
     "reads the counter",
     async () => {
       const conf = config(env);
@@ -72,7 +72,7 @@ describe("counter contract (helper)", () => {
     default_timeout
   );
 
-  it.skip(
+  it(
     "increments the counter by 5 and 6",
     async () => {
       const conf = config(env);
@@ -90,7 +90,7 @@ describe("counter contract (helper)", () => {
     default_timeout
   );
 
-  it.skip(
+  it(
     "reads the counter again",
     async () => {
       const conf = config(env);
@@ -104,7 +104,7 @@ describe("counter contract (helper)", () => {
     default_timeout
   );
 
-  it.skip(
+  it(
     "resets the counter",
     async () => {
       const conf = config(env);
@@ -120,7 +120,7 @@ describe("counter contract (helper)", () => {
     default_timeout
   );
 
-  it.skip(
+  it(
     "reads the counter again",
     async () => {
       const conf = config(env);
@@ -134,7 +134,7 @@ describe("counter contract (helper)", () => {
     default_timeout
   );
 
-  it.skip(
+  it(
     "increments the counter from another account",
     async () => {
       const conf = config(env);
@@ -150,7 +150,7 @@ describe("counter contract (helper)", () => {
     default_timeout
   );
 
-  it.skip(
+  it(
     "reads the counter",
     async () => {
       const conf = config(env);
@@ -164,7 +164,7 @@ describe("counter contract (helper)", () => {
     default_timeout
   );
 
-  it.skip(
+  it(
     "resets the counter and fails",
     async () => {
       const conf = config(env);
@@ -185,7 +185,7 @@ describe("counter contract (helper)", () => {
     default_timeout
   );
 
-  it.skip(
+  it(
     "reads the counter again",
     async () => {
       const conf = config(env);
@@ -199,7 +199,7 @@ describe("counter contract (helper)", () => {
     default_timeout
   );
 
-  it.skip(
+  it(
     "increments the counter with an alt provider URL",
     async () => {
       const conf = config(env);
@@ -221,7 +221,7 @@ describe("counter contract (helper)", () => {
     default_timeout
   );
 
-  it.skip(
+  it(
     "reads the counter from an alt. provider URL",
     async () => {
       const conf = config(env);
