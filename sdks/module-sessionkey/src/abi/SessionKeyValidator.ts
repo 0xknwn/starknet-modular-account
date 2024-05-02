@@ -132,6 +132,49 @@ export const ABI = [
     ]
   },
   {
+    "type": "impl",
+    "name": "ConfigureImpl",
+    "interface_name": "smartr::module::validator::IConfigure"
+  },
+  {
+    "type": "interface",
+    "name": "smartr::module::validator::IConfigure",
+    "items": [
+      {
+        "type": "function",
+        "name": "call",
+        "inputs": [
+          {
+            "name": "call",
+            "type": "core::starknet::account::Call"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::array::Array::<core::felt252>"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "execute",
+        "inputs": [
+          {
+            "name": "call",
+            "type": "core::starknet::account::Call"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::array::Array::<core::felt252>"
+          }
+        ],
+        "state_mutability": "external"
+      }
+    ]
+  },
+  {
     "type": "event",
     "name": "smartr::module::validator::ValidatorComponent::Event",
     "kind": "enum",
