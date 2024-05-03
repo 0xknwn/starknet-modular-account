@@ -9,7 +9,7 @@ If not already done the script below shows how to create a minimalistic
 typescript project to use:
 
 ```shell
-mkdir sample && cd sample
+mkdir documentation-examples && cd documentation-examples
 npm init -y
 git init
 npm install typescript --save-dev

@@ -1,0 +1,16 @@
+{
+  "name": "documentation-examples",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@0xknwn/starknet-modular-account": "^0.1.5",
+    "starknet": "^6.8.0"
+  }
+}

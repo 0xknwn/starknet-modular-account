@@ -10,7 +10,7 @@ import {
   CounterABI,
   initial_EthTransfer,
   ETH,
-} from "tests-starknet-helpers";
+} from "@0xknwn/starknet-test-helpers";
 import {
   declareClass as declareAccountClass,
   classHash as accountClassHash,

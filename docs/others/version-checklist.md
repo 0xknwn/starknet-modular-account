@@ -26,14 +26,14 @@ npm run test:scarb
 5. adding the version in the package.json
 
 ```shell
-npm run prepare -- 0.1.5
+npm run update-version -- 0.1.6
 ```
 
 6. Merge all the changes to the `develop` branch of the repository
 
-7. tag the version on github with `v` followed by the new version number
+7. tag the version on github with `v` followed by the new version number in semver
 
-8. provide a description of the version and release the project
+8. provide a description of the version, a changelog and release the project
 
 9. switch to develop and pull to the `tag`. You should be able to publish
    the artifact to npmjs.org
@@ -42,8 +42,8 @@ npm run prepare -- 0.1.5
 git fetch -p
 git checkout develop
 git pull
-git reset --hard v0.1.5
-npm run register
+git reset --hard v0.1.6
+npm run registry
 ```
 
 10. review the documentation and make sure it is still up to date
