@@ -3,6 +3,11 @@
 SDKs are provided as NPM packages for an easy use. If you plan to use them, you
 should have a Javascript or Typescript project.
 
+- [Installing SDKs](#installing-sdks)
+  - [Create a typescript project](#create-a-typescript-project)
+  - [Install the Modular Account SDK](#install-the-modular-account-sdk)
+  - [Install the SessionKey Module SDK](#install-the-sessionkey-module-sdk)
+
 ## Create a typescript project
 
 If not already done the script below shows how to create a minimalistic

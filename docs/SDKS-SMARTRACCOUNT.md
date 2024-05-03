@@ -6,14 +6,6 @@ installation and used to compute the account address. In this section of the
 documentation, you will see how you can use the Moduler Account as well as
 how to interact with the Stark Validator Module.
 
-> Note: This section assumes the `SmartrAccount` class has been instantiated
-> in the `smartrAccount` variable as shown in
-> [Using the modular account from the SDK](./SDKS-DEPLOYMENT.md#using-the-modular-account-from-the-sdk).
-> It also assumes the `Counter` contract that comes with the project has been
-> deploys to the `counterAddress` and the `CounterABI` class is available. The
-> `02-setup.ts` script that comes with this project ensure those steps are
-> executed.
-
 - [Using the Modular Account](#using-the-modular-account)
   - [Interacting with a Contract](#interacting-with-a-contract)
   - [Interacting with the Stark Validator](#interacting-with-the-stark-validator)
@@ -22,6 +14,14 @@ how to interact with the Stark Validator Module.
     - [Calling views functions in the module](#calling-views-functions-in-the-module)
     - [Executing external functions in the module](#executing-external-functions-in-the-module)
   - [Interacting with a Contract with the new registered key](#interacting-with-a-contract-with-the-new-registered-key)
+
+> Note: This section assumes the `SmartrAccount` class has been instantiated
+> in the `smartrAccount` variable as shown in
+> [Using the modular account from the SDK](./SDKS-DEPLOYMENT.md#using-the-modular-account-from-the-sdk).
+> It also assumes the `Counter` contract that comes with the project has been
+> deploys to the `counterAddress` and the `CounterABI` class is available. The
+> `02-setup.ts` script that comes with this project ensure those steps are
+> executed.
 
 ## Interacting with a Contract
 
