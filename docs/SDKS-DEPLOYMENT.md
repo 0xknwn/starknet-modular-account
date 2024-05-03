@@ -23,28 +23,7 @@ pass:
 Below is an example of a script that declares the 2 classes.
 
 ```typescript
-// file src/01-declare-class.ts
-import { RpcProvider, Account } from "starknet";
-import { declareClass } from "@0xknwn/starknet-modular-account";
-
-// these are the settings for the devnet with --seed=0
-// change them to mee your requirements
-const providerURL="http://127.0.0.1:5050/rpc";
-const ozAccountAddress="0x64b48806902a367c8598f4f95c305e8c1a1acba5f082d294a43793113115691";
-const ozPrivateKey="0x71d7bb07b9a64f6f78ac4c816aff4da9";
-
-const main = async () => {
-  const provider = new RpcProvider({nodeUrl: providerURL});
-  const account = new Account(provider, ozAccountAddress, ozPrivateKey);
-
-  const { classHash: smartrAccountClassHash} = await declareClass(account, "SmartrAccount");
-  console.log("smartrAccount class hash:", smartrAccountClassHash);
-
-  const { classHash: coreValidatorClassHash} = await declareClass(account, "CoreValidator");
-  console.log("coreValidator class hash:", coreValidatorClassHash);
-}
-
-main().then(() => {}).catch((e) => {console.warn(e)});
+{{#include ../experiments/documentation-examples/src/01-declare-class.ts}}
 ```
 
 > Note: To declare the class, the account you use must be loaded with ETH.
@@ -67,11 +46,7 @@ can find them at any time with the `classHash` helper that comes with the
 SDK. The script below shows how to use that function:
 
 ```typescript
-// file src/01-check-class.ts
-import { classHash } from "@0xknwn/starknet-modular-account";
-
-console.log("smartrAccount class hash:", classHash("SmartrAccount"));
-console.log("coreValidator class hash:", classHash("CoreValidator"));
+{{#include ../experiments/documentation-examples/src/01-check-class.ts}}
 ```
 
 Assuming you have named the script `src/check-class.ts`, to transpile it and
@@ -91,44 +66,7 @@ the account, you must compute the account address with `accountAddress` and
 send ETH to it. To proceed, create a file named `src/load-eth.ts` like below:
 
 ```typescript
-// file src/01-load-eth.ts
-import { RpcProvider, Account, Signer, Contract, cairo } from "starknet";
-import { accountAddress, classHash } from "@0xknwn/starknet-modular-account";
-import { ABI as ERC20ABI } from "./abi/ERC20";
-
-// these are the settings for the devnet with --seed=0
-// change them to mee your requirements
-const providerURL="http://127.0.0.1:5050/rpc";
-const ozAccountAddress="0x64b48806902a367c8598f4f95c305e8c1a1acba5f082d294a43793113115691";
-const ozPrivateKey="0x71d7bb07b9a64f6f78ac4c816aff4da9";
-const smartrAccountPrivateKey="0x1";
-const ethAddress="0x49D36570D4E46F48E99674BD3FCC84644DDD6B96F7C741B1562B82F9E004DC7";
-
-const main = async () => {
-  const provider = new RpcProvider({nodeUrl: providerURL});
-  const account = new Account(provider, ozAccountAddress, ozPrivateKey);
-  const smartrSigner = new Signer(smartrAccountPrivateKey)
-  const smartrAccountPublicKey = await smartrSigner.getPubKey();
-  const coreValidatorClassHash = classHash("CoreValidator");
-  const smartrAccountAddress = accountAddress("SmartrAccount", smartrAccountPublicKey, [
-      coreValidatorClassHash,
-      smartrAccountPublicKey,
-  ]);
-  const ETH = new Contract(ERC20ABI, ethAddress, account);
-  const initial_EthTransfer = cairo.uint256(3n * 10n ** 15n);
-  const call = ETH.populate("transfer", {
-    recipient: smartrAccountAddress, 
-    amount: initial_EthTransfer,
-  })
-  const { transaction_hash } = await account.execute(call);
-  const output = await account.waitForTransaction(transaction_hash);
-  if (!output.isSuccess()) {
-    throw new Error("Could not send ETH to the expected address");
-  }
-  console.log("accountAddress", smartrAccountAddress)
-}
-
-main().then(() => {}).catch((e) => {console.warn(e)});
+{{#include ../experiments/documentation-examples/src/01-load-eth.ts}}
 ```
 
 > Note: You must create a file `abi/ERC20.ts` that contains the ABI of an ERC20
@@ -151,39 +89,7 @@ Now that the address has some ETH on it, you can deploy the account with the
 `deployAccount` helper. Create a file named `src/deploy-account.ts` like below:
 
 ```typescript
-// file src/01-deploy-account.ts
-import { RpcProvider, Account, Signer, Contract, cairo } from "starknet";
-import { accountAddress, classHash, deployAccount, SmartrAccount } from "@0xknwn/starknet-modular-account";
-
-// these are the settings for the devnet with --seed=0
-// change them to mee your requirements
-const providerURL="http://127.0.0.1:5050/rpc";
-const smartrAccountPrivateKey="0x1";
-
-const main = async () => {
-  const provider = new RpcProvider({nodeUrl: providerURL});
-  const smartrSigner = new Signer(smartrAccountPrivateKey)
-  const smartrAccountPublicKey = await smartrSigner.getPubKey();
-  const coreValidatorClassHash = classHash("CoreValidator");
-  const smartrAccountAddress = accountAddress("SmartrAccount", smartrAccountPublicKey, [
-      coreValidatorClassHash,
-      smartrAccountPublicKey,
-  ]);
-  const smartrAccount = new SmartrAccount(provider, smartrAccountAddress, smartrAccountPrivateKey);
-  const address = await deployAccount(
-        smartrAccount,
-        "SmartrAccount",
-        smartrAccountPublicKey,
-        [coreValidatorClassHash, smartrAccountPublicKey]
-      );
-  if (address !== smartrAccountAddress) {
-    throw new Error(`The account should have been deployed to ${smartrAccountAddress}, instead ${address}`);
-  }
-  console.log("accountAddress", smartrAccountAddress)
-  console.log("public key", smartrAccountPublicKey)
-}
-
-main().then(() => {}).catch((e) => {console.warn(e)});
+{{#include ../experiments/documentation-examples/src/01-deploy-account.ts}}
 ```
 
 Assuming you have named the script `src/deploy-account.ts`, to transpile it and
@@ -202,29 +108,7 @@ below shows all the requirements to compute the class hash, the address and
 instantiate the account:
 
 ```typescript
-// file src/01-using-account.ts
-import { RpcProvider, Signer } from "starknet";
-import { accountAddress, classHash, SmartrAccount } from "@0xknwn/starknet-modular-account";
-
-// these are the settings for the devnet with --seed=0
-// change them to mee your requirements
-const providerURL="http://127.0.0.1:5050/rpc";
-const smartrAccountPrivateKey="0x1";
-
-const main = async () => {
-  const provider = new RpcProvider({nodeUrl: providerURL});
-  const smartrSigner = new Signer(smartrAccountPrivateKey)
-  const smartrAccountPublicKey = await smartrSigner.getPubKey();
-  const coreValidatorClassHash = classHash("CoreValidator");
-  const smartrAccountAddress = accountAddress("SmartrAccount", smartrAccountPublicKey, [
-      coreValidatorClassHash,
-      smartrAccountPublicKey,
-  ]);
-  const smartrAccount = new SmartrAccount(provider, smartrAccountAddress, smartrAccountPrivateKey);
-  console.log("address", smartrAccount.address);
-}
-
-main().then(() => {}).catch((e) => {console.warn(e)});
+{{#include ../experiments/documentation-examples/src/01-using-account.ts}}
 ```
 
 Assuming you have named the script `src/using-account.ts`, to transpile it and
