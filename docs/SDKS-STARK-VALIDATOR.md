@@ -13,25 +13,27 @@ installation and used to compute the account address.
 
 ## Interacting with a Contract
 
+The starknet modular account SDK provides the `SmartrAccount` class that extends
+the starknet.js Account class. As you can see from the script below, using the
+`SmartrAccount` is exactly like using the `Account` class, you can:
+
+- instantiate the account with an `RpcProvider`, an `address` and a `Signer` or
+  private key
+- use the account in a `Contract` to call view functions
+- use the `execute` function of the account to call an external function of a
+  contract. `SmartrAccount` provides the same methods as `Account`
 
 ```typescript
-// file src/execute-transaction.ts
-import { smartrAccount, counterAdress } from "./preinstall";
-import { ABI as CounterABI } from "./abi/Counter.ts";
-import { Contract } from "starknet";
+{{#include ../experiments/documentation-examples/src/02-execute-tx.ts}}
+```
 
-const main = async () => {
-  const counter = new RpcProvider({nodeUrl: providerURL});
-  const account = new Account(provider, ozAccountAddress, ozPrivateKey);
+To execute the script, make sure you have deployed the account and the counter
+contract in the network and run the following commands:
 
-  const { classHash: smartrAccountClassHash} = await declareClass(account, "SmartrAccount");
-  console.log("smartrAccount class hash:", smartrAccountClassHash);
+```shell
+npx tsc --build
 
-  const { classHash: coreValidatorClassHash} = await declareClass(account, "CoreValidator");
-  console.log("coreValidator class hash:", coreValidatorClassHash);
-}
-
-main().then(() => {}).catch((e) => {console.warn(e)});
+node dist/02-execute-tx.ts
 ```
 
 ## Checking the Core Validator

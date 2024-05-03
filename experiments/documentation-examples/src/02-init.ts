@@ -1,20 +1,17 @@
-import { Account, Contract, RpcProvider, Signer } from "starknet";
+import { Signer } from "starknet";
+import { accountAddress, classHash } from "@0xknwn/starknet-modular-account";
 import {
-  accountAddress,
-  classHash,
-  SmartrAccount,
-} from "@0xknwn/starknet-modular-account";
+  counterAddress as helperCounterAddress,
+  CounterABI,
+} from "@0xknwn/starknet-test-helpers";
 
 const ozAccountAddress =
   "0x64b48806902a367c8598f4f95c305e8c1a1acba5f082d294a43793113115691";
-const ozPrivateKey = "0x71d7bb07b9a64f6f78ac4c816aff4da9";
-const providerURL = "http://127.0.0.1:5050/rpc";
 const smartrAccountPrivateKey = "0x1";
-export let smartrAccount: SmartrAccount;
-export let counter: Contract;
 
-const main = async () => {
-  const provider = new RpcProvider({ nodeUrl: providerURL });
+export { CounterABI };
+export const init = async () => {
+  // compute the smartrAccount details
   const smartrSigner = new Signer(smartrAccountPrivateKey);
   const smartrAccountPublicKey = await smartrSigner.getPubKey();
   const coreValidatorClassHash = classHash("CoreValidator");
@@ -23,17 +20,16 @@ const main = async () => {
     smartrAccountPublicKey,
     [coreValidatorClassHash, smartrAccountPublicKey]
   );
-  smartrAccount = new SmartrAccount(
-    provider,
-    smartrAccountAddress,
-    smartrAccountPrivateKey
+
+  // compute the counter Address
+  const counterAddress = await helperCounterAddress(
+    ozAccountAddress,
+    ozAccountAddress
   );
-
-  const account = new Account(provider, ozAccountAddress, ozPrivateKey);
+  return {
+    accountAddress: smartrAccountAddress,
+    counterAddress,
+    smartrAccountPrivateKey,
+    smartrAccountPublicKey,
+  };
 };
-
-main()
-  .then(() => {})
-  .catch((e) => {
-    console.warn(e);
-  });

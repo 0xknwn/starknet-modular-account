@@ -21,19 +21,19 @@ export const counterAddress = async (
 
 /**
  * Deploys a Counter contract.
- * @param ownerAccount - The owner's account.
+ * @param deployerAccount - The account used to deploy the contract.
  * @param ownerAddress - The owner's address.
  * @returns A Promise that resolves to the deployed Counter contract.
  */
 export const deployCounter = async (
-  ownerAccount: Account,
+  deployerAccount: Account,
   ownerAddress: string
 ): Promise<Contract> => {
   const myCallData = new CallData(CounterABI);
   const _calldata = myCallData.compile("constructor", {
     owner: ownerAddress,
   });
-  return deployContract("Counter", CounterABI, ownerAccount, _calldata);
+  return deployContract("Counter", CounterABI, deployerAccount, _calldata);
 };
 
 export { CounterABI };

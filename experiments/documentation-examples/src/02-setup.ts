@@ -2,8 +2,14 @@ import { Account, Contract, RpcProvider, Signer, cairo } from "starknet";
 import {
   accountAddress,
   declareClass,
+  SmartrAccount,
+  deployAccount,
 } from "@0xknwn/starknet-modular-account";
 import { ABI as ERC20ABI } from "./abi/ERC20";
+import {
+  declareClass as helperDeclareClass,
+  deployCounter,
+} from "@0xknwn/starknet-test-helpers";
 
 const ozAccountAddress =
   "0x64b48806902a367c8598f4f95c305e8c1a1acba5f082d294a43793113115691";
@@ -48,7 +54,33 @@ const main = async () => {
     throw new Error("Could not send ETH to the expected address");
   }
 
+  // deploy the account
+  const smartrAccount = new SmartrAccount(
+    provider,
+    smartrAccountAddress,
+    smartrAccountPrivateKey
+  );
+  const address = await deployAccount(
+    smartrAccount,
+    "SmartrAccount",
+    smartrAccountPublicKey,
+    [coreValidatorClassHash, smartrAccountPublicKey]
+  );
+  if (address !== smartrAccountAddress) {
+    throw new Error(
+      `The account should have been deployed to ${smartrAccountAddress}, instead ${address}`
+    );
+  }
+
   // deploy the Counter contract
+  const { classHash: counterClassHash } = await helperDeclareClass(
+    account,
+    "Counter"
+  );
+  const counter = await deployCounter(account, account.address);
+  console.log("Account address:", smartrAccountAddress);
+  console.log("Counter class hash:", counterClassHash);
+  console.log("Counter address:", counter.address);
 };
 
 main()
