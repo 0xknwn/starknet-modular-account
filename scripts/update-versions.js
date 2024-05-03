@@ -13,6 +13,7 @@ for (package of [
   "package.json",
   "sdks/account/package.json",
   "sdks/module-sessionkey/package.json",
+  "sdks/__tests__/helpers/package.json",
 ]) {
   const mainPackage = fs.readFileSync(package, "utf-8");
   const mainPackageJson = JSON.parse(mainPackage);

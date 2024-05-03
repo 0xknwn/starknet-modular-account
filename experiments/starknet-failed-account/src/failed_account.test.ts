@@ -9,7 +9,7 @@ import {
   config,
   ETH,
   initial_EthTransfer,
-} from "tests-starknet-helpers";
+} from "@0xknwn/starknet-test-helpers";
 import {
   classHash as failedClassHash,
   declareClass as declareFailedClass,

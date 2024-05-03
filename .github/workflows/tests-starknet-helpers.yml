@@ -15,4 +15,4 @@ jobs:
   test:
     uses: ./.github/workflows/_sdks_jest.yml
     with:
-      workspace: "tests-starknet-helpers"
+      workspace: "@0xknwn/starknet-test-helpers"

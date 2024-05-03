@@ -6,7 +6,7 @@ import {
   config,
   initial_EthTransfer,
   ETH,
-} from "tests-starknet-helpers";
+} from "@0xknwn/starknet-test-helpers";
 import { bootstrapAccountAddress } from "./bootstrap_account";
 import { classHash, declareClass as declareBootstrapClass } from "./class";
 import { deployAccount } from "./contract";

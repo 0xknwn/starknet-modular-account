@@ -9,7 +9,7 @@ import {
   config,
   initial_EthTransfer,
   ETH,
-} from "tests-starknet-helpers";
+} from "@0xknwn/starknet-test-helpers";
 import { PolicyManager } from "@0xknwn/starknet-module-sessionkey";
 import {
   declareClass as declareAccountClass,

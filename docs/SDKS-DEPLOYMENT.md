@@ -1,5 +1,12 @@
 # Deploying the Modular Account
 
+- [Deploying the Modular Account](#deploying-the-modular-account)
+  - [Declare a the SmartrAccount and CoreValidator classes](#declare-a-the-smartraccount-and-corevalidator-classes)
+  - [Verify the SmartrAccount and CoreValidator class hash](#verify-the-smartraccount-and-corevalidator-class-hash)
+  - [Charge ETH to the SmartrAccount Address to deploy it](#charge-eth-to-the-smartraccount-address-to-deploy-it)
+  - [Deploy the Modular Account](#deploy-the-modular-account)
+  - [Using the modular account from the SDK](#using-the-modular-account-from-the-sdk)
+
 ## Declare a the SmartrAccount and CoreValidator classes
 
 If you are working on a network that does not have the classes already
@@ -16,7 +23,7 @@ pass:
 Below is an example of a script that declares the 2 classes.
 
 ```typescript
-// file src/declare-class.ts
+// file src/01-declare-class.ts
 import { RpcProvider, Account } from "starknet";
 import { declareClass } from "@0xknwn/starknet-modular-account";
 
@@ -48,7 +55,7 @@ run it, use the script below:
 ```shell
 npx tsc --build
 
-node dist/declare-class.js
+node dist/01-declare-class.js
 ```
 
 The output should return the classHash for the 2 classes.
@@ -60,7 +67,7 @@ can find them at any time with the `classHash` helper that comes with the
 SDK. The script below shows how to use that function:
 
 ```typescript
-// file src/check-class.ts
+// file src/01-check-class.ts
 import { classHash } from "@0xknwn/starknet-modular-account";
 
 console.log("smartrAccount class hash:", classHash("SmartrAccount"));
@@ -73,7 +80,7 @@ run it, use the script below:
 ```shell
 npx tsc --build
 
-node dist/check-class.js
+node dist/01-check-class.js
 ```
 
 ## Charge ETH to the SmartrAccount Address to deploy it
@@ -84,7 +91,7 @@ the account, you must compute the account address with `accountAddress` and
 send ETH to it. To proceed, create a file named `src/load-eth.ts` like below:
 
 ```typescript
-// file src/load-eth.ts
+// file src/01-load-eth.ts
 import { RpcProvider, Account, Signer, Contract, cairo } from "starknet";
 import { accountAddress, classHash } from "@0xknwn/starknet-modular-account";
 import { ABI as ERC20ABI } from "./abi/ERC20";
@@ -133,7 +140,7 @@ run it, use the script below:
 ```shell
 npx tsc --build
 
-node src/load-eth.js
+node dist/01-load-eth.js
 ```
 
 The output should return the yet to come account address...
@@ -144,7 +151,7 @@ Now that the address has some ETH on it, you can deploy the account with the
 `deployAccount` helper. Create a file named `src/deploy-account.ts` like below:
 
 ```typescript
-// file src/deploy-account.ts
+// file src/01-deploy-account.ts
 import { RpcProvider, Account, Signer, Contract, cairo } from "starknet";
 import { accountAddress, classHash, deployAccount, SmartrAccount } from "@0xknwn/starknet-modular-account";
 
@@ -173,7 +180,7 @@ const main = async () => {
     throw new Error(`The account should have been deployed to ${smartrAccountAddress}, instead ${address}`);
   }
   console.log("accountAddress", smartrAccountAddress)
-  console.log("public ket", smartrAccountPublicKey)
+  console.log("public key", smartrAccountPublicKey)
 }
 
 main().then(() => {}).catch((e) => {console.warn(e)});
@@ -185,7 +192,7 @@ run it, use the script below:
 ```shell
 npx tsc --build
 
-node src/deploy-account.js
+node dist/01-deploy-account.js
 ```
 
 ## Using the modular account from the SDK
@@ -195,7 +202,7 @@ below shows all the requirements to compute the class hash, the address and
 instantiate the account:
 
 ```typescript
-// file src/using-account.ts
+// file src/01-using-account.ts
 import { RpcProvider, Signer } from "starknet";
 import { accountAddress, classHash, SmartrAccount } from "@0xknwn/starknet-modular-account";
 
@@ -226,5 +233,5 @@ run it, use the script below:
 ```shell
 npx tsc --build
 
-node src/using-account.js
+node dist/01-using-account.js
 ```
