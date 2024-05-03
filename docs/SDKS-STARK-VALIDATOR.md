@@ -1,15 +1,27 @@
-# Using the Core Stark Module
+# Using the Modular Account
 
 The Stark Validator Module is the Core Validator for the account. It is used by
 default by the modular account. It is currently referenced during the
-installation and used to compute the account address.
+installation and used to compute the account address. In this section of the
+documentation, you will see how you can use the Moduler Account as well as
+how to interact with the Stark Validator Module.
 
 > Note: This section assumes the `SmartrAccount` class has been instantiated
 > in the `smartrAccount` variable as shown in
 > [Using the modular account from the SDK](./SDKS-DEPLOYMENT.md#using-the-modular-account-from-the-sdk).
 > It also assumes the `Counter` contract that comes with the project has been
-> deploys to the `counterAddress` and the counter ABI available from the
-> `./abi/Counter.ts` typescript.
+> deploys to the `counterAddress` and the `CounterABI` class is available. The
+> `02-setup.ts` script that comes with this project ensure those steps are
+> executed.
+
+- [Using the Modular Account](#using-the-modular-account)
+  - [Interacting with a Contract](#interacting-with-a-contract)
+  - [Interacting with the Stark Validator](#interacting-with-the-stark-validator)
+    - [Getting the stark validator module class hash](#getting-the-stark-validator-module-class-hash)
+    - [Check the module is installed on the account](#check-the-module-is-installed-on-the-account)
+    - [Calling views functions in the module](#calling-views-functions-in-the-module)
+    - [Executing external functions in the module](#executing-external-functions-in-the-module)
+  - [Interacting with a Contract with the new registered key](#interacting-with-a-contract-with-the-new-registered-key)
 
 ## Interacting with a Contract
 
@@ -33,14 +45,134 @@ contract in the network and run the following commands:
 ```shell
 npx tsc --build
 
-node dist/02-execute-tx.ts
+node dist/02-execute-tx.js
 ```
 
-## Checking the Core Validator
+## Interacting with the Stark Validator
 
-## Using the Stark Validator API
+The `SmartrAccount` class, however, provides more than just the regular
+`Account` class. It can interact with functions that are part of the module
+and not part of the account. In the case of the Stark Validator, those
+functions are:
 
-## Calling views functions in the module
+```rust
+fn get_public_keys(self: @TState) -> Array<felt252>;
+fn add_public_key(ref self: TState, new_public_key: felt252);
+fn remove_public_key(ref self: TState, old_public_key: felt252);
+fn get_threshold(self: @TState) -> u8;
+fn set_threshold(ref self: TState, new_threshold: u8);
+```
 
-## Executing external functions in the module
+To execute the fonction that are part of the module you need:
 
+- to figure out the stark validator module class hash
+- to check the module is installed on the account. That is something that is
+  setup at the account deployment time
+- to use one of `callOnModule` for view functions or `executeOnModule` for
+  running transactions on the SmartrAccount.
+
+The sections below dig into the details of those operations:
+
+### Getting the stark validator module class hash
+
+This is something we have already done previously. You can use
+`classHash("CoreValidator")` afther your imported the `classHash` function from
+`@0xknwn/starknet-modular-account` like below:
+
+```typescript
+{{#include ../experiments/documentation-examples/src/02-check-class.ts}}
+```
+
+To execute the script, make sure you have deployed the account in the network
+and run the following commands:
+
+```shell
+npx tsc --build
+
+node dist/02-check-class.js
+```
+
+### Check the module is installed on the account
+
+The `SmartrAccount` provides a method `isModule` that can be used to know if
+a module is installed with the account. 
+
+
+```typescript
+{{#include ../experiments/documentation-examples/src/02-module-installed.ts}}
+```
+
+To execute the script, make sure you have deployed the account in the network
+and run the following commands:
+
+```shell
+npx tsc --build
+
+node dist/02-module-installed.js
+```
+
+### Calling views functions in the module
+
+To execute a view function on the module, we must build the argumemt list with
+the `CallData` class. Thwn we can call the `callOnModule` function from
+`SmartrAccount` with the module class hash, the function name and the calldata
+like below:
+
+```typescript
+{{#include ../experiments/documentation-examples/src/02-registered-publickeys.ts}}
+```
+
+The script above returns a list of public keys. Make sure you have deployed the
+account in the network and run the following commands:
+
+```shell
+npx tsc --build
+
+node dist/02-registered-publickeys.js
+```
+
+### Executing external functions in the module
+
+To execute an external function on the module, we must build the argumemt list
+with the `CallData` class. Then we can call the `executeOnModule` function from
+`SmartrAccount` with the module class hash, the function name and the calldata
+like below. Here we will register a second public key for the same account:
+
+```typescript
+{{#include ../experiments/documentation-examples/src/02-add-publickey.ts}}
+```
+
+The script above returns a list of public keys. Make sure you have deployed the
+account in the network and run the following commands:
+
+```shell
+npx tsc --build
+
+node dist/02-add-publickey.js
+```
+
+You can re-run the script from the previous example to check the account has
+two registered public key:
+
+```shell
+node dist/02-registered-publickeys.js
+```
+
+
+## Interacting with a Contract with the new registered key
+
+You now can interact with the `SmartrAccount` with your second private key like
+below:
+
+```typescript
+{{#include ../experiments/documentation-examples/src/02-execute-tx-pk2.ts}}
+```
+
+To execute the script, make sure you have deployed the account and the counter
+contract in the network and run the following commands:
+
+```shell
+npx tsc --build
+
+node dist/02-execute-tx-pk2.js
+```

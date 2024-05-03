@@ -9,7 +9,7 @@
 - [Using SDKs](./SDKs.md)
   - [Installing SDKs](./SDKS-INSTALL.md)
   - [Deploying the Modular Account](./SDKS-DEPLOYMENT.md)
-  - [Using the Core Stark Validator](./SDKS-STARK-VALIDATOR.md)
+  - [Using the Modular Account](./SDKS-STARK-VALIDATOR.md)
   - [Using Multiple Signers](./SDKS-MULTISIG.md)
   - [Configuring Modules](./SDKS-MODULE-CONFIGURATION.md)
   - [Using the SessionKey Validator](./SDKS-SESSIONKEY-VALIDATOR.md)
