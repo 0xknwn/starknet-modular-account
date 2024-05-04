@@ -16,16 +16,6 @@ mod SimpleValidator {
 
     #[abi(embed_v0)]
     impl ValidatorImpl of IValidator<ContractState> {
-        fn is_valid_signature(
-            self: @ContractState, hash: felt252, signature: Array<felt252>
-        ) -> felt252 {
-            if self.validator._is_valid_signature(hash, signature.span()) {
-                starknet::VALIDATED
-            } else {
-                0
-            }
-        }
-
         fn validate(self: @ContractState, grantor_class: ClassHash, calls: Array<Call>) -> felt252 {
             starknet::VALIDATED
         }

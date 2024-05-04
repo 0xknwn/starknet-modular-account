@@ -23,21 +23,14 @@ A Validator is a class that implement the following interface:
 ```rust
 #[starknet::interface]
 pub trait IValidator<TState> {
-    fn is_valid_signature(self: @TState, hash: felt252, signature: Array<felt252>) -> felt252;
     fn validate(self: @TState, grantor_class: ClassHash, calls: Array<Call>) -> felt252;
 }
 ```
 
-The 2 functions manages the following:
-
-- `is_valid_signature`, given the `hash` that can be a transaction hash or a
-  message hash should return `starknet::VALIDATED` is the signature is valid
-  and 0 if not. Depending on the case, it can be that the function cannot be
-  implemented. If that is the case, we suggest you return that the transaction
-  is not valid
-- `validate` generated the hash for a transaction and validates the transaction
-  for the account. Opposite to `is_valid_signature`, `validate` has access to
-  the whole transaction and, as such should always be fully implemented
+`validate` generated the hash for a transaction and validates the transaction
+for the account. Opposite to `is_valid_signature`, `validate` has access to
+the whole transaction and, as such should always be fully implemented by any
+validator module.
 
 > Note: the grantor class that is passed by the account is the Core Validator
 > class hash registered with the account. It can be used for some specific
@@ -54,9 +47,18 @@ the account public key when the accounted is created the first time
 ```rust
 #[starknet::interface]
 pub trait ICoreValidator<TState> {
+    fn is_valid_signature(self: @TState, hash: felt252, signature: Array<felt252>) -> felt252;
     fn initialize(ref self: TState, public_key: felt252);
 }
 ```
+
+- `is_valid_signature`, given the `hash` that can be a transaction hash or a
+  message hash should return `starknet::VALIDATED` is the signature is valid
+  and 0 if not. Depending on the case, it can be that the function cannot be
+  implemented. If that is the case, we suggest you return that the transaction
+  is not valid
+- `initialize` is used at the installation time of the account to store the
+  first account public key.
 
 ## Management Interface and Mappers
 

@@ -2,11 +2,60 @@
 ///
 /// The Account component enables contracts to behave as accounts.
 
-use super::interface;
+use openzeppelin::account::utils::secp256k1::Secp256k1PointSerde;
+use starknet::ContractAddress;
+use starknet::account::Call;
+use starknet::ClassHash;
+
+pub const ISRC6_ID: felt252 = 0x2ceccef7f994940b3962a6c67e0ba4fcd37df7d131417c604f91e03caecc1cd;
+
+//
+// Account
+//
+
+#[starknet::interface]
+pub trait ISRC6<TState> {
+    fn __execute__(self: @TState, calls: Array<Call>) -> Array<Span<felt252>>;
+    fn __validate__(self: @TState, calls: Array<Call>) -> felt252;
+    fn is_valid_signature(self: @TState, hash: felt252, signature: Array<felt252>) -> felt252;
+}
+
+#[starknet::interface]
+pub trait IDeclarer<TState> {
+    fn __validate_declare__(self: @TState, class_hash: felt252) -> felt252;
+}
+
+#[starknet::interface]
+pub trait IDeployable<TState> {
+    fn __validate_deploy__(
+        self: @TState,
+        class_hash: felt252,
+        contract_address_salt: felt252,
+        core_validator: felt252,
+        public_key: felt252
+    ) -> felt252;
+}
+
+#[starknet::interface]
+pub trait ISRC6CamelOnly<TState> {
+    fn isValidSignature(self: @TState, hash: felt252, signature: Array<felt252>) -> felt252;
+}
+
+#[starknet::interface]
+pub trait IModule<TState> {
+    // @todo: discuss this function and how fragile it is
+    fn __module_validate__(self: @TState, calldata: Array<felt252>);
+    fn add_module(ref self: TState, class_hash: ClassHash);
+    fn remove_module(ref self: TState, class_hash: ClassHash);
+    fn update_core_module(ref self: TState, class_hash: ClassHash);
+    fn get_core_module(self: @TState) -> ClassHash;
+    fn is_module(self: @TState, class_hash: ClassHash) -> bool;
+    fn call_on_module(self: @TState, class_hash: ClassHash, call: Call) -> Array<felt252>;
+    fn execute_on_module(ref self: TState, class_hash: ClassHash, call: Call) -> Array<felt252>;
+}
 
 #[starknet::component]
 pub mod AccountComponent {
-    use super::interface;
     use smartr::store::Felt252ArrayStore;
     use smartr::component::{
         ICoreValidatorDispatcherTrait, ICoreValidatorLibraryDispatcher, IValidatorDispatcherTrait,
@@ -72,7 +121,7 @@ pub mod AccountComponent {
         +HasComponent<TContractState>,
         +SRC5Component::HasComponent<TContractState>,
         +Drop<TContractState>
-    > of interface::ISRC6<ComponentState<TContractState>> {
+    > of super::ISRC6<ComponentState<TContractState>> {
         /// Executes a list of calls from the account.
         ///
         /// Requirements:
@@ -128,7 +177,7 @@ pub mod AccountComponent {
             self: @ComponentState<TContractState>, hash: felt252, signature: Array<felt252>
         ) -> felt252 {
             let core_validator = self.Account_core_validator.read();
-            IValidatorLibraryDispatcher { class_hash: core_validator }
+            ICoreValidatorLibraryDispatcher { class_hash: core_validator }
                 .is_valid_signature(hash, signature)
         }
     }
@@ -139,7 +188,7 @@ pub mod AccountComponent {
         +HasComponent<TContractState>,
         +SRC5Component::HasComponent<TContractState>,
         +Drop<TContractState>
-    > of interface::IDeclarer<ComponentState<TContractState>> {
+    > of super::IDeclarer<ComponentState<TContractState>> {
         /// Verifies the validity of the signature for the current transaction.
         /// This function is used by the protocol to verify `declare` transactions.
         fn __validate_declare__(
@@ -155,7 +204,7 @@ pub mod AccountComponent {
         +HasComponent<TContractState>,
         +SRC5Component::HasComponent<TContractState>,
         +Drop<TContractState>
-    > of interface::IDeployable<ComponentState<TContractState>> {
+    > of super::IDeployable<ComponentState<TContractState>> {
         /// Verifies the validity of the signature for the current transaction.
         /// This function is used by the protocol to verify `deploy_account` transactions.
         fn __validate_deploy__(
@@ -176,7 +225,7 @@ pub mod AccountComponent {
         +HasComponent<TContractState>,
         +SRC5Component::HasComponent<TContractState>,
         +Drop<TContractState>
-    > of interface::ISRC6CamelOnly<ComponentState<TContractState>> {
+    > of super::ISRC6CamelOnly<ComponentState<TContractState>> {
         fn isValidSignature(
             self: @ComponentState<TContractState>, hash: felt252, signature: Array<felt252>
         ) -> felt252 {
@@ -190,7 +239,7 @@ pub mod AccountComponent {
         +HasComponent<TContractState>,
         +SRC5Component::HasComponent<TContractState>,
         +Drop<TContractState>
-    > of interface::IModule<ComponentState<TContractState>> {
+    > of super::IModule<ComponentState<TContractState>> {
         fn __module_validate__(self: @ComponentState<TContractState>, calldata: Array<felt252>) {
             self.assert_only_self();
         }
@@ -253,7 +302,7 @@ pub mod AccountComponent {
             ref self: ComponentState<TContractState>, core_validator: felt252, public_key: felt252
         ) {
             let mut src5_component = get_dep_component_mut!(ref self, SRC5);
-            src5_component.register_interface(interface::ISRC6_ID);
+            src5_component.register_interface(super::ISRC6_ID);
             assert(core_validator != 0, Errors::INVALID_SIGNATURE);
             let core_validator_address: ClassHash = core_validator.try_into().unwrap();
             self.Account_core_validator.write(core_validator_address);
@@ -283,7 +332,7 @@ pub mod AccountComponent {
                 i += 1;
             };
             let core_validator = self.Account_core_validator.read();
-            IValidatorLibraryDispatcher { class_hash: core_validator }
+            ICoreValidatorLibraryDispatcher { class_hash: core_validator }
                 .is_valid_signature(tx_hash, sig)
         }
 

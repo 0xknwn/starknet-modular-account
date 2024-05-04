@@ -115,35 +115,48 @@ There are 2 types of modules for the starknet modular account:
 
 ### Validator and Core Validator Modules
 
-A validator module is a contract that implements the following interface and
-can be used by the account to delegate the transaction validation and additional
-message signature check. The later is used to support and verify offchain
-signatures:
+A validator module is a class that implements the following interface and
+can be used by the account to delegate the transaction validation:
 
 ```rust
 /// @title Validator Module Interface
 trait IValidator {
     fn validate(calls: Array<Call>) -> felt252;
-
-    fn is_valid_signature(hash: Array<felt252>, signature: Array<felt252>) -> felt252;
 }
 ```
 
-As you can guess Validator modules "replace" the `__validate__` and
-`is_valid_signature` entrypoints of the account:
+As you can guess Validator modules "replace" the `__validate__` entrypoint of
+the account:
 
 > Note: `__validate__` is a reserved entrypoint name for the account and the
 > cairo compiler treat them differently. That is why the module entrypoint are
 > named `validate` and not `__validate__` but that should have been the case.
 
+A Validator is a Core Validator if it also implements the `ICoreValidator` 
+interface:
+
+```rust
+/// @title Core Validator Module Interface
+trait ICoreValidator<TState> {
+    fn is_valid_signature(self: @TState, hash: Array<felt252>, signature: Array<felt252>) -> felt252;
+    fn initialize(ref self: TState, public_key: felt252);
+}
+```
+
+The core validator has some enhanced features, including the ability to check
+a signature from another validator. This can be leverage to support and verify
+offchain. This is possible with the `is_valid_signature` function that provides
+can be used, not only to check transactions but also signed messages. The
+`initialize` function is used to setup the core module configuration at
+the installation time.
+
 When installing the modular account, not only the public key of the signer is
-required like on most account but the **core** validator module class hash(*)
-is also mandatory. So "the" **core** validator module is a module, i.e. a class,
-that contains the logic that manages the account `__validate__` and
-`is_valid_signature` by default. It has some specific requirement when comparing
-with other validator modules and in particular, it cannot reference the core
-validator. For now, the only core validator module available is the stark
-module; it:
+required like on most account but the **Core** validator module class hash(*)
+is also mandatory. So "the" **Core** validator module is a module, i.e. a class,
+that contains all the validation logic for the account, i.e. the `__validate__`
+and the `is_valid_signature` functions. 
+
+For now, the only core validator module available is the stark module; it:
 
 - computes the transaction into a a pedersen hash
 - validate the transaction signature with the stark curve
@@ -315,15 +328,24 @@ The project comes with 2 validator modules:
 
 ### Validator Interfaces
 
-Like mentioned above, validators must implement the following interface to work
+As mentioned earlier, validators must implement the following interface to work
 properly. How the implementation is done depends on the requirements...
 
 ```rust
 /// @title Validator Module Interface
 trait IValidator {
     fn validate(calls: Array<Call>) -> felt252;
+}
+```
 
-    fn is_valid_signature(hash: Array<felt252>, signature: Array<felt252>) -> felt252;
+In addition, if the validator is a Core validator, it must also implement the
+following interface:
+
+```rust
+/// @title Core Validator Module Interface
+trait ICoreValidator<TState> {
+    fn is_valid_signature(self: @TState, hash: Array<felt252>, signature: Array<felt252>) -> felt252;
+    fn initialize(ref self: TState, public_key: felt252);
 }
 ```
 

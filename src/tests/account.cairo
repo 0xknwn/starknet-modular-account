@@ -56,7 +56,7 @@ fn test_account_module_call() {
     let constructorCallData = array![core_validator_class_felt, publicKey];
     let deployerAddress: ContractAddress = 0x0.try_into().unwrap();
     let computed_account_address: ContractAddress = calculate_contract_address_from_deploy_syscall(
-        publicKey, account_class.class_hash,constructorCallData.span(), deployerAddress
+        publicKey, account_class.class_hash, constructorCallData.span(), deployerAddress
     );
     let (account_address, _) = account_class
         .deploy_at(@array![core_validator_class_felt, publicKey], computed_account_address)

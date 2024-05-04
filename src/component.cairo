@@ -1,12 +1,11 @@
 mod account;
 pub use account::AccountComponent;
-mod interface;
-pub use interface::ISRC6;
-pub use interface::IDeclarer;
-pub use interface::IDeployable;
-pub use interface::ISRC6CamelOnly;
-pub use interface::IModule;
-pub use interface::{IModuleDispatcherTrait, IModuleDispatcher};
+pub use account::ISRC6;
+pub use account::IDeclarer;
+pub use account::IDeployable;
+pub use account::ISRC6CamelOnly;
+pub use account::IModule;
+pub use account::{IModuleDispatcherTrait, IModuleDispatcher};
 mod validator;
 pub use validator::ValidatorComponent;
 pub use validator::IValidator;

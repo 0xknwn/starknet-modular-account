@@ -17,25 +17,14 @@ A validator is a contract that implement the following interface:
 
 ```rust
 #[starknet::interface]
-pub trait IValidator<TState> {
-    fn is_valid_signature(self: @TState, hash: felt252, signature: Array<felt252>) -> felt252;
+trait IValidator<TState> {
     fn validate(self: @TState, grantor_class: ClassHash, calls: Array<Call>) -> felt252;
 }
 ```
 
-In the case of the Stark Validator the 2 functions manages the following:
-
-- `is_valid_signature` being given a hash that can be a hash of a
-  transaction or a hash of a message as well as a signature check if this is a
-  valid signature given the current configuration (i.e storage) of the account.
-  To proceed it does the following:
-  - It checks the elements of the signature are valid considering the public
-    keys registered in the account
-  - It checks the number of valid signature matches the threshold defines in
-    the account.
-- `validate` on the other hand, should be used to validate a transaction. That
-  is not yet the case because of [#136 Improve the Stark/Core Validator Class](https://github.com/0xknwn/starknet-modular-account/issues/136). The intend
-  behavior of this method should be:
+`validate` should be used to validate a transaction on the account. The current
+implementation does not rely but a fix should come as part of issue
+[#136 Improve the Stark/Core Validator Class](https://github.com/0xknwn/starknet-modular-account/issues/136). The intend behavior of this method should be:
   - to compute the hash for the current transaction to validate based on
     Starknet default mecasnism as it is currently implemented in the account
   - use `is_valid_signature` to check the signature is valid considering the
@@ -55,15 +44,26 @@ The interface looks like this:
 ```rust
 #[starknet::interface]
 pub trait ICoreValidator<TState> {
+    fn is_valid_signature(self: @TState, hash: felt252, signature: Array<felt252>) -> felt252;
     fn initialize(ref self: TState, public_key: felt252);
 }
 ```
 
-The associated method is used when the account is created so that the Core
-module can store the public key of the signer. In the case of the Stark
-Validator the key is simply stored in the `Account_public_keys` storage. It
-is also stored in the `Account_public_key` so that we can upgrade the account
-back and forth with an OpenZeppelin Account.
+In the case of the Stark Validator the 2 functionsare:
+
+- `is_valid_signature`. It checks a hash of a transaction or a hash of a message
+  matches the account public keys of the current configurationm i.e stored in
+  the account storage:
+  - It checks the elements of the signature are valid considering the public
+    keys registered in the account
+  - It checks the number of valid signature matches the threshold defines in
+    the account.
+- `initialize` is used at the installation time of the account to store the
+  first account public key.
+
+> Note: In the case of the Stark Validator the key is simply stored in the
+> `Account_public_keys` storage. It is also stored in the `Account_public_key`
+> so that we can downgrade the account back to an OpenZeppelin Account.
 
 ## Management Interface
 
