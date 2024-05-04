@@ -39,9 +39,6 @@ are the following:
   first parameter for the account and the module
 - Version the contracts for both accounts and modules and maintain a
   compatibility matrix
-- If possible, rely on Openzeppelin `calculate_contract_address` functions
-  that come from `src/utils/deployments.cairo` rather than implementing them in
-  the project
 - Improve the distinction between stark validator and core validator
 - Make sure we cannot remove the core module from modules with the
   `remove_module` entrypoint
