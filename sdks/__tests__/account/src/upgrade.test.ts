@@ -16,7 +16,7 @@ import {
   accountAddress,
 } from "@0xknwn/starknet-modular-account";
 import { RpcProvider, Contract, Account, type Call, CallData } from "starknet";
-import { CoreValidatorABI } from "@0xknwn/starknet-modular-account";
+import { StarkValidatorABI } from "@0xknwn/starknet-modular-account";
 
 describe("upgrade management", () => {
   let env: string;
@@ -38,12 +38,12 @@ describe("upgrade management", () => {
   );
 
   it(
-    "declares the coreValidator class",
+    "declares the starkValidator class",
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareAccountClass(a, "CoreValidator");
-      expect(c.classHash).toEqual(accountClassHash("CoreValidator"));
+      const c = await declareAccountClass(a, "StarkValidator");
+      expect(c.classHash).toEqual(accountClassHash("StarkValidator"));
     },
     default_timeout
   );
@@ -67,9 +67,9 @@ describe("upgrade management", () => {
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
       const publicKey = conf.accounts[0].publicKey;
       const privateKey = conf.accounts[0].privateKey;
-      const coreValidatorClassHash = accountClassHash("CoreValidator");
+      const starkValidatorClassHash = accountClassHash("StarkValidator");
       const address = accountAddress("SmartrAccount", publicKey, [
-        coreValidatorClassHash,
+        starkValidatorClassHash,
         publicKey,
       ]);
       const { transaction_hash } = await ETH(sender).transfer(
@@ -88,16 +88,16 @@ describe("upgrade management", () => {
     async () => {
       const conf = config(env);
       const publicKey = conf.accounts[0].publicKey;
-      const coreValidatorClassHash = accountClassHash("CoreValidator");
+      const starkValidatorClassHash = accountClassHash("StarkValidator");
       const address = await deployAccount(
         smartrAccount,
         "SmartrAccount",
         publicKey,
-        [coreValidatorClassHash, publicKey]
+        [starkValidatorClassHash, publicKey]
       );
       expect(address).toEqual(
         accountAddress("SmartrAccount", publicKey, [
-          coreValidatorClassHash,
+          starkValidatorClassHash,
           publicKey,
         ])
       );
@@ -109,10 +109,10 @@ describe("upgrade management", () => {
     "checks the SmartAccount public keys",
     async () => {
       const conf = config(env);
-      const calldata = new CallData(CoreValidatorABI);
+      const calldata = new CallData(StarkValidatorABI);
       const data = calldata.compile("get_public_keys", {});
       const c = await smartrAccount.callOnModule(
-        accountClassHash("CoreValidator"),
+        accountClassHash("StarkValidator"),
         "get_public_keys",
         data
       );

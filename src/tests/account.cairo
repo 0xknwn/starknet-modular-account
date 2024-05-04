@@ -49,7 +49,7 @@ fn test_deploy_simple_account() {
 
 #[test]
 fn test_account_module_call() {
-    let core_validator_class = declare("CoreValidator").unwrap();
+    let core_validator_class = declare("StarkValidator").unwrap();
     let core_validator_class_felt: felt252 = core_validator_class.class_hash.into();
     let account_class = declare("SmartrAccount").unwrap();
     let publicKey = 0x39d9e6ce352ad4530a0ef5d5a18fd3303c3606a7fa6ac5b620020ad681cc33b;
@@ -72,7 +72,7 @@ fn test_account_module_call() {
 
 #[test]
 fn test_account_module_execute() {
-    let core_validator_class = declare("CoreValidator").unwrap();
+    let core_validator_class = declare("StarkValidator").unwrap();
     let core_validator_class_felt: felt252 = core_validator_class.class_hash.into();
     let account_class = declare("SmartrAccount").unwrap();
     let publicKey = 0x39d9e6ce352ad4530a0ef5d5a18fd3303c3606a7fa6ac5b620020ad681cc33b;

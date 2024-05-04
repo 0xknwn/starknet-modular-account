@@ -12,7 +12,7 @@ import {
   deployAccount,
   accountAddress,
 } from "@0xknwn/starknet-modular-account";
-import { CoreValidatorABI } from "@0xknwn/starknet-modular-account";
+import { StarkValidatorABI } from "@0xknwn/starknet-modular-account";
 import { RpcProvider, num, CallData } from "starknet";
 
 describe("call and execute on validator", () => {
@@ -24,12 +24,12 @@ describe("call and execute on validator", () => {
   });
 
   it(
-    "deploys the coreValidator class",
+    "deploys the starkValidator class",
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareAccountClass(a, "CoreValidator");
-      expect(c.classHash).toEqual(accountClassHash("CoreValidator"));
+      const c = await declareAccountClass(a, "StarkValidator");
+      expect(c.classHash).toEqual(accountClassHash("StarkValidator"));
     },
     default_timeout
   );
@@ -53,9 +53,9 @@ describe("call and execute on validator", () => {
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
       const publicKey = conf.accounts[0].publicKey;
       const privateKey = conf.accounts[0].privateKey;
-      const coreValidatorClassHash = accountClassHash("CoreValidator");
+      const starkValidatorClassHash = accountClassHash("StarkValidator");
       const address = accountAddress("SmartrAccount", publicKey, [
-        coreValidatorClassHash,
+        starkValidatorClassHash,
         publicKey,
       ]);
       const { transaction_hash } = await ETH(sender).transfer(
@@ -74,16 +74,16 @@ describe("call and execute on validator", () => {
     async () => {
       const conf = config(env);
       const publicKey = conf.accounts[0].publicKey;
-      const coreValidatorClassHash = accountClassHash("CoreValidator");
+      const starkValidatorClassHash = accountClassHash("StarkValidator");
       const address = await deployAccount(
         smartrAccount,
         "SmartrAccount",
         publicKey,
-        [coreValidatorClassHash, publicKey]
+        [starkValidatorClassHash, publicKey]
       );
       expect(address).toEqual(
         accountAddress("SmartrAccount", publicKey, [
-          coreValidatorClassHash,
+          starkValidatorClassHash,
           publicKey,
         ])
       );
@@ -95,12 +95,12 @@ describe("call and execute on validator", () => {
     "adds a SmartAccount public keys",
     async () => {
       const conf = config(env);
-      const calldata = new CallData(CoreValidatorABI);
+      const calldata = new CallData(StarkValidatorABI);
       const data = calldata.compile("add_public_key", {
         new_public_key: conf.accounts[1].publicKey,
       });
       const { transaction_hash } = await smartrAccount.executeOnModule(
-        accountClassHash("CoreValidator"),
+        accountClassHash("StarkValidator"),
         "add_public_key",
         data
       );
@@ -115,10 +115,10 @@ describe("call and execute on validator", () => {
     async () => {
       const conf = config(env);
 
-      const calldata = new CallData(CoreValidatorABI);
+      const calldata = new CallData(StarkValidatorABI);
       const data = calldata.compile("get_public_keys", {});
       const output = await smartrAccount.callOnModule(
-        accountClassHash("CoreValidator"),
+        accountClassHash("StarkValidator"),
         "get_public_keys",
         data
       );
@@ -135,12 +135,12 @@ describe("call and execute on validator", () => {
     "removes a SmartAccount public keys",
     async () => {
       const conf = config(env);
-      const calldata = new CallData(CoreValidatorABI);
+      const calldata = new CallData(StarkValidatorABI);
       const data = calldata.compile("remove_public_key", {
         old_public_key: conf.accounts[1].publicKey,
       });
       const { transaction_hash } = await smartrAccount.executeOnModule(
-        accountClassHash("CoreValidator"),
+        accountClassHash("StarkValidator"),
         "remove_public_key",
         data
       );
@@ -155,10 +155,10 @@ describe("call and execute on validator", () => {
     async () => {
       const conf = config(env);
 
-      const calldata = new CallData(CoreValidatorABI);
+      const calldata = new CallData(StarkValidatorABI);
       const data = calldata.compile("get_public_keys", {});
       const output = await smartrAccount.callOnModule(
-        accountClassHash("CoreValidator"),
+        accountClassHash("StarkValidator"),
         "get_public_keys",
         data
       );

@@ -1,6 +1,6 @@
 import { hash, json, CompiledContract, Account } from "starknet";
-import { data as CoreValidatorContract } from "./artifacts/CoreValidator-contract";
-import { data as CoreValidatorCompiled } from "./artifacts/CoreValidator-compiled";
+import { data as StarkValidatorContract } from "./artifacts/StarkValidator-contract";
+import { data as StarkValidatorCompiled } from "./artifacts/StarkValidator-compiled";
 import { data as SimpleValidatorContract } from "./artifacts/SimpleValidator-contract";
 import { data as SimpleValidatorCompiled } from "./artifacts/SimpleValidator-compiled";
 import { data as SmartrAccountContract } from "./artifacts/SmartrAccount-contract";
@@ -17,14 +17,14 @@ import { data as SmartrAccountCompiled } from "./artifacts/SmartrAccount-compile
  */
 export const classHash = (
   className:
-    | "CoreValidator"
+    | "StarkValidator"
     | "SmartrAccount"
     | "SimpleValidator" = "SmartrAccount"
 ) => {
   let contract: string = "";
   switch (className) {
-    case "CoreValidator":
-      contract = CoreValidatorContract;
+    case "StarkValidator":
+      contract = StarkValidatorContract;
       break;
     case "SimpleValidator":
       contract = SimpleValidatorContract;
@@ -58,7 +58,7 @@ export const classHash = (
 export const declareClass = async (
   account: Account,
   className:
-    | "CoreValidator"
+    | "StarkValidator"
     | "SmartrAccount"
     | "SimpleValidator" = "SmartrAccount"
 ) => {
@@ -73,8 +73,8 @@ export const declareClass = async (
 
   let contract: string = "";
   switch (className) {
-    case "CoreValidator":
-      contract = CoreValidatorContract;
+    case "StarkValidator":
+      contract = StarkValidatorContract;
       break;
     case "SimpleValidator":
       contract = SimpleValidatorContract;
@@ -88,8 +88,8 @@ export const declareClass = async (
 
   let compiled: string = "";
   switch (className) {
-    case "CoreValidator":
-      compiled = CoreValidatorCompiled;
+    case "StarkValidator":
+      compiled = StarkValidatorCompiled;
       break;
     case "SimpleValidator":
       compiled = SimpleValidatorCompiled;

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 #[starknet::contract]
-mod CoreValidator {
+mod StarkValidator {
     use core::traits::Into;
     use smartr::module::ValidatorComponent;
     use openzeppelin::introspection::src5::SRC5Component;

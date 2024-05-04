@@ -268,7 +268,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::presets::core_validator::CoreValidator::Event",
+    "name": "smartr::module::starkvalidator::starkvalidator::StarkValidator::Event",
     "kind": "enum",
     "variants": [
       {
