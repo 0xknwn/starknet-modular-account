@@ -62,4 +62,6 @@ are the following:
   need to disable that feature to force dapps to requests what they want and
   for users to review policies.
 - For a better understanding of the sessionkey flow in the SDK we should sign
-  directly the request and not the `SsessionKeyModule`
+  directly the request and not the `SessionKeyModule`
+- We should remove the `is_valid_signature` method from `IValidator` interface
+  and move it to the `ICoreValidator` interface to prevent errors.
