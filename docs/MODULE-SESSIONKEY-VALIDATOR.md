@@ -1,7 +1,7 @@
-# How the SessionKey Validator Module Works
+# The SessionKey Validator Module
 
 The Sessionkey Validator module provides 
-- [How the SessionKey Validator Module Works](#how-the-sessionkey-validator-module-works)
+- [The SessionKey Validator Module](#the-sessionkey-validator-module)
   - [Enabling and Disabling the Module](#enabling-and-disabling-the-module)
   - [Validation](#validation)
   - [Module Configuration](#module-configuration)

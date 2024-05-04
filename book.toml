@@ -4,3 +4,7 @@ language = "en"
 multilingual = false
 src = "docs"
 title = "starknet-modular-account"
+
+[output.html]
+git-repository-url = "https://github.com/0xknwn/starknet-modular-account/tree/develop/guide"
+edit-url-template = "https://github.com/0xknwn/starknet-modular-account/tree/develop/{path}"

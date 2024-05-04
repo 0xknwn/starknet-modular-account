@@ -1,6 +1,6 @@
-# How the Stark Validator Module Works
+# The Stark Validator Module
 
-- [How the Stark Validator Module Works](#how-the-stark-validator-module-works)
+- [The Stark Validator Module](#the-stark-validator-module)
   - [Core Validator Module](#core-validator-module)
   - [Validation](#validation)
   - [Module Initialisation and Update](#module-initialisation-and-update)
