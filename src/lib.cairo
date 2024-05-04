@@ -1,8 +1,9 @@
-pub mod account;
-pub mod module;
-pub mod store;
-pub mod message;
-pub mod utils;
 
-mod presets;
+pub mod store;
+pub mod utils;
+pub mod component;
+
+mod modules;
+mod helpers;
+mod account;
 mod tests;

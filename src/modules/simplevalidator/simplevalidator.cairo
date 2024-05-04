@@ -2,11 +2,11 @@
 
 #[starknet::contract]
 mod SimpleValidator {
-    use smartr::module::{ValidatorComponent, IValidator};
+    use smartr::component::{ValidatorComponent, IValidator};
     use openzeppelin::account::utils::{is_valid_stark_signature};
     use openzeppelin::introspection::src5::SRC5Component;
     use starknet::{get_caller_address, get_contract_address};
-    use smartr::account::AccountComponent;
+    use smartr::component::AccountComponent;
     use starknet::class_hash::ClassHash;
     use starknet::account::Call;
 

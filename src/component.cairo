@@ -1,3 +1,12 @@
+mod account;
+pub use account::AccountComponent;
+mod interface;
+pub use interface::ISRC6;
+pub use interface::IDeclarer;
+pub use interface::IDeployable;
+pub use interface::ISRC6CamelOnly;
+pub use interface::IModule;
+pub use interface::{IModuleDispatcherTrait, IModuleDispatcher};
 mod validator;
 pub use validator::ValidatorComponent;
 pub use validator::IValidator;
@@ -6,5 +15,3 @@ pub use validator::ICoreValidator;
 pub use validator::{ICoreValidatorDispatcherTrait, ICoreValidatorLibraryDispatcher};
 pub use validator::IConfigure;
 pub use validator::{IConfigureDispatcherTrait, IConfigureLibraryDispatcher};
-pub mod merkle_tree;
-mod starkvalidator;

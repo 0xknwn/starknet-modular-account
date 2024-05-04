@@ -3,10 +3,10 @@
 #[starknet::contract]
 mod StarkValidator {
     use core::traits::Into;
-    use smartr::module::ValidatorComponent;
+    use smartr::component::ValidatorComponent;
     use openzeppelin::introspection::src5::SRC5Component;
-    use smartr::account::AccountComponent;
-    use smartr::module::IConfigure;
+    use smartr::component::AccountComponent;
+    use smartr::component::IConfigure;
     use starknet::account::Call;
 
     component!(path: ValidatorComponent, storage: validator, event: ValidatorEvent);
