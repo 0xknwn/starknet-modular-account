@@ -58,3 +58,8 @@ are the following:
   for developers.
 - Associate class versions with class hash in the documentation and version
   the documentation so that we can keep track of the version history
+- It is possible to get a sessionkey that has all accesses on an account. We
+  need to disable that feature to force dapps to requests what they want and
+  for users to review policies.
+- For a better understanding of the sessionkey flow in the SDK we should sign
+  directly the request and not the `SsessionKeyModule`

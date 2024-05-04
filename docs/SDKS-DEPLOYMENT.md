@@ -28,8 +28,8 @@ Below is an example of a script that declares the 2 classes.
 
 > Note: To declare the class, the account you use must be loaded with ETH.
 
-Assuming you have named the script `src/deploy-class.ts`, to transpile it and
-run it, use the script below:
+Assuming you have named the script `src/01-declare-class.ts`, to transpile it
+and run it, use the script below:
 
 ```shell
 npx tsc --build
