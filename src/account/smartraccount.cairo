@@ -2,8 +2,8 @@
 
 #[starknet::contract(account)]
 mod SmartrAccount {
-    use smartr::account::AccountComponent;
-    use smartr::account::AccountComponent::Errors;
+    use smartr::component::AccountComponent;
+    use smartr::component::AccountComponent::Errors;
     use openzeppelin::introspection::src5::SRC5Component;
     use openzeppelin::upgrades::UpgradeableComponent;
     use openzeppelin::upgrades::interface::IUpgradeable;

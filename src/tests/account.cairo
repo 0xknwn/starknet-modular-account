@@ -5,7 +5,7 @@ use snforge_std::errors::{SyscallResultStringErrorTrait, PanicDataOrString};
 use smartr::utils::compute_contract_address;
 use starknet::{ClassHash, ContractAddress};
 use openzeppelin::account::interface::{IPublicKeyDispatcherTrait, IPublicKeyDispatcher};
-use smartr::account::interface::{IModuleDispatcherTrait, IModuleDispatcher};
+use smartr::component::{IModuleDispatcherTrait, IModuleDispatcher};
 use starknet::account::Call;
 
 #[test]

@@ -13,14 +13,14 @@ mod SessionKeyValidator {
     use openzeppelin::account::utils::{is_valid_stark_signature};
     use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
     use openzeppelin::introspection::src5::SRC5Component;
-    use smartr::account::AccountComponent;
-    use smartr::message::hash_auth_message;
+    use smartr::component::AccountComponent;
+    use smartr::utils::hash_auth_message;
     use super::{IDisableSessionKeyDispatcherTrait, IDisableSessionKey};
-    use smartr::module::IConfigure;
-    use smartr::module::{
+    use smartr::component::IConfigure;
+    use smartr::component::{
         ValidatorComponent, IValidator, IValidatorDispatcherTrait, IValidatorLibraryDispatcher
     };
-    use smartr::module::merkle_tree::is_valid_root;
+    use smartr::utils::merkle_tree::is_valid_root;
     use starknet::{get_caller_address, get_contract_address, get_tx_info, get_block_timestamp};
     use starknet::account::Call;
     use starknet::class_hash::ClassHash;

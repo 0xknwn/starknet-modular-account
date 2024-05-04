@@ -2,7 +2,7 @@ use snforge_std::errors::{SyscallResultStringErrorTrait, PanicDataOrString};
 use starknet::contract_address_const;
 use starknet::class_hash::class_hash_const;
 use starknet::{ContractAddress, ClassHash};
-use smartr::message::hash_auth_message;
+use smartr::utils::hash_auth_message;
 
 #[test]
 fn test_hash_auth_message() {

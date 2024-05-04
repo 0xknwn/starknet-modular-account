@@ -45,8 +45,8 @@ pub mod ValidatorComponent {
     use starknet::class_hash::ClassHash;
     use starknet::account::Call;
     use smartr::store::Felt252ArrayStore;
-    use smartr::account::AccountComponent;
-    use smartr::account::AccountComponent::InternalTrait as AccountInternalTrait;
+    use smartr::component::AccountComponent;
+    use smartr::component::AccountComponent::InternalTrait as AccountInternalTrait;
     use super::IPublicKeys;
 
     mod Errors {

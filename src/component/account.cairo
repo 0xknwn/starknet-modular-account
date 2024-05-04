@@ -8,11 +8,11 @@ use super::interface;
 pub mod AccountComponent {
     use super::interface;
     use smartr::store::Felt252ArrayStore;
-    use smartr::module::{
+    use smartr::component::{
         ICoreValidatorDispatcherTrait, ICoreValidatorLibraryDispatcher, IValidatorDispatcherTrait,
         IValidatorLibraryDispatcher
     };
-    use smartr::module::{IConfigureDispatcherTrait, IConfigureLibraryDispatcher};
+    use smartr::component::{IConfigureDispatcherTrait, IConfigureLibraryDispatcher};
     use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
     use openzeppelin::account::utils::{execute_calls, is_valid_stark_signature};
     use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SRC5InternalTrait;
