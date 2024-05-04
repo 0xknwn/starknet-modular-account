@@ -166,8 +166,6 @@ mod SessionKeyValidator {
         }
     }
 
-    impl ValidatorInternalImpl = ValidatorComponent::InternalImpl<ContractState>;
-
     #[storage]
     struct Storage {
         Sessionkey_disabled: LegacyMap<felt252, bool>,

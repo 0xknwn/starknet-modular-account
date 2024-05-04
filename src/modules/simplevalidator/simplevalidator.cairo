@@ -21,8 +21,6 @@ mod SimpleValidator {
         }
     }
 
-    impl ValidatorInternalImpl = ValidatorComponent::InternalImpl<ContractState>;
-
     #[storage]
     struct Storage {
         #[substorage(v0)]
