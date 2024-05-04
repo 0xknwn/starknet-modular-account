@@ -26,10 +26,16 @@ out of the scope of this documentation...
 
 The rest of the documentation assume typescript is used and the javascript
 file are generated in the `dist` directory. To change the default settings
-and get this configuration, add the following line to your `tsconfig.json`:
+edit the `tsconfig.json` and change the following:
+
+- set the `outDir` property to be `dist`
+- change the `target` to be `es2020` or later. That is because we intensively
+  use `bigint` in the project and it was not supported with `es2016`
+  
+This is an example of a working `tsconfig.json`:
 
 ```json
-"outDir": "./dist/",
+{{#include ../experiments/documentation-examples/tsconfig.json}}
 ```
 
 Then create a simple `src` directory with a index.ts file in it:

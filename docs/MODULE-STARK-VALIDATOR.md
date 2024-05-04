@@ -1,5 +1,10 @@
 # The Stark Validator Module
 
+The Stark Validator Module is an implementation of a Validator Module for the
+Starknet Modular Account. It must be used as the Core Validator for the Account.
+This document explains the features, the configuration and some of the Internals
+of this module.
+
 - [The Stark Validator Module](#the-stark-validator-module)
   - [Core Validator Module](#core-validator-module)
   - [Validation](#validation)
@@ -8,6 +13,8 @@
   - [Integration in the SDK](#integration-in-the-sdk)
 
 ## Core Validator Module
+
+
 
 ## Validation
 
