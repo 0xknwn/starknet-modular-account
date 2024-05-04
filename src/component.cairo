@@ -14,3 +14,4 @@ pub use validator::ICoreValidator;
 pub use validator::{ICoreValidatorDispatcherTrait, ICoreValidatorLibraryDispatcher};
 pub use validator::IConfigure;
 pub use validator::{IConfigureDispatcherTrait, IConfigureLibraryDispatcher};
+pub use validator::IValidator_ID;

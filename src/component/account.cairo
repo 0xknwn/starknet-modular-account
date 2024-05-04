@@ -353,12 +353,14 @@ pub mod AccountComponent {
         fn notify_owner_addition(
             ref self: ComponentState<TContractState>, owner_public_key: felt252
         ) {
+            self.assert_only_self();
             self.emit(OwnerAdded { new_owner_guid: owner_public_key });
         }
 
         fn notify_owner_removal(
             ref self: ComponentState<TContractState>, owner_public_key: felt252
         ) {
+            self.assert_only_self();
             self.emit(OwnerRemoved { removed_owner_guid: owner_public_key });
         }
     }
