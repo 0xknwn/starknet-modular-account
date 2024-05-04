@@ -2,11 +2,11 @@ use core::traits::Into;
 use snforge_std::{declare, ContractClassTrait};
 use snforge_std::{start_prank, stop_prank, CheatTarget};
 use snforge_std::errors::{SyscallResultStringErrorTrait, PanicDataOrString};
-use smartr::utils::compute_contract_address;
 use starknet::{ClassHash, ContractAddress};
 use openzeppelin::account::interface::{IPublicKeyDispatcherTrait, IPublicKeyDispatcher};
 use smartr::component::{IModuleDispatcherTrait, IModuleDispatcher};
 use starknet::account::Call;
+use openzeppelin::utils::deployments::calculate_contract_address_from_deploy_syscall;
 
 #[test]
 fn test_compute_account_address() {
@@ -17,10 +17,10 @@ fn test_compute_account_address() {
     let constructorCallData = array![publicKey, 0x10];
     let deployerAddress: ContractAddress = 0x0.try_into().unwrap();
 
-    // use compute_contract_address with deployerAddress=0 and salt=publicKey
+    // use calculate_contract_address_from_deploy_syscall with deployerAddress=0 and salt=publicKey
     // to get the accouny address
-    let account_address: ContractAddress = compute_contract_address(
-        deployerAddress, publicKey, class_hash, constructorCallData
+    let account_address: ContractAddress = calculate_contract_address_from_deploy_syscall(
+        publicKey, class_hash, constructorCallData.span(), deployerAddress
     );
     let account_address_felt = account_address.into();
     assert_eq!(
@@ -36,8 +36,8 @@ fn test_deploy_simple_account() {
     let publicKey = 0x39d9e6ce352ad4530a0ef5d5a18fd3303c3606a7fa6ac5b620020ad681cc33b;
     let deployerAddress: ContractAddress = 0x0.try_into().unwrap();
     let account_class_hash = account_class.class_hash;
-    let computed_account_address: ContractAddress = compute_contract_address(
-        deployerAddress, publicKey, account_class_hash, array![publicKey, 0x10]
+    let computed_account_address: ContractAddress = calculate_contract_address_from_deploy_syscall(
+        publicKey, account_class_hash, (array![publicKey, 0x10]).span(), deployerAddress
     );
     let (account_address, _) = account_class
         .deploy_at(@array![publicKey, 0x10], computed_account_address)
@@ -55,8 +55,8 @@ fn test_account_module_call() {
     let publicKey = 0x39d9e6ce352ad4530a0ef5d5a18fd3303c3606a7fa6ac5b620020ad681cc33b;
     let constructorCallData = array![core_validator_class_felt, publicKey];
     let deployerAddress: ContractAddress = 0x0.try_into().unwrap();
-    let computed_account_address: ContractAddress = compute_contract_address(
-        deployerAddress, publicKey, account_class.class_hash, constructorCallData
+    let computed_account_address: ContractAddress = calculate_contract_address_from_deploy_syscall(
+        publicKey, account_class.class_hash,constructorCallData.span(), deployerAddress
     );
     let (account_address, _) = account_class
         .deploy_at(@array![core_validator_class_felt, publicKey], computed_account_address)
@@ -78,8 +78,8 @@ fn test_account_module_execute() {
     let publicKey = 0x39d9e6ce352ad4530a0ef5d5a18fd3303c3606a7fa6ac5b620020ad681cc33b;
     let constructorCallData = array![core_validator_class_felt, publicKey];
     let deployerAddress: ContractAddress = 0x0.try_into().unwrap();
-    let computed_account_address: ContractAddress = compute_contract_address(
-        deployerAddress, publicKey, account_class.class_hash, constructorCallData
+    let computed_account_address: ContractAddress = calculate_contract_address_from_deploy_syscall(
+        publicKey, account_class.class_hash, constructorCallData.span(), deployerAddress
     );
     let (account_address, _) = account_class
         .deploy_at(@array![core_validator_class_felt, publicKey], computed_account_address)
