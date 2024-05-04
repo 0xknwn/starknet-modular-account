@@ -120,7 +120,6 @@ In the case of the Stark Validator:
 - `execute` takes calls to `add_public_key`, `remove_public_keys` and
   `set_threshold` and match the input/output on the account.
 
-
 > Note: To work the Call should include the following:
 > - `selector` must be the selector for the management interface, i.e. the
 >   `sn_keccak` of the entrypoint name
