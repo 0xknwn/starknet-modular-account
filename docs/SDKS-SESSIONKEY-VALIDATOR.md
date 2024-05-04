@@ -176,14 +176,14 @@ const sessionKeyModule = new SessionKeyModule(
 ### Request a Grant by the Account Core Validator Signer
 
 To request the authorization you should call the `request` method on the module
-with the `corevalidatorClassHash` like below:
+with the `starkValidatorClassHash` like below:
 
 ```typescript
-const request = await sessionKeyModule.request(corevalidatorClassHash);
+const request = await sessionKeyModule.request(starkValidatorClassHash);
 ```
 
 > Note: this step is very important because it stores the
-> `corevalidatorClassHash` in the module.
+> `starkValidatorClassHash` in the module.
 
 ### Get the Session Key Grant
 
@@ -194,7 +194,7 @@ the signature, run the `sign` method on it:
 
 ```typescript
 const grantor = new SessionKeyGrantor(
-  corevalidatorClassHash,
+  starkValidatorClassHash,
   smartrAccountPrivateKey
 );
 const signature = await grantor.sign(sessionKeyModule);

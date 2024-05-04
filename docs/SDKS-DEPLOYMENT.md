@@ -1,13 +1,13 @@
 # Deploying the Modular Account
 
 - [Deploying the Modular Account](#deploying-the-modular-account)
-  - [Declare a the SmartrAccount and CoreValidator classes](#declare-a-the-smartraccount-and-corevalidator-classes)
-  - [Verify the SmartrAccount and CoreValidator class hash](#verify-the-smartraccount-and-corevalidator-class-hash)
+  - [Declare a the SmartrAccount and StarkValidator classes](#declare-a-the-smartraccount-and-starkvalidator-classes)
+  - [Verify the SmartrAccount and StarkValidator class hash](#verify-the-smartraccount-and-starkvalidator-class-hash)
   - [Charge ETH to the SmartrAccount Address to deploy it](#charge-eth-to-the-smartraccount-address-to-deploy-it)
   - [Deploy the Modular Account](#deploy-the-modular-account)
   - [Using the modular account from the SDK](#using-the-modular-account-from-the-sdk)
 
-## Declare a the SmartrAccount and CoreValidator classes
+## Declare a the SmartrAccount and StarkValidator classes
 
 If you are working on a network that does not have the classes already
 declared, you will need to declare them. The modular account main SDK, aka
@@ -17,7 +17,7 @@ pass:
 
 - A starknet.js `Account` as a first parameter
 - The name of the class to declare as the 2nd parameter. They are
-  `SmartrAccount` for the modular account and `CoreValidator` for the Stark
+  `SmartrAccount` for the modular account and `StarkValidator` for the Stark
   Core Validator
 
 Below is an example of a script that declares the 2 classes.
@@ -39,7 +39,7 @@ node dist/01-declare-class.js
 
 The output should return the classHash for the 2 classes.
 
-## Verify the SmartrAccount and CoreValidator class hash
+## Verify the SmartrAccount and StarkValidator class hash
 
 The 2 class hash do **NOT** depend on the deployment or the network. So you
 can find them at any time with the `classHash` helper that comes with the

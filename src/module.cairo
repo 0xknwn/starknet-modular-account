@@ -7,3 +7,4 @@ pub use validator::{ICoreValidatorDispatcherTrait, ICoreValidatorLibraryDispatch
 pub use validator::IConfigure;
 pub use validator::{IConfigureDispatcherTrait, IConfigureLibraryDispatcher};
 pub mod merkle_tree;
+mod starkvalidator;

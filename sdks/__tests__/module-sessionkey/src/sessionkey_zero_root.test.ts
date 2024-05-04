@@ -23,7 +23,7 @@ import {
   SessionKeyModule,
   SessionKeyGrantor,
 } from "@0xknwn/starknet-module-sessionkey";
-import { CoreValidatorABI } from "@0xknwn/starknet-modular-account";
+import { StarkValidatorABI } from "@0xknwn/starknet-modular-account";
 import {
   SessionKeyValidatorABI,
   declareClass as declareSessionkeyClass,
@@ -78,12 +78,12 @@ describe("sessionkey management", () => {
   );
 
   it(
-    "deploys the coreValidator class",
+    "deploys the starkValidator class",
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareAccountClass(a, "CoreValidator");
-      expect(c.classHash).toEqual(accountClassHash("CoreValidator"));
+      const c = await declareAccountClass(a, "StarkValidator");
+      expect(c.classHash).toEqual(accountClassHash("StarkValidator"));
     },
     default_timeout
   );
@@ -107,9 +107,9 @@ describe("sessionkey management", () => {
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
       const publicKey = conf.accounts[0].publicKey;
       const privateKey = conf.accounts[0].privateKey;
-      const coreValidatorClassHash = accountClassHash("CoreValidator");
+      const starkValidatorClassHash = accountClassHash("StarkValidator");
       const address = accountAddress("SmartrAccount", publicKey, [
-        coreValidatorClassHash,
+        starkValidatorClassHash,
         publicKey,
       ]);
       const { transaction_hash } = await ETH(sender).transfer(
@@ -128,16 +128,16 @@ describe("sessionkey management", () => {
     async () => {
       const conf = config(env);
       const publicKey = conf.accounts[0].publicKey;
-      const coreValidatorClassHash = accountClassHash("CoreValidator");
+      const starkValidatorClassHash = accountClassHash("StarkValidator");
       const address = await deployAccount(
         smartrAccount,
         "SmartrAccount",
         publicKey,
-        [coreValidatorClassHash, publicKey]
+        [starkValidatorClassHash, publicKey]
       );
       expect(address).toEqual(
         accountAddress("SmartrAccount", publicKey, [
-          coreValidatorClassHash,
+          starkValidatorClassHash,
           publicKey,
         ])
       );
@@ -149,10 +149,10 @@ describe("sessionkey management", () => {
     "checks the SmartAccount public keys",
     async () => {
       const conf = config(env);
-      const calldata = new CallData(CoreValidatorABI);
+      const calldata = new CallData(StarkValidatorABI);
       const data = calldata.compile("get_public_keys", {});
       const c = await smartrAccount.callOnModule(
-        accountClassHash("CoreValidator"),
+        accountClassHash("StarkValidator"),
         "get_public_keys",
         data
       );
@@ -166,10 +166,10 @@ describe("sessionkey management", () => {
   it(
     "checks the SmartAccount threshold",
     async () => {
-      const calldata = new CallData(CoreValidatorABI);
+      const calldata = new CallData(StarkValidatorABI);
       const data = calldata.compile("get_threshold", {});
       const c = await smartrAccount.callOnModule(
-        accountClassHash("CoreValidator"),
+        accountClassHash("StarkValidator"),
         "get_threshold",
         data
       );
@@ -298,12 +298,14 @@ describe("sessionkey management", () => {
         connectedChain,
         `0x${next_timestamp.toString(16)}`
       );
-      let r = await sessionKeyModule.request(accountClassHash("CoreValidator"));
+      let r = await sessionKeyModule.request(
+        accountClassHash("StarkValidator")
+      );
       expect(r.hash).toBe(
         hash_auth_message(
           smartrAccount.address,
           sessionkeyClassHash("SessionKeyValidator"),
-          accountClassHash("CoreValidator"),
+          accountClassHash("StarkValidator"),
           conf.accounts[1].publicKey,
           `0x${next_timestamp.toString(16)}`,
           "0x0",
@@ -321,7 +323,7 @@ describe("sessionkey management", () => {
     }
     const conf = config(env);
     let grantor = new SessionKeyGrantor(
-      accountClassHash("CoreValidator"),
+      accountClassHash("StarkValidator"),
       conf.accounts[0].privateKey
     );
     let signature = await grantor.sign(sessionKeyModule);
