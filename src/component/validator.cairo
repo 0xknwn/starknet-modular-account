@@ -9,12 +9,12 @@ pub const IValidator_ID: felt252 =
 
 #[starknet::interface]
 pub trait ICoreValidator<TState> {
+    fn is_valid_signature(self: @TState, hash: felt252, signature: Array<felt252>) -> felt252;
     fn initialize(ref self: TState, public_key: felt252);
 }
 
 #[starknet::interface]
 pub trait IValidator<TState> {
-    fn is_valid_signature(self: @TState, hash: felt252, signature: Array<felt252>) -> felt252;
     fn validate(self: @TState, grantor_class: ClassHash, calls: Array<Call>) -> felt252;
 }
 
@@ -80,6 +80,17 @@ pub mod ValidatorComponent {
         +AccountComponent::HasComponent<TContractState>,
         +Drop<TContractState>
     > of ICoreValidator<ComponentState<TContractState>> {
+        /// Verifies that the given signature is valid for the given hash.
+        fn is_valid_signature(
+            self: @ComponentState<TContractState>, hash: felt252, signature: Array<felt252>
+        ) -> felt252 {
+            if self._is_valid_signature(hash, signature.span()) {
+                starknet::VALIDATED
+            } else {
+                0
+            }
+        }
+
         fn initialize(ref self: ComponentState<TContractState>, public_key: felt252) {
             self.Account_public_key.write(public_key);
             self.Account_public_keys.write(array![public_key]);
@@ -95,17 +106,6 @@ pub mod ValidatorComponent {
         +AccountComponent::HasComponent<TContractState>,
         +Drop<TContractState>
     > of IValidator<ComponentState<TContractState>> {
-        /// Verifies that the given signature is valid for the given hash.
-        fn is_valid_signature(
-            self: @ComponentState<TContractState>, hash: felt252, signature: Array<felt252>
-        ) -> felt252 {
-            if self._is_valid_signature(hash, signature.span()) {
-                starknet::VALIDATED
-            } else {
-                0
-            }
-        }
-
         fn validate(
             self: @ComponentState<TContractState>, grantor_class: ClassHash, calls: Array<Call>
         ) -> felt252 {

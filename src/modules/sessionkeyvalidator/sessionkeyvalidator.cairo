@@ -18,7 +18,8 @@ mod SessionKeyValidator {
     use super::{IDisableSessionKeyDispatcherTrait, IDisableSessionKey};
     use smartr::component::IConfigure;
     use smartr::component::{
-        ValidatorComponent, IValidator, IValidatorDispatcherTrait, IValidatorLibraryDispatcher
+        ValidatorComponent, IValidator, ICoreValidator, ICoreValidatorDispatcherTrait,
+        ICoreValidatorLibraryDispatcher,
     };
     use smartr::utils::merkle_tree::is_valid_root;
     use starknet::{get_caller_address, get_contract_address, get_tx_info, get_block_timestamp};
@@ -57,16 +58,6 @@ mod SessionKeyValidator {
 
     #[abi(embed_v0)]
     impl ValidatorImpl of IValidator<ContractState> {
-        fn is_valid_signature(
-            self: @ContractState, hash: felt252, signature: Array<felt252>
-        ) -> felt252 {
-            if self.validator._is_valid_signature(hash, signature.span()) {
-                starknet::VALIDATED
-            } else {
-                0
-            }
-        }
-
         fn validate(self: @ContractState, grantor_class: ClassHash, calls: Array<Call>) -> felt252 {
             // Parse the transaction info
             let tx_info = get_tx_info().unbox();
@@ -170,7 +161,7 @@ mod SessionKeyValidator {
             let is_disabled = self.Sessionkey_disabled.read(auth_hash);
             assert(!is_disabled, Errors::DISABLED_SESSION);
 
-            IValidatorLibraryDispatcher { class_hash: grantor_class }
+            ICoreValidatorLibraryDispatcher { class_hash: grantor_class }
                 .is_valid_signature(auth_hash, signature)
         }
     }
@@ -240,5 +231,4 @@ mod SessionKeyValidator {
             output
         }
     }
-
 }

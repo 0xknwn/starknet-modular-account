@@ -23,30 +23,22 @@ A validator is a contract that implement the following interface:
 ```rust
 #[starknet::interface]
 pub trait IValidator<TState> {
-    fn is_valid_signature(self: @TState, hash: felt252, signature: Array<felt252>) -> felt252;
     fn validate(self: @TState, grantor_class: ClassHash, calls: Array<Call>) -> felt252;
 }
 ```
 
-In the case of the sessionkey Validator the 2 functions manages the following:
+In the case of the sessionkey Validator the `validate` function checks the
+transaction signature is valid by:
 
-- `is_valid_signature` does **NOT** work! That is because the signature that is
-  used in the transaction does not contain all the information to decide for
-  the validation. As a matter of fact, they are passed in a prefix call of the
-  transaction. This is a known issue that might be addressed in a future
-  release of the Modular Account by moving those informations in the signature.
-  Note that, even if that was the case, the function could not validate the 
-  merkle proofs and as such would not provide a useful validation anyway.
-- `validate` checks the transaction signature is valid by:
-  - making sure the session key has not been disabled with the module management
-    interface.
-  - extracting the session key data and making sure they are valid, signed
-    by the core validator and still properly configured in the account.
-  - check the transaction calls matches the policies associated with the session
-    key by examining the merkle proofs of the signature and recomputing the
-    merkle root with those proofs and the calls
-  - check the transaction is signed by the private key that has been granted
-    the access by the session key.
+- making sure the session key has not been disabled with the module management
+  interface.
+- extracting the session key data and making sure they are valid, signed
+  by the core validator and still properly configured in the account.
+- check the transaction calls matches the policies associated with the session
+  key by examining the merkle proofs of the signature and recomputing the
+  merkle root with those proofs and the calls
+- check the transaction is signed by the private key that has been granted
+  the access by the session key.
 
 > Note: the grantor class that is passed by the account is the Core Validator
 > class hash registered with the account. In the case of the SessionKey 
@@ -57,7 +49,10 @@ In the case of the sessionkey Validator the 2 functions manages the following:
 
 This module cannot be used as a Core Validator. That is because the session key
 needs to be authorized by the Core Validator Signer to be used. As a result, it
-does not implement the `ICoreValidator` interface.
+does not implement the `ICoreValidator` interface. In addition, a message cannot
+be signed by a session key simply because the policy cannot apply to it and
+there is no way to check a transaction hash is valid without the calls. That is
+why the `is_valid_signature` cannot be implemented for that case.
 
 ## Management Interface
 
