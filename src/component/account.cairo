@@ -113,6 +113,7 @@ pub mod AccountComponent {
         pub const MODULE_NOT_FOUND: felt252 = 'Module: module not found';
         pub const MODULE_NOT_INSTALLED: felt252 = 'Module: module not installed';
         pub const MODULE_ALREADY_INSTALLED: felt252 = 'Module: already installed';
+        pub const MODULE_IS_COREVALIDATOR: felt252 = 'Module: is core validator';
     }
 
     #[embeddable_as(SRC6Impl)]
@@ -253,6 +254,7 @@ pub mod AccountComponent {
 
         fn remove_module(ref self: ComponentState<TContractState>, class_hash: ClassHash) {
             self.assert_only_self();
+            self.assert_not_corevalidator(class_hash);
             let installed = self.Account_modules.read(class_hash);
             assert(installed, Errors::MODULE_NOT_INSTALLED);
             self.Account_modules.write(class_hash, false);
@@ -264,6 +266,12 @@ pub mod AccountComponent {
 
         fn update_core_module(ref self: ComponentState<TContractState>, class_hash: ClassHash) {
             self.assert_only_self();
+            self.assert_not_corevalidator(class_hash);
+            // Note 1: leaves the current core module installed as a secondary validator.
+            // Note 2: the core module should be installed as a secondary validator before
+            // updating it as the core validator.
+            let installed = self.Account_modules.read(class_hash);
+            assert(installed, Errors::MODULE_NOT_INSTALLED);
             self.Account_core_validator.write(class_hash);
         }
 
@@ -316,6 +324,12 @@ pub mod AccountComponent {
             let caller = get_caller_address();
             let self = get_contract_address();
             assert(self == caller, Errors::UNAUTHORIZED);
+        }
+
+        /// Validates that the class hash is not the core validator.
+        fn assert_not_corevalidator(self: @ComponentState<TContractState>, class_hash: ClassHash) {
+            let corevalidatorHash = self.Account_core_validator.read();
+            assert(corevalidatorHash != class_hash, Errors::MODULE_IS_COREVALIDATOR);
         }
 
         /// Validates the signature for the current transaction.

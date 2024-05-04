@@ -39,9 +39,6 @@ are the following:
   first parameter for the account and the module
 - Version the contracts for both accounts and modules and maintain a
   compatibility matrix
-- Improve the distinction between stark validator and core validator
-- Make sure we cannot remove the core module from modules with the
-  `remove_module` entrypoint
 - Improve the upgrade management with the help of the bootstrap experiment.
   Right now the upgrade works because it is actually a downgrade and move back.
   In reality it will not pass a test of an upgrade with an Argent, Braavos or
