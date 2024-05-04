@@ -13,7 +13,7 @@
   - [The Stark Validator Module](./MODULE-STARK-VALIDATOR.md)
   - [The Session Key Validator Module](./MODULE-SESSIONKEY-VALIDATOR.md)
 - [Roadmap and Known Issues](./ROADMAP.md)
-- [SDK Reference]()
+- [SDK Reference](./SDKs-REFERENCE.md)
   - [@0xknwn/starknet-modular-account](./starknet-account/modules.md)
     - [SmartrAccount class](./starknet-account/classes/SmartrAccount.md)
     - [AccountModuleInterface interface](./starknet-account/interfaces/AccountModuleInterface.md)

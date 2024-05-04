@@ -1,6 +1,11 @@
 # The SessionKey Validator Module
 
-The Sessionkey Validator module provides 
+The SessionKey Validator Module is an implementation of a Validator Module for
+the Starknet Modular Account. It must be used as a secondary Validator for the
+Account and requires a Core Validator module to authorize the sessionkey. This
+document explains the features, the configuration and some of the Internals
+of this module.
+
 - [The SessionKey Validator Module](#the-sessionkey-validator-module)
   - [Enabling and Disabling the Module](#enabling-and-disabling-the-module)
   - [Validation](#validation)

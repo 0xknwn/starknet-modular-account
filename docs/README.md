@@ -37,4 +37,4 @@ Doing it as a community project would help everybody to get those feature
 
 ## License
 
-This project is licensed under the [MIT](./LICENSE.md)
+This project is licensed under the [MIT License](./docs/LICENSE.md)
