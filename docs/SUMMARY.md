@@ -12,7 +12,6 @@
   - [Using the Modular Account](./SDKS-SMARTRACCOUNT.md)
   - [Using Multiple Signers](./SDKS-MULTISIG.md)
   - [Using the SessionKey Validator](./SDKS-SESSIONKEY-VALIDATOR.md)
-  - [Using Policies with the SessionKey](./SDKS-SESSIONKEY-POLICIES.md)
 - [Roadmap and Known Issues](./ROADMAP.md)
 - [SDK Reference]()
   - [@0xknwn/starknet-modular-account](./starknet-account/modules.md)
