@@ -53,13 +53,13 @@ fn test_account_module_call() {
     let core_validator_class_felt: felt252 = core_validator_class.class_hash.into();
     let account_class = declare("SmartrAccount").unwrap();
     let publicKey = 0x39d9e6ce352ad4530a0ef5d5a18fd3303c3606a7fa6ac5b620020ad681cc33b;
-    let constructorCallData = array![core_validator_class_felt, publicKey];
+    let constructorCallData = array![core_validator_class_felt, 0x1, publicKey];
     let deployerAddress: ContractAddress = 0x0.try_into().unwrap();
     let computed_account_address: ContractAddress = calculate_contract_address_from_deploy_syscall(
         publicKey, account_class.class_hash, constructorCallData.span(), deployerAddress
     );
     let (account_address, _) = account_class
-        .deploy_at(@array![core_validator_class_felt, publicKey], computed_account_address)
+        .deploy_at(@array![core_validator_class_felt, 0x1, publicKey], computed_account_address)
         .unwrap();
     let account = IModuleDispatcher { contract_address: account_address };
     let call = Call {
@@ -76,13 +76,13 @@ fn test_account_module_execute() {
     let core_validator_class_felt: felt252 = core_validator_class.class_hash.into();
     let account_class = declare("SmartrAccount").unwrap();
     let publicKey = 0x39d9e6ce352ad4530a0ef5d5a18fd3303c3606a7fa6ac5b620020ad681cc33b;
-    let constructorCallData = array![core_validator_class_felt, publicKey];
+    let constructorCallData = array![core_validator_class_felt, 0x1, publicKey];
     let deployerAddress: ContractAddress = 0x0.try_into().unwrap();
     let computed_account_address: ContractAddress = calculate_contract_address_from_deploy_syscall(
         publicKey, account_class.class_hash, constructorCallData.span(), deployerAddress
     );
     let (account_address, _) = account_class
-        .deploy_at(@array![core_validator_class_felt, publicKey], computed_account_address)
+        .deploy_at(@array![core_validator_class_felt, 0x1, publicKey], computed_account_address)
         .unwrap();
     let account = IModuleDispatcher { contract_address: account_address };
 

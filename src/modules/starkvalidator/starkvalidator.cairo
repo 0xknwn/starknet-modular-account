@@ -66,9 +66,11 @@ mod StarkValidator {
             }
         }
 
-        fn initialize(ref self: ContractState, public_key: felt252) {
-            self.Account_public_key.write(public_key);
-            self.Account_public_keys.write(array![public_key]);
+        fn initialize(ref self: ContractState, public_key: Array<felt252>) {
+            assert(public_key.len() == 1, 'Invalid public key');
+            let public_key_felt = *public_key.at(0);
+            self.Account_public_key.write(public_key_felt);
+            self.Account_public_keys.write(array![public_key_felt]);
             self.Account_threshold.write(1);
         }
     }
@@ -185,7 +187,7 @@ mod StarkValidator {
             };
             public_keys.append(new_public_key);
             self.Account_public_keys.write(public_keys);
-            self.account.notify_owner_addition(new_public_key);
+            self.account.notify_owner_addition(array![new_public_key]);
         }
 
         /// Returns the current public keys of the account.
@@ -219,7 +221,7 @@ mod StarkValidator {
             };
             assert(is_found, Errors::KEY_NOT_FOUND);
             self.Account_public_keys.write(public_keys);
-            self.account.notify_owner_removal(old_public_key);
+            self.account.notify_owner_removal(array![old_public_key]);
         }
 
         fn set_threshold(ref self: ContractState, new_threshold: u8) {
