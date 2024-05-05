@@ -37,11 +37,11 @@ npx tsc --build
 node dist/01-declare-class.js
 ```
 
-The output should return the classHash for the 2 classes.
+The output should return the hashes for the 2 classes.
 
 ## Verify the SmartrAccount and StarkValidator class hash
 
-The 2 class hash do **NOT** depend on the deployment or the network. So you
+The 2 class hashes do **NOT** depend on the deployment or the network. So you
 can find them at any time with the `classHash` helper that comes with the
 SDK. The script below shows how to use that function:
 
@@ -49,8 +49,8 @@ SDK. The script below shows how to use that function:
 {{#include ../experiments/documentation-examples/src/01-check-class.ts}}
 ```
 
-Assuming you have named the script `src/check-class.ts`, to transpile it and
-run it, use the script below:
+Assuming you have named the script `src/01-check-class.ts`, you can transpile
+and run it:
 
 ```shell
 npx tsc --build
@@ -63,17 +63,17 @@ node dist/01-check-class.js
 Here again, the SDK provides a helper function called `deployAccount` to
 help with the deployment of the modular account. Before you move forward with
 the account, you must compute the account address with `accountAddress` and 
-send ETH to it. To proceed, create a file named `src/load-eth.ts` like below:
+send ETH to it. To proceed, create a file named `src/01-load-eth.ts` with this
+content:
 
 ```typescript
 {{#include ../experiments/documentation-examples/src/01-load-eth.ts}}
 ```
 
 > Note: You must create a file `abi/ERC20.ts` that contains the ABI of an ERC20
-> in order to call it from a contract.
+> in order to call it from a contract. 
 
-Assuming you have named the script `src/load-eth.ts`, to transpile it and
-run it, use the script below:
+Transpile and run the script:
 
 ```shell
 npx tsc --build
@@ -81,19 +81,17 @@ npx tsc --build
 node dist/01-load-eth.js
 ```
 
-The output should return the yet to come account address...
-
 ## Deploy the Modular Account
 
 Now that the address has some ETH on it, you can deploy the account with the
-`deployAccount` helper. Create a file named `src/deploy-account.ts` like below:
+`deployAccount` helper. Create a file named `src/01-deploy-account.ts` like
+below:
 
 ```typescript
 {{#include ../experiments/documentation-examples/src/01-deploy-account.ts}}
 ```
 
-Assuming you have named the script `src/deploy-account.ts`, to transpile it and
-run it, use the script below:
+Transpile and run the script:
 
 ```shell
 npx tsc --build
@@ -111,8 +109,7 @@ instantiate the account:
 {{#include ../experiments/documentation-examples/src/01-using-account.ts}}
 ```
 
-Assuming you have named the script `src/using-account.ts`, to transpile it and
-run it, use the script below:
+Transpile and run the script:
 
 ```shell
 npx tsc --build

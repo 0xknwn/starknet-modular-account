@@ -1,6 +1,17 @@
 // file src/01-load-eth.ts
-import { RpcProvider, Account, Signer, Contract, cairo } from "starknet";
-import { accountAddress, classHash } from "@0xknwn/starknet-modular-account";
+import {
+  RpcProvider,
+  Account,
+  Signer,
+  Contract,
+  cairo,
+  CallData,
+} from "starknet";
+import {
+  accountAddress,
+  classHash,
+  SmartrAccountABI,
+} from "@0xknwn/starknet-modular-account";
 import { ABI as ERC20ABI } from "./abi/ERC20";
 
 // these are the settings for the devnet with --seed=0
@@ -18,11 +29,15 @@ const main = async () => {
   const account = new Account(provider, ozAccountAddress, ozPrivateKey);
   const smartrSigner = new Signer(smartrAccountPrivateKey);
   const smartrAccountPublicKey = await smartrSigner.getPubKey();
-  const coreValidatorClassHash = classHash("CoreValidator");
+  const starkValidatorClassHash = classHash("StarkValidator");
+  const calldata = new CallData(SmartrAccountABI).compile("constructor", {
+    core_validator: starkValidatorClassHash,
+    public_key: [smartrAccountPublicKey],
+  });
   const smartrAccountAddress = accountAddress(
     "SmartrAccount",
     smartrAccountPublicKey,
-    [coreValidatorClassHash, smartrAccountPublicKey]
+    calldata
   );
   const ETH = new Contract(ERC20ABI, ethAddress, account);
   const initial_EthTransfer = cairo.uint256(3n * 10n ** 15n);

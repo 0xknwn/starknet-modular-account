@@ -13,10 +13,10 @@ const main = async () => {
     accountAddress,
     smartrAccountPrivateKey
   );
-  const isInstalled = await account.isModule(classHash("CoreValidator"));
+  const isInstalled = await account.isModule(classHash("StarkValidator"));
   console.log(
     "module",
-    classHash("CoreValidator"),
+    classHash("StarkValidator"),
     "is installed",
     isInstalled
   );

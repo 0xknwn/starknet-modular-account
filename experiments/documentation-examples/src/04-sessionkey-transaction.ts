@@ -24,7 +24,7 @@ const main = async () => {
 
   const chain = await provider.getChainId();
 
-  let expires = BigInt(Math.floor(Date.now() / 1000) + 24 * 60 * 60); // 24 hours from now
+  const expires = BigInt(Math.floor(Date.now() / 1000) + 24 * 60 * 60); // 24 hours from now
 
   const policyManager = new PolicyManager([
     { contractAddress: counterAddress, selector: "increment" },
@@ -46,15 +46,15 @@ const main = async () => {
   // Step 3: Generate the sessionkey grant request
   // that is an important step to request a session key because that is when
   // the core validator class is registered with the session key module
-  const request = await sessionKeyModule.request(classHash("CoreValidator"));
+  const request = await sessionKeyModule.request(classHash("StarkValidator"));
   console.log("request", request);
 
   // Step 4: Use the SessionKeyGrantor helper class to sign the request
-  let grantor = new SessionKeyGrantor(
-    classHash("CoreValidator"),
+  const grantor = new SessionKeyGrantor(
+    classHash("StarkValidator"),
     smartrAccountPrivateKey
   );
-  let signature = await grantor.sign(sessionKeyModule);
+  const signature = await grantor.sign(sessionKeyModule);
 
   // Step 5: Register the signatures to the session key module
   sessionKeyModule.add_signature(signature);

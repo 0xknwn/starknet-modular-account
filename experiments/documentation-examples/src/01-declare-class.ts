@@ -19,11 +19,11 @@ const main = async () => {
   );
   console.log("smartrAccount class hash:", smartrAccountClassHash);
 
-  const { classHash: coreValidatorClassHash } = await declareClass(
+  const { classHash: starkValidatorClassHash } = await declareClass(
     account,
-    "CoreValidator"
+    "StarkValidator"
   );
-  console.log("coreValidator class hash:", coreValidatorClassHash);
+  console.log("starkValidator class hash:", starkValidatorClassHash);
 };
 
 main()

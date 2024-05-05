@@ -1,9 +1,17 @@
-import { Account, Contract, RpcProvider, Signer, cairo } from "starknet";
+import {
+  Account,
+  Contract,
+  RpcProvider,
+  Signer,
+  cairo,
+  CallData,
+} from "starknet";
 import {
   accountAddress,
   declareClass,
   SmartrAccount,
   deployAccount,
+  SmartrAccountABI,
 } from "@0xknwn/starknet-modular-account";
 import { ABI as ERC20ABI } from "./abi/ERC20";
 import {
@@ -29,18 +37,22 @@ const main = async () => {
     account,
     "SmartrAccount"
   );
-  const { classHash: coreValidatorClassHash } = await declareClass(
+  const { classHash: starkValidatorClassHash } = await declareClass(
     account,
-    "CoreValidator"
+    "StarkValidator"
   );
 
   // load ETH
   const smartrSigner = new Signer(smartrAccountPrivateKey);
   const smartrAccountPublicKey = await smartrSigner.getPubKey();
+  const calldata = new CallData(SmartrAccountABI).compile("constructor", {
+    core_validator: starkValidatorClassHash,
+    public_key: [smartrAccountPublicKey],
+  });
   const smartrAccountAddress = accountAddress(
     "SmartrAccount",
     smartrAccountPublicKey,
-    [coreValidatorClassHash, smartrAccountPublicKey]
+    calldata
   );
   const ETH = new Contract(ERC20ABI, ethAddress, account);
   const initial_EthTransfer = cairo.uint256(3n * 10n ** 15n);
@@ -64,7 +76,7 @@ const main = async () => {
     smartrAccount,
     "SmartrAccount",
     smartrAccountPublicKey,
-    [coreValidatorClassHash, smartrAccountPublicKey]
+    calldata
   );
   if (address !== smartrAccountAddress) {
     throw new Error(
