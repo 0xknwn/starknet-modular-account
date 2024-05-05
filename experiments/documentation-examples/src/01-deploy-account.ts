@@ -1,10 +1,11 @@
 // file src/01-deploy-account.ts
-import { RpcProvider, Account, Signer, Contract, cairo } from "starknet";
+import { RpcProvider, Account, Signer, CallData } from "starknet";
 import {
   accountAddress,
   classHash,
   deployAccount,
   SmartrAccount,
+  SmartrAccountABI,
 } from "@0xknwn/starknet-modular-account";
 
 // these are the settings for the devnet with --seed=0
@@ -16,11 +17,15 @@ const main = async () => {
   const provider = new RpcProvider({ nodeUrl: providerURL });
   const smartrSigner = new Signer(smartrAccountPrivateKey);
   const smartrAccountPublicKey = await smartrSigner.getPubKey();
-  const coreValidatorClassHash = classHash("CoreValidator");
+  const starkValidatorClassHash = classHash("StarkValidator");
+  const calldata = new CallData(SmartrAccountABI).compile("constructor", {
+    core_validator: starkValidatorClassHash,
+    public_key: [smartrAccountPublicKey],
+  });
   const smartrAccountAddress = accountAddress(
     "SmartrAccount",
     smartrAccountPublicKey,
-    [coreValidatorClassHash, smartrAccountPublicKey]
+    calldata
   );
   const smartrAccount = new SmartrAccount(
     provider,
@@ -31,7 +36,7 @@ const main = async () => {
     smartrAccount,
     "SmartrAccount",
     smartrAccountPublicKey,
-    [coreValidatorClassHash, smartrAccountPublicKey]
+    calldata
   );
   if (address !== smartrAccountAddress) {
     throw new Error(

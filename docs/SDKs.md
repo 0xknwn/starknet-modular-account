@@ -14,9 +14,9 @@
 
 In addition, the project provides another SDK called
 [@0xknwn/starknet-test-helpers](https://www.npmjs.com/package/@0xknwn/starknet-test-helpers) that can be used to create helper classes outside of
-this repository. That project is used to demonstrate the 2 main SDKs.
+this repository. It is used to demonstrate the 2 main SDKs.
 
 This section provides a set of tutorials about how to use the account and
 modules. If you want to understand how modules are working internally, you
-should check 
+should check [Modules Internals](./MODULES.md).
 

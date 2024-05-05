@@ -9,7 +9,7 @@ is what is shown in this section.
 - [Using Multiple Signers](#using-multiple-signers)
   - [An Account with 3 Registered Keys](#an-account-with-3-registered-keys)
   - [Changing the Account Threshold to 2](#changing-the-account-threshold-to-2)
-  - [Checking you cannot run a transaction with a single signer](#checking-you-cannot-run-a-transaction-with-a-single-signer)
+  - [Checking you can **NOT** run a transaction with a single signer](#checking-you-can-not-run-a-transaction-with-a-single-signer)
   - [Running a Multiple Signer Transaction](#running-a-multiple-signer-transaction)
   - [Reset the threshold to one](#reset-the-threshold-to-one)
   - [Remove Registered Keys](#remove-registered-keys)
@@ -42,8 +42,7 @@ of the account:
 {{#include ../experiments/documentation-examples/src/03-add-publickeys.ts}}
 ```
 
-The script above returns a list of public keys. Make sure you have deployed the
-account in the network and run the following commands:
+Transpile and run the script:
 
 ```shell
 npx tsc --build
@@ -53,7 +52,7 @@ node dist/03-add-publickeys.js
 
 You can re-run the script from the previous section to check the currently
 registered public keys. We provide a copy of that script named
-`03-registered-publickeys.ts` that you can run like below:
+`03-registered-publickeys.ts` that you can run:
 
 ```shell
 npx tsc --build
@@ -72,7 +71,7 @@ publickey # 3 0x411494b501a98abd8262b0da1351e17899a0c4ef23dd2f96fec5ba847310b20
 
 ## Changing the Account Threshold to 2
 
-By changing the Stark Validator Threshold to 2, you force transactiona to be
+By changing the Stark Validator Threshold to 2, you force transactions to be
 signed by 2 of the 3 signers of the account. Run a script like below to
 change the threshold:
 
@@ -80,8 +79,7 @@ change the threshold:
 {{#include ../experiments/documentation-examples/src/03-increase-threshold.ts}}
 ```
 
-The script above returns a list of public keys. Make sure you have deployed the
-account in the network and run the following commands:
+Transpile and run the script:
 
 ```shell
 npx tsc --build
@@ -103,17 +101,17 @@ npx tsc --build
 node dist/03-get-threshold.js
 ```
 
-## Checking you cannot run a transaction with a single signer
+## Checking you can **NOT** run a transaction with a single signer
 
-If you run the script below that execute a transaction with a single signer as
-it was the case in the previous section:
+The script below executes a transaction with a single signer as it was the case
+in the previous section:
 
 ```typescript
 {{#include ../experiments/documentation-examples/src/03-execute-tx.ts}}
 ```
 
-To execute the script, make sure you have deployed the account and the counter
-contract in the network and run the following commands:
+Make sure you have deployed the account and the counter contract in the network
+and run the following commands:
 
 ```shell
 npx tsc --build
@@ -121,7 +119,7 @@ npx tsc --build
 node dist/03-execute-tx.js
 ```
 
-You are now getting an error saying the signatire is now invalid like below:
+You are now getting an error saying the signature is invalid like below:
 
 ```output
 Execution failed.
@@ -135,7 +133,7 @@ To run a transaction with multiple signers, you need to instantiate several
 `SmartrAccount`, each one with a different signer. Because you have set the
 threshold, you need to instantiate 2 accounts.
 
-Once done, you should proceed in 3 steps:
+Once done, proceed in 3 steps:
 
 - Step 1: generate the transaction details. This requires you create the calls
   but also you set some details about it, including: the Fees, the Nonce, the
@@ -145,12 +143,12 @@ Once done, you should proceed in 3 steps:
 - Step 2: have all the signers generate their part of the signature. The
   `signMultisig` takes the list of calls and the details you have generated and
   provides the signature as an array of string
-- Step 3: Execute the transaction with all the signature from Step 2. This could
-  be done by anyone, including one of the account you have already created. The
-  `executeMultisig` takes the list of calls, the details and an array that
-  contains all the signatures.
+- Step 3: Execute the transaction with all the signatures from Step 2. This
+  could be done by anyone, including one of the account you have already
+  created. The `executeMultisig` function takes the list of calls, the details
+  and an array that contains all the signatures.
 
-The script below signe the transaction with 2 signers and to run the `increment`
+The script below signs the transaction with 2 signers and to run the `increment`
 external function of the `Counter` contract. It shows the value of the counter
 before and after the call:
 
@@ -158,7 +156,7 @@ before and after the call:
 {{#include ../experiments/documentation-examples/src/03-execute-tx-multiple-signers.ts}}
 ```
 
-To execute the script, run the following commands:
+Transpile and run the script:
 
 ```shell
 npx tsc --build
@@ -176,7 +174,7 @@ account threshold back to one. The script below build the call to
 {{#include ../experiments/documentation-examples/src/03-decrease-threshold.ts}}
 ```
 
-To execute the script, run the following commands:
+Execute the script with the following commands:
 
 ```shell
 npx tsc --build
@@ -199,7 +197,7 @@ below shows how to remove 2 public keys from a single call:
 {{#include ../experiments/documentation-examples/src/03-remove-publickeys.ts}}
 ```
 
-To execute the script, run the following commands:
+Transpile and run the script:
 
 ```shell
 npx tsc --build
@@ -207,7 +205,7 @@ npx tsc --build
 node dist/03-remove-publickeys.js
 ```
 
-You can check the threshold is back to one:
+You can check the 2 of the 3 public keys have been removed:
 
 ```shell
 node dist/03-registered-publickeys.js

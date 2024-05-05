@@ -1,7 +1,7 @@
 // file src/03-add-publickeys.ts
 import {
   SmartrAccountABI,
-  CoreValidatorABI,
+  StarkValidatorABI,
   SmartrAccount,
   classHash,
 } from "@0xknwn/starknet-modular-account";
@@ -20,13 +20,13 @@ const main = async () => {
     accountAddress,
     smartrAccountPrivateKey
   );
-  const module_class_hash = classHash("CoreValidator");
+  const module_class_hash = classHash("StarkValidator");
   const calls: Call[] = [];
   for (const privateKey of [secondAccountPrivateKey, thirdAccountPrivateKey]) {
     const signer = new Signer(privateKey);
     const publicKey = await signer.getPubKey();
     console.log("new account public key", publicKey);
-    const moduleCallData = new CallData(CoreValidatorABI);
+    const moduleCallData = new CallData(StarkValidatorABI);
     const moduleCalldata = moduleCallData.compile("add_public_key", {
       new_public_key: publicKey,
     });

@@ -1,6 +1,6 @@
 // file src/03-increase-threshold.ts
 import {
-  CoreValidatorABI,
+  StarkValidatorABI,
   SmartrAccount,
   classHash,
 } from "@0xknwn/starknet-modular-account";
@@ -17,12 +17,12 @@ const main = async () => {
     accountAddress,
     smartrAccountPrivateKey
   );
-  const moduleCallData = new CallData(CoreValidatorABI);
+  const moduleCallData = new CallData(StarkValidatorABI);
   const calldata = moduleCallData.compile("set_threshold", {
     new_threshold: 2,
   });
   const { transaction_hash } = await account.executeOnModule(
-    classHash("CoreValidator"),
+    classHash("StarkValidator"),
     "set_threshold",
     calldata
   );

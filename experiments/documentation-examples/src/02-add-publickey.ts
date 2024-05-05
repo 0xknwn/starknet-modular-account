@@ -1,6 +1,6 @@
 // file src/02-add-publickey.ts
 import {
-  CoreValidatorABI,
+  StarkValidatorABI,
   SmartrAccount,
   classHash,
 } from "@0xknwn/starknet-modular-account";
@@ -21,12 +21,12 @@ const main = async () => {
     accountAddress,
     smartrAccountPrivateKey
   );
-  const moduleCallData = new CallData(CoreValidatorABI);
+  const moduleCallData = new CallData(StarkValidatorABI);
   const calldata = await moduleCallData.compile("add_public_key", {
     new_public_key: secondAccountPublicKey,
   });
   const { transaction_hash } = await account.executeOnModule(
-    classHash("CoreValidator"),
+    classHash("StarkValidator"),
     "add_public_key",
     calldata
   );

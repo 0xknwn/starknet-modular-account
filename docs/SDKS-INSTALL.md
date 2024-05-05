@@ -1,7 +1,7 @@
 # Installing SDKs
 
 SDKs are provided as NPM packages for an easy use. If you plan to use them, you
-should have a Javascript or Typescript project.
+should have a Javascript or a Typescript project configured,
 
 - [Installing SDKs](#installing-sdks)
   - [Create a typescript project](#create-a-typescript-project)
@@ -11,7 +11,7 @@ should have a Javascript or Typescript project.
 ## Create a typescript project
 
 If not already done the script below shows how to create a minimalistic
-typescript project to use:
+typescript project:
 
 ```shell
 mkdir documentation-examples && cd documentation-examples
