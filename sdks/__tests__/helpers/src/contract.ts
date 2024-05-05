@@ -69,7 +69,7 @@ export const deployContract = async (
   // check if the contract is already deployed and if it has been, return the
   // contract instance, otherwise continue with the deployment
   try {
-    let address = await contractAddress(
+    const address = await contractAddress(
       contractName,
       deployerAccount.address,
       constructorCalldata

@@ -45,7 +45,7 @@ describe("swap router", () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
       const c = await deploySwapRouter(a, a.address);
-      let routerAddress = await swapRouterAddress(a.address, a.address);
+      const routerAddress = await swapRouterAddress(a.address, a.address);
       swapRouterContract = new SwapRouter(routerAddress, a);
       expect(c.address).toEqual(routerAddress);
     },
@@ -184,7 +184,7 @@ describe("swap router", () => {
       }
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      let balance = await tokenA.balance_of(a.address);
+      const balance = await tokenA.balance_of(a.address);
       expect(balance - tokenAInitialBalance).toBeGreaterThanOrEqual(
         2000000000000000000n
       );
@@ -198,7 +198,7 @@ describe("swap router", () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
       // @todo: fix this test and/or the swap function
-      let receipt = await swapRouterContract.swap(
+      const receipt = await swapRouterContract.swap(
         tokenA.address,
         cairo.uint256(10n ** 15n)
       );
@@ -215,7 +215,7 @@ describe("swap router", () => {
       }
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      let balance = await tokenB.balance_of(a.address);
+      const balance = await tokenB.balance_of(a.address);
       expect(balance - tokenBInitialBalance).toBeGreaterThanOrEqual(10n ** 15n);
     },
     default_timeout

@@ -8,13 +8,13 @@ describe("message management", () => {
   });
 
   it("computes the hash with computeHashOnElements", async () => {
-    let code = hash.computeHashOnElements(["0x1", "0x2", "0x3"]);
+    const code = hash.computeHashOnElements(["0x1", "0x2", "0x3"]);
     // computeHashOnElements works this way:
     // - it start by hashing the first element with a 0x0 element
     // - then it hashes recursively the result with the next element
     // - it hashes the last element with the length of the array
     // as a result is is equivalent to h(h(h(h(0, 0x1), 0x2), 0x3), 3)
-    let code2 = ec.starkCurve.pedersen(
+    const code2 = ec.starkCurve.pedersen(
       ec.starkCurve.pedersen(
         ec.starkCurve.pedersen(ec.starkCurve.pedersen("0x0", "0x1"), "0x2"),
         "0x3"
@@ -29,7 +29,7 @@ describe("message management", () => {
   });
 
   it("computes the hash with hash_auth_message", async () => {
-    let code = hash_auth_message(
+    const code = hash_auth_message(
       "0x123",
       "0x234",
       "0x456",

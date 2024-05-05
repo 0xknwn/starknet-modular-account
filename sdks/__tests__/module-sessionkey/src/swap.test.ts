@@ -79,7 +79,7 @@ describe("sessionkey swap", () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
       const c = await deploySwapRouter(a, a.address);
-      let routerAddress = await swapRouterAddress(a.address, a.address);
+      const routerAddress = await swapRouterAddress(a.address, a.address);
       swapRouterContract = new SwapRouter(routerAddress, a);
       expect(c.address).toEqual(routerAddress);
     },
@@ -199,7 +199,7 @@ describe("sessionkey swap", () => {
       const publicKey = conf.accounts[0].publicKey;
       const privateKey = conf.accounts[0].privateKey;
       const starkValidatorClassHash = accountClassHash("StarkValidator");
-      let calldata = new CallData(SmartrAccountABI).compile("constructor", {
+      const calldata = new CallData(SmartrAccountABI).compile("constructor", {
         core_validator: starkValidatorClassHash,
         public_key: [publicKey],
       });
@@ -208,7 +208,7 @@ describe("sessionkey swap", () => {
         address,
         initial_EthTransfer
       );
-      let receipt = await sender.waitForTransaction(transaction_hash);
+      const receipt = await sender.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toEqual(true);
       smartrAccount = new SmartrAccount(p, address, privateKey);
     },
@@ -221,7 +221,7 @@ describe("sessionkey swap", () => {
       const conf = config(env);
       const publicKey = conf.accounts[0].publicKey;
       const starkValidatorClassHash = accountClassHash("StarkValidator");
-      let calldata = new CallData(SmartrAccountABI).compile("constructor", {
+      const calldata = new CallData(SmartrAccountABI).compile("constructor", {
         core_validator: starkValidatorClassHash,
         public_key: [publicKey],
       });
@@ -321,7 +321,7 @@ describe("sessionkey swap", () => {
         return;
       }
       const conf = config(env);
-      let next_timestamp = BigInt(Math.floor(Date.now() / 1000) + 24 * 60 * 60);
+      const next_timestamp = BigInt(Math.floor(Date.now() / 1000) + 24 * 60 * 60);
       sessionKeyModule = new SessionKeyModule(
         conf.accounts[1].publicKey,
         smartrAccount.address,
@@ -329,7 +329,7 @@ describe("sessionkey swap", () => {
         connectedChain,
         `0x${next_timestamp.toString(16)}`
       );
-      let r = await sessionKeyModule.request(
+      const r = await sessionKeyModule.request(
         accountClassHash("StarkValidator")
       );
       expect(r.hash).toBe(
@@ -353,11 +353,11 @@ describe("sessionkey swap", () => {
       return;
     }
     const conf = config(env);
-    let grantor = new SessionKeyGrantor(
+    const grantor = new SessionKeyGrantor(
       accountClassHash("StarkValidator"),
       conf.accounts[0].privateKey
     );
-    let signature = await grantor.sign(sessionKeyModule);
+    const signature = await grantor.sign(sessionKeyModule);
     expect(signature.length).toEqual(2);
     sessionKeyModule.add_signature(signature);
   });
@@ -400,7 +400,7 @@ describe("sessionkey swap", () => {
         throw new Error("tokenAInitialBalance is undefined");
       }
       const conf = config(env);
-      let balance = await tokenA.balance_of(
+      const balance = await tokenA.balance_of(
         smartrAccountWithSessionKey.address
       );
       expect(balance - tokenAInitialBalance).toBeGreaterThanOrEqual(
@@ -414,7 +414,7 @@ describe("sessionkey swap", () => {
     "swaps tokenA for tokenB",
     async () => {
       // @todo: fix this test and/or the swap function
-      let receipt = await swapRouterWithSmartAccountContract.swap(
+      const receipt = await swapRouterWithSmartAccountContract.swap(
         tokenA.address,
         cairo.uint256(10n ** 15n)
       );
@@ -430,7 +430,7 @@ describe("sessionkey swap", () => {
         throw new Error("tokenAInitialBalance is undefined");
       }
       const conf = config(env);
-      let balance = await tokenB.balance_of(
+      const balance = await tokenB.balance_of(
         smartrAccountWithSessionKey.address
       );
       expect(balance - tokenBInitialBalance).toBeGreaterThanOrEqual(10n ** 15n);

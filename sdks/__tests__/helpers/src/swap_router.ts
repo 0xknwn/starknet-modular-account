@@ -62,7 +62,7 @@ export class SwapRouter extends Contract {
    * @returns A promise that resolves to the transaction receipt once the transfer is complete.
    */
   async faucet(amount: Uint256) {
-    let call: Call = this.populate("faucet", {
+    const call: Call = this.populate("faucet", {
       amount,
     });
     const a = this.providerOrAccount as Account;
@@ -78,7 +78,7 @@ export class SwapRouter extends Contract {
    * @returns A promise that resolves to the transaction receipt once the transaction is confirmed.
    */
   async set_tokens(tokenAAddress: string, tokenBAddress: string) {
-    let call: Call = this.populate("set_tokens", {
+    const call: Call = this.populate("set_tokens", {
       tokenAAddress,
       tokenBAddress,
     });
@@ -93,7 +93,7 @@ export class SwapRouter extends Contract {
    * @returns A promise that resolves to the transaction receipt once the conversion rate is set.
    */
   async set_conversion_rate(rate: string) {
-    let call: Call = this.populate("set_conversion_rate", {
+    const call: Call = this.populate("set_conversion_rate", {
       rate,
     });
     const a = this.providerOrAccount as Account;
@@ -121,11 +121,11 @@ export class SwapRouter extends Contract {
       throw new Error("Account address is undefined");
     }
     const tokenAContract = new Contract(TokenAABI, tokenAAddress, a);
-    let approveCall: Call = tokenAContract.populate("approve", {
+    const approveCall: Call = tokenAContract.populate("approve", {
       spender: this.address,
       amount,
     });
-    let swapCall: Call = this.populate("swap", {
+    const swapCall: Call = this.populate("swap", {
       amount,
     });
     const { transaction_hash: transferTxHash } = await a.execute([
@@ -145,11 +145,11 @@ export class SwapRouter extends Contract {
   async swap_minimum_at(tokenAAddress: string, rate: string, amount: Uint256) {
     const a = this.providerOrAccount as Account;
     const tokenAContract = new Contract(TokenAABI, tokenAAddress, a);
-    let approveCall: Call = tokenAContract.populate("approve", {
+    const approveCall: Call = tokenAContract.populate("approve", {
       spender: a.address,
       amount,
     });
-    let swapCall: Call = this.populate("swap_minimum_at", {
+    const swapCall: Call = this.populate("swap_minimum_at", {
       rate,
       amount,
     });
@@ -171,11 +171,11 @@ export class SwapRouter extends Contract {
   async swap_maximum_at(tokenAAddress: string, rate: string, amount: Uint256) {
     const a = this.providerOrAccount as Account;
     const tokenAContract = new Contract(TokenAABI, tokenAAddress, a);
-    let approveCall: Call = tokenAContract.populate("approve", {
+    const approveCall: Call = tokenAContract.populate("approve", {
       spender: a.address,
       amount,
     });
-    let swapCall: Call = this.populate("swap_maximum_at", {
+    const swapCall: Call = this.populate("swap_maximum_at", {
       rate,
       amount,
     });

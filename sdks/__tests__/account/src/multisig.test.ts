@@ -88,7 +88,7 @@ describe("multiple signature", () => {
       const publicKey = conf.accounts[0].publicKey;
       const privateKey = conf.accounts[0].privateKey;
       const starkValidatorClassHash = accountClassHash("StarkValidator");
-      let calldata = new CallData(SmartrAccountABI).compile("constructor", {
+      const calldata = new CallData(SmartrAccountABI).compile("constructor", {
         core_validator: starkValidatorClassHash,
         public_key: [publicKey],
       });
@@ -97,7 +97,7 @@ describe("multiple signature", () => {
         address,
         initial_EthTransfer
       );
-      let receipt = await sender.waitForTransaction(transaction_hash);
+      const receipt = await sender.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toEqual(true);
       smartrAccount = new SmartrAccount(p, address, privateKey);
     },
@@ -110,7 +110,7 @@ describe("multiple signature", () => {
       const conf = config(env);
       const publicKey = conf.accounts[0].publicKey;
       const starkValidatorClassHash = accountClassHash("StarkValidator");
-      let calldata = new CallData(SmartrAccountABI).compile("constructor", {
+      const calldata = new CallData(SmartrAccountABI).compile("constructor", {
         core_validator: starkValidatorClassHash,
         public_key: [publicKey],
       });

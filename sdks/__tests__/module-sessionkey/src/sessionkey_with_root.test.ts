@@ -107,7 +107,7 @@ describe("sessionkey management", () => {
       const publicKey = conf.accounts[0].publicKey;
       const privateKey = conf.accounts[0].privateKey;
       const starkValidatorClassHash = accountClassHash("StarkValidator");
-      let calldata = new CallData(SmartrAccountABI).compile("constructor", {
+      const calldata = new CallData(SmartrAccountABI).compile("constructor", {
         core_validator: starkValidatorClassHash,
         public_key: [publicKey],
       });
@@ -116,7 +116,7 @@ describe("sessionkey management", () => {
         address,
         initial_EthTransfer
       );
-      let receipt = await sender.waitForTransaction(transaction_hash);
+      const receipt = await sender.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toEqual(true);
       smartrAccount = new SmartrAccount(p, address, privateKey);
     },
@@ -129,7 +129,7 @@ describe("sessionkey management", () => {
       const conf = config(env);
       const publicKey = conf.accounts[0].publicKey;
       const starkValidatorClassHash = accountClassHash("StarkValidator");
-      let calldata = new CallData(SmartrAccountABI).compile("constructor", {
+      const calldata = new CallData(SmartrAccountABI).compile("constructor", {
         core_validator: starkValidatorClassHash,
         public_key: [publicKey],
       });
@@ -295,7 +295,7 @@ describe("sessionkey management", () => {
         { contractAddress: counterContract.address, selector: "increment_by" },
       ]);
       const conf = config(env);
-      let next_timestamp = BigInt(Math.floor(Date.now() / 1000) + 24 * 60 * 60);
+      const next_timestamp = BigInt(Math.floor(Date.now() / 1000) + 24 * 60 * 60);
       sessionKeyModule = new SessionKeyModule(
         conf.accounts[1].publicKey,
         smartrAccount.address,
@@ -304,8 +304,8 @@ describe("sessionkey management", () => {
         `0x${next_timestamp.toString(16)}`,
         policyManager
       );
-      let root = policyManager.getRoot();
-      let r = await sessionKeyModule.request(
+      const root = policyManager.getRoot();
+      const r = await sessionKeyModule.request(
         accountClassHash("StarkValidator")
       );
       expect(r.hash).toBe(
@@ -329,11 +329,11 @@ describe("sessionkey management", () => {
       return;
     }
     const conf = config(env);
-    let grantor = new SessionKeyGrantor(
+    const grantor = new SessionKeyGrantor(
       accountClassHash("StarkValidator"),
       conf.accounts[0].privateKey
     );
-    let signature = await grantor.sign(sessionKeyModule);
+    const signature = await grantor.sign(sessionKeyModule);
     expect(signature.length).toEqual(2);
     sessionKeyModule.add_signature(signature);
   });
@@ -360,8 +360,8 @@ describe("sessionkey management", () => {
       const a = testAccounts(conf)[0];
       const c1 = await counterContract.get();
       if (c1 !== 0n) {
-        let { transaction_hash } = await counterContract.reset();
-        let receipt = await a.waitForTransaction(transaction_hash);
+        const { transaction_hash } = await counterContract.reset();
+        const receipt = await a.waitForTransaction(transaction_hash);
         expect(receipt.isSuccess()).toBe(true);
       }
       const c2 = await counterContract.get();

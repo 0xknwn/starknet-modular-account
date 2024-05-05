@@ -71,7 +71,7 @@ export const deployAccount = async (
   // Check if the account has enough eth to deploy the account
   const eth = new Contract(ERC20ABI, ethAddress, deployerAccount);
   const result = await eth.call("balance_of", [computedAccountAddress]);
-  let balance = num.toBigInt(result.toString());
+  const balance = num.toBigInt(result.toString());
   if (balance <= 10n ** 15n) {
     throw new Error(
       `Insufficient balance to deploy account: ${balance.toString()}`

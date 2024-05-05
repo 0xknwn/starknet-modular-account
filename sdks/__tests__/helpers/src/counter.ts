@@ -56,8 +56,8 @@ export class Counter extends Contract {
    * @returns A promise that resolves to the result of the execution.
    */
   async increment() {
-    let transferCall: Call = this.populate("increment", {});
-    let account = this.providerOrAccount as Account;
+    const transferCall: Call = this.populate("increment", {});
+    const account = this.providerOrAccount as Account;
     return await account.execute(transferCall);
   }
 
@@ -67,8 +67,8 @@ export class Counter extends Contract {
    * @returns A promise that resolves to the result of the execution.
    */
   async increment_by(value: number) {
-    let transferCall: Call = this.populate("increment_by", { value });
-    let account = this.providerOrAccount as Account;
+    const transferCall: Call = this.populate("increment_by", { value });
+    const account = this.providerOrAccount as Account;
     return await account.execute(transferCall);
   }
 
@@ -86,7 +86,7 @@ export class Counter extends Contract {
       const transferCall: Call = this.populate("increment_by", { value });
       transferCalls.push(transferCall);
     }
-    let account = this.providerOrAccount as Account;
+    const account = this.providerOrAccount as Account;
     return await account.execute(transferCalls);
   }
 
@@ -99,8 +99,8 @@ export class Counter extends Contract {
     if (!Array.isArray(args)) {
       throw new Error("args should not be empty");
     }
-    let transferCall: Call = this.populate("increment_by_array", { args });
-    let account = this.providerOrAccount as Account;
+    const transferCall: Call = this.populate("increment_by_array", { args });
+    const account = this.providerOrAccount as Account;
     return await account.execute(transferCall);
   }
 
@@ -110,8 +110,8 @@ export class Counter extends Contract {
    * @remarks This function requires the Account used by the Counter to be its owner.
    */
   async reset() {
-    let transferCall: Call = this.populate("reset", {});
-    let account = this.providerOrAccount as Account;
+    const transferCall: Call = this.populate("reset", {});
+    const account = this.providerOrAccount as Account;
     return await account.execute(transferCall);
   }
 }

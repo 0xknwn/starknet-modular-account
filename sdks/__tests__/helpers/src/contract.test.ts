@@ -10,7 +10,7 @@ describe("contract management (helper)", () => {
     async () => {
       const publicKey =
         "0x39d9e6ce352ad4530a0ef5d5a18fd3303c3606a7fa6ac5b620020ad681cc33b";
-      let class_hash = classHash("SimpleAccount");
+        const class_hash = classHash("SimpleAccount");
       expect(class_hash).toBe(
         "0x69e764188a1dd42abc108888c1853913f078052c790c67f31b08a7a31a078e1"
       );
