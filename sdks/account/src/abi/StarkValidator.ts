@@ -1,8 +1,8 @@
 export const ABI = [
   {
     "type": "impl",
-    "name": "ConfigureImpl",
-    "interface_name": "smartr::module::validator::IConfigure"
+    "name": "ValidatorImpl",
+    "interface_name": "smartr::component::validator::IValidator"
   },
   {
     "type": "struct",
@@ -34,7 +34,81 @@ export const ABI = [
   },
   {
     "type": "interface",
-    "name": "smartr::module::validator::IConfigure",
+    "name": "smartr::component::validator::IValidator",
+    "items": [
+      {
+        "type": "function",
+        "name": "validate",
+        "inputs": [
+          {
+            "name": "grantor_class",
+            "type": "core::starknet::class_hash::ClassHash"
+          },
+          {
+            "name": "calls",
+            "type": "core::array::Array::<core::starknet::account::Call>"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::felt252"
+          }
+        ],
+        "state_mutability": "view"
+      }
+    ]
+  },
+  {
+    "type": "impl",
+    "name": "CoreValidator",
+    "interface_name": "smartr::component::validator::ICoreValidator"
+  },
+  {
+    "type": "interface",
+    "name": "smartr::component::validator::ICoreValidator",
+    "items": [
+      {
+        "type": "function",
+        "name": "is_valid_signature",
+        "inputs": [
+          {
+            "name": "hash",
+            "type": "core::array::Array::<core::felt252>"
+          },
+          {
+            "name": "signature",
+            "type": "core::array::Array::<core::felt252>"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::felt252"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "initialize",
+        "inputs": [
+          {
+            "name": "public_key",
+            "type": "core::array::Array::<core::felt252>"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      }
+    ]
+  },
+  {
+    "type": "impl",
+    "name": "ConfigureImpl",
+    "interface_name": "smartr::component::validator::IConfigure"
+  },
+  {
+    "type": "interface",
+    "name": "smartr::component::validator::IConfigure",
     "items": [
       {
         "type": "function",
@@ -72,86 +146,12 @@ export const ABI = [
   },
   {
     "type": "impl",
-    "name": "ValidatorImpl",
-    "interface_name": "smartr::module::validator::IValidator"
+    "name": "PublicKeys",
+    "interface_name": "smartr::modules::starkvalidator::starkvalidator::IPublicKeys"
   },
   {
     "type": "interface",
-    "name": "smartr::module::validator::IValidator",
-    "items": [
-      {
-        "type": "function",
-        "name": "is_valid_signature",
-        "inputs": [
-          {
-            "name": "hash",
-            "type": "core::felt252"
-          },
-          {
-            "name": "signature",
-            "type": "core::array::Array::<core::felt252>"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "core::felt252"
-          }
-        ],
-        "state_mutability": "view"
-      },
-      {
-        "type": "function",
-        "name": "validate",
-        "inputs": [
-          {
-            "name": "grantor_class",
-            "type": "core::starknet::class_hash::ClassHash"
-          },
-          {
-            "name": "calls",
-            "type": "core::array::Array::<core::starknet::account::Call>"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "core::felt252"
-          }
-        ],
-        "state_mutability": "view"
-      }
-    ]
-  },
-  {
-    "type": "impl",
-    "name": "CoreValidatorImpl",
-    "interface_name": "smartr::module::validator::ICoreValidator"
-  },
-  {
-    "type": "interface",
-    "name": "smartr::module::validator::ICoreValidator",
-    "items": [
-      {
-        "type": "function",
-        "name": "initialize",
-        "inputs": [
-          {
-            "name": "public_key",
-            "type": "core::felt252"
-          }
-        ],
-        "outputs": [],
-        "state_mutability": "external"
-      }
-    ]
-  },
-  {
-    "type": "impl",
-    "name": "PublicKeysImpl",
-    "interface_name": "smartr::module::validator::IPublicKeys"
-  },
-  {
-    "type": "interface",
-    "name": "smartr::module::validator::IPublicKeys",
+    "name": "smartr::modules::starkvalidator::starkvalidator::IPublicKeys",
     "items": [
       {
         "type": "function",
@@ -215,7 +215,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::module::validator::ValidatorComponent::Event",
+    "name": "smartr::component::validator::ValidatorComponent::Event",
     "kind": "enum",
     "variants": []
   },
@@ -227,53 +227,53 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::account::account::AccountComponent::OwnerAdded",
+    "name": "smartr::component::account::AccountComponent::OwnerAdded",
     "kind": "struct",
     "members": [
       {
         "name": "new_owner_guid",
-        "type": "core::felt252",
+        "type": "core::array::Array::<core::felt252>",
         "kind": "key"
       }
     ]
   },
   {
     "type": "event",
-    "name": "smartr::account::account::AccountComponent::OwnerRemoved",
+    "name": "smartr::component::account::AccountComponent::OwnerRemoved",
     "kind": "struct",
     "members": [
       {
         "name": "removed_owner_guid",
-        "type": "core::felt252",
+        "type": "core::array::Array::<core::felt252>",
         "kind": "key"
       }
     ]
   },
   {
     "type": "event",
-    "name": "smartr::account::account::AccountComponent::Event",
+    "name": "smartr::component::account::AccountComponent::Event",
     "kind": "enum",
     "variants": [
       {
         "name": "OwnerAdded",
-        "type": "smartr::account::account::AccountComponent::OwnerAdded",
+        "type": "smartr::component::account::AccountComponent::OwnerAdded",
         "kind": "nested"
       },
       {
         "name": "OwnerRemoved",
-        "type": "smartr::account::account::AccountComponent::OwnerRemoved",
+        "type": "smartr::component::account::AccountComponent::OwnerRemoved",
         "kind": "nested"
       }
     ]
   },
   {
     "type": "event",
-    "name": "smartr::module::starkvalidator::starkvalidator::StarkValidator::Event",
+    "name": "smartr::modules::starkvalidator::starkvalidator::StarkValidator::Event",
     "kind": "enum",
     "variants": [
       {
         "name": "ValidatorEvent",
-        "type": "smartr::module::validator::ValidatorComponent::Event",
+        "type": "smartr::component::validator::ValidatorComponent::Event",
         "kind": "flat"
       },
       {
@@ -283,7 +283,7 @@ export const ABI = [
       },
       {
         "name": "AccountEvent",
-        "type": "smartr::account::account::AccountComponent::Event",
+        "type": "smartr::component::account::AccountComponent::Event",
         "kind": "flat"
       }
     ]

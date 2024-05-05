@@ -211,71 +211,6 @@ export const ABI = [
   },
   {
     "type": "impl",
-    "name": "PublicKeyCamelImpl",
-    "interface_name": "openzeppelin::account::interface::IPublicKeyCamel"
-  },
-  {
-    "type": "interface",
-    "name": "openzeppelin::account::interface::IPublicKeyCamel",
-    "items": [
-      {
-        "type": "function",
-        "name": "getPublicKey",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::felt252"
-          }
-        ],
-        "state_mutability": "view"
-      },
-      {
-        "type": "function",
-        "name": "setPublicKey",
-        "inputs": [
-          {
-            "name": "newPublicKey",
-            "type": "core::felt252"
-          }
-        ],
-        "outputs": [],
-        "state_mutability": "external"
-      }
-    ]
-  },
-  {
-    "type": "impl",
-    "name": "SRC6CamelOnlyImpl",
-    "interface_name": "openzeppelin::account::interface::ISRC6CamelOnly"
-  },
-  {
-    "type": "interface",
-    "name": "openzeppelin::account::interface::ISRC6CamelOnly",
-    "items": [
-      {
-        "type": "function",
-        "name": "isValidSignature",
-        "inputs": [
-          {
-            "name": "hash",
-            "type": "core::felt252"
-          },
-          {
-            "name": "signature",
-            "type": "core::array::Array::<core::felt252>"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "core::felt252"
-          }
-        ],
-        "state_mutability": "view"
-      }
-    ]
-  },
-  {
-    "type": "impl",
     "name": "SRC5Impl",
     "interface_name": "openzeppelin::introspection::interface::ISRC5"
   },
@@ -398,7 +333,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::presets::helpers::failed_account::FailedAccount::Event",
+    "name": "smartr::helpers::failed_account::FailedAccount::Event",
     "kind": "enum",
     "variants": [
       {

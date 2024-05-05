@@ -2,7 +2,7 @@ export const ABI = [
   {
     "type": "impl",
     "name": "DisableSessionKeyImpl",
-    "interface_name": "smartr::presets::sessionkey_validator::IDisableSessionKey"
+    "interface_name": "smartr::modules::sessionkeyvalidator::sessionkeyvalidator::IDisableSessionKey"
   },
   {
     "type": "enum",
@@ -20,7 +20,7 @@ export const ABI = [
   },
   {
     "type": "interface",
-    "name": "smartr::presets::sessionkey_validator::IDisableSessionKey",
+    "name": "smartr::modules::sessionkeyvalidator::sessionkeyvalidator::IDisableSessionKey",
     "items": [
       {
         "type": "function",
@@ -55,7 +55,7 @@ export const ABI = [
   {
     "type": "impl",
     "name": "ValidatorImpl",
-    "interface_name": "smartr::module::validator::IValidator"
+    "interface_name": "smartr::component::validator::IValidator"
   },
   {
     "type": "struct",
@@ -87,28 +87,8 @@ export const ABI = [
   },
   {
     "type": "interface",
-    "name": "smartr::module::validator::IValidator",
+    "name": "smartr::component::validator::IValidator",
     "items": [
-      {
-        "type": "function",
-        "name": "is_valid_signature",
-        "inputs": [
-          {
-            "name": "hash",
-            "type": "core::felt252"
-          },
-          {
-            "name": "signature",
-            "type": "core::array::Array::<core::felt252>"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "core::felt252"
-          }
-        ],
-        "state_mutability": "view"
-      },
       {
         "type": "function",
         "name": "validate",
@@ -134,11 +114,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "ConfigureImpl",
-    "interface_name": "smartr::module::validator::IConfigure"
+    "interface_name": "smartr::component::validator::IConfigure"
   },
   {
     "type": "interface",
-    "name": "smartr::module::validator::IConfigure",
+    "name": "smartr::component::validator::IConfigure",
     "items": [
       {
         "type": "function",
@@ -176,7 +156,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::module::validator::ValidatorComponent::Event",
+    "name": "smartr::component::validator::ValidatorComponent::Event",
     "kind": "enum",
     "variants": []
   },
@@ -188,53 +168,53 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::account::account::AccountComponent::OwnerAdded",
+    "name": "smartr::component::account::AccountComponent::OwnerAdded",
     "kind": "struct",
     "members": [
       {
         "name": "new_owner_guid",
-        "type": "core::felt252",
+        "type": "core::array::Array::<core::felt252>",
         "kind": "key"
       }
     ]
   },
   {
     "type": "event",
-    "name": "smartr::account::account::AccountComponent::OwnerRemoved",
+    "name": "smartr::component::account::AccountComponent::OwnerRemoved",
     "kind": "struct",
     "members": [
       {
         "name": "removed_owner_guid",
-        "type": "core::felt252",
+        "type": "core::array::Array::<core::felt252>",
         "kind": "key"
       }
     ]
   },
   {
     "type": "event",
-    "name": "smartr::account::account::AccountComponent::Event",
+    "name": "smartr::component::account::AccountComponent::Event",
     "kind": "enum",
     "variants": [
       {
         "name": "OwnerAdded",
-        "type": "smartr::account::account::AccountComponent::OwnerAdded",
+        "type": "smartr::component::account::AccountComponent::OwnerAdded",
         "kind": "nested"
       },
       {
         "name": "OwnerRemoved",
-        "type": "smartr::account::account::AccountComponent::OwnerRemoved",
+        "type": "smartr::component::account::AccountComponent::OwnerRemoved",
         "kind": "nested"
       }
     ]
   },
   {
     "type": "event",
-    "name": "smartr::presets::sessionkey_validator::SessionKeyValidator::Event",
+    "name": "smartr::modules::sessionkeyvalidator::sessionkeyvalidator::SessionKeyValidator::Event",
     "kind": "enum",
     "variants": [
       {
         "name": "ValidatorEvent",
-        "type": "smartr::module::validator::ValidatorComponent::Event",
+        "type": "smartr::component::validator::ValidatorComponent::Event",
         "kind": "flat"
       },
       {
@@ -244,7 +224,7 @@ export const ABI = [
       },
       {
         "name": "AccountEvent",
-        "type": "smartr::account::account::AccountComponent::Event",
+        "type": "smartr::component::account::AccountComponent::Event",
         "kind": "flat"
       }
     ]

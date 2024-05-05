@@ -2,11 +2,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "DeployableImpl",
-    "interface_name": "smartr::presets::helpers::bootstrap_account::IDeployable"
+    "interface_name": "smartr::helpers::bootstrap_account::IDeployable"
   },
   {
     "type": "interface",
-    "name": "smartr::presets::helpers::bootstrap_account::IDeployable",
+    "name": "smartr::helpers::bootstrap_account::IDeployable",
     "items": [
       {
         "type": "function",
@@ -191,37 +191,6 @@ export const ABI = [
     ]
   },
   {
-    "type": "impl",
-    "name": "SRC6CamelOnlyImpl",
-    "interface_name": "openzeppelin::account::interface::ISRC6CamelOnly"
-  },
-  {
-    "type": "interface",
-    "name": "openzeppelin::account::interface::ISRC6CamelOnly",
-    "items": [
-      {
-        "type": "function",
-        "name": "isValidSignature",
-        "inputs": [
-          {
-            "name": "hash",
-            "type": "core::felt252"
-          },
-          {
-            "name": "signature",
-            "type": "core::array::Array::<core::felt252>"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "core::felt252"
-          }
-        ],
-        "state_mutability": "view"
-      }
-    ]
-  },
-  {
     "type": "constructor",
     "name": "constructor",
     "inputs": [
@@ -308,7 +277,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::presets::helpers::bootstrap_account::BootstrapAccount::Event",
+    "name": "smartr::helpers::bootstrap_account::BootstrapAccount::Event",
     "kind": "enum",
     "variants": [
       {

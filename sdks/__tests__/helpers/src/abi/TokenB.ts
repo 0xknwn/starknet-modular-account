@@ -446,7 +446,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::presets::helpers::token_b::TokenB::Event",
+    "name": "smartr::helpers::token_b::TokenB::Event",
     "kind": "enum",
     "variants": [
       {

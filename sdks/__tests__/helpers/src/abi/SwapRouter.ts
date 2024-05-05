@@ -2,7 +2,7 @@ export const ABI = [
   {
     "type": "impl",
     "name": "SwapRouterImpl",
-    "interface_name": "smartr::presets::helpers::swap_router::ISwapRouter"
+    "interface_name": "smartr::helpers::swap_router::ISwapRouter"
   },
   {
     "type": "struct",
@@ -34,7 +34,7 @@ export const ABI = [
   },
   {
     "type": "interface",
-    "name": "smartr::presets::helpers::swap_router::ISwapRouter",
+    "name": "smartr::helpers::swap_router::ISwapRouter",
     "items": [
       {
         "type": "function",
@@ -373,7 +373,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::presets::helpers::swap_router::SwapRouter::Event",
+    "name": "smartr::helpers::swap_router::SwapRouter::Event",
     "kind": "enum",
     "variants": [
       {
