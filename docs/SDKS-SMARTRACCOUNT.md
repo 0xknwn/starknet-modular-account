@@ -39,8 +39,7 @@ the starknet.js Account class. As you can see from the script below, using the
 {{#include ../experiments/documentation-examples/src/02-execute-tx.ts}}
 ```
 
-To execute the script, make sure you have deployed the account and the counter
-contract in the network and run the following commands:
+Transpile and run the script:
 
 ```shell
 npx tsc --build
@@ -63,7 +62,7 @@ fn get_threshold(self: @TState) -> u8;
 fn set_threshold(ref self: TState, new_threshold: u8);
 ```
 
-To execute the fonction that are part of the module you need:
+To execute a function that is part of the module you need:
 
 - to figure out the stark validator module class hash
 - to check the module is installed on the account. That is something that is
@@ -71,7 +70,7 @@ To execute the fonction that are part of the module you need:
 - to use one of `callOnModule` for view functions or `executeOnModule` for
   running transactions on the SmartrAccount.
 
-The sections below dig into the details of those operations:
+The sections below dig into the details of these operations.
 
 ### Getting the stark validator module class hash
 
@@ -102,8 +101,7 @@ a module is installed with the account.
 {{#include ../experiments/documentation-examples/src/02-module-installed.ts}}
 ```
 
-To execute the script, make sure you have deployed the account in the network
-and run the following commands:
+Transpile and run the script:
 
 ```shell
 npx tsc --build
@@ -122,8 +120,7 @@ like below:
 {{#include ../experiments/documentation-examples/src/02-registered-publickeys.ts}}
 ```
 
-The script above returns a list of public keys. Make sure you have deployed the
-account in the network and run the following commands:
+Transpile and run the script:
 
 ```shell
 npx tsc --build
@@ -142,8 +139,7 @@ like below. Here we will register a second public key for the same account:
 {{#include ../experiments/documentation-examples/src/02-add-publickey.ts}}
 ```
 
-The script above returns a list of public keys. Make sure you have deployed the
-account in the network and run the following commands:
+Transpile and run the script:
 
 ```shell
 npx tsc --build
@@ -158,7 +154,6 @@ two registered public key:
 node dist/02-registered-publickeys.js
 ```
 
-
 ## Interacting with a Contract with the new registered key
 
 You now can interact with the `SmartrAccount` with your second private key like
@@ -168,8 +163,7 @@ below:
 {{#include ../experiments/documentation-examples/src/02-execute-tx-pk2.ts}}
 ```
 
-To execute the script, make sure you have deployed the account and the counter
-contract in the network and run the following commands:
+Transpile and run the script:
 
 ```shell
 npx tsc --build
