@@ -54,7 +54,7 @@ export const config = (env: string = "devnet"): Config => {
 export const testAccounts = (config: Config): Account[] => {
   const provider = new RpcProvider({ nodeUrl: config.providerURL });
   let accounts: Account[] = [];
-  for (let configAccount of config.accounts) {
+  for (const configAccount of config.accounts) {
     const account = new Account(
       provider,
       configAccount.address,

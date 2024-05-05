@@ -24,7 +24,7 @@ export class SessionKeyGrantor extends Signer {
       throw new Error("hash not set");
     }
     const signature = await this.signRaw(request.hash);
-    let sig = signatureToHexArray(signature);
+    const sig = signatureToHexArray(signature);
 
     return sig;
   }
@@ -64,7 +64,7 @@ export class SessionKeyModule implements AccountModuleInterface {
       throw new Error("reset grantor before requesting again");
     }
     this.auth.grantorClass = grantorClass;
-    let hash = hash_auth_message(
+    const hash = hash_auth_message(
       this.auth.accountAddress,
       this.auth.validatorClass,
       this.auth.grantorClass,
@@ -133,9 +133,9 @@ export class SessionKeyModule implements AccountModuleInterface {
         calls = [calls];
       }
       let proof_number = 0;
-      for (let call of calls) {
-        let contractAddress = call.contractAddress;
-        let selector = call.entrypoint;
+      for (const call of calls) {
+        const contractAddress = call.contractAddress;
+        const selector = call.entrypoint;
         const proof = this.policyManager?.getProof({
           contractAddress,
           selector,
