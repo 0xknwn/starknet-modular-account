@@ -55,11 +55,11 @@ mod StarkValidator {
         fn is_valid_signature(
             self: @ContractState, hash: Array<felt252>, signature: Array<felt252>
         ) -> felt252 {
-            if signature.len() != 1 {
+            if hash.len() != 1 {
                 return 0;
             }
-            let vhash = *hash.at(0);
-            if self._is_valid_signature(vhash, signature.span()) {
+            let hash_value = *hash.at(0);
+            if self._is_valid_signature(hash_value, signature.span()) {
                 starknet::VALIDATED
             } else {
                 0
