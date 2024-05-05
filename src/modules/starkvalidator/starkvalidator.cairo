@@ -36,7 +36,7 @@ mod StarkValidator {
     pub impl ValidatorImpl of IValidator<ContractState> {
         fn validate(self: @ContractState, grantor_class: ClassHash, calls: Array<Call>) -> felt252 {
           let tx_info = get_tx_info().unbox();
-          let tx_hash = tx_info.transaction_hash;
+          let tx_hash = array![tx_info.transaction_hash];
           let signature = tx_info.signature;
           let signature_len = signature.len();
           let mut i: usize = 0;
@@ -53,9 +53,13 @@ mod StarkValidator {
     pub impl CoreValidator of ICoreValidator<ContractState> {
         /// Verifies that the given signature is valid for the given hash.
         fn is_valid_signature(
-            self: @ContractState, hash: felt252, signature: Array<felt252>
+            self: @ContractState, hash: Array<felt252>, signature: Array<felt252>
         ) -> felt252 {
-            if self._is_valid_signature(hash, signature.span()) {
+            if signature.len() != 1 {
+                return 0;
+            }
+            let vhash = *hash.at(0);
+            if self._is_valid_signature(vhash, signature.span()) {
                 starknet::VALIDATED
             } else {
                 0

@@ -38,10 +38,10 @@ are the following:
 - is_valid_signature should support `Array<felt252>` and not `felt252` as a
   first parameter for the account and the module
 - the __validate_deploy__ and __validate_declare__ use the is_valid_signature
-  of the core module with a transaction_hash computed by the network. This is
-  a concern because the core validator has to use the same hash computation
-  as the network to validate the account deployment. TL;DR: We will have to
-  extend the interface of the core validator to support other signature schems.
+  method of the core module with a transaction_hash computed by the network.
+  This might have to be revisited or not. As a matter of fact, addresses of the
+  account and contract are based on the pedersen hash anyway so why not simply
+  sign those. A hunch is that somehow the pedersen hash is useful in that case.
 - Version the contracts for both accounts and modules and maintain a
   compatibility matrix
 - Improve the upgrade management with the help of the bootstrap experiment.

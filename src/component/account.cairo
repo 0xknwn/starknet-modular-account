@@ -17,7 +17,7 @@ pub const ISRC6_ID: felt252 = 0x2ceccef7f994940b3962a6c67e0ba4fcd37df7d131417c60
 pub trait ISRC6<TState> {
     fn __execute__(self: @TState, calls: Array<Call>) -> Array<Span<felt252>>;
     fn __validate__(self: @TState, calls: Array<Call>) -> felt252;
-    fn is_valid_signature(self: @TState, hash: felt252, signature: Array<felt252>) -> felt252;
+    fn is_valid_signature(self: @TState, hash: Array<felt252>, signature: Array<felt252>) -> felt252;
 }
 
 #[starknet::interface]
@@ -34,11 +34,6 @@ pub trait IDeployable<TState> {
         core_validator: felt252,
         public_key: felt252
     ) -> felt252;
-}
-
-#[starknet::interface]
-pub trait ISRC6CamelOnly<TState> {
-    fn isValidSignature(self: @TState, hash: felt252, signature: Array<felt252>) -> felt252;
 }
 
 #[starknet::interface]
@@ -174,7 +169,7 @@ pub mod AccountComponent {
 
         /// Verifies that the given signature is valid for the given hash.
         fn is_valid_signature(
-            self: @ComponentState<TContractState>, hash: felt252, signature: Array<felt252>
+            self: @ComponentState<TContractState>, hash: Array<felt252>, signature: Array<felt252>
         ) -> felt252 {
             let core_validator = self.Account_core_validator.read();
             ICoreValidatorLibraryDispatcher { class_hash: core_validator }
@@ -223,21 +218,6 @@ pub mod AccountComponent {
             // based on the signature check, i.e. does not recompute the hash
             // to a call to the core validator with a recompted hash.
             self.validate_transaction()
-        }
-    }
-
-    /// Adds camelCase support for `ISRC6`.
-    #[embeddable_as(SRC6CamelOnlyImpl)]
-    impl SRC6CamelOnly<
-        TContractState,
-        +HasComponent<TContractState>,
-        +SRC5Component::HasComponent<TContractState>,
-        +Drop<TContractState>
-    > of super::ISRC6CamelOnly<ComponentState<TContractState>> {
-        fn isValidSignature(
-            self: @ComponentState<TContractState>, hash: felt252, signature: Array<felt252>
-        ) -> felt252 {
-            SRC6::is_valid_signature(self, hash, signature)
         }
     }
 
@@ -343,7 +323,7 @@ pub mod AccountComponent {
         /// Returns the short string `VALID` if valid, otherwise it reverts.
         fn validate_transaction(self: @ComponentState<TContractState>) -> felt252 {
             let tx_info = get_tx_info().unbox();
-            let tx_hash = tx_info.transaction_hash;
+            let tx_hash = array![tx_info.transaction_hash];
             let signature = tx_info.signature;
             let signature_len = signature.len();
             let mut i: usize = 0;
