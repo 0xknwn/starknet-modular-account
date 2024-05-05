@@ -3,7 +3,6 @@ pub use account::AccountComponent;
 pub use account::ISRC6;
 pub use account::IDeclarer;
 pub use account::IDeployable;
-pub use account::ISRC6CamelOnly;
 pub use account::IModule;
 pub use account::{IModuleDispatcherTrait, IModuleDispatcher};
 mod validator;

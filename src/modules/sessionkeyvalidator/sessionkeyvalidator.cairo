@@ -162,7 +162,7 @@ mod SessionKeyValidator {
             assert(!is_disabled, Errors::DISABLED_SESSION);
 
             ICoreValidatorLibraryDispatcher { class_hash: grantor_class }
-                .is_valid_signature(auth_hash, signature)
+                .is_valid_signature(array![auth_hash], signature)
         }
     }
 
