@@ -45,7 +45,7 @@ The interface looks like this:
 #[starknet::interface]
 pub trait ICoreValidator<TState> {
     fn is_valid_signature(self: @TState, hash: Hash<felt252>, signature: Array<felt252>) -> felt252;
-    fn initialize(ref self: TState, public_key: felt252);
+    fn initialize(ref self: TState, public_key: Array<felt252>);
 }
 ```
 
@@ -59,7 +59,9 @@ In the case of the Stark Validator the 2 functionsare:
   - It checks the number of valid signature matches the threshold defines in
     the account.
 - `initialize` is used at the installation time of the account to store the
-  first account public key.
+  first account public key. In the case of the Stark Validator, the public key
+  can be managed in a single felt so you can just use an array of one, i.e.
+  `array![publicKey]` in cairo or `[publicKey]` in Typescript/Javascript.
 
 > Note: In the case of the Stark Validator the key is simply stored in the
 > `Account_public_keys` storage. It is also stored in the `Account_public_key`

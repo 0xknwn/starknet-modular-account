@@ -139,13 +139,13 @@ interface:
 /// @title Core Validator Module Interface
 trait ICoreValidator<TState> {
     fn is_valid_signature(self: @TState, hash: Array<felt252>, signature: Array<felt252>) -> felt252;
-    fn initialize(ref self: TState, public_key: felt252);
+    fn initialize(ref self: TState, public_key: Array<felt252>);
 }
 ```
 
 The core validator has some enhanced features, including the ability to check
 a signature from another validator. This can be leverage to support and verify
-offchain. This is possible with the `is_valid_signature` function that provides
+offchain. This is possible with the `is_valid_signature` function that
 can be used, not only to check transactions but also signed messages. The
 `initialize` function is used to setup the core module configuration at
 the installation time.
@@ -165,7 +165,7 @@ That is why the modular account constructor is the following:
 
 ```rust
 #[constructor]
-fn constructor(ref self: ContractState, core_validator: felt252, public_key: felt252) {
+fn constructor(ref self: ContractState, core_validator: felt252, public_key: Array<felt252>) {
     self.account.initializer(core_validator, public_key);
 }
 ```
@@ -175,6 +175,10 @@ fn constructor(ref self: ContractState, core_validator: felt252, public_key: fel
 > the external representation of a ClassHash is the same as the one from a
 > felt252.
  
+> Note: the public_key is an Array<felt232> so that it can be used to support
+> private keys that are larger than the felt232. In the case of the Stark Curve,
+> we simply put the public key in an array of one
+
 ### Validator Modules and Prefix Call
 
 So if there is a **core** validator module that is used by default by the
@@ -345,7 +349,7 @@ following interface:
 /// @title Core Validator Module Interface
 trait ICoreValidator<TState> {
     fn is_valid_signature(self: @TState, hash: Array<felt252>, signature: Array<felt252>) -> felt252;
-    fn initialize(ref self: TState, public_key: felt252);
+    fn initialize(ref self: TState, public_key: Array<felt252>);
 }
 ```
 

@@ -48,7 +48,7 @@ the account public key when the accounted is created the first time
 #[starknet::interface]
 pub trait ICoreValidator<TState> {
     fn is_valid_signature(self: @TState, hash: Array<felt252>, signature: Array<felt252>) -> felt252;
-    fn initialize(ref self: TState, public_key: felt252);
+    fn initialize(ref self: TState, public_key: Array<felt252>);
 }
 ```
 
@@ -58,7 +58,9 @@ pub trait ICoreValidator<TState> {
   implemented. If that is the case, we suggest you return that the transaction
   is not valid
 - `initialize` is used at the installation time of the account to store the
-  first account public key.
+  first account public key. The reason the public_key is an `Array<felt252>` is
+  to be able to initialize scheme where the public key requires more than one
+  felt252.
 
 ## Management Interface and Mappers
 
