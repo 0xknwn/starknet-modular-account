@@ -1,10 +1,6 @@
-import { declareClass, classHash } from "./class";
-import { testAccounts, config } from "./utils";
-import { deployCounter, counterAddress, CounterABI } from "./counter";
+import { classHash } from "./class";
 import { default_timeout } from "./parameters";
-import { Contract, CallData, hash } from "starknet";
-import { ABI as SimpleAccountABI } from "./abi/SimpleAccount";
-import { simpleAccountAddress } from "./simple_account";
+import { hash } from "starknet";
 
 describe("contract management (helper)", () => {
   let env: string = "devnet";

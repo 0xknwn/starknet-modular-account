@@ -110,6 +110,7 @@ describe("sessionkey management", () => {
       const starkValidatorClassHash = accountClassHash("StarkValidator");
       const address = accountAddress("SmartrAccount", publicKey, [
         starkValidatorClassHash,
+        "0x1", 
         publicKey,
       ]);
       const { transaction_hash } = await ETH(sender).transfer(
@@ -133,11 +134,12 @@ describe("sessionkey management", () => {
         smartrAccount,
         "SmartrAccount",
         publicKey,
-        [starkValidatorClassHash, publicKey]
+        [starkValidatorClassHash, "0x1", publicKey]
       );
       expect(address).toEqual(
         accountAddress("SmartrAccount", publicKey, [
           starkValidatorClassHash,
+          "0x1", 
           publicKey,
         ])
       );

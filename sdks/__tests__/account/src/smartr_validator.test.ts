@@ -56,6 +56,7 @@ describe("call and execute on validator", () => {
       const starkValidatorClassHash = accountClassHash("StarkValidator");
       const address = accountAddress("SmartrAccount", publicKey, [
         starkValidatorClassHash,
+        "0x1", 
         publicKey,
       ]);
       const { transaction_hash } = await ETH(sender).transfer(
@@ -79,11 +80,12 @@ describe("call and execute on validator", () => {
         smartrAccount,
         "SmartrAccount",
         publicKey,
-        [starkValidatorClassHash, publicKey]
+        [starkValidatorClassHash, "0x1", publicKey]
       );
       expect(address).toEqual(
         accountAddress("SmartrAccount", publicKey, [
           starkValidatorClassHash,
+          "0x1", 
           publicKey,
         ])
       );
