@@ -35,8 +35,6 @@ that have been identified and need to be addressed. Most of them are
 implementation details bit some of them might impact your usage. Those issues
 are the following:
 
-- is_valid_signature should support `Array<felt252>` and not `felt252` as a
-  first parameter for the account and the module
 - the __validate_deploy__ and __validate_declare__ use the is_valid_signature
   method of the core module with a transaction_hash computed by the network.
   This might have to be revisited or not. As a matter of fact, addresses of the

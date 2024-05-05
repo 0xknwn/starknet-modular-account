@@ -44,7 +44,7 @@ The interface looks like this:
 ```rust
 #[starknet::interface]
 pub trait ICoreValidator<TState> {
-    fn is_valid_signature(self: @TState, hash: felt252, signature: Array<felt252>) -> felt252;
+    fn is_valid_signature(self: @TState, hash: Hash<felt252>, signature: Array<felt252>) -> felt252;
     fn initialize(ref self: TState, public_key: felt252);
 }
 ```

@@ -47,7 +47,7 @@ the account public key when the accounted is created the first time
 ```rust
 #[starknet::interface]
 pub trait ICoreValidator<TState> {
-    fn is_valid_signature(self: @TState, hash: felt252, signature: Array<felt252>) -> felt252;
+    fn is_valid_signature(self: @TState, hash: Array<felt252>, signature: Array<felt252>) -> felt252;
     fn initialize(ref self: TState, public_key: felt252);
 }
 ```
