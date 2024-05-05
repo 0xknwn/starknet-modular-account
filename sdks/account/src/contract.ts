@@ -13,12 +13,12 @@ import { ethAddress } from "./natives";
  */
 export const accountAddress = (
   accountName: "SmartrAccount",
-  publicKey: string,
+  salt: string,
   constructorCallData: string[]
 ): string => {
   const class_hash = classHash(accountName);
   return hash.calculateContractAddressFromHash(
-    publicKey,
+    salt,
     class_hash,
     constructorCallData,
     0
@@ -38,12 +38,12 @@ export const accountAddress = (
 export const deployAccount = async (
   deployerAccount: Account,
   accountName: "SmartrAccount",
-  publicKey: string,
+  salt: string,
   constructorCalldata: any[]
 ) => {
   const computedAccountAddress = accountAddress(
     accountName,
-    publicKey,
+    salt,
     constructorCalldata
   );
   if (computedAccountAddress !== deployerAccount.address) {
@@ -83,7 +83,7 @@ export const deployAccount = async (
     await deployerAccount.deployAccount({
       classHash: classHash(accountName),
       constructorCalldata,
-      addressSalt: publicKey,
+      addressSalt: salt,
     });
   const receipt = await deployerAccount.waitForTransaction(tx);
   if (!receipt.isSuccess()) {

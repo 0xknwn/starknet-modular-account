@@ -14,6 +14,7 @@ import {
   SmartrAccount,
   deployAccount,
   accountAddress,
+  SmartrAccountABI,
 } from "@0xknwn/starknet-modular-account";
 import { RpcProvider, Contract, Account, type Call, CallData } from "starknet";
 import { StarkValidatorABI } from "@0xknwn/starknet-modular-account";
@@ -68,10 +69,11 @@ describe("upgrade management", () => {
       const publicKey = conf.accounts[0].publicKey;
       const privateKey = conf.accounts[0].privateKey;
       const starkValidatorClassHash = accountClassHash("StarkValidator");
-      const address = accountAddress("SmartrAccount", publicKey, [
-        starkValidatorClassHash,
-        publicKey,
-      ]);
+      let calldata = new CallData(SmartrAccountABI).compile("constructor", {
+        core_validator: starkValidatorClassHash,
+        public_key: [publicKey],
+      });
+      const address = accountAddress("SmartrAccount", publicKey, calldata);
       const { transaction_hash } = await ETH(sender).transfer(
         address,
         initial_EthTransfer
@@ -89,17 +91,18 @@ describe("upgrade management", () => {
       const conf = config(env);
       const publicKey = conf.accounts[0].publicKey;
       const starkValidatorClassHash = accountClassHash("StarkValidator");
+      let calldata = new CallData(SmartrAccountABI).compile("constructor", {
+        core_validator: starkValidatorClassHash,
+        public_key: [publicKey],
+      });
       const address = await deployAccount(
         smartrAccount,
         "SmartrAccount",
         publicKey,
-        [starkValidatorClassHash, publicKey]
+        calldata
       );
       expect(address).toEqual(
-        accountAddress("SmartrAccount", publicKey, [
-          starkValidatorClassHash,
-          publicKey,
-        ])
+        accountAddress("SmartrAccount", publicKey, calldata)
       );
     },
     default_timeout

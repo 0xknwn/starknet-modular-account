@@ -25,7 +25,7 @@ export const ABI = [
   {
     "type": "impl",
     "name": "SRC6Impl",
-    "interface_name": "smartr::account::interface::ISRC6"
+    "interface_name": "smartr::component::account::ISRC6"
   },
   {
     "type": "struct",
@@ -57,7 +57,7 @@ export const ABI = [
   },
   {
     "type": "interface",
-    "name": "smartr::account::interface::ISRC6",
+    "name": "smartr::component::account::ISRC6",
     "items": [
       {
         "type": "function",
@@ -97,7 +97,7 @@ export const ABI = [
         "inputs": [
           {
             "name": "hash",
-            "type": "core::felt252"
+            "type": "core::array::Array::<core::felt252>"
           },
           {
             "name": "signature",
@@ -116,11 +116,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "DeclarerImpl",
-    "interface_name": "smartr::account::interface::IDeclarer"
+    "interface_name": "smartr::component::account::IDeclarer"
   },
   {
     "type": "interface",
-    "name": "smartr::account::interface::IDeclarer",
+    "name": "smartr::component::account::IDeclarer",
     "items": [
       {
         "type": "function",
@@ -143,11 +143,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "DeployableImpl",
-    "interface_name": "smartr::account::interface::IDeployable"
+    "interface_name": "smartr::component::account::IDeployable"
   },
   {
     "type": "interface",
-    "name": "smartr::account::interface::IDeployable",
+    "name": "smartr::component::account::IDeployable",
     "items": [
       {
         "type": "function",
@@ -167,37 +167,6 @@ export const ABI = [
           },
           {
             "name": "public_key",
-            "type": "core::felt252"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "core::felt252"
-          }
-        ],
-        "state_mutability": "view"
-      }
-    ]
-  },
-  {
-    "type": "impl",
-    "name": "SRC6CamelOnlyImpl",
-    "interface_name": "smartr::account::interface::ISRC6CamelOnly"
-  },
-  {
-    "type": "interface",
-    "name": "smartr::account::interface::ISRC6CamelOnly",
-    "items": [
-      {
-        "type": "function",
-        "name": "isValidSignature",
-        "inputs": [
-          {
-            "name": "hash",
-            "type": "core::felt252"
-          },
-          {
-            "name": "signature",
             "type": "core::array::Array::<core::felt252>"
           }
         ],
@@ -213,7 +182,7 @@ export const ABI = [
   {
     "type": "impl",
     "name": "ModuleImpl",
-    "interface_name": "smartr::account::interface::IModule"
+    "interface_name": "smartr::component::account::IModule"
   },
   {
     "type": "enum",
@@ -231,7 +200,7 @@ export const ABI = [
   },
   {
     "type": "interface",
-    "name": "smartr::account::interface::IModule",
+    "name": "smartr::component::account::IModule",
     "items": [
       {
         "type": "function",
@@ -387,47 +356,47 @@ export const ABI = [
       },
       {
         "name": "public_key",
-        "type": "core::felt252"
+        "type": "core::array::Array::<core::felt252>"
       }
     ]
   },
   {
     "type": "event",
-    "name": "smartr::account::account::AccountComponent::OwnerAdded",
+    "name": "smartr::component::account::AccountComponent::OwnerAdded",
     "kind": "struct",
     "members": [
       {
         "name": "new_owner_guid",
-        "type": "core::felt252",
+        "type": "core::array::Array::<core::felt252>",
         "kind": "key"
       }
     ]
   },
   {
     "type": "event",
-    "name": "smartr::account::account::AccountComponent::OwnerRemoved",
+    "name": "smartr::component::account::AccountComponent::OwnerRemoved",
     "kind": "struct",
     "members": [
       {
         "name": "removed_owner_guid",
-        "type": "core::felt252",
+        "type": "core::array::Array::<core::felt252>",
         "kind": "key"
       }
     ]
   },
   {
     "type": "event",
-    "name": "smartr::account::account::AccountComponent::Event",
+    "name": "smartr::component::account::AccountComponent::Event",
     "kind": "enum",
     "variants": [
       {
         "name": "OwnerAdded",
-        "type": "smartr::account::account::AccountComponent::OwnerAdded",
+        "type": "smartr::component::account::AccountComponent::OwnerAdded",
         "kind": "nested"
       },
       {
         "name": "OwnerRemoved",
-        "type": "smartr::account::account::AccountComponent::OwnerRemoved",
+        "type": "smartr::component::account::AccountComponent::OwnerRemoved",
         "kind": "nested"
       }
     ]
@@ -464,12 +433,12 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "smartr::presets::smartr_account::SmartrAccount::Event",
+    "name": "smartr::account::smartraccount::SmartrAccount::Event",
     "kind": "enum",
     "variants": [
       {
         "name": "AccountEvent",
-        "type": "smartr::account::account::AccountComponent::Event",
+        "type": "smartr::component::account::AccountComponent::Event",
         "kind": "flat"
       },
       {

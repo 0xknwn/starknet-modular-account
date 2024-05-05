@@ -32,7 +32,7 @@ pub trait IDeployable<TState> {
         class_hash: felt252,
         contract_address_salt: felt252,
         core_validator: felt252,
-        public_key: felt252
+        public_key: Array<felt252>
     ) -> felt252;
 }
 
@@ -86,13 +86,13 @@ pub mod AccountComponent {
     #[derive(Drop, PartialEq, starknet::Event)]
     pub struct OwnerAdded {
         #[key]
-        new_owner_guid: felt252
+        new_owner_guid: Array<felt252>
     }
 
     #[derive(Drop, PartialEq, starknet::Event)]
     pub struct OwnerRemoved {
         #[key]
-        removed_owner_guid: felt252
+        removed_owner_guid: Array<felt252>
     }
 
     pub mod Errors {
@@ -211,7 +211,7 @@ pub mod AccountComponent {
             class_hash: felt252,
             contract_address_salt: felt252,
             core_validator: felt252,
-            public_key: felt252
+            public_key: Array<felt252>
         ) -> felt252 {
             // @todo: we should be able to rebuild the call with the class hash
             // and replace the call to validate_transaction() that is currently
@@ -294,7 +294,7 @@ pub mod AccountComponent {
         /// Initializes the account by setting the initial public key
         /// and registering the ISRC6 interface Id.
         fn initializer(
-            ref self: ComponentState<TContractState>, core_validator: felt252, public_key: felt252
+            ref self: ComponentState<TContractState>, core_validator: felt252, public_key: Array<felt252>
         ) {
             let mut src5_component = get_dep_component_mut!(ref self, SRC5);
             src5_component.register_interface(super::ISRC6_ID);
@@ -338,14 +338,14 @@ pub mod AccountComponent {
         }
 
         fn notify_owner_addition(
-            ref self: ComponentState<TContractState>, owner_public_key: felt252
+            ref self: ComponentState<TContractState>, owner_public_key: Array<felt252>
         ) {
             self.assert_only_self();
             self.emit(OwnerAdded { new_owner_guid: owner_public_key });
         }
 
         fn notify_owner_removal(
-            ref self: ComponentState<TContractState>, owner_public_key: felt252
+            ref self: ComponentState<TContractState>, owner_public_key: Array<felt252>
         ) {
             self.assert_only_self();
             self.emit(OwnerRemoved { removed_owner_guid: owner_public_key });
