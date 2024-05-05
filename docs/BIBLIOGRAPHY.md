@@ -41,6 +41,8 @@ that suggests the Paymaster is not yet prioritized.
   supports an alpha implementation of the
   [Safe{Core} Protocol](https://forum.safe.global/t/safe-core-protocol-whitepaper/3949)
 - The [Kernel Smart Contract](https://github.com/zerodevapp/kernel)
+- The [RIP 7560](https://github.com/ethereum/RIPs/blob/master/RIPS/rip-7560.md)
+  that is a proposal to make ERC 4337 mandatory for rollups.
 
 ## Module Registry
 
@@ -69,3 +71,10 @@ have a look at existing implementations like:
 - [Zodiac Modules](https://github.com/gnosisguild/zodiac)
 - [A list of modules and resources by Rhinestone](https://github.com/rhinestonewtf/awesome-modular-accounts)
 - [Safe Hackathon Ideas](https://safe-global.notion.site/d75c813772f54528990a9b5c2f5cb375?v=96a818baabe242e3ad25aad66722b2bb)
+
+## Other resources
+
+You might also want to check:
+
+- [Notes on the Account Abstraction roadmap](https://notes.ethereum.org/@yoav/AA-roadmap-May-2024)
+- The Awesome [AA list of projects](https://github.com/4337Mafia/awesome-account-abstraction)

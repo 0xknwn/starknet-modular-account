@@ -25,6 +25,7 @@ mod StarkValidator {
     use starknet::class_hash::ClassHash;
     use starknet::get_caller_address;
     use starknet::get_contract_address;
+    use starknet::get_tx_info;
     use super::IPublicKeys;
 
     component!(path: ValidatorComponent, storage: validator, event: ValidatorEvent);
@@ -32,7 +33,41 @@ mod StarkValidator {
     component!(path: AccountComponent, storage: account, event: AccountEvent);
 
     #[abi(embed_v0)]
-    impl ValidatorImpl = ValidatorComponent::ValidatorImpl<ContractState>;
+    pub impl ValidatorImpl of IValidator<ContractState> {
+        fn validate(self: @ContractState, grantor_class: ClassHash, calls: Array<Call>) -> felt252 {
+          let tx_info = get_tx_info().unbox();
+          let tx_hash = tx_info.transaction_hash;
+          let signature = tx_info.signature;
+          let signature_len = signature.len();
+          let mut i: usize = 0;
+          let mut sig: Array<felt252> = ArrayTrait::<felt252>::new();
+          while i < signature_len {
+              sig.append(*signature.at(i));
+              i += 1;
+          };
+          self.is_valid_signature(tx_hash, sig)
+        }
+    }
+
+    #[abi(embed_v0)]
+    pub impl CoreValidator of ICoreValidator<ContractState> {
+        /// Verifies that the given signature is valid for the given hash.
+        fn is_valid_signature(
+            self: @ContractState, hash: felt252, signature: Array<felt252>
+        ) -> felt252 {
+            if self._is_valid_signature(hash, signature.span()) {
+                starknet::VALIDATED
+            } else {
+                0
+            }
+        }
+
+        fn initialize(ref self: ContractState, public_key: felt252) {
+            self.Account_public_key.write(public_key);
+            self.Account_public_keys.write(array![public_key]);
+            self.Account_threshold.write(1);
+        }
+    }
 
     mod Errors {
         pub const REGISTERED_KEY: felt252 = 'Account: key already registered';
@@ -70,7 +105,7 @@ mod StarkValidator {
 
 
     #[abi(embed_v0)]
-    impl ConfigureImpl of IConfigure<ContractState> {
+    pub impl ConfigureImpl of IConfigure<ContractState> {
         fn call(self: @ContractState, call: Call) -> Array<felt252> {
             let mut output = ArrayTrait::<felt252>::new();
             let mut found = false;
@@ -192,25 +227,6 @@ mod StarkValidator {
         }
     }
 
-    #[abi(embed_v0)]
-    pub impl CoreValidator of ICoreValidator<ContractState> {
-        /// Verifies that the given signature is valid for the given hash.
-        fn is_valid_signature(
-            self: @ContractState, hash: felt252, signature: Array<felt252>
-        ) -> felt252 {
-            if self._is_valid_signature(hash, signature.span()) {
-                starknet::VALIDATED
-            } else {
-                0
-            }
-        }
-
-        fn initialize(ref self: ContractState, public_key: felt252) {
-            self.Account_public_key.write(public_key);
-            self.Account_public_keys.write(array![public_key]);
-            self.Account_threshold.write(1);
-        }
-    }
 
     #[generate_trait]
     impl Internal of InternalTrait {

@@ -63,7 +63,7 @@ pub mod AccountComponent {
     };
     use smartr::component::{IConfigureDispatcherTrait, IConfigureLibraryDispatcher};
     use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
-    use openzeppelin::account::utils::{execute_calls, is_valid_stark_signature};
+    use openzeppelin::account::utils::execute_calls;
     use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SRC5InternalTrait;
     use openzeppelin::introspection::src5::SRC5Component::SRC5;
     use openzeppelin::introspection::src5::SRC5Component;
@@ -156,6 +156,7 @@ pub mod AccountComponent {
         /// This function is used by the protocol to verify `invoke` transactions.
         fn __validate__(self: @ComponentState<TContractState>, mut calls: Array<Call>) -> felt252 {
             let selector = *calls.at(0).selector;
+            let core_validator = self.Account_core_validator.read();
             if selector == selector!("__module_validate__") {
                 let account = get_contract_address();
                 assert(*calls.at(0).to == account, Errors::UNAUTHORIZED);
@@ -164,13 +165,11 @@ pub mod AccountComponent {
                 let felt = *calldata.at(1);
                 let class_hash: ClassHash = felt.try_into().unwrap();
                 assert(self.Account_modules.read(class_hash), Errors::MODULE_NOT_INSTALLED);
-                let core_validator = self.Account_core_validator.read();
-                // @todo - check if the signer is the core validator as it should be
-                // part of the prefix calldata.
                 return IValidatorLibraryDispatcher { class_hash: class_hash }
                     .validate(core_validator, calls);
             }
-            self.validate_transaction()
+            IValidatorLibraryDispatcher { class_hash: core_validator }
+                .validate(core_validator, calls)
         }
 
         /// Verifies that the given signature is valid for the given hash.
@@ -195,6 +194,10 @@ pub mod AccountComponent {
         fn __validate_declare__(
             self: @ComponentState<TContractState>, class_hash: felt252
         ) -> felt252 {
+            // @todo: we should be able to rebuild the call with the class hash
+            // and replace the call to validate_transaction() that is currently
+            // based on the signature check, i.e. does not recompute the hash
+            // to a call to the core validator with a recompted hash.
             self.validate_transaction()
         }
     }
@@ -215,6 +218,10 @@ pub mod AccountComponent {
             core_validator: felt252,
             public_key: felt252
         ) -> felt252 {
+            // @todo: we should be able to rebuild the call with the class hash
+            // and replace the call to validate_transaction() that is currently
+            // based on the signature check, i.e. does not recompute the hash
+            // to a call to the core validator with a recompted hash.
             self.validate_transaction()
         }
     }
