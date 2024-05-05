@@ -76,7 +76,6 @@ describe("bootstrapping an account", () => {
         public_key: publicKey,
         target_class: helperClassHash("SimpleAccount"),
       });
-
       const address = await deployAccount(
         account,
         "BootstrapAccount",
