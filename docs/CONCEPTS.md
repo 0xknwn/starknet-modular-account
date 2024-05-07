@@ -17,7 +17,6 @@
   - [Validator Interfaces](#validator-interfaces)
   - [Validator Configuration](#validator-configuration)
   - [Validator Entrypoints](#validator-entrypoints)
-- [To continue](#to-continue)
 
 ## Accounts and the Modular Account
 
@@ -397,8 +396,3 @@ pub trait IDisableSessionKey {
     fn is_disabled_session_key(self: @ContractState, sessionkey: felt252);
 }
 ```
-
-## To continue
-
-Do not hesitate to open an issue on the project if you have question or think
-some sections of this document need to be improved.

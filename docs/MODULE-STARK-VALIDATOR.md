@@ -9,6 +9,7 @@ of this module.
   - [Validator Module](#validator-module)
   - [Core Validator Interface](#core-validator-interface)
   - [Management Interface](#management-interface)
+  - [Version Interface](#version-interface)
   - [Module Management Interface Mappers](#module-management-interface-mappers)
 
 ## Validator Module
@@ -93,6 +94,22 @@ As you can assess by their name:
 - `set_threshold` defines the number of signer that must sign a transaction or
   message for the signature to be valid
 - `get_threshold` list the current threshold of the account.
+
+## Version Interface
+
+The Stark Validator implements the `IVersion` interface below:
+
+```rust
+#[starknet::interface]
+pub trait IVersion<TState> {
+    fn get_version(self: @TState) -> felt252;
+    fn get_name(self: @TState) -> felt252;
+}
+```
+
+- `get_name()` returns `stark-validator` in a shortString
+- `get_version()` returns the version starting with a v, like `v0.1.8` as a 
+  short string. 
 
 ## Module Management Interface Mappers
 

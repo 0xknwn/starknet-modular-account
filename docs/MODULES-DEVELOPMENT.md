@@ -14,6 +14,7 @@ contact the project to get some help.
   - [Validator Module](#validator-module)
   - [Core Validator Interface](#core-validator-interface)
   - [Management Interface and Mappers](#management-interface-and-mappers)
+  - [Version Interface](#version-interface)
   - [Other considerations](#other-considerations)
   
 ## Validator Module
@@ -90,6 +91,21 @@ pub trait IConfigure<TState> {
 >   `sn_keccak` of the entrypoint name
 > - `to` should be the account address
 > - `calldata` should be the call data as defined by the ABI of the class
+
+## Version Interface
+
+It is recommended to implement the `IVersion` interface in the module and add
+them to the mappers as describe above. These interface helps the users to
+identify the validators, even if eventually, the class hash remains the only
+real identifier:
+
+```rust
+#[starknet::interface]
+pub trait IVersion<TState> {
+    fn get_version(self: @TState) -> felt252;
+    fn get_name(self: @TState) -> felt252;
+}
+```
 
 ## Other considerations
 

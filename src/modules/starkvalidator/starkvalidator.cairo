@@ -20,6 +20,7 @@ mod StarkValidator {
     use smartr::component::AccountComponent::InternalTrait as AccountInternalTrait;
     use smartr::component::ValidatorComponent;
     use smartr::component::{IValidator, ICoreValidator, IValidator_ID, IConfigure};
+    use smartr::component::IVersion;
     use smartr::store::Felt252ArrayStore;
     use starknet::account::Call;
     use starknet::class_hash::ClassHash;
@@ -46,6 +47,16 @@ mod StarkValidator {
               i += 1;
           };
           self.is_valid_signature(tx_hash, sig)
+        }
+    }
+
+    #[abi(embed_v0)]
+    impl VersionImpl of IVersion<ContractState> {
+        fn get_name(self: @ContractState) -> felt252 {
+            'stark-validator'
+        }
+        fn get_version(self: @ContractState) -> felt252 {
+            'v0.1.8'
         }
     }
 
@@ -129,6 +140,16 @@ mod StarkValidator {
                 let threshold = self.get_threshold();
                 let threshold_felt: felt252 = threshold.into();
                 output.append(threshold_felt);
+            }
+            if call.selector == selector!("get_version") {
+                found = true;
+                let out = self.get_version();
+                output.append(out);
+            }
+            if call.selector == selector!("get_name") {
+                found = true;
+                let out = self.get_name();
+                output.append(out);
             }
             if !found {
                 assert(false, 'Invalid selector');

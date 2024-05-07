@@ -11,3 +11,4 @@ dist
 /docs/starknet-module-sessionkey
 /.env.*
 /!.env.template.json
+wip

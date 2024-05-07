@@ -14,7 +14,7 @@ import {
   SmartrAccountABI,
 } from "@0xknwn/starknet-modular-account";
 import { StarkValidatorABI } from "@0xknwn/starknet-modular-account";
-import { RpcProvider, num, CallData } from "starknet";
+import { RpcProvider, num, CallData, shortString } from "starknet";
 
 describe("call and execute on validator", () => {
   let env: string;
@@ -89,6 +89,27 @@ describe("call and execute on validator", () => {
       );
       expect(address).toEqual(
         accountAddress("SmartrAccount", publicKey, calldata)
+      );
+    },
+    default_timeout
+  );
+
+  it(
+    "checks the StarkValidator name",
+    async () => {
+      const conf = config(env);
+
+      const calldata = new CallData(StarkValidatorABI);
+      const data = calldata.compile("get_name", {});
+      const output = await smartrAccount.callOnModule(
+        accountClassHash("StarkValidator"),
+        "get_name",
+        data
+      );
+      expect(Array.isArray(output)).toBe(true);
+      expect(output.length).toEqual(1);
+      expect(`0x${num.toBigInt(output[0]).toString(16)}`).toEqual(
+        shortString.encodeShortString("stark-validator")
       );
     },
     default_timeout

@@ -1,6 +1,39 @@
 export const ABI = [
   {
     "type": "impl",
+    "name": "VersionImpl",
+    "interface_name": "smartr::component::version::IVersion"
+  },
+  {
+    "type": "interface",
+    "name": "smartr::component::version::IVersion",
+    "items": [
+      {
+        "type": "function",
+        "name": "get_version",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::felt252"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_name",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::felt252"
+          }
+        ],
+        "state_mutability": "view"
+      }
+    ]
+  },
+  {
+    "type": "impl",
     "name": "DisableSessionKeyImpl",
     "interface_name": "smartr::modules::sessionkeyvalidator::sessionkeyvalidator::IDisableSessionKey"
   },

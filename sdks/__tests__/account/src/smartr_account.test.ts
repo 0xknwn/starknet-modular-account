@@ -18,7 +18,7 @@ import {
   accountAddress,
   SmartrAccountABI,
 } from "@0xknwn/starknet-modular-account";
-import { RpcProvider, CallData } from "starknet";
+import { RpcProvider, CallData, Contract, shortString, num } from "starknet";
 import { StarkValidatorABI } from "@0xknwn/starknet-modular-account";
 
 describe("account management", () => {
@@ -139,6 +139,21 @@ describe("account management", () => {
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(1);
       expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
+    },
+    default_timeout
+  );
+
+  it(
+    "checks the SmartAccount name",
+    async () => {
+      const conf = config(env);
+      const p = new RpcProvider({ nodeUrl: conf.providerURL });
+      const contract = new Contract(SmartrAccountABI, smartrAccount.address, p);
+
+      const result = await contract.call("get_name");
+      expect(`0x${result.toString(16)}`).toEqual(
+        shortString.encodeShortString("starknet-modular-account")
+      );
     },
     default_timeout
   );

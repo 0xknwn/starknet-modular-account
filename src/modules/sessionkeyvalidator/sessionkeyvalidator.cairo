@@ -17,6 +17,7 @@ mod SessionKeyValidator {
     use smartr::utils::hash_auth_message;
     use super::{IDisableSessionKeyDispatcherTrait, IDisableSessionKey};
     use smartr::component::IConfigure;
+    use smartr::component::IVersion;
     use smartr::component::{
         ValidatorComponent, IValidator, ICoreValidator, ICoreValidatorDispatcherTrait,
         ICoreValidatorLibraryDispatcher,
@@ -43,6 +44,16 @@ mod SessionKeyValidator {
         pub const INVALID_SESSION_PROOF_LEN: felt252 = 'Invalid sessionkey proof length';
         pub const INVALID_MODULE_SIGNATURE: felt252 = 'Invalid module signature';
         pub const INVALID_MODULE_VALIDATOR: felt252 = 'Invalid Core Validator';
+    }
+
+    #[abi(embed_v0)]
+    impl VersionImpl of IVersion<ContractState> {
+        fn get_name(self: @ContractState) -> felt252 {
+            'sessionkey-validator'
+        }
+        fn get_version(self: @ContractState) -> felt252 {
+            'v0.1.8'
+        }
     }
 
     #[abi(embed_v0)]
@@ -205,6 +216,16 @@ mod SessionKeyValidator {
                 } else {
                     output.append(0);
                 }
+            }
+            if call.selector == selector!("get_version") {
+                found = true;
+                let out = self.get_version();
+                output.append(out);
+            }
+            if call.selector == selector!("get_name") {
+                found = true;
+                let out = self.get_name();
+                output.append(out);
             }
             if !found {
                 assert(false, 'Invalid selector');
