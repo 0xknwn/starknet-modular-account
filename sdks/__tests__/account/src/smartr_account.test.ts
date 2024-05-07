@@ -151,7 +151,7 @@ describe("account management", () => {
       const contract = new Contract(SmartrAccountABI, smartrAccount.address, p);
 
       const result = await contract.call("get_name");
-      expect(`0x${num.toBigInt(result).toString(16)}`).toEqual(
+      expect(`0x${result.toString(16)}`).toEqual(
         shortString.encodeShortString("starknet-modular-account")
       );
     },
