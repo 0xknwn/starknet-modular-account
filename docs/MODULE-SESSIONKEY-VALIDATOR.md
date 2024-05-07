@@ -11,6 +11,7 @@ of this module.
   - [Core Validator Interface](#core-validator-interface)
   - [Management Interface](#management-interface)
   - [Module Management Interface Mappers](#module-management-interface-mappers)
+  - [Version Interface](#version-interface)
   
 > Note: To understand the process of requesting a session key authorization and
 > signing the authorization, you should check the documentation for the
@@ -108,3 +109,19 @@ In the case of the Stark Validator:
 >   `sn_keccak` of the entrypoint name
 > - `to` should be the account address
 > - `calldata` should be the call data as defined by the ABI of the class
+
+## Version Interface
+
+The Session Key Validator implements the `IVersion` interface below:
+
+```rust
+#[starknet::interface]
+pub trait IVersion<TState> {
+    fn get_version(self: @TState) -> felt252;
+    fn get_name(self: @TState) -> felt252;
+}
+```
+
+- `get_name()` returns `sessionkey-validator` in a shortString
+- `get_version()` returns the version starting with a v, like `v0.1.8` as a 
+  short string. 
