@@ -18,7 +18,7 @@ import {
   accountAddress,
   SmartrAccountABI,
 } from "@0xknwn/starknet-modular-account";
-import { RpcProvider, CallData, Contract, shortString } from "starknet";
+import { RpcProvider, CallData, Contract, shortString, num } from "starknet";
 import { StarkValidatorABI } from "@0xknwn/starknet-modular-account";
 
 describe("account management", () => {
@@ -151,7 +151,7 @@ describe("account management", () => {
       const contract = new Contract(SmartrAccountABI, smartrAccount.address, p);
 
       const result = await contract.call("get_name");
-      expect(result).toEqual(
+      expect(`0x${num.toBigInt(result).toString(16)}`).toEqual(
         shortString.encodeShortString("starknet-modular-account")
       );
     },
