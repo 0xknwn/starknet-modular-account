@@ -4,10 +4,21 @@
 mod SmartrAccount {
     use smartr::component::AccountComponent;
     use smartr::component::AccountComponent::Errors;
+    use smartr::component::IVersion;
     use openzeppelin::introspection::src5::SRC5Component;
     use openzeppelin::upgrades::UpgradeableComponent;
     use openzeppelin::upgrades::interface::IUpgradeable;
     use starknet::ClassHash;
+
+    #[abi(embed_v0)]
+    impl VersionImpl of IVersion<ContractState> {
+        fn get_name(self: @ContractState) -> felt252 {
+            'starknet-modular-account'
+        }
+        fn get_version(self: @ContractState) -> felt252 {
+            'v0.1.8'
+        }
+    }
 
     component!(path: AccountComponent, storage: account, event: AccountEvent);
     component!(path: SRC5Component, storage: src5, event: SRC5Event);
