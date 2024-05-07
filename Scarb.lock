@@ -8,7 +8,7 @@ source = "git+https://github.com/openzeppelin/cairo-contracts?tag=v0.12.0#069700
 
 [[package]]
 name = "smartr"
-version = "0.1.0"
+version = "0.1.8"
 dependencies = [
  "openzeppelin",
  "snforge_std",

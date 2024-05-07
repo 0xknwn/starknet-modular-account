@@ -7,6 +7,7 @@ mod SimpleValidator {
     use openzeppelin::introspection::src5::SRC5Component;
     use starknet::{get_caller_address, get_contract_address};
     use smartr::component::AccountComponent;
+    use smartr::component::IConfigure;
     use smartr::component::IVersion;
     use starknet::class_hash::ClassHash;
     use starknet::account::Call;
@@ -55,6 +56,7 @@ mod SimpleValidator {
 
         fn execute(ref self: ContractState, call: Call) -> Array<felt252> {
             assert(false, 'Invalid selector');
+            array![]
         }
     }
 
