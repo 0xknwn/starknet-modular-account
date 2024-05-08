@@ -46,6 +46,11 @@ mod SessionKeyValidator {
         pub const INVALID_MODULE_VALIDATOR: felt252 = 'Invalid Core Validator';
     }
 
+    #[constructor]
+    fn constructor(ref self: ContractState) {
+        assert(false, 'deployment not allowed')
+    }
+
     #[abi(embed_v0)]
     impl VersionImpl of IVersion<ContractState> {
         fn get_name(self: @ContractState) -> felt252 {
