@@ -5,8 +5,10 @@
     { "path": "experiments/starknet-bootstrap-account" },
     { "path": "sdks/__tests__/account" },
     { "path": "sdks/__tests__/helpers" },
+    { "path": "sdks/__tests__/module-eth" },
     { "path": "sdks/__tests__/module-sessionkey" },
     { "path": "sdks/account" },
+    { "path": "sdks/module-eth" },
     { "path": "sdks/module-sessionkey" }
   ]
 }
