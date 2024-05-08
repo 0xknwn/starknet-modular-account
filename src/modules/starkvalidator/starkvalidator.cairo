@@ -33,6 +33,11 @@ mod StarkValidator {
     component!(path: SRC5Component, storage: src5, event: SRC5Event);
     component!(path: AccountComponent, storage: account, event: AccountEvent);
 
+    #[constructor]
+    fn constructor(ref self: ContractState) {
+        assert(false, 'deployment not allowed')
+    }
+
     #[abi(embed_v0)]
     pub impl ValidatorImpl of IValidator<ContractState> {
         fn validate(self: @ContractState, grantor_class: ClassHash, calls: Array<Call>) -> felt252 {

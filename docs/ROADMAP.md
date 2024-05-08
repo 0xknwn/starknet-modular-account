@@ -49,8 +49,6 @@ are the following:
 - Right now, type conversions are done manually with the `core::traits::Into`
   package. Improve it so that is it more readable and consistent with how other
   libraries like openzeppelin does.
-- Block the deployment of the module classes by adding an `assert(false)` with
-  a message in the `constructor`
 - Reduce, as much as possible the SDKs API surface to make it simpler to use
   for developers.
 - Associate class versions with class hash in the documentation and version
@@ -60,3 +58,5 @@ are the following:
   for users to review policies.
 - For a better understanding of the sessionkey flow in the SDK we should sign
   directly the request and not the `SessionKeyModule`
+- Check when OpenZeppelin uses Poseidon Hash and see if that impacts the Eth
+  module.

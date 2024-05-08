@@ -188,6 +188,11 @@ export const ABI = [
     ]
   },
   {
+    "type": "constructor",
+    "name": "constructor",
+    "inputs": []
+  },
+  {
     "type": "event",
     "name": "smartr::component::validator::ValidatorComponent::Event",
     "kind": "enum",
