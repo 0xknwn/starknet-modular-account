@@ -80,11 +80,15 @@ export const deployAccount = async (
 
   // deploy the account and return the associated address
   const { transaction_hash: tx, contract_address: account_address } =
-    await deployerAccount.deployAccount({
-      classHash: classHash(accountName),
-      constructorCalldata,
-      addressSalt: salt,
-    });
+    await deployerAccount.deployAccount(
+      {
+        classHash: classHash(accountName),
+        constructorCalldata,
+        addressSalt: salt,
+      },
+      // @todo: remove this once the fee is fixed
+      { maxFee: "0x2000000000000" }
+    );
   const receipt = await deployerAccount.waitForTransaction(tx);
   if (!receipt.isSuccess()) {
     throw new Error(`Failed to deploy account: ${receipt.status}`);

@@ -3,8 +3,6 @@
   "version": "0.1.0",
   "description": "",
   "scripts": {
-    "build:abi:EthValidator": "npx abi-wan-kanabi --input ../../target/dev/smartr_EthValidator.contract_class.json --output ./src/abi/EthValidator.ts",
-    "build:abi": "mkdir -p src/abi && npm run build:abi:EthValidator",
     "test": "jest --runInBand --verbose"
   },
   "author": "0xknwn",

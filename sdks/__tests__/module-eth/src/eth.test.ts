@@ -26,7 +26,7 @@ import {
 } from "@0xknwn/starknet-module-eth";
 import { StarkValidatorABI } from "@0xknwn/starknet-modular-account";
 
-describe("eth account management", () => {
+describe("eth validator management", () => {
   let env: string;
   let counterContract: Counter;
   let smartrAccount: SmartrAccount;

@@ -313,8 +313,17 @@ pub mod AccountComponent {
         /// Validates that the caller is the account itself. Otherwise it reverts.
         fn assert_only_self(self: @ComponentState<TContractState>) {
             let caller = get_caller_address();
-            let self = get_contract_address();
-            assert(self == caller, Errors::UNAUTHORIZED);
+            let contract = get_contract_address();
+            assert(contract == caller, Errors::UNAUTHORIZED);
+        }
+
+        fn assert_only_self_or_deploy_account(self: @ComponentState<TContractState>) {
+            let caller = get_caller_address();
+            if caller.is_zero() {
+                return;
+            }
+            let contract = get_contract_address();
+            assert(contract == caller, Errors::UNAUTHORIZED);
         }
 
         /// Validates that the class hash is not the core validator.
@@ -344,7 +353,7 @@ pub mod AccountComponent {
         fn notify_owner_addition(
             ref self: ComponentState<TContractState>, owner_public_key: Array<felt252>
         ) {
-            self.assert_only_self();
+            self.assert_only_self_or_deploy_account();
             self.emit(OwnerAdded { new_owner_guid: owner_public_key });
         }
 

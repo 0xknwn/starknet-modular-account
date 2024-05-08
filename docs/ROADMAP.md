@@ -60,3 +60,6 @@ are the following:
   directly the request and not the `SessionKeyModule`
 - Check when OpenZeppelin uses Poseidon Hash and see if that impacts the Eth
   module.
+- Fees are not computed correctly when a large part comes from the signature and
+  as a result, the deploy_account has a fixed maxFee. Improve the computation
+  and remove that fix value.
