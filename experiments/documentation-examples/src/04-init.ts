@@ -4,6 +4,7 @@ import {
   classHash,
   SmartrAccountABI,
 } from "@0xknwn/starknet-modular-account";
+import { classHash as ethClassHash } from "@0xknwn/starknet-module-eth";
 import {
   counterAddress as helperCounterAddress,
   CounterABI,
@@ -18,6 +19,7 @@ export const init = async () => {
   // compute the smartrAccount details
   const smartrSigner = new Signer(smartrAccountPrivateKey);
   const smartrAccountPublicKey = await smartrSigner.getPubKey();
+  const ethValidatorClassHash = ethClassHash("EthValidator");
   const starkValidatorClassHash = classHash("StarkValidator");
   const calldata = new CallData(SmartrAccountABI).compile("constructor", {
     core_validator: starkValidatorClassHash,
@@ -39,5 +41,6 @@ export const init = async () => {
     counterAddress,
     smartrAccountPrivateKey,
     smartrAccountPublicKey,
+    ethValidatorClassHash,
   };
 };

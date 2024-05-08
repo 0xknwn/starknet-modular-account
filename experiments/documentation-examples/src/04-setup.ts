@@ -13,7 +13,7 @@ import {
   deployAccount,
   SmartrAccountABI,
 } from "@0xknwn/starknet-modular-account";
-import { declareClass as ethDeclareClass } from "@0xknwn/starknet-modular-eth";
+import { declareClass as ethDeclareClass } from "@0xknwn/starknet-module-eth";
 import { ABI as ERC20ABI } from "./abi/ERC20";
 import {
   declareClass as helperDeclareClass,
@@ -41,6 +41,10 @@ const main = async () => {
   const { classHash: starkValidatorClassHash } = await declareClass(
     account,
     "StarkValidator"
+  );
+  const { classHash: ethValidatorClassHash } = await ethDeclareClass(
+    account,
+    "EthValidator"
   );
 
   // load ETH
