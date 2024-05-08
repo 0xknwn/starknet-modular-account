@@ -234,9 +234,7 @@ mod tests {
         let mut value = value.span();
         let eth_public_key = Serde::<EthPublicKey>::deserialize(ref value);
         match eth_public_key {
-            Option::Some(_key) => {
-              assert(true, 'valid public key');
-              // println!("{:?}", _key);
+            Option::Some(_key) => { assert(true, 'valid public key'); // println!("{:?}", _key);
             },
             Option::None => { assert(false, 'option is none'); },
         }
@@ -268,27 +266,29 @@ mod tests {
     //
     #[test]
     fn play_with_u256() {
-      let _privateKey: u256 =0xb28ebb20fb1015da6e6367d1b5dba9b52862a06dbb3a4022e4749b6987ac1bd2_u256;
-      let x: u256 = 0xd31cf702f5c89d49c567dcfd568bc4869e343506749f69d849eb408802cfa646_u256;
-      let y: u256 = 0x348c7bbf341964c306669365292c0066c23a2fedd131907534677aa3e22db2fc_u256;
-      assert_eq!(x.low, 210289098249831467762502193281061856838, "x.low");
-      assert_eq!(x.high, 280617501412351006689952710290844664966, "x.high");
-      assert_eq!(y.low, 258172356515136873455592221375042794236, "y.low");
-      assert_eq!(y.high, 69849287226094710129367771214955413606, "y.high");
+        let _privateKey: u256 =
+            0xb28ebb20fb1015da6e6367d1b5dba9b52862a06dbb3a4022e4749b6987ac1bd2_u256;
+        let x: u256 = 0xd31cf702f5c89d49c567dcfd568bc4869e343506749f69d849eb408802cfa646_u256;
+        let y: u256 = 0x348c7bbf341964c306669365292c0066c23a2fedd131907534677aa3e22db2fc_u256;
+        assert_eq!(x.low, 210289098249831467762502193281061856838, "x.low");
+        assert_eq!(x.high, 280617501412351006689952710290844664966, "x.high");
+        assert_eq!(y.low, 258172356515136873455592221375042794236, "y.low");
+        assert_eq!(y.high, 69849287226094710129367771214955413606, "y.high");
     }
 
     #[test]
     fn value_match_key_from_u256() {
         let value: Array<felt252> = array![
-            210289098249831467762502193281061856838, 280617501412351006689952710290844664966, 258172356515136873455592221375042794236, 69849287226094710129367771214955413606
+            210289098249831467762502193281061856838,
+            280617501412351006689952710290844664966,
+            258172356515136873455592221375042794236,
+            69849287226094710129367771214955413606
         ];
         let mut value = value.span();
         let eth_public_key = Serde::<EthPublicKey>::deserialize(ref value);
         println!("{:?}", eth_public_key);
         match eth_public_key {
-            Option::Some(_key) => {
-              assert(true, 'valid public key');
-            },
+            Option::Some(_key) => { assert(true, 'valid public key'); },
             Option::None => { assert(false, 'option is none'); },
         }
     }
