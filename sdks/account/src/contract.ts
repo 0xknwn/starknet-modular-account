@@ -86,6 +86,7 @@ export const deployAccount = async (
         constructorCalldata,
         addressSalt: salt,
       },
+      // @todo: remove this once the fee is fixed
       { maxFee: "0x2000000000000" }
     );
   const receipt = await deployerAccount.waitForTransaction(tx);

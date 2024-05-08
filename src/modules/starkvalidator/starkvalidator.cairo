@@ -87,7 +87,7 @@ mod StarkValidator {
             let public_key_felt = *public_key.at(0);
             self.Account_public_key.write(public_key_felt);
             self.Account_public_keys.write(array![public_key_felt]);
-            self.account.notify_owner_addition(array![public_key_felt]);
+            // self.account.notify_owner_addition(array![public_key_felt]);
             self.Account_threshold.write(1);
         }
     }
