@@ -17,7 +17,9 @@ pub const ISRC6_ID: felt252 = 0x2ceccef7f994940b3962a6c67e0ba4fcd37df7d131417c60
 pub trait ISRC6<TState> {
     fn __execute__(self: @TState, calls: Array<Call>) -> Array<Span<felt252>>;
     fn __validate__(self: @TState, calls: Array<Call>) -> felt252;
-    fn is_valid_signature(self: @TState, hash: Array<felt252>, signature: Array<felt252>) -> felt252;
+    fn is_valid_signature(
+        self: @TState, hash: Array<felt252>, signature: Array<felt252>
+    ) -> felt252;
 }
 
 #[starknet::interface]
@@ -294,7 +296,9 @@ pub mod AccountComponent {
         /// Initializes the account by setting the initial public key
         /// and registering the ISRC6 interface Id.
         fn initializer(
-            ref self: ComponentState<TContractState>, core_validator: felt252, public_key: Array<felt252>
+            ref self: ComponentState<TContractState>,
+            core_validator: felt252,
+            public_key: Array<felt252>
         ) {
             let mut src5_component = get_dep_component_mut!(ref self, SRC5);
             src5_component.register_interface(super::ISRC6_ID);

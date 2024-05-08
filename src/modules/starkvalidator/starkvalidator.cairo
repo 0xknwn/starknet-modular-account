@@ -41,17 +41,17 @@ mod StarkValidator {
     #[abi(embed_v0)]
     pub impl ValidatorImpl of IValidator<ContractState> {
         fn validate(self: @ContractState, grantor_class: ClassHash, calls: Array<Call>) -> felt252 {
-          let tx_info = get_tx_info().unbox();
-          let tx_hash = array![tx_info.transaction_hash];
-          let signature = tx_info.signature;
-          let signature_len = signature.len();
-          let mut i: usize = 0;
-          let mut sig: Array<felt252> = ArrayTrait::<felt252>::new();
-          while i < signature_len {
-              sig.append(*signature.at(i));
-              i += 1;
-          };
-          self.is_valid_signature(tx_hash, sig)
+            let tx_info = get_tx_info().unbox();
+            let tx_hash = array![tx_info.transaction_hash];
+            let signature = tx_info.signature;
+            let signature_len = signature.len();
+            let mut i: usize = 0;
+            let mut sig: Array<felt252> = ArrayTrait::<felt252>::new();
+            while i < signature_len {
+                sig.append(*signature.at(i));
+                i += 1;
+            };
+            self.is_valid_signature(tx_hash, sig)
         }
     }
 

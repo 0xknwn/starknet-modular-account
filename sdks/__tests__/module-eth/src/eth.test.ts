@@ -18,14 +18,19 @@ import {
   accountAddress,
   SmartrAccountABI,
 } from "@0xknwn/starknet-modular-account";
-import { RpcProvider, CallData } from "starknet";
-import { EthModule } from "@0xknwn/starknet-module-eth";
+import { RpcProvider, CallData, EthSigner } from "starknet";
+import {
+  declareClass as declareEthClass,
+  classHash as ethClassHash,
+  EthModule,
+} from "@0xknwn/starknet-module-eth";
 import { StarkValidatorABI } from "@0xknwn/starknet-modular-account";
 
-describe("sessionkey management", () => {
+describe("eth account management", () => {
   let env: string;
   let counterContract: Counter;
   let smartrAccount: SmartrAccount;
+  let ethModule: EthModule;
   let smartrAccountWithEth: SmartrAccount;
   let connectedChain: string;
 
@@ -220,269 +225,213 @@ describe("sessionkey management", () => {
     default_timeout
   );
 
-  // it(
-  //   "deploys the EthValidator class",
-  //   async () => {
-  //     const conf = config(env);
-  //     const a = testAccounts(conf)[0];
-  //     const c = await declareSessionkeyClass(a, "SessionKeyValidator");
-  //     expect(c.classHash).toEqual(sessionkeyClassHash("SessionKeyValidator"));
-  //   },
-  //   default_timeout
-  // );
+  it(
+    "deploys the EthValidator class",
+    async () => {
+      const conf = config(env);
+      const a = testAccounts(conf)[0];
+      const c = await declareEthClass(a, "EthValidator");
+      expect(c.classHash).toEqual(ethClassHash("EthValidator"));
+    },
+    default_timeout
+  );
 
-  // it(
-  //   "adds a module to the account",
-  //   async () => {
-  //     if (!smartrAccount) {
-  //       throw new Error("SmartrAccount is not deployed");
-  //     }
-  //     const { transaction_hash } = await smartrAccount.addModule(
-  //       sessionkeyClassHash("SessionKeyValidator")
-  //     );
-  //     const receipt = await smartrAccount.waitForTransaction(transaction_hash);
-  //     expect(receipt.isSuccess()).toBe(true);
-  //   },
-  //   default_timeout
-  // );
+  it(
+    "adds a module to the account",
+    async () => {
+      if (!smartrAccount) {
+        throw new Error("SmartrAccount is not deployed");
+      }
+      const isInstalled = await smartrAccount.isModule(
+        ethClassHash("EthValidator")
+      );
+      if (isInstalled) {
+        return;
+      }
+      const { transaction_hash } = await smartrAccount.addModule(
+        ethClassHash("EthValidator")
+      );
+      const receipt = await smartrAccount.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
 
-  // it(
-  //   "checks the SessionKeyValidator is installed",
-  //   async () => {
-  //     if (!smartrAccount) {
-  //       throw new Error("SmartrAccount is not deployed");
-  //     }
-  //     const output = await smartrAccount.isModule(
-  //       sessionkeyClassHash("SessionKeyValidator")
-  //     );
-  //     expect(output).toBe(true);
-  //   },
-  //   default_timeout
-  // );
+  it(
+    "checks the EthValidator is installed",
+    async () => {
+      if (!smartrAccount) {
+        throw new Error("SmartrAccount is not deployed");
+      }
+      const output = await smartrAccount.isModule(ethClassHash("EthValidator"));
+      expect(output).toBe(true);
+    },
+    default_timeout
+  );
 
-  // it(
-  //   "resets the counter",
-  //   async () => {
-  //     const conf = config(env);
-  //     const account = testAccounts(conf)[0];
-  //     if (!counterContract) {
-  //       throw new Error("Counter not deployed");
-  //     }
-  //     const { transaction_hash } = await counterContract.reset();
-  //     const receipt = await account.waitForTransaction(transaction_hash);
-  //     expect(receipt.isSuccess()).toBe(true);
-  //   },
-  //   default_timeout
-  // );
+  it(
+    "set the ETH public key",
+    async () => {
+      const { transaction_hash } = await smartrAccount.executeOnModule(
+        ethClassHash("EthValidator"),
+        "set_public_key",
+        [
+          "210289098249831467762502193281061856838",
+          "280617501412351006689952710290844664966",
+          "258172356515136873455592221375042794236",
+          "69849287226094710129367771214955413606",
+        ]
+      );
+      const receipt = await smartrAccount.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
 
-  // it(
-  //   "creates a typescript session key module",
-  //   async () => {
-  //     if (!connectedChain) {
-  //       expect(connectedChain).toBeDefined();
-  //       return;
-  //     }
-  //     const conf = config(env);
-  //     const next_timestamp = BigInt(
-  //       Math.floor(Date.now() / 1000) + 24 * 60 * 60
-  //     );
-  //     sessionKeyModule = new SessionKeyModule(
-  //       conf.accounts[1].publicKey,
-  //       smartrAccount.address,
-  //       sessionkeyClassHash("SessionKeyValidator"),
-  //       connectedChain,
-  //       `0x${next_timestamp.toString(16)}`
-  //     );
-  //     const r = await sessionKeyModule.request(
-  //       accountClassHash("StarkValidator")
-  //     );
-  //     expect(r.hash).toBe(
-  //       hash_auth_message(
-  //         smartrAccount.address,
-  //         sessionkeyClassHash("SessionKeyValidator"),
-  //         accountClassHash("StarkValidator"),
-  //         conf.accounts[1].publicKey,
-  //         `0x${next_timestamp.toString(16)}`,
-  //         "0x0",
-  //         connectedChain
-  //       )
-  //     );
-  //   },
-  //   default_timeout
-  // );
+  it(
+    "gets the ETH public key",
+    async () => {
+      const result = await smartrAccount.callOnModule(
+        ethClassHash("EthValidator"),
+        "get_public_key",
+        []
+      );
+      expect(result.length).toEqual(4);
+      expect(result[0]).toEqual(210289098249831467762502193281061856838n);
+      expect(result[1]).toEqual(280617501412351006689952710290844664966n);
+      expect(result[2]).toEqual(258172356515136873455592221375042794236n);
+      expect(result[3]).toEqual(69849287226094710129367771214955413606n);
+    },
+    default_timeout
+  );
 
-  // it("signs the typescript session key module", async () => {
-  //   if (!sessionKeyModule) {
-  //     expect(sessionKeyModule).toBeDefined();
-  //     return;
-  //   }
-  //   const conf = config(env);
-  //   const grantor = new SessionKeyGrantor(
-  //     accountClassHash("StarkValidator"),
-  //     conf.accounts[0].privateKey
-  //   );
-  //   const signature = await grantor.sign(sessionKeyModule);
-  //   expect(signature.length).toEqual(2);
-  //   sessionKeyModule.add_signature(signature);
-  // });
+  it(
+    "resets the counter",
+    async () => {
+      const conf = config(env);
+      const account = testAccounts(conf)[0];
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      const { transaction_hash } = await counterContract.reset();
+      const receipt = await account.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
 
-  // it("creates an account with the session key module", async () => {
-  //   if (!sessionKeyModule) {
-  //     expect(sessionKeyModule).toBeDefined();
-  //     return;
-  //   }
-  //   const conf = config(env);
-  //   const p = new RpcProvider({ nodeUrl: conf.providerURL });
-  //   smartrAccountWithSessionKey = new SmartrAccount(
-  //     p,
-  //     smartrAccount.address,
-  //     conf.accounts[1].privateKey,
-  //     sessionKeyModule
-  //   );
-  // });
+  it(
+    "creates a typescript ETH Validator module",
+    async () => {
+      const conf = config(env);
+      const next_timestamp = BigInt(
+        Math.floor(Date.now() / 1000) + 24 * 60 * 60
+      );
+      ethModule = new EthModule(smartrAccount.address);
+    },
+    default_timeout
+  );
 
-  // it(
-  //   "resets and read the counter from owner account",
-  //   async () => {
-  //     const conf = config(env);
-  //     const a = testAccounts(conf)[0];
-  //     const c1 = await counterContract.get();
-  //     if (c1 !== 0n) {
-  //       const { transaction_hash } = await counterContract.reset();
-  //       const receipt = await a.waitForTransaction(transaction_hash);
-  //       expect(receipt.isSuccess()).toBe(true);
-  //     }
-  //     const c2 = await counterContract.get();
-  //     expect(c2).toBe(0n);
-  //   },
-  //   default_timeout
-  // );
+  it("creates an account with the ETH Validator module", async () => {
+    if (!ethModule) {
+      expect(ethModule).toBeDefined();
+      return;
+    }
+    const conf = config(env);
+    const p = new RpcProvider({ nodeUrl: conf.providerURL });
+    const signer = new EthSigner(
+      "0xb28ebb20fb1015da6e6367d1b5dba9b52862a06dbb3a4022e4749b6987ac1bd2"
+    );
+    smartrAccountWithEth = new SmartrAccount(
+      p,
+      smartrAccount.address,
+      signer,
+      ethModule
+    );
+  });
 
-  // it(
-  //   "increments the counter from SmartrAccount with Module and succeed",
-  //   async () => {
-  //     if (!counterContract) {
-  //       throw new Error("Counter not deployed");
-  //     }
-  //     if (!smartrAccountWithSessionKey) {
-  //       throw new Error("SmartrAccount with SessionKey not installed");
-  //     }
-  //     const counterWithSmartrAccountAndModule = new Counter(
-  //       counterContract.address,
-  //       smartrAccountWithSessionKey
-  //     );
-  //     const { transaction_hash } =
-  //       await counterWithSmartrAccountAndModule.increment();
-  //     const receipt = await smartrAccountWithSessionKey.waitForTransaction(
-  //       transaction_hash
-  //     );
-  //     expect(receipt.isSuccess()).toBe(true);
-  //   },
-  //   default_timeout
-  // );
+  it(
+    "increments the counter from SmartrAccount with Module and succeed",
+    async () => {
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      if (!smartrAccountWithEth) {
+        throw new Error("SmartrAccount with Eth Validator not installed");
+      }
+      const counterWithSmartrAccountAndModule = new Counter(
+        counterContract.address,
+        smartrAccountWithEth
+      );
+      const { transaction_hash } =
+        await counterWithSmartrAccountAndModule.increment();
+      const receipt = await smartrAccountWithEth.waitForTransaction(
+        transaction_hash
+      );
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
 
-  // it(
-  //   "disables the sessionkey",
-  //   async () => {
-  //     const conf = config(env);
-  //     const calldata = new CallData(SessionKeyValidatorABI);
-  //     const sessionkey = await sessionKeyModule.get_session_key();
-  //     const data = calldata.compile("disable_session_key", {
-  //       sessionkey,
-  //     });
-  //     const { transaction_hash } = await smartrAccount.executeOnModule(
-  //       sessionkeyClassHash("SessionKeyValidator"),
-  //       "disable_session_key",
-  //       data
-  //     );
-  //     const receipt = await smartrAccount.waitForTransaction(transaction_hash);
-  //     expect(receipt.isSuccess()).toBe(true);
-  //   },
-  //   default_timeout
-  // );
+  it(
+    "increments the counter with wrong key and fails",
+    async () => {
+      if (!ethModule) {
+        expect(ethModule).toBeDefined();
+        return;
+      }
+      const conf = config(env);
+      const p = new RpcProvider({ nodeUrl: conf.providerURL });
+      const signer = new EthSigner(
+        "0xfc5f3cbec4bea5789df4783f423e500aab57ddff75f872f629c27208b4f285fc"
+      );
+      let failedSmartrAccountWithEth = new SmartrAccount(
+        p,
+        smartrAccount.address,
+        signer,
+        ethModule
+      );
+      if (!counterContract) {
+        throw new Error("Counter not deployed");
+      }
+      const counterWithSmartrAccountAndModule = new Counter(
+        counterContract.address,
+        failedSmartrAccountWithEth
+      );
+      try {
+        await counterWithSmartrAccountAndModule.increment();
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e).toBeDefined();
+      }
+    },
+    default_timeout
+  );
 
-  // it(
-  //   "checks the sessionkey is disabled",
-  //   async () => {
-  //     const conf = config(env);
-  //     const calldata = new CallData(SessionKeyValidatorABI);
-  //     const sessionkey = await sessionKeyModule.get_session_key();
-  //     const data = calldata.compile("is_disabled_session_key", {
-  //       sessionkey,
-  //     });
-  //     const output = await smartrAccount.callOnModule(
-  //       sessionkeyClassHash("SessionKeyValidator"),
-  //       "is_disabled_session_key",
-  //       data
-  //     );
-  //     expect(output.length).toBe(1);
-  //     expect(output[0]).toBe(1n);
-  //   },
-  //   default_timeout
-  // );
+  it(
+    "removes the Eth Validator module from the account",
+    async () => {
+      if (!smartrAccount) {
+        throw new Error("SmartrAccount is not deployed");
+      }
+      const { transaction_hash } = await smartrAccount.removeModule(
+        ethClassHash("EthValidator")
+      );
+      const receipt = await smartrAccount.waitForTransaction(transaction_hash);
+      expect(receipt.isSuccess()).toBe(true);
+    },
+    default_timeout
+  );
 
-  // it(
-  //   "increments the counter from SmartrAccount with Module and fails",
-  //   async () => {
-  //     if (!counterContract) {
-  //       throw new Error("Counter not deployed");
-  //     }
-  //     if (!smartrAccountWithSessionKey) {
-  //       throw new Error("SmartrAccount with SessionKey not installed");
-  //     }
-  //     const counterWithSmartrAccountAndModule = new Counter(
-  //       counterContract.address,
-  //       smartrAccountWithSessionKey
-  //     );
-  //     try {
-  //       const { transaction_hash } =
-  //         await counterWithSmartrAccountAndModule.increment();
-  //       expect(true).toBe(false);
-  //     } catch (e) {
-  //       expect(e).toBeDefined();
-  //     }
-  //   },
-  //   default_timeout
-  // );
-
-  // it(
-  //   "reads the counter",
-  //   async () => {
-  //     if (!counterContract) {
-  //       throw new Error("Counter not deployed");
-  //     }
-  //     const c = await counterContract.get();
-  //     expect(c).toBeGreaterThan(0n);
-  //   },
-  //   default_timeout
-  // );
-
-  // it(
-  //   "removes the module from the account",
-  //   async () => {
-  //     if (!smartrAccount) {
-  //       throw new Error("SmartrAccount is not deployed");
-  //     }
-  //     const { transaction_hash } = await smartrAccount.removeModule(
-  //       sessionkeyClassHash("SessionKeyValidator")
-  //     );
-  //     const receipt = await smartrAccount.waitForTransaction(transaction_hash);
-  //     expect(receipt.isSuccess()).toBe(true);
-  //   },
-  //   default_timeout
-  // );
-
-  // it(
-  //   "checks the SessionKeyValidator is not installed",
-  //   async () => {
-  //     if (!smartrAccount) {
-  //       throw new Error("SmartrAccount is not deployed");
-  //     }
-  //     const output = await smartrAccount.isModule(
-  //       sessionkeyClassHash("SessionKeyValidator")
-  //     );
-  //     expect(output).toBe(false);
-  //   },
-  //   default_timeout
-  // );
+  it(
+    "checks the Eth Validator  is not installed",
+    async () => {
+      if (!smartrAccount) {
+        throw new Error("SmartrAccount is not deployed");
+      }
+      const output = await smartrAccount.isModule(ethClassHash("EthValidator"));
+      expect(output).toBe(false);
+    },
+    default_timeout
+  );
 });

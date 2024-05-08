@@ -10,6 +10,7 @@
   "author": "0xknwn",
   "license": "MIT",
   "dependencies": {
-    "@0xknwn/starknet-test-helpers": "^0.1.0"
+    "@0xknwn/starknet-test-helpers": "^0.1.0",
+    "ethereum-cryptography": "^2.1.3"
   }
 }

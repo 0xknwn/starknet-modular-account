@@ -8,8 +8,7 @@
     "build:abi:EthValidator": "npx abi-wan-kanabi --input ../../target/dev/smartr_EthValidator.contract_class.json --output ./src/abi/EthValidator.ts",
     "build:abi": "mkdir -p src/abi && npm run build:abi:EthValidator",
     "doc": "typedoc && mkdir -p ../../docs/starknet-module-eth && cp -R docs/modules.md docs/classes ../../docs/starknet-module-eth/",
-    "registry": "npm publish --access=public",
-    "test": "jest --runInBand --verbose"
+    "registry": "npm publish --access=public"
   },
   "peerDependencies": {
     "starknet": "6.8.0"

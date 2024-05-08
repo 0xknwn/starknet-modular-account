@@ -129,12 +129,13 @@ export class SmartrAccount extends Account {
         version,
       }
     );
+    let maxFee = `0x${(10n * BigInt(estimate.maxFee)).toString(16)}`;
 
     return {
       ...stark.v3Details(details),
       resourceBounds: estimate.resourceBounds,
       nonce,
-      maxFee: estimate.maxFee,
+      maxFee,
       version,
     };
   }
@@ -279,6 +280,7 @@ export class SmartrAccount extends Account {
         version,
       }
     );
+    let maxFee = `0x${(10n * BigInt(estimate.maxFee)).toString(16)}`;
 
     const chainId = await this.getChainId();
 
@@ -287,7 +289,7 @@ export class SmartrAccount extends Account {
       resourceBounds: estimate.resourceBounds,
       walletAddress: this.address,
       nonce,
-      maxFee: estimate.maxFee,
+      maxFee,
       version,
       chainId,
       cairoVersion: await this.getCairoVersion(),
@@ -308,7 +310,7 @@ export class SmartrAccount extends Account {
         ...stark.v3Details(details),
         resourceBounds: estimate.resourceBounds,
         nonce,
-        maxFee: estimate.maxFee,
+        maxFee,
         version,
       }
     );
