@@ -1,4 +1,4 @@
-// file src/04-sessionkey-transaction.ts
+// file src/05-sessionkey-transaction.ts
 import { SmartrAccount, classHash } from "@0xknwn/starknet-modular-account";
 import {
   classHash as sessionkeyClassHash,
@@ -6,7 +6,7 @@ import {
   SessionKeyModule,
   SessionKeyGrantor,
 } from "@0xknwn/starknet-module-sessionkey";
-import { init, CounterABI } from "./04-init";
+import { init, CounterABI } from "./05-init";
 import { RpcProvider, Signer, Contract } from "starknet";
 
 const providerURL = "http://127.0.0.1:5050/rpc";

@@ -1,7 +1,7 @@
-// file src/04-add-module.ts
+// file src/05-remove-module.ts
 import { SmartrAccount } from "@0xknwn/starknet-modular-account";
 import { classHash } from "@0xknwn/starknet-module-sessionkey";
-import { init } from "./04-init";
+import { init } from "./05-init";
 import { RpcProvider } from "starknet";
 
 const providerURL = "http://127.0.0.1:5050/rpc";
@@ -14,7 +14,7 @@ const main = async () => {
     accountAddress,
     smartrAccountPrivateKey
   );
-  const { transaction_hash } = await account.addModule(
+  const { transaction_hash } = await account.removeModule(
     classHash("SessionKeyValidator")
   );
   const receipt = await account.waitForTransaction(transaction_hash);
@@ -24,7 +24,7 @@ const main = async () => {
   console.log(
     "module",
     classHash("SessionKeyValidator"),
-    "is installed",
+    "has been removed",
     isInstalled
   );
 };

@@ -1,11 +1,11 @@
-# The Stark Validator Module
+# The Eth Validator Module
 
-The Stark Validator Module is an implementation of a Validator Module for the
-Starknet Modular Account. It must be used as the Core Validator for the Account.
-This document explains the features, the configuration and some of the Internals
-of this module.
+The Eth Validator Module is an implementation of a Validator Module for the
+Starknet Modular Account. It can be used as the Core Validator or as a secondary
+Validator for the Account. This document explains the features, the
+configuration and some of the Internals of this module.
 
-- [The Stark Validator Module](#the-stark-validator-module)
+- [The Eth Validator Module](#the-eth-validator-module)
   - [Validator Module](#validator-module)
   - [Core Validator Interface](#core-validator-interface)
   - [Management Interface](#management-interface)
@@ -28,13 +28,13 @@ trait IValidator<TState> {
   - use `is_valid_signature` to check the signature is valid
 
 > Note: the grantor class that is passed by the account is the Core Validator
-> class hash registered with the account. In the case of the Stark Validator
+> class hash registered with the account. In the case of the Eth Validator
 > it is the module class hash. The validator does not use that parameter.
 
 ## Core Validator Interface
 
-In addition to the `IValidator` interface, The Stark Validator Module implements
-the `ICoreValidator` interface. That is because the Stark Validator can be
+In addition to the `IValidator` interface, The Eth Validator Module implements
+the `ICoreValidator` interface. That is because the Eth Validator can be
 installed as a Core Validator Module, i.e. the default Validator for the account.
 The interface looks like this:
 
@@ -46,50 +46,38 @@ pub trait ICoreValidator<TState> {
 }
 ```
 
-In the case of the Stark Validator the 2 functionsare:
+In the case of the Eth Validator the 2 functions are:
 
 - `is_valid_signature`. It checks a hash of a transaction or a hash of a message
   matches the account public keys of the current configurationm i.e stored in
-  the account storage:
-  - It checks the elements of the signature are valid considering the public
-    keys registered in the account
-  - It checks the number of valid signature matches the threshold defines in
-    the account.
+  the account storage. It checks the elements of the signature are valid
+  considering the public keys registered in the account
 - `initialize` is used at the installation time of the account to store the
-  first account public key. In the case of the Stark Validator, the public key
-  can be managed in a single felt so you can just use an array of one, i.e.
-  `array![publicKey]` in cairo or `[publicKey]` in Typescript/Javascript.
+  first account public key. In the case of the Eth Validator, the public key
+  is managed by an array of 4 felt.
 
-> Note: In the case of the Stark Validator the key is simply stored in the
-> `Account_public_keys` storage. It is also stored in the `Account_public_key`
-> so that we can downgrade the account back to an OpenZeppelin Account.
+> Note: In the case of the Eth Validator, the downgrade from the account back
+> to an OpenZeppelin Account as not been tested.
 
 ## Management Interface
 
 Each Validator Module can provide some management entrypoint to configure the
-module. In the case of the Stark Validator, the management methods are:
+module. In the case of the Eth Validator, the management methods are:
 
 ```rust
 #[starknet::interface]
 pub trait IPublicKeys<TState> {
-    fn add_public_key(ref self: TState, new_public_key: felt252);
-    fn get_public_keys(self: @TState) -> Array<felt252>;
-    fn get_threshold(self: @TState) -> u8;
-    fn remove_public_key(ref self: TState, old_public_key: felt252);
-    fn set_threshold(ref self: TState, new_threshold: u8);
+    fn set_public_key(ref self: TState, new_public_key: Array<felt252>);
+    fn get_public_key(self: @TState) -> Array<felt252>;
 }
 ```
 
 As you can assess by their name:
 
-- `add_public_key` adds a public key into the account. Be careful that it does
-  not remove the existing key that must be managed separately.
-- `remove_public_key` removes a public key from the account.
-- `get_public_keys` returns the list of current public keys registered with
+- `set_public_key` changes the public key associated with the account. Be
+  careful that it removes the existing key
+- `get_public_key` returns the elements of current public keys registered with
   the account
-- `set_threshold` defines the number of signer that must sign a transaction or
-  message for the signature to be valid
-- `get_threshold` list the current threshold of the account.
 
 ## Version Interface
 
@@ -103,7 +91,7 @@ pub trait IVersion<TState> {
 }
 ```
 
-- `get_name()` returns `stark-validator` in a shortString
+- `get_name()` returns `eth-validator` in a shortString
 - `get_version()` returns the version starting with a v, like `v0.1.8` as a 
   short string. 
 
@@ -128,15 +116,14 @@ pub trait IConfigure<TState> {
 }
 ```
 
-In the case of the Stark Validator:
+In the case of the Eth Validator:
 
-- `call` can takes calls to `get_public_keys`, `get_name`, `get_version` and
-  `get_threshold`.
-- `execute` execute calls to `add_public_key`, `remove_public_keys` and
-  `set_threshold`.
+- `call` can takes calls to `get_public_key`, `get_name` and `get_version`.
+- `execute` can execute calls to `set_public_key`.
 
 > Note: To work the Call should include the following:
 > - `selector` must be the selector for the management interface, i.e. the
 >   `sn_keccak` of the entrypoint name
 > - `to` should be the account address
-> - `calldata` should be the call data as defined by the ABI of the class
+> - `calldata` should be the call data as defined by the ABI of the class and
+  in the case of an EthPublicKey, it should be an array of 4 felts.
