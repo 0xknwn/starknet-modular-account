@@ -13,8 +13,7 @@ pub trait IPublicKey<TState> {
 mod EthValidator {
     use core::traits::Into;
     use openzeppelin::account::utils::is_valid_eth_signature;
-    use openzeppelin::account::utils::secp256k1::Secp256k1PointSerde;
-    use openzeppelin::account::utils::secp256k1::Secp256k1PointStorePacking;
+    use openzeppelin::account::utils::secp256k1::{Secp256k1PointStorePacking, Secp256k1PointSerde};
     use openzeppelin::account::interface::EthPublicKey;
     use openzeppelin::introspection::src5::SRC5Component;
     use openzeppelin::introspection::src5::SRC5Component::SRC5;
@@ -93,9 +92,7 @@ mod EthValidator {
                     self.EthAccount_public_key.write(key);
                     self.account.notify_owner_addition(public_key);
                 },
-                 Option::None => {
-                    assert(false, 'Invalid public key');
-                },
+                Option::None => { assert(false, 'Invalid public key'); },
             }
         }
     }
@@ -164,14 +161,11 @@ mod EthValidator {
                 }
                 // let me: Array<felt252> = call.calldata;
                 let mut value = call.calldata;
+                assert(value.len() == 4, 'Ough, try again!');
                 let eth_public_key = Serde::<EthPublicKey>::deserialize(ref value);
                 match eth_public_key {
-                    Option::Some(key) => {
-                        self.set_public_key(key);
-                    },
-                    Option::None => {
-                        assert(false, 'Invalid public key');
-                    },
+                    Option::Some(key) => { self.set_public_key(key); },
+                    Option::None => { assert(false, 'Invalid public key'); },
                 }
             }
             if !found {
@@ -221,6 +215,81 @@ mod EthValidator {
         ) -> bool {
             let public_key: EthPublicKey = self.EthAccount_public_key.read();
             is_valid_eth_signature(hash, public_key, signature)
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use openzeppelin::account::utils::secp256k1::Secp256k1PointStorePacking;
+    use openzeppelin::account::interface::EthPublicKey;
+    use openzeppelin::account::utils::secp256k1::Secp256k1PointSerde;
+    use openzeppelin::account::utils::secp256k1::DebugSecp256k1Point;
+
+    #[test]
+    fn value_match_key() {
+        let value: Array<felt252> = array![
+            3, 0, 215399990735478923917501906261422522596, 277625874459002347535277135431259155380
+        ];
+        let mut value = value.span();
+        let eth_public_key = Serde::<EthPublicKey>::deserialize(ref value);
+        match eth_public_key {
+            Option::Some(_key) => {
+              assert(true, 'valid public key');
+              // println!("{:?}", _key);
+            },
+            Option::None => { assert(false, 'option is none'); },
+        }
+    }
+
+    // You can generate (x, y) from Typescript/Javascript. Below is an example
+    // of the code to use. Once done, you can generate a x and y values with
+    // cairo u256 types, get their low and high values and use them to
+    // initialize a public key for the module.
+    //
+    // ```typescript
+    // import { secp256k1 } from "ethereum-cryptography/secp256k1.js";
+    // const { utils, getPublicKey } = secp256k1;
+    //
+    // const privateKey = utils.randomPrivateKey();
+    // let st1: string = "";
+    // privateKey.forEach((x) => (st1 += x.toString(16).padStart(2, "0")));
+    // console.log("privateKey: ", "0x" + st1);
+    //
+    // const publicKey = getPublicKey(privateKey, false);
+    // let st2: string = "";
+    // publicKey.forEach((x) => (st2 += x.toString(16).padStart(2, "0")));
+    // console.log("publicKey: ", st2);
+    // 
+    // const coordsString = st2.slice(2, st2.length); // removes 04
+    // console.log("x: ", "0x" + coordsString.slice(0, 64));
+    // console.log("y: ", "0x" + coordsString.slice(64, 128));
+    // ```
+    //
+    #[test]
+    fn play_with_u256() {
+      let _privateKey: u256 =0xb28ebb20fb1015da6e6367d1b5dba9b52862a06dbb3a4022e4749b6987ac1bd2_u256;
+      let x: u256 = 0xd31cf702f5c89d49c567dcfd568bc4869e343506749f69d849eb408802cfa646_u256;
+      let y: u256 = 0x348c7bbf341964c306669365292c0066c23a2fedd131907534677aa3e22db2fc_u256;
+      assert_eq!(x.low, 210289098249831467762502193281061856838, "x.low");
+      assert_eq!(x.high, 280617501412351006689952710290844664966, "x.high");
+      assert_eq!(y.low, 258172356515136873455592221375042794236, "y.low");
+      assert_eq!(y.high, 69849287226094710129367771214955413606, "y.high");
+    }
+
+    #[test]
+    fn value_match_key_from_u256() {
+        let value: Array<felt252> = array![
+            210289098249831467762502193281061856838, 280617501412351006689952710290844664966, 258172356515136873455592221375042794236, 69849287226094710129367771214955413606
+        ];
+        let mut value = value.span();
+        let eth_public_key = Serde::<EthPublicKey>::deserialize(ref value);
+        println!("{:?}", eth_public_key);
+        match eth_public_key {
+            Option::Some(_key) => {
+              assert(true, 'valid public key');
+            },
+            Option::None => { assert(false, 'option is none'); },
         }
     }
 }
