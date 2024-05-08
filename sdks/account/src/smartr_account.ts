@@ -38,9 +38,6 @@ export type Authorization = {
 };
 
 export interface AccountModuleInterface {
-  request(grantorClass: string): Promise<Authorization>;
-  add_signature(signature: string[]): Promise<void>;
-  reset(signature: string[]): Promise<void>;
   prefix(calls: Call[] | Call): Call;
 }
 
