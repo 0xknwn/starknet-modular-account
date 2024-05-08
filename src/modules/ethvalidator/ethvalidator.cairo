@@ -12,7 +12,7 @@ pub trait IPublicKey<TState> {
 #[starknet::contract]
 mod EthValidator {
     use core::traits::Into;
-    use openzeppelin::account::utils::{execute_calls, is_valid_eth_signature};
+    use openzeppelin::account::utils::is_valid_eth_signature;
     use openzeppelin::account::utils::secp256k1::Secp256k1PointSerde;
     use openzeppelin::account::utils::secp256k1::Secp256k1PointStorePacking;
     use openzeppelin::account::interface::EthPublicKey;
