@@ -4,8 +4,14 @@ set -e
 
 npx tsc --build
 node dist/04-setup.js
-node dist/04-declare-class.js
+
+# Use Eth Validator as a Secondary validator
+node dist/04-declare-eth-validator.js
+node dist/04-check-eth-validator.js
 node dist/04-add-module.js
-node dist/04-sessionkey-transaction.js
-node dist/04-block-sessionkey.js
+node dist/04-register-publickey.js
+node dist/04-get-publickey.js
+node dist/04-execute-tx.js
 node dist/04-remove-module.js
+
+# Use Eth Validator as a Core validator

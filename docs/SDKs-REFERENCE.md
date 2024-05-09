@@ -4,7 +4,7 @@ This section provides the generated reference documentation for the
 Typescript/Javascript SDKs that comes with the project. For a better
 understanding of those SDKs, check the [Using SDKs](./SDKs.md) section.
 
-The 2 SDKs can be downloaded from
+The 3 SDKs can be downloaded from
 [npmjs.com](https://www.npmjs.com/package/@0xknwn/starknet-modular-account). 
 
 - [@0xknwn/starknet-modular-account](https://www.npmjs.com/package/@0xknwn/starknet-modular-account)
@@ -17,6 +17,11 @@ The 2 SDKs can be downloaded from
   as well as tools to configure the sessionkey module, including the
   `PolicyManager` and the `PolicyGrantor` classes. You can check the reference documentation for this SDK
   [here](./starknet-module-sessionkey/modules.md)
+- [@0xknwn/starknet-module-eth](https://www.npmjs.com/package/@0xknwn/starknet-module-eth)
+  provides the `EthModule` that implements the `AccountModuleInterface`. To sign
+  transaction, you can simply use the Starknet.js `EthSigner`. You can check the
+  reference documentation for this SDK
+  [here](./starknet-module-eth/modules.md)
 
 
 In addition, the project provides another SDK called

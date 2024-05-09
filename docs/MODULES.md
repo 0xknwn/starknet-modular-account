@@ -15,6 +15,7 @@ particular, the folllowing are explained.
 
 - How to [Developing your Own Validator Module](./MODULES-DEVELOPMENT.md)
 - How the [Stark Validator Module](./MODULE-STARK-VALIDATOR.md) Works
+- How the [Eth Validator Module](./MODULE-ETH-VALIDATOR.md) Works
 - How the [SessionKey Validator Module](./MODULE-SESSIONKEY-VALIDATOR.md) Works
 
 If you just plan to use the Starknet Modular Account with those modules, we

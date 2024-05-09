@@ -1,4 +1,4 @@
-// file src/04-declare-class.ts
+// file src/05-declare-class.ts
 import { RpcProvider, Account } from "starknet";
 import { declareClass } from "@0xknwn/starknet-module-sessionkey";
 

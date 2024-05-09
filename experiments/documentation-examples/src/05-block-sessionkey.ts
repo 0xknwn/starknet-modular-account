@@ -1,10 +1,14 @@
-// file src/04-remove-module.ts
+// file src/05-block-sessionkey.ts
 import { SmartrAccount } from "@0xknwn/starknet-modular-account";
-import { classHash } from "@0xknwn/starknet-module-eth";
-import { init } from "./04-init";
-import { RpcProvider } from "starknet";
+import {
+  classHash as sessionkeyClassHash,
+  SessionKeyValidatorABI,
+} from "@0xknwn/starknet-module-sessionkey";
+import { init } from "./05-init";
+import { CallData, RpcProvider } from "starknet";
 
 const providerURL = "http://127.0.0.1:5050/rpc";
+const sessionkeyHash = "0x7";
 
 const main = async () => {
   const provider = new RpcProvider({ nodeUrl: providerURL });
@@ -14,19 +18,18 @@ const main = async () => {
     accountAddress,
     smartrAccountPrivateKey
   );
-  const { transaction_hash } = await account.removeModule(
-    classHash("EthValidator")
+
+  const moduleCallData = new CallData(SessionKeyValidatorABI);
+  const calldata = moduleCallData.compile("disable_session_key", {
+    sessionkey: sessionkeyHash,
+  });
+  const { transaction_hash } = await account.executeOnModule(
+    sessionkeyClassHash("SessionKeyValidator"),
+    "disable_session_key",
+    calldata
   );
   const receipt = await account.waitForTransaction(transaction_hash);
   console.log("transaction succeeded", receipt.isSuccess());
-
-  const isInstalled = await account.isModule(classHash("EthValidator"));
-  console.log(
-    "module",
-    classHash("EthValidator"),
-    "has been removed",
-    isInstalled
-  );
 };
 
 main()

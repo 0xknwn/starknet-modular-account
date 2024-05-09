@@ -11,6 +11,8 @@
   provides the `SessionKeyModule` that implements the `AccountModuleInterface`
   as well as tools to configure the sessionkey module, including the
   `PolicyManager` and the `PolicyGrantor` classes.
+- [@0xknwn/starknet-module-eth](https://www.npmjs.com/package/@0xknwn/starknet-module-eth)
+  provides the `EthModule` that implements the `AccountModuleInterface`.
 
 In addition, the project provides another SDK called
 [@0xknwn/starknet-test-helpers](https://www.npmjs.com/package/@0xknwn/starknet-test-helpers) that can be used to create helper classes outside of

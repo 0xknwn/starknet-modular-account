@@ -10,9 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@0xknwn/starknet-modular-account": "^0.1.7",
-    "@0xknwn/starknet-module-sessionkey": "^0.1.7",
-    "@0xknwn/starknet-test-helpers": "^0.1.7",
+    "@0xknwn/starknet-modular-account": "^0.1.8",
+    "@0xknwn/starknet-module-eth": "^0.1.8",
+    "@0xknwn/starknet-module-sessionkey": "^0.1.8",
+    "@0xknwn/starknet-test-helpers": "^0.1.8",
     "starknet": "^6.8.0"
   }
 }
