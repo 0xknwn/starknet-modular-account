@@ -33,19 +33,19 @@ with the Eth Validator Module.
 ## Installing the Eth Validator SDK
 
 If you plan to use the Eth Validatoi module, you might need the
-`@0xknwn/starknet-module-eth` SDK in addition to the
+`@0xknwn/starknet-module` SDK in addition to the
 `@0xknwn/starknet-modular-account` SDK. To install it, run:
 
 ```shell
 npm install --save \
-  @0xknwn/starknet-module-eth
+  @0xknwn/starknet-module
 ```
 
 ## Declaring the Eth Validator
 
 If you are working on a network that does not have the eth validator class
 already declared, you will need to declare it. The Eth validator module SDK, aka
-`@0xknwn/starknet-module-eth` contains a helper function named `declareClass` to
+`@0xknwn/starknet-module` contains a helper function named `declareClass` to
 declare the class to the network. To use it, you need to pass:
 
 - A starknet.js `Account` as a first parameter
@@ -93,7 +93,7 @@ node dist/04-check-eth-validator.js
 
 The simplest way to use the Eth Validator is to add it as a module to an
 existing account and execute a transaction with the `EthModule` class from
-the `@0xknwn/starknet-module-eth`. 
+the `@0xknwn/starknet-module`. 
 
 ### Register the Eth Validator as a Module
 

@@ -1,0 +1,19 @@
+{
+  "name": "@0xknwn/starknet-module",
+  "version": "0.1.8",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build:abi:EthValidator": "npx abi-wan-kanabi --input ../../target/dev/smartr_EthValidator.contract_class.json --output ./src/abi/EthValidator.ts",
+    "build:abi:P256Validator": "npx abi-wan-kanabi --input ../../target/dev/smartr_P256Validator.contract_class.json --output ./src/abi/P256Validator.ts",
+    "build:abi": "mkdir -p src/abi && npm run build:abi:EthValidator && npm run build:abi:P256Validator",
+    "doc": "typedoc && mkdir -p ../../docs/starknet-module && cp -R docs/modules.md docs/classes ../../docs/starknet-module/",
+    "registry": "npm publish --access=public"
+  },
+  "peerDependencies": {
+    "starknet": "6.8.0"
+  },
+  "author": "0xknwn",
+  "license": "MIT"
+}

@@ -17,11 +17,11 @@ The 3 SDKs can be downloaded from
   as well as tools to configure the sessionkey module, including the
   `PolicyManager` and the `PolicyGrantor` classes. You can check the reference documentation for this SDK
   [here](./starknet-module-sessionkey/modules.md)
-- [@0xknwn/starknet-module-eth](https://www.npmjs.com/package/@0xknwn/starknet-module-eth)
+- [@0xknwn/starknet-module](https://www.npmjs.com/package/@0xknwn/starknet-module)
   provides the `EthModule` that implements the `AccountModuleInterface`. To sign
   transaction, you can simply use the Starknet.js `EthSigner`. You can check the
   reference documentation for this SDK
-  [here](./starknet-module-eth/modules.md)
+  [here](./starknet-module/modules.md)
 
 
 In addition, the project provides another SDK called

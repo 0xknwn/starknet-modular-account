@@ -7,7 +7,7 @@
   "references": [
     { "path": "../helpers" },
     { "path": "../../account" },
-    { "path": "../../module-eth" },
+    { "path": "../../module" },
   ],
   "typedocOptions": {
     "entryPoints": ["src/index.ts"],

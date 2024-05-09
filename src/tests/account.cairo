@@ -59,15 +59,15 @@ fn test_account_module_call() {
         publicKey, account_class.class_hash, constructorCallData.span(), deployerAddress
     );
     let (_account_address, _) = account_class
-     .deploy_at(@array![core_validator_class_felt, 0x1, publicKey], computed_account_address)
-     .unwrap();
-    // let account = IModuleDispatcher { contract_address: account_address };
-    // let call = Call {
-    //     selector: selector!("get_public_keys"), to: account_address, calldata: (array![]).span(),
-    // };
-    // let result = account.call_on_module(core_validator_class.class_hash, call);
-    // assert_eq!(result.len(), 1, "result len should be 1");
-    // assert_eq!(*result.at(0), publicKey, "result[0] should be 0x1");
+        .deploy_at(@array![core_validator_class_felt, 0x1, publicKey], computed_account_address)
+        .unwrap();
+// let account = IModuleDispatcher { contract_address: account_address };
+// let call = Call {
+//     selector: selector!("get_public_keys"), to: account_address, calldata: (array![]).span(),
+// };
+// let result = account.call_on_module(core_validator_class.class_hash, call);
+// assert_eq!(result.len(), 1, "result len should be 1");
+// assert_eq!(*result.at(0), publicKey, "result[0] should be 0x1");
 }
 
 #[test]
