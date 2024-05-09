@@ -1,13 +1,13 @@
-// file src/04-get-publickey.ts
+// file src/05-get-publickey.ts
 import { SmartrAccount } from "@0xknwn/starknet-modular-account";
 import {
-  EthValidatorABI,
-  classHash as ethClassHash,
+  classHash as moduleClassHash,
+  P256ValidatorABI,
 } from "@0xknwn/starknet-module";
-import { init } from "./04-init";
+import { init } from "./05-init";
 import { CallData, RpcProvider } from "starknet";
 
-const providerURL = "http://127.0.0.1:5050/rpc";
+const providerURL = "https://starknet-sepolia.public.blastapi.io";
 
 const main = async () => {
   const provider = new RpcProvider({ nodeUrl: providerURL });
@@ -17,10 +17,10 @@ const main = async () => {
     accountAddress,
     smartrAccountPrivateKey
   );
-  const moduleCallData = new CallData(EthValidatorABI);
+  const moduleCallData = new CallData(P256ValidatorABI);
   const calldata = moduleCallData.compile("get_public_key", {});
   const public_keys = await account.callOnModule(
-    ethClassHash("EthValidator"),
+    moduleClassHash("P256Validator"),
     "get_public_key",
     calldata
   );

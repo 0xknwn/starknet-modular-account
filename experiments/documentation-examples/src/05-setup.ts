@@ -20,9 +20,10 @@ import {
 } from "@0xknwn/starknet-test-helpers";
 
 const ozAccountAddress =
-  "0x64b48806902a367c8598f4f95c305e8c1a1acba5f082d294a43793113115691";
-const ozPrivateKey = "0x71d7bb07b9a64f6f78ac4c816aff4da9";
-const providerURL = "http://127.0.0.1:5050/rpc";
+  "0x3b2d6d0edcbdbdf6548d2b79531263628887454a0a608762c71056172d36240";
+const ozPrivateKey =
+  "0x000e8f079f1092042bf9b855935d3ef1bb7078609491fb24e7cb8cbb574e50ca";
+const providerURL = "https://starknet-sepolia.public.blastapi.io";
 const smartrAccountPrivateKey = "0x1";
 const ethAddress =
   "0x49D36570D4E46F48E99674BD3FCC84644DDD6B96F7C741B1562B82F9E004DC7";
@@ -55,7 +56,7 @@ const main = async () => {
     calldata
   );
   const ETH = new Contract(ERC20ABI, ethAddress, account);
-  const initial_EthTransfer = cairo.uint256(3n * 10n ** 15n);
+  const initial_EthTransfer = cairo.uint256(6n * 10n ** 15n);
   const call = ETH.populate("transfer", {
     recipient: smartrAccountAddress,
     amount: initial_EthTransfer,

@@ -1,18 +1,21 @@
-// file src/04-execute-tx-core.ts
+// file src/05-execute-tx-core.ts
 import {
   SmartrAccount,
   accountAddress,
 } from "@0xknwn/starknet-modular-account";
-import { init, CounterABI } from "./04-init";
-import { RpcProvider, Contract, EthSigner, cairo, hash } from "starknet";
-import { classHash as ethClassHash } from "@0xknwn/starknet-module";
+import { init, CounterABI } from "./05-init";
+import { RpcProvider, Contract, cairo, hash } from "starknet";
+import {
+  classHash as moduleClassHash,
+  P256Signer,
+} from "@0xknwn/starknet-module";
 const providerURL = "http://127.0.0.1:5050/rpc";
-const ethPrivateKey =
-  "0xb28ebb20fb1015da6e6367d1b5dba9b52862a06dbb3a4022e4749b6987ac1bd2";
+const p256PrivateKey =
+  "0x1efecf7ee1e25bb87098baf2aaab0406167aae0d5ea9ba0d31404bf01886bd0e";
 
 const main = async () => {
   // recompute the account address
-  const signer = new EthSigner(ethPrivateKey);
+  const signer = new P256Signer(p256PrivateKey);
   const publicKey = await signer.getPubKey();
   const coords = publicKey.slice(2, publicKey.length);
   const x = coords.slice(0, 64);
@@ -30,7 +33,7 @@ const main = async () => {
   const computedAccountAddress = accountAddress(
     "SmartrAccount",
     publicKeyHash,
-    [ethClassHash("EthValidator"), "0x4", ...publicKeyArray]
+    [moduleClassHash("P256Validator"), "0x4", ...publicKeyArray]
   );
 
   // execute the transaction

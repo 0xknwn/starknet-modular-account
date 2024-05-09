@@ -1,7 +1,7 @@
-// file src/05-remove-module.ts
+// file src/06-remove-module.ts
 import { SmartrAccount } from "@0xknwn/starknet-modular-account";
-import { classHash } from "@0xknwn/starknet-module";
-import { init } from "./05-init";
+import { classHash } from "@0xknwn/starknet-module-sessionkey";
+import { init } from "./06-init";
 import { RpcProvider } from "starknet";
 
 const providerURL = "http://127.0.0.1:5050/rpc";
@@ -15,16 +15,16 @@ const main = async () => {
     smartrAccountPrivateKey
   );
   const { transaction_hash } = await account.removeModule(
-    classHash("P256Validator")
+    classHash("SessionKeyValidator")
   );
   const receipt = await account.waitForTransaction(transaction_hash);
   console.log("transaction succeeded", receipt.isSuccess());
 
-  const isInstalled = await account.isModule(classHash("P256Validator"));
+  const isInstalled = await account.isModule(classHash("SessionKeyValidator"));
   console.log(
     "module",
-    classHash("P256Validator"),
-    "is installed:",
+    classHash("SessionKeyValidator"),
+    "has been removed",
     isInstalled
   );
 };

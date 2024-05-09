@@ -1,11 +1,11 @@
-# The Eth Validator Module
+# The ETH and P256 Validator Module
 
-The Eth Validator Module is an implementation of a Validator Module for the
-Starknet Modular Account. It can be used as the Core Validator or as a secondary
-Validator for the Account. This document explains the features, the
-configuration and some of the Internals of this module.
+The Eth and P256 Validator Modules are implementations of a Validator Module for
+the Starknet Modular Account. They can both be used as the Core Validator or as
+a secondary Validator for the Account. This document explains the features, the
+configuration and some of the Internals of these modules.
 
-- [The Eth Validator Module](#the-eth-validator-module)
+- [The ETH and P256 Validator Module](#the-eth-and-p256-validator-module)
   - [Validator Module](#validator-module)
   - [Core Validator Interface](#core-validator-interface)
   - [Management Interface](#management-interface)
@@ -28,14 +28,15 @@ trait IValidator<TState> {
   - use `is_valid_signature` to check the signature is valid
 
 > Note: the grantor class that is passed by the account is the Core Validator
-> class hash registered with the account. In the case of the Eth Validator
-> it is the module class hash. The validator does not use that parameter.
+> class hash registered with the account. In the case of the Eth and P256
+> Validator it is the module class hash. The validator does not use that
+> parameter for now.
 
 ## Core Validator Interface
 
-In addition to the `IValidator` interface, The Eth Validator Module implements
-the `ICoreValidator` interface. That is because the Eth Validator can be
-installed as a Core Validator Module, i.e. the default Validator for the account.
+In addition to the `IValidator` interface, The Eth and P256 Validator Modules
+implement the `ICoreValidator` interface. That is because they can be installed
+as a Core Validator Modules, i.e. the default Validator for the account.
 The interface looks like this:
 
 ```rust
@@ -46,23 +47,23 @@ pub trait ICoreValidator<TState> {
 }
 ```
 
-In the case of the Eth Validator the 2 functions are:
+In the case of these Validators, the 2 functions are:
 
 - `is_valid_signature`. It checks a hash of a transaction or a hash of a message
   matches the account public keys of the current configurationm i.e stored in
   the account storage. It checks the elements of the signature are valid
   considering the public keys registered in the account
 - `initialize` is used at the installation time of the account to store the
-  first account public key. In the case of the Eth Validator, the public key
-  is managed by an array of 4 felt.
+  first account public key. In the case of the Eth and P256 Validator, the
+  public key is managed by an array of 4 felt.
 
-> Note: In the case of the Eth Validator, the downgrade from the account back
-> to an OpenZeppelin Account as not been tested.
+> Note: The downgrade from the account back to an OpenZeppelin Account as not
+> been tested.
 
 ## Management Interface
 
 Each Validator Module can provide some management entrypoint to configure the
-module. In the case of the Eth Validator, the management methods are:
+module. The management methods for the 2 validators are:
 
 ```rust
 #[starknet::interface]
@@ -81,7 +82,7 @@ As you can assess by their name:
 
 ## Version Interface
 
-The Stark Validator implements the `IVersion` interface below:
+The Validator implements the `IVersion` interface below:
 
 ```rust
 #[starknet::interface]
@@ -91,7 +92,8 @@ pub trait IVersion<TState> {
 }
 ```
 
-- `get_name()` returns `eth-validator` in a shortString
+- `get_name()` returns `eth-validator` for the ETH validator in a shortString.
+  It returns `p256-validator` for the ETH validator in a shortString.
 - `get_version()` returns the version starting with a v, like `v0.1.8` as a 
   short string. 
 
