@@ -1,6 +1,11 @@
 import { hash, json, CompiledContract, Account } from "starknet";
 import { data as EthValidatorContract } from "./artifacts/EthValidator-contract";
 import { data as EthValidatorCompiled } from "./artifacts/EthValidator-compiled";
+import { data as P256ValidatorContract } from "./artifacts/P256Validator-contract";
+import { data as P256ValidatorCompiled } from "./artifacts/P256Validator-compiled";
+
+export const __module_validate__ =
+  "0x119c88dea7ff05dbe71c36247fc6682116f6dafa24089373d49aca7b2657017";
 
 /**
  * Computes the hash of the requested class that is part of the
@@ -11,11 +16,16 @@ import { data as EthValidatorCompiled } from "./artifacts/EthValidator-compiled"
  * `scarb build` command at the root of the project.
  *
  */
-export const classHash = (className: "EthValidator" = "EthValidator") => {
+export const classHash = (
+  className: "EthValidator" | "P256Validator" = "EthValidator"
+) => {
   let contract: string = "";
   switch (className) {
     case "EthValidator":
       contract = EthValidatorContract;
+      break;
+    case "P256Validator":
+      contract = P256ValidatorContract;
       break;
     default:
       throw new Error("Invalid class name");
@@ -42,7 +52,7 @@ export const classHash = (className: "EthValidator" = "EthValidator") => {
  */
 export const declareClass = async (
   account: Account,
-  className: "EthValidator" = "EthValidator"
+  className: "EthValidator" | "P256Validator" = "EthValidator"
 ) => {
   const HelperClassHash = classHash(className);
 
@@ -58,6 +68,9 @@ export const declareClass = async (
     case "EthValidator":
       contract = EthValidatorContract;
       break;
+    case "P256Validator":
+      contract = P256ValidatorContract;
+      break;
     default:
       throw new Error("Invalid class name");
   }
@@ -66,6 +79,9 @@ export const declareClass = async (
   switch (className) {
     case "EthValidator":
       compiled = EthValidatorCompiled;
+      break;
+    case "P256Validator":
+      compiled = P256ValidatorCompiled;
       break;
     default:
       throw new Error("Invalid class name");
