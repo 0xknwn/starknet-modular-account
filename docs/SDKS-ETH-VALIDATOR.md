@@ -15,6 +15,10 @@ with the Eth Validator Module.
     - [Run a transaction with the EthModule](#run-a-transaction-with-the-ethmodule)
     - [Remove the Eth Validator Module](#remove-the-eth-validator-module)
   - [Using the Eth Validator as the Core Validator](#using-the-eth-validator-as-the-core-validator)
+    - [Compute the Account Address](#compute-the-account-address)
+    - [Charge ETH to the SmartrAccount Address to deploy it](#charge-eth-to-the-smartraccount-address-to-deploy-it)
+    - [Deploy the Account with the Eth Validator as Core](#deploy-the-account-with-the-eth-validator-as-core)
+    - [Run a transaction with Eth Vaidator as Core](#run-a-transaction-with-eth-vaidator-as-core)
 
 > Note: This section assumes the `SmartrAccount` class has been instantiated
 > in the `smartrAccount` variable as shown in
@@ -208,7 +212,223 @@ node dist/04-remove-module.js
 ## Using the Eth Validator as the Core Validator
 
 You can also use the Eth Validator as a Core Validator for the account. For that
-purpose we will deploy a new account and use the EthSigner to validate the
+purpose you will deploy a new account and use the EthSigner to validate the
 account deployment.
 
-> To Be Continued...
+### Compute the Account Address
+
+### Charge ETH to the SmartrAccount Address to deploy it
+
+### Deploy the Account with the Eth Validator as Core
+
+### Run a transaction with Eth Vaidator as Core
+
+<!--### Compute the Account Address
+
+### Charge ETH to the SmartrAccount Address to deploy it
+
+Here again, the SDK provides a helper function called `deployAccount` to
+help with the deployment of the modular account. Before you move forward with
+the account, you must compute the account address with `accountAddress` and 
+send ETH to it. To proceed, create a file named `src/01-load-eth.ts` with this
+content:
+
+```typescript
+{{#include ../experiments/documentation-examples/src/01-load-eth.ts}}
+```
+
+> Note: You must create a file `abi/ERC20.ts` that contains the ABI of an ERC20
+> in order to call it from a contract. 
+
+Transpile and run the script:
+
+```shell
+npx tsc --build
+
+node dist/01-load-eth.js
+```
+
+## Deploy the Account with the Eth Validator as Core
+
+Now that the address has some ETH on it, you can deploy the account with the
+`deployAccount` helper. Create a file named `src/01-deploy-account.ts` like
+below:
+
+```typescript
+{{#include ../experiments/documentation-examples/src/01-deploy-account.ts}}
+```
+
+Transpile and run the script:
+
+```shell
+npx tsc --build
+
+node dist/01-deploy-account.js
+```
+
+## Using the modular account from the SDK
+
+You can use rely on the `SmartrAccount` class to use the account. The script
+below shows all the requirements to compute the class hash, the address and 
+instantiate the account:
+
+```typescript
+{{#include ../experiments/documentation-examples/src/01-using-account.ts}}
+```
+
+Transpile and run the script:
+
+```shell
+npx tsc --build
+
+node dist/01-using-account.js
+```
+
+
+ ## Interacting with a Contract
+
+The starknet modular account SDK provides the `SmartrAccount` class that extends
+the starknet.js Account class. As you can see from the script below, using the
+`SmartrAccount` is exactly like using the `Account` class, you can:
+
+- instantiate the account with an `RpcProvider`, an `address` and a `Signer` or
+  private key
+- use the account in a `Contract` to call view functions
+- use the `execute` function of the account to call an external function of a
+  contract. `SmartrAccount` provides the same methods as `Account`
+
+```typescript
+{{#include ../experiments/documentation-examples/src/02-execute-tx.ts}}
+```
+
+Transpile and run the script:
+
+```shell
+npx tsc --build
+
+node dist/02-execute-tx.js
+```
+
+## Interacting with the Eth Validator
+
+The `SmartrAccount` class, however, provides more than just the regular
+`Account` class. It can interact with functions that are part of the module
+and not part of the account. In the case of the Stark Validator, those
+functions are:
+
+```rust
+fn get_public_keys(self: @TState) -> Array<felt252>;
+fn add_public_key(ref self: TState, new_public_key: felt252);
+fn remove_public_key(ref self: TState, old_public_key: felt252);
+fn get_threshold(self: @TState) -> u8;
+fn set_threshold(ref self: TState, new_threshold: u8);
+```
+
+To execute a function that is part of the module you need:
+
+- to figure out the stark validator module class hash
+- to check the module is installed on the account. That is something that is
+  setup at the account deployment time
+- to use one of `callOnModule` for view functions or `executeOnModule` for
+  running transactions on the SmartrAccount.
+
+The sections below dig into the details of these operations.
+
+### Getting the stark validator module class hash
+
+This is something we have already done previously. You can use
+`classHash("CoreValidator")` afther your imported the `classHash` function from
+`@0xknwn/starknet-modular-account` like below:
+
+```typescript
+{{#include ../experiments/documentation-examples/src/02-check-class.ts}}
+```
+
+To execute the script, make sure you have deployed the account in the network
+and run the following commands:
+
+```shell
+npx tsc --build
+
+node dist/02-check-class.js
+```
+
+### Check the module is installed on the account
+
+The `SmartrAccount` provides a method `isModule` that can be used to know if
+a module is installed with the account. 
+
+
+```typescript
+{{#include ../experiments/documentation-examples/src/02-module-installed.ts}}
+```
+
+Transpile and run the script:
+
+```shell
+npx tsc --build
+
+node dist/02-module-installed.js
+```
+
+### Calling views functions in the module
+
+To execute a view function on the module, we must build the argumemt list with
+the `CallData` class. Thwn we can call the `callOnModule` function from
+`SmartrAccount` with the module class hash, the function name and the calldata
+like below:
+
+```typescript
+{{#include ../experiments/documentation-examples/src/02-registered-publickeys.ts}}
+```
+
+Transpile and run the script:
+
+```shell
+npx tsc --build
+
+node dist/02-registered-publickeys.js
+```
+
+### Executing external functions in the module
+
+To execute an external function on the module, we must build the argumemt list
+with the `CallData` class. Then we can call the `executeOnModule` function from
+`SmartrAccount` with the module class hash, the function name and the calldata
+like below. Here we will register a second public key for the same account:
+
+```typescript
+{{#include ../experiments/documentation-examples/src/02-add-publickey.ts}}
+```
+
+Transpile and run the script:
+
+```shell
+npx tsc --build
+
+node dist/02-add-publickey.js
+```
+
+You can re-run the script from the previous example to check the account has
+two registered public key:
+
+```shell
+node dist/02-registered-publickeys.js
+```
+
+## Interacting with a Contract with the new registered key
+
+You now can interact with the `SmartrAccount` with your second private key like
+below:
+
+```typescript
+{{#include ../experiments/documentation-examples/src/02-execute-tx-pk2.ts}}
+```
+
+Transpile and run the script:
+
+```shell
+npx tsc --build
+
+node dist/02-execute-tx-pk2.js
+``` -->
