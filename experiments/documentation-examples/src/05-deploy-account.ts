@@ -1,4 +1,4 @@
-// file src/04-deploy-account.ts
+// file src/05-deploy-account.ts
 import { RpcProvider, EthSigner, Contract, cairo, hash } from "starknet";
 import {
   accountAddress,

@@ -26,7 +26,7 @@ and how to use it.
 > [Using the modular account from the SDK](./SDKS-DEPLOYMENT.md#using-the-modular-account-from-the-sdk).
 > It also assumes the `Counter` contract that comes with the project has been
 > deploys to the `counterAddress` and the `CounterABI` class is available. The
-> `05-setup.ts` script that comes with this project ensure those steps are
+> `06-setup.ts` script that comes with this project ensure those steps are
 > executed.
 
 ## Install the SessionKey Validator
@@ -46,7 +46,7 @@ declared already, like the devnet, you should declare the class. The
 Below is an example of a script that install the module class:
 
 ```typescript
-{{#include ../experiments/documentation-examples/src/05-declare-class.ts}}
+{{#include ../experiments/documentation-examples/src/06-declare-class.ts}}
 ```
 
 > Note: To declare the class, the account you use must be loaded with ETH. In
@@ -57,7 +57,7 @@ Transpile it and run the script with the commands below:
 ```shell
 npx tsc --build
 
-node dist/05-declare-class.js
+node dist/06-declare-class.js
 ```
 
 > Note: only the `declareClass` function from `@0xknwn/starknet-module-sessionkey`
@@ -74,7 +74,7 @@ once it has been declared to the network. To register the module in the account,
 use `addModule`:
 
 ```typescript
-{{#include ../experiments/documentation-examples/src/05-add-module.ts}}
+{{#include ../experiments/documentation-examples/src/06-add-module.ts}}
 ```
 
 Transpile and run the script:
@@ -82,7 +82,7 @@ Transpile and run the script:
 ```shell
 npx tsc --build
 
-node dist/05-add-module.js
+node dist/06-add-module.js
 ```
 
 ## Requesting a Session Key
@@ -232,7 +232,7 @@ The overall sessionkey request/grant process with the execution of a transaction
 on the counter contract is available as a single script below:
 
 ```typescript
-{{#include ../experiments/documentation-examples/src/05-sessionkey-transaction.ts}}
+{{#include ../experiments/documentation-examples/src/06-sessionkey-transaction.ts}}
 ```
 
 Transpile and run it:
@@ -240,7 +240,7 @@ Transpile and run it:
 ```shell
 npx tsc --build
 
-node dist/05-sessionkey-transaction.js
+node dist/06-sessionkey-transaction.js
 ```
 
 ## Execute a Transaction with the Session Key
@@ -260,7 +260,7 @@ script. Then, you can use `disable_session_key` entrypoint on the module with
 the `executeOnModule` entrypoint of the account:
 
 ```typescript
-{{#include ../experiments/documentation-examples/src/05-block-sessionkey.ts}}
+{{#include ../experiments/documentation-examples/src/06-block-sessionkey.ts}}
 ```
 
 Transpile and run the script:
@@ -268,7 +268,7 @@ Transpile and run the script:
 ```shell
 npx tsc --build
 
-node dist/05-block-sessionkey.js
+node dist/06-block-sessionkey.js
 ```
 
 ## Remove the SessionKey Validator Module from the Account
@@ -276,7 +276,7 @@ node dist/05-block-sessionkey.js
 To remove the module from the account, use `removeModule`:
 
 ```typescript
-{{#include ../experiments/documentation-examples/src/05-remove-module.ts}}
+{{#include ../experiments/documentation-examples/src/06-remove-module.ts}}
 ```
 
 Transpile and run the script with the commands below:
@@ -284,5 +284,5 @@ Transpile and run the script with the commands below:
 ```shell
 npx tsc --build
 
-node dist/05-remove-module.js
+node dist/06-remove-module.js
 ```

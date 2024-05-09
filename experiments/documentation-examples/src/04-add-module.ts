@@ -1,6 +1,6 @@
 // file src/04-add-module.ts
 import { SmartrAccount } from "@0xknwn/starknet-modular-account";
-import { classHash } from "@0xknwn/starknet-module-eth";
+import { classHash } from "@0xknwn/starknet-module";
 import { init } from "./04-init";
 import { RpcProvider } from "starknet";
 

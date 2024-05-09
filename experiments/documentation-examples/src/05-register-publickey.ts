@@ -1,8 +1,8 @@
-// file src/04-register-publickey.ts
+// file src/05-register-publickey.ts
 import { SmartrAccount } from "@0xknwn/starknet-modular-account";
 import { classHash as ethClassHash } from "@0xknwn/starknet-module";
 import { EthSigner, cairo } from "starknet";
-import { init } from "./04-init";
+import { init } from "./05-init";
 import { RpcProvider } from "starknet";
 
 const providerURL = "http://127.0.0.1:5050/rpc";

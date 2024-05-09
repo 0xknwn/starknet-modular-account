@@ -1,6 +1,6 @@
-// file src/04-declare-eth-validator.ts
+// file src/06-declare-class.ts
 import { RpcProvider, Account } from "starknet";
-import { declareClass } from "@0xknwn/starknet-module";
+import { declareClass } from "@0xknwn/starknet-module-sessionkey";
 
 // these are the settings for the devnet with --seed=0
 // change them to mee your requirements
@@ -13,11 +13,11 @@ const main = async () => {
   const provider = new RpcProvider({ nodeUrl: providerURL });
   const account = new Account(provider, ozAccountAddress, ozPrivateKey);
 
-  const { classHash: ethValidatorClassHash } = await declareClass(
+  const { classHash: sessionkeyValidatorClassHash } = await declareClass(
     account,
-    "EthValidator"
+    "SessionKeyValidator"
   );
-  console.log("EthValidator class hash:", ethValidatorClassHash);
+  console.log("SessionKeyValidator class hash:", sessionkeyValidatorClassHash);
 };
 
 main()
