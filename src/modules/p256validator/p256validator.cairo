@@ -1,20 +1,20 @@
 // SPDX-License-Identifier: MIT
 
-use openzeppelin::account::utils::secp256k1::Secp256k1PointSerde;
-use openzeppelin::account::interface::EthPublicKey;
+use openzeppelin::account::utils::secp256r1::Secp256r1PointSerde;
+use openzeppelin::account::interface::P256PublicKey;
 
 #[starknet::interface]
 pub trait IPublicKey<TState> {
-    fn set_public_key(ref self: TState, new_public_key: EthPublicKey);
-    fn get_public_key(self: @TState) -> EthPublicKey;
+    fn set_public_key(ref self: TState, new_public_key: P256PublicKey);
+    fn get_public_key(self: @TState) -> P256PublicKey;
 }
 
 #[starknet::contract]
-mod EthValidator {
+mod P256Validator {
     use core::traits::Into;
-    use openzeppelin::account::utils::is_valid_eth_signature;
-    use openzeppelin::account::utils::secp256k1::{Secp256k1PointStorePacking, Secp256k1PointSerde};
-    use openzeppelin::account::interface::EthPublicKey;
+    use openzeppelin::account::utils::is_valid_p256_signature;
+    use openzeppelin::account::utils::secp256r1::{Secp256r1PointStorePacking, Secp256r1PointSerde};
+    use openzeppelin::account::interface::P256PublicKey;
     use openzeppelin::introspection::src5::SRC5Component;
     use openzeppelin::introspection::src5::SRC5Component::SRC5;
     use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SRC5InternalTrait;
@@ -60,7 +60,7 @@ mod EthValidator {
     #[abi(embed_v0)]
     impl VersionImpl of IVersion<ContractState> {
         fn get_name(self: @ContractState) -> felt252 {
-            'eth-validator'
+            'p256-validator'
         }
         fn get_version(self: @ContractState) -> felt252 {
             'v0.1.8'
@@ -86,10 +86,10 @@ mod EthValidator {
 
         fn initialize(ref self: ContractState, public_key: Array<felt252>) {
             let mut value = public_key.span();
-            let eth_public_key = Serde::<EthPublicKey>::deserialize(ref value);
-            match eth_public_key {
+            let p256_public_key = Serde::<P256PublicKey>::deserialize(ref value);
+            match p256_public_key {
                 Option::Some(key) => {
-                    self.EthAccount_public_key.write(key);
+                    self.P256Account_public_key.write(key);
                     self.account.notify_owner_addition(public_key);
                 },
                 Option::None => { assert(false, 'Invalid public key'); },
@@ -104,7 +104,7 @@ mod EthValidator {
 
     #[storage]
     struct Storage {
-        EthAccount_public_key: EthPublicKey,
+        P256Account_public_key: P256PublicKey,
         #[substorage(v0)]
         validator: ValidatorComponent::Storage,
         #[substorage(v0)]
@@ -162,8 +162,8 @@ mod EthValidator {
                 // let me: Array<felt252> = call.calldata;
                 let mut value = call.calldata;
                 assert(value.len() == 4, 'Ough, try again!');
-                let eth_public_key = Serde::<EthPublicKey>::deserialize(ref value);
-                match eth_public_key {
+                let p256_public_key = Serde::<P256PublicKey>::deserialize(ref value);
+                match p256_public_key {
                     Option::Some(key) => { self.set_public_key(key); },
                     Option::None => { assert(false, 'Invalid public key'); },
                 }
@@ -179,16 +179,16 @@ mod EthValidator {
     #[abi(embed_v0)]
     pub impl PublicKey of IPublicKey<ContractState> {
         /// Add a key to the current public keys of the account.
-        fn set_public_key(ref self: ContractState, new_public_key: EthPublicKey) {
-            self.EthAccount_public_key.write(new_public_key);
+        fn set_public_key(ref self: ContractState, new_public_key: P256PublicKey) {
+            self.P256Account_public_key.write(new_public_key);
             let mut public_key_felt = ArrayTrait::<felt252>::new();
             new_public_key.serialize(ref public_key_felt);
             self.account.notify_owner_addition(public_key_felt);
         }
 
         /// Returns the current public keys of the account.
-        fn get_public_key(self: @ContractState) -> EthPublicKey {
-            self.EthAccount_public_key.read()
+        fn get_public_key(self: @ContractState) -> P256PublicKey {
+            self.P256Account_public_key.read()
         }
     }
 
@@ -208,33 +208,38 @@ mod EthValidator {
             assert(self == caller, Errors::UNAUTHORIZED);
         }
 
-        /// Returns whether the given signature is valid for the given hash
+        /// Returns wher the given signature is valid for the given hash
         /// using the account's current public key.
         fn _is_valid_signature(
             self: @ContractState, hash: felt252, signature: Span<felt252>
         ) -> bool {
-            let public_key: EthPublicKey = self.EthAccount_public_key.read();
-            is_valid_eth_signature(hash, public_key, signature)
+            let public_key: P256PublicKey = self.P256Account_public_key.read();
+            is_valid_p256_signature(hash, public_key, signature)
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use openzeppelin::account::utils::secp256k1::Secp256k1PointStorePacking;
-    use openzeppelin::account::interface::EthPublicKey;
-    use openzeppelin::account::utils::secp256k1::Secp256k1PointSerde;
-    use openzeppelin::account::utils::secp256k1::DebugSecp256k1Point;
+    use openzeppelin::account::utils::secp256r1::Secp256r1PointStorePacking;
+    use openzeppelin::account::interface::P256PublicKey;
+    use openzeppelin::account::utils::secp256r1::Secp256r1PointSerde;
+    use openzeppelin::account::utils::secp256r1::DebugSecp256r1Point;
 
     #[test]
     fn value_match_key() {
         let value: Array<felt252> = array![
-            3, 0, 215399990735478923917501906261422522596, 277625874459002347535277135431259155380
+            84367212547305142575912199700718371262,
+            258400589869575108989031672267243838881,
+            116613713336784839275036561532313383696,
+            333360036780834669843466872615052783706
         ];
         let mut value = value.span();
-        let eth_public_key = Serde::<EthPublicKey>::deserialize(ref value);
-        match eth_public_key {
-            Option::Some(_key) => { assert(true, 'valid public key'); },
+        let p256_public_key = Serde::<P256PublicKey>::deserialize(ref value);
+        match p256_public_key {
+            Option::Some(_key) => {
+                assert(true, 'valid public key'); // println!("{:?}", _key);
+            },
             Option::None => { assert(false, 'option is none'); },
         }
     }
@@ -242,26 +247,27 @@ mod tests {
     #[test]
     fn play_with_u256() {
         let _privateKey: u256 =
-            0xb28ebb20fb1015da6e6367d1b5dba9b52862a06dbb3a4022e4749b6987ac1bd2_u256;
-        let x: u256 = 0xd31cf702f5c89d49c567dcfd568bc4869e343506749f69d849eb408802cfa646_u256;
-        let y: u256 = 0x348c7bbf341964c306669365292c0066c23a2fedd131907534677aa3e22db2fc_u256;
-        assert_eq!(x.low, 210289098249831467762502193281061856838, "x.low");
-        assert_eq!(x.high, 280617501412351006689952710290844664966, "x.high");
-        assert_eq!(y.low, 258172356515136873455592221375042794236, "y.low");
-        assert_eq!(y.high, 69849287226094710129367771214955413606, "y.high");
+            0x1efecf7ee1e25bb87098baf2aaab0406167aae0d5ea9ba0d31404bf01886bd0e_u256;
+        let x: u256 = 0x097420e05fbc83afe4d73b31890187d0cacf2c3653e27f434701a91625f916c2_u256;
+        let y: u256 = 0x98a304ff544db99c864308a9b3432324adc6c792181bae33fe7a4cbd48cf263a_u256;
+        assert_eq!(x.low, 269579757328574126121444003492591638210, "x.low");
+        assert_eq!(x.high, 12566025211498978771503502663570524112, "x.high");
+        assert_eq!(y.low, 230988565823064299531546210785320445498, "y.low");
+        assert_eq!(y.high, 202889101106158949967186230758848275236, "y.high");
     }
 
     #[test]
     fn value_match_key_from_u256() {
         let value: Array<felt252> = array![
-            210289098249831467762502193281061856838,
-            280617501412351006689952710290844664966,
-            258172356515136873455592221375042794236,
-            69849287226094710129367771214955413606
+            269579757328574126121444003492591638210,
+            12566025211498978771503502663570524112,
+            230988565823064299531546210785320445498,
+            202889101106158949967186230758848275236
         ];
         let mut value = value.span();
-        let eth_public_key = Serde::<EthPublicKey>::deserialize(ref value);
-        match eth_public_key {
+        let p256_public_key = Serde::<P256PublicKey>::deserialize(ref value);
+        // println!("{:?}", p256_public_key);
+        match p256_public_key {
             Option::Some(_key) => { assert(true, 'valid public key'); },
             Option::None => { assert(false, 'option is none'); },
         }

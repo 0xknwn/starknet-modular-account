@@ -59,10 +59,10 @@
     "experiments/starknet-bootstrap-account",
     "sdks/__tests__/account",
     "sdks/__tests__/helpers",
-    "sdks/__tests__/module-eth",
+    "sdks/__tests__/module",
     "sdks/__tests__/module-sessionkey",
     "sdks/account",
-    "sdks/module-eth",
+    "sdks/module",
     "sdks/module-sessionkey"
   ],
   "devDependencies": {

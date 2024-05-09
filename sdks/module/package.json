@@ -1,5 +1,5 @@
 {
-  "name": "@0xknwn/starknet-module-eth",
+  "name": "@0xknwn/starknet-module",
   "version": "0.1.8",
   "description": "",
   "main": "dist/index.js",
@@ -7,15 +7,12 @@
   "scripts": {
     "build:abi:EthValidator": "npx abi-wan-kanabi --input ../../target/dev/smartr_EthValidator.contract_class.json --output ./src/abi/EthValidator.ts",
     "build:abi": "mkdir -p src/abi && npm run build:abi:EthValidator",
-    "doc": "typedoc && mkdir -p ../../docs/starknet-module-eth && cp -R docs/modules.md docs/classes ../../docs/starknet-module-eth/",
+    "doc": "typedoc && mkdir -p ../../docs/starknet-module && cp -R docs/modules.md docs/classes ../../docs/starknet-module/",
     "registry": "npm publish --access=public"
   },
   "peerDependencies": {
     "starknet": "6.8.0"
   },
   "author": "0xknwn",
-  "license": "MIT",
-  "dependencies": {
-    "ethereum-cryptography": "^2.1.3"
-  }
+  "license": "MIT"
 }
