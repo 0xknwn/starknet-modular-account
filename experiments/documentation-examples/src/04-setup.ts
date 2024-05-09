@@ -42,10 +42,6 @@ const main = async () => {
     account,
     "StarkValidator"
   );
-  const { classHash: ethValidatorClassHash } = await ethDeclareClass(
-    account,
-    "EthValidator"
-  );
 
   // load ETH
   const smartrSigner = new Signer(smartrAccountPrivateKey);
@@ -60,7 +56,7 @@ const main = async () => {
     calldata
   );
   const ETH = new Contract(ERC20ABI, ethAddress, account);
-  const initial_EthTransfer = cairo.uint256(3n * 10n ** 15n);
+  const initial_EthTransfer = cairo.uint256(10n * 10n ** 15n);
   const call = ETH.populate("transfer", {
     recipient: smartrAccountAddress,
     amount: initial_EthTransfer,
