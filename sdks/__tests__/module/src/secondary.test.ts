@@ -77,7 +77,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
   });
 
   it(
-    "gets the chain id",
+    `[${name}]: gets the chain id`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -87,7 +87,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
   );
 
   it(
-    "declare the Counter class",
+    `[${name}]: declares the Counter class`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -98,7 +98,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
   );
 
   it(
-    "deploys the Counter contract",
+    `[${name}]: deploys the Counter contract`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -112,7 +112,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
   );
 
   it(
-    "deploys the starkValidator class",
+    `[${name}]: declares the starkValidator class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
@@ -123,7 +123,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
   );
 
   it(
-    "deploys the SmartrAccount class",
+    `[${name}]: declares the SmartrAccount class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
@@ -134,7 +134,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
   );
 
   it(
-    "sends ETH to the account address",
+    `[${name}]: sends ETH to the account address`,
     async () => {
       const conf = config(env);
       const sender = testAccounts(conf)[0];
@@ -159,7 +159,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
   );
 
   it(
-    "deploys a SmartrAccount account",
+    `[${name}]: deploys a SmartrAccount account`,
     async () => {
       const conf = config(env);
       const publicKey = conf.accounts[0].publicKey;
@@ -182,7 +182,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
   );
 
   it(
-    "checks the SmartAccount public keys",
+    `[${name}]: checks the SmartAccount public keys`,
     async () => {
       const conf = config(env);
       const calldata = new CallData(StarkValidatorABI);
@@ -200,7 +200,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
   );
 
   it(
-    "checks the SmartAccount threshold",
+    `[${name}]: checks the SmartAccount threshold`,
     async () => {
       const calldata = new CallData(StarkValidatorABI);
       const data = calldata.compile("get_threshold", {});
@@ -217,7 +217,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
   );
 
   it(
-    "resets the counter",
+    `[${name}]: resets the counter`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -232,7 +232,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
   );
 
   it(
-    "increments the counter from SmartrAccount and succeed",
+    `[${name}]: increments the counter from SmartrAccount and succeeds`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
@@ -252,7 +252,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
   );
 
   it(
-    "reads the counter",
+    `[${name}]: reads the counter`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
@@ -264,7 +264,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
   );
 
   it(
-    "deploys the Validator class",
+    `[${name}]: deploys the Validator class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
@@ -275,7 +275,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
   );
 
   it(
-    "adds a module to the account",
+    `[${name}]: adds a module to the account`,
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
@@ -296,7 +296,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
   );
 
   it(
-    "checks the Module is installed",
+    `[${name}]: checks the module is installed`,
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
@@ -310,7 +310,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
   );
 
   it(
-    "set the ETH public key",
+    `[${name}]: sets the public key`,
     async () => {
       if (!Array.isArray(data.publicKeyArray)) {
         throw new Error("Public key array not defined");
@@ -327,7 +327,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
   );
 
   it(
-    "gets the ETH public key",
+    `[${name}]: gets the public key`,
     async () => {
       if (!Array.isArray(data.publicKeyArray)) {
         throw new Error("Public key array not defined");
@@ -347,7 +347,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
   );
 
   it(
-    "resets the counter",
+    `[${name}]: resets the counter`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -361,7 +361,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
     default_timeout
   );
 
-  it("creates an account with the Validator module", async () => {
+  it(`[${name}]: creates an typescript account with the module`, async () => {
     if (!module) {
       expect(module).toBeDefined();
       return;
@@ -382,7 +382,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
   });
 
   it(
-    "increments the counter from SmartrAccount with Module and succeed",
+    `[${name}]: increments the counter with the account/module and succeeds`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
@@ -405,7 +405,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
   );
 
   it(
-    "increments the counter with wrong key and fails",
+    `[${name}]: increments the counter with wrong key and fails`,
     async () => {
       if (!module) {
         expect(module).toBeDefined();
@@ -442,7 +442,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
   );
 
   it(
-    "removes the Validator module from the account",
+    `[${name}]: removes the Validator module from the account`,
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
@@ -457,7 +457,7 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
   );
 
   it(
-    "checks the Validator is not installe anymored",
+    `[${name}]: checks the Validator is not installed anymore`,
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");

@@ -74,7 +74,7 @@ describe.each(dataset)("core validator management", ({ name, data }) => {
   });
 
   it(
-    "gets the chain id",
+    `[${name}]: gets the chain id`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -84,7 +84,7 @@ describe.each(dataset)("core validator management", ({ name, data }) => {
   );
 
   it(
-    "declare the Counter class",
+    `[${name}]: declare the Counter class`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -95,7 +95,7 @@ describe.each(dataset)("core validator management", ({ name, data }) => {
   );
 
   it(
-    "deploys the Counter contract",
+    `[${name}]: deploys the Counter contract`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -109,7 +109,7 @@ describe.each(dataset)("core validator management", ({ name, data }) => {
   );
 
   it(
-    `deploys the ${data.className} class`,
+    `[${name}]: deploys the ${data.className} class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
@@ -120,7 +120,7 @@ describe.each(dataset)("core validator management", ({ name, data }) => {
   );
 
   it(
-    "deploys the SmartrAccount class",
+    `[${name}]: deploys the SmartrAccount class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
@@ -131,7 +131,7 @@ describe.each(dataset)("core validator management", ({ name, data }) => {
   );
 
   it(
-    "sends ETH to the account address",
+    `[${name}]: sends ETH to the account address`,
     async () => {
       const conf = config(env);
       const sender = testAccounts(conf)[0];
@@ -157,7 +157,7 @@ describe.each(dataset)("core validator management", ({ name, data }) => {
   );
 
   it(
-    "configures the SmartrAccount with the EthSigner",
+    `[${name}]: configures the SmartrAccount with the signer`,
     async () => {
       const conf = config(env);
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
@@ -172,7 +172,7 @@ describe.each(dataset)("core validator management", ({ name, data }) => {
   );
 
   it(
-    "deploys a SmartrAccount account",
+    `[${name}]: deploys a SmartrAccount account`,
     async () => {
       const conf = config(env);
       const moduleValidatorClassHash = moduleClassHash(data.className);
@@ -194,7 +194,7 @@ describe.each(dataset)("core validator management", ({ name, data }) => {
   );
 
   it(
-    "checks the SmartAccount public key",
+    `[${name}]: checks the SmartAccount public key`,
     async () => {
       const conf = config(env);
       const calldata = new CallData(data.validatorABI);
@@ -212,7 +212,7 @@ describe.each(dataset)("core validator management", ({ name, data }) => {
   );
 
   it(
-    "resets the counter",
+    `[${name}]: resets the counter`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -227,7 +227,7 @@ describe.each(dataset)("core validator management", ({ name, data }) => {
   );
 
   it(
-    "increments the counter from SmartrAccount and succeed",
+    `[${name}]: increments the counter from SmartrAccount and succeeds`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
@@ -247,7 +247,7 @@ describe.each(dataset)("core validator management", ({ name, data }) => {
   );
 
   it(
-    "reads the counter",
+    `[${name}]: reads the counter`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
