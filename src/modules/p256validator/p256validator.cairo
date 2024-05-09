@@ -63,7 +63,7 @@ mod P256Validator {
             'p256-validator'
         }
         fn get_version(self: @ContractState) -> felt252 {
-            'v0.1.8'
+            'v0.1.9'
         }
     }
 
