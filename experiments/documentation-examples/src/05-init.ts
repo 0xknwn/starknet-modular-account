@@ -10,7 +10,7 @@ import {
 } from "@0xknwn/starknet-test-helpers";
 
 const ozAccountAddress =
-  "0x64b48806902a367c8598f4f95c305e8c1a1acba5f082d294a43793113115691";
+  "0x3b2d6d0edcbdbdf6548d2b79531263628887454a0a608762c71056172d36240";
 const smartrAccountPrivateKey = "0x1";
 
 export { CounterABI };

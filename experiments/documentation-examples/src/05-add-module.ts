@@ -4,7 +4,11 @@ import { classHash } from "@0xknwn/starknet-module";
 import { init } from "./05-init";
 import { RpcProvider } from "starknet";
 
-const providerURL = "http://127.0.0.1:5050/rpc";
+const ozAccountAddress =
+  "0x3b2d6d0edcbdbdf6548d2b79531263628887454a0a608762c71056172d36240";
+const ozPrivateKey =
+  "0x000e8f079f1092042bf9b855935d3ef1bb7078609491fb24e7cb8cbb574e50ca";
+const providerURL = "https://starknet-sepolia.public.blastapi.io";
 
 const main = async () => {
   const provider = new RpcProvider({ nodeUrl: providerURL });

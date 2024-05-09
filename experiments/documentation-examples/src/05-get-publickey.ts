@@ -7,7 +7,7 @@ import {
 import { init } from "./05-init";
 import { CallData, RpcProvider } from "starknet";
 
-const providerURL = "http://127.0.0.1:5050/rpc";
+const providerURL = "https://starknet-sepolia.public.blastapi.io";
 
 const main = async () => {
   const provider = new RpcProvider({ nodeUrl: providerURL });

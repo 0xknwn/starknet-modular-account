@@ -14,6 +14,29 @@ describe.each([
         "0x097420e05fbc83afe4d73b31890187d0cacf2c3653e27f434701a91625f916c2",
         "0x98a304ff544db99c864308a9b3432324adc6c792181bae33fe7a4cbd48cf263a",
       ],
+      hash: "0x419d921d19fbb356ebe8f57be613b8d4d1880c5ad18768ba4e12baa566ec06",
+      signature: [
+        "0x98fd57ced24ecea3e19b87540589788da1913d80b4b735ea849919d5636cb5e9",
+        "0x3e75ae4643235e4dad268f0a480ef3f56a05a126fc09205b0a3a509ba0db9243",
+      ],
+      splitSignature: [
+        "0xa1913d80b4b735ea849919d5636cb5e9",
+        "0x98fd57ced24ecea3e19b87540589788d",
+        "0x6a05a126fc09205b0a3a509ba0db9243",
+        "0x3e75ae4643235e4dad268f0a480ef3f5",
+      ],
+    },
+  },
+  {
+    name: "p256",
+    data: {
+      alg: p256,
+      privateKey:
+        "0x1efecf7ee1e25bb87098baf2aaab0406167aae0d5ea9ba0d31404bf01886bd0e",
+      publicKey: [
+        "0x097420e05fbc83afe4d73b31890187d0cacf2c3653e27f434701a91625f916c2",
+        "0x98a304ff544db99c864308a9b3432324adc6c792181bae33fe7a4cbd48cf263a",
+      ],
       hash: "0x1e0cb9e0eb2a8b414df99964673bd493b594c4a627ab031c150ffc81b330706",
       signature: [
         "0xfe4e53a283f4715bba1969dff40227c2ca24a6321a89a02e37a0b830c1a0918e",

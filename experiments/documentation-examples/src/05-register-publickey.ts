@@ -8,7 +8,7 @@ import { cairo } from "starknet";
 import { init } from "./05-init";
 import { RpcProvider } from "starknet";
 
-const providerURL = "http://127.0.0.1:5050/rpc";
+const providerURL = "https://starknet-sepolia.public.blastapi.io";
 const p256PrivateKey =
   "0x1efecf7ee1e25bb87098baf2aaab0406167aae0d5ea9ba0d31404bf01886bd0e";
 
