@@ -15,16 +15,16 @@ const main = async () => {
     smartrAccountPrivateKey
   );
   const { transaction_hash } = await account.removeModule(
-    classHash("EthValidator")
+    classHash("P256Validator")
   );
   const receipt = await account.waitForTransaction(transaction_hash);
   console.log("transaction succeeded", receipt.isSuccess());
 
-  const isInstalled = await account.isModule(classHash("EthValidator"));
+  const isInstalled = await account.isModule(classHash("P256Validator"));
   console.log(
     "module",
-    classHash("EthValidator"),
-    "has been removed",
+    classHash("P256Validator"),
+    "is installed:",
     isInstalled
   );
 };

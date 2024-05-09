@@ -1,13 +1,16 @@
 // file src/05-register-publickey.ts
 import { SmartrAccount } from "@0xknwn/starknet-modular-account";
-import { classHash as ethClassHash } from "@0xknwn/starknet-module";
-import { EthSigner, cairo } from "starknet";
+import {
+  classHash as moduleClassHash,
+  P256Signer,
+} from "@0xknwn/starknet-module";
+import { cairo } from "starknet";
 import { init } from "./05-init";
 import { RpcProvider } from "starknet";
 
 const providerURL = "http://127.0.0.1:5050/rpc";
-const ethPrivateKey =
-  "0xb28ebb20fb1015da6e6367d1b5dba9b52862a06dbb3a4022e4749b6987ac1bd2";
+const p256PrivateKey =
+  "0x1efecf7ee1e25bb87098baf2aaab0406167aae0d5ea9ba0d31404bf01886bd0e";
 
 const main = async () => {
   const provider = new RpcProvider({ nodeUrl: providerURL });
@@ -17,8 +20,8 @@ const main = async () => {
     accountAddress,
     smartrAccountPrivateKey
   );
-  const module_class_hash = ethClassHash("EthValidator");
-  const signer = new EthSigner(ethPrivateKey);
+  const module_class_hash = moduleClassHash("P256Validator");
+  const signer = new P256Signer(p256PrivateKey);
   const publicKey = await signer.getPubKey();
   const coords = publicKey.slice(2, publicKey.length);
   const x = coords.slice(0, 64);

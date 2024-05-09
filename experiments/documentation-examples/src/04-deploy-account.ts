@@ -6,7 +6,7 @@ import {
   SmartrAccount,
 } from "@0xknwn/starknet-modular-account";
 import { classHash as ethClassHash } from "@0xknwn/starknet-module";
-import { init } from "./03-init";
+import { init } from "./04-init";
 import { ABI as ERC20ABI } from "./abi/ERC20";
 const ethAddress =
   "0x49D36570D4E46F48E99674BD3FCC84644DDD6B96F7C741B1562B82F9E004DC7";
@@ -23,8 +23,8 @@ const main = async () => {
     await init();
 
   // Step 1 - Get the public key from the Eth Signer
-  const signer = new EthSigner(ethPrivateKey);
-  const publicKey = await signer.getPubKey();
+  const ethSmartrSigner = new EthSigner(ethPrivateKey);
+  const publicKey = await ethSmartrSigner.getPubKey();
   const coords = publicKey.slice(2, publicKey.length);
   const x = coords.slice(0, 64);
   const x_felts = cairo.uint256(`0x${x}`);
@@ -64,7 +64,6 @@ const main = async () => {
   }
 
   // Step 4 - Deploy the account with the EthValidator as Core Validator
-  const ethSmartrSigner = new EthSigner(smartrAccountPrivateKey);
   const ethAccount = new SmartrAccount(
     provider,
     computedAccountAddress,

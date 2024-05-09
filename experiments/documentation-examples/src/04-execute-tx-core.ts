@@ -3,7 +3,7 @@ import {
   SmartrAccount,
   accountAddress,
 } from "@0xknwn/starknet-modular-account";
-import { init, CounterABI } from "./03-init";
+import { init, CounterABI } from "./04-init";
 import { RpcProvider, Contract, EthSigner, cairo, hash } from "starknet";
 import { classHash as ethClassHash } from "@0xknwn/starknet-module";
 const providerURL = "http://127.0.0.1:5050/rpc";

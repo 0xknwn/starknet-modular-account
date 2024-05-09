@@ -15,13 +15,18 @@ const main = async () => {
     smartrAccountPrivateKey
   );
   const { transaction_hash } = await account.addModule(
-    classHash("EthValidator")
+    classHash("P256Validator")
   );
   const receipt = await account.waitForTransaction(transaction_hash);
   console.log("transaction succeeded", receipt.isSuccess());
 
-  const isInstalled = await account.isModule(classHash("EthValidator"));
-  console.log("module", classHash("EthValidator"), "is installed", isInstalled);
+  const isInstalled = await account.isModule(classHash("P256Validator"));
+  console.log(
+    "module",
+    classHash("P256Validator"),
+    "is installed:",
+    isInstalled
+  );
 };
 
 main()

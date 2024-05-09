@@ -6,8 +6,8 @@ npx tsc --build
 node dist/05-setup.js
 
 # Use P256 Validator as a Secondary validator
-node dist/05-declare-eth-validator.js
-node dist/05-check-eth-validator.js
+node dist/05-declare-p256-validator.js
+node dist/05-check-p256-validator.js
 node dist/05-add-module.js
 node dist/05-register-publickey.js
 node dist/05-get-publickey.js

@@ -1,4 +1,4 @@
-// file src/05-declare-eth-validator.ts
+// file src/05-declare-p256-validator.ts
 import { RpcProvider, Account } from "starknet";
 import { declareClass } from "@0xknwn/starknet-module";
 
@@ -13,11 +13,11 @@ const main = async () => {
   const provider = new RpcProvider({ nodeUrl: providerURL });
   const account = new Account(provider, ozAccountAddress, ozPrivateKey);
 
-  const { classHash: ethValidatorClassHash } = await declareClass(
+  const { classHash: p256ValidatorClassHash } = await declareClass(
     account,
-    "EthValidator"
+    "P256Validator"
   );
-  console.log("EthValidator class hash:", ethValidatorClassHash);
+  console.log("P256Validator class hash:", p256ValidatorClassHash);
 };
 
 main()

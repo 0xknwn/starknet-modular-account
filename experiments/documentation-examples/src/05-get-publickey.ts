@@ -1,8 +1,8 @@
 // file src/05-get-publickey.ts
 import { SmartrAccount } from "@0xknwn/starknet-modular-account";
 import {
-  EthValidatorABI,
-  classHash as ethClassHash,
+  classHash as moduleClassHash,
+  P256ValidatorABI,
 } from "@0xknwn/starknet-module";
 import { init } from "./05-init";
 import { CallData, RpcProvider } from "starknet";
@@ -17,10 +17,10 @@ const main = async () => {
     accountAddress,
     smartrAccountPrivateKey
   );
-  const moduleCallData = new CallData(EthValidatorABI);
+  const moduleCallData = new CallData(P256ValidatorABI);
   const calldata = moduleCallData.compile("get_public_key", {});
   const public_keys = await account.callOnModule(
-    ethClassHash("EthValidator"),
+    moduleClassHash("P256Validator"),
     "get_public_key",
     calldata
   );

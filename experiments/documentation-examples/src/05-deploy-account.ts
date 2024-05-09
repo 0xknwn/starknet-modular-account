@@ -1,11 +1,14 @@
 // file src/05-deploy-account.ts
-import { RpcProvider, EthSigner, Contract, cairo, hash } from "starknet";
+import { RpcProvider, Contract, cairo, hash } from "starknet";
 import {
   accountAddress,
   deployAccount,
   SmartrAccount,
 } from "@0xknwn/starknet-modular-account";
-import { classHash as ethClassHash } from "@0xknwn/starknet-module";
+import {
+  classHash as moduleClassHash,
+  P256Signer,
+} from "@0xknwn/starknet-module";
 import { init } from "./03-init";
 import { ABI as ERC20ABI } from "./abi/ERC20";
 const ethAddress =
@@ -14,8 +17,8 @@ const ethAddress =
 // these are the settings for the devnet with --seed=0
 // change them to mee your requirements
 const providerURL = "http://127.0.0.1:5050/rpc";
-const ethPrivateKey =
-  "0xb28ebb20fb1015da6e6367d1b5dba9b52862a06dbb3a4022e4749b6987ac1bd2";
+const p256PrivateKey =
+  "0x1efecf7ee1e25bb87098baf2aaab0406167aae0d5ea9ba0d31404bf01886bd0e";
 
 const main = async () => {
   const provider = new RpcProvider({ nodeUrl: providerURL });
@@ -23,8 +26,8 @@ const main = async () => {
     await init();
 
   // Step 1 - Get the public key from the Eth Signer
-  const signer = new EthSigner(ethPrivateKey);
-  const publicKey = await signer.getPubKey();
+  const p236SmartrSigner = new P256Signer(p256PrivateKey);
+  const publicKey = await p236SmartrSigner.getPubKey();
   const coords = publicKey.slice(2, publicKey.length);
   const x = coords.slice(0, 64);
   const x_felts = cairo.uint256(`0x${x}`);
@@ -42,7 +45,7 @@ const main = async () => {
   const computedAccountAddress = accountAddress(
     "SmartrAccount",
     publicKeyHash,
-    [ethClassHash("EthValidator"), "0x4", ...publicKeyArray]
+    [moduleClassHash("P256Validator"), "0x4", ...publicKeyArray]
   );
 
   // Step 3 - Send ETH to the computed account address
@@ -63,18 +66,17 @@ const main = async () => {
     throw new Error("Could not send ETH to the expected address");
   }
 
-  // Step 4 - Deploy the account with the EthValidator as Core Validator
-  const ethSmartrSigner = new EthSigner(smartrAccountPrivateKey);
-  const ethAccount = new SmartrAccount(
+  // Step 4 - Deploy the account with the P256Validator as Core Validator
+  const p256Account = new SmartrAccount(
     provider,
     computedAccountAddress,
-    ethSmartrSigner
+    p236SmartrSigner
   );
   const address = await deployAccount(
-    ethAccount,
+    p256Account,
     "SmartrAccount",
     publicKeyHash,
-    [ethClassHash("EthValidator"), "0x4", ...publicKeyArray]
+    [moduleClassHash("P256Validator"), "0x4", ...publicKeyArray]
   );
   if (address !== computedAccountAddress) {
     throw new Error(
