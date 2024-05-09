@@ -33,7 +33,7 @@ import type {
 /**
  * Signer for accounts using Ethereum signature
  */
-export class p256Signer implements SignerInterface {
+export class P256Signer implements SignerInterface {
   protected pk: string; // hex string without 0x and with an odd number of characters
 
   constructor(pk: Uint8Array | string) {

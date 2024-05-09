@@ -21,28 +21,12 @@ import {
   declareClass as declareModuleClass,
   classHash as moduleClassHash,
   EthValidatorABI,
-} from "../../../module/src";
+  P256ValidatorABI,
+  P256Signer,
+} from "@0xknwn/starknet-module";
 const initial_EthTransfer = cairo.uint256(10n * 10n ** 15n);
 
-const _more_data = {
-  name: "p256",
-  data: {
-    privateKey:
-      "0x1efecf7ee1e25bb87098baf2aaab0406167aae0d5ea9ba0d31404bf01886bd0e",
-    // let x: u256 = 0x097420e05fbc83afe4d73b31890187d0cacf2c3653e27f434701a91625f916c2_u256;
-    // let y: u256 = 0x98a304ff544db99c864308a9b3432324adc6c792181bae33fe7a4cbd48cf263a_u256;
-    publicKeyArray: [
-      "269579757328574126121444003492591638210",
-      "12566025211498978771503502663570524112",
-      "230988565823064299531546210785320445498",
-      "202889101106158949967186230758848275236",
-    ],
-    className: "P256Validator" as "P256Validator",
-    module: EthSigner,
-  },
-};
-
-describe.each([
+const dataset = [
   {
     name: "secp256k1",
     data: {
@@ -55,10 +39,31 @@ describe.each([
         "69849287226094710129367771214955413606",
       ],
       className: "EthValidator" as "EthValidator",
-      module: EthSigner,
+      signer: EthSigner,
+      validatorABI: EthValidatorABI,
     },
   },
-])("core validator management", ({ name, data }) => {
+  {
+    name: "p256",
+    data: {
+      privateKey:
+        "0x1efecf7ee1e25bb87098baf2aaab0406167aae0d5ea9ba0d31404bf01886bd0e",
+      // let x: u256 = 0x097420e05fbc83afe4d73b31890187d0cacf2c3653e27f434701a91625f916c2_u256;
+      // let y: u256 = 0x98a304ff544db99c864308a9b3432324adc6c792181bae33fe7a4cbd48cf263a_u256;
+      publicKeyArray: [
+        "269579757328574126121444003492591638210",
+        "12566025211498978771503502663570524112",
+        "230988565823064299531546210785320445498",
+        "202889101106158949967186230758848275236",
+      ],
+      className: "P256Validator" as "P256Validator",
+      signer: P256Signer,
+      validatorABI: P256ValidatorABI,
+    },
+  },
+];
+
+describe.each(dataset)("core validator management", ({ name, data }) => {
   let env: string;
   let counterContract: Counter;
   let smartrAccount: SmartrAccount;
@@ -156,7 +161,7 @@ describe.each([
     async () => {
       const conf = config(env);
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
-      const signer = new data.module(data.privateKey);
+      const signer = new data.signer(data.privateKey);
       smartrAccountWithModule = new SmartrAccount(
         p,
         smartrAccount.address,
@@ -192,7 +197,7 @@ describe.each([
     "checks the SmartAccount public key",
     async () => {
       const conf = config(env);
-      const calldata = new CallData(EthValidatorABI);
+      const calldata = new CallData(data.validatorABI);
       const nestedCalldata = calldata.compile("get_public_key", {});
       const c = await smartrAccount.callOnModule(
         moduleClassHash(data.className),

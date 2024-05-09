@@ -23,10 +23,28 @@ import {
   declareClass as declareModuleClass,
   classHash as moduleClassHash,
   EthModule,
+  P256Module,
 } from "../../../module/src";
+import { P256Signer } from "@0xknwn/starknet-module";
 import { StarkValidatorABI } from "@0xknwn/starknet-modular-account";
 
-const _more_data = [
+const dataset = [
+  {
+    name: "secp256k1",
+    data: {
+      privateKey:
+        "0xb28ebb20fb1015da6e6367d1b5dba9b52862a06dbb3a4022e4749b6987ac1bd2",
+      publicKeyArray: [
+        "210289098249831467762502193281061856838",
+        "280617501412351006689952710290844664966",
+        "258172356515136873455592221375042794236",
+        "69849287226094710129367771214955413606",
+      ],
+      className: "EthValidator" as "EthValidator",
+      module: EthModule,
+      signer: EthSigner,
+    },
+  },
   {
     name: "p256",
     data: {
@@ -40,34 +58,18 @@ const _more_data = [
         "230988565823064299531546210785320445498",
         "202889101106158949967186230758848275236",
       ],
-      className: "P256Validator",
-      module: EthModule,
+      className: "P256Validator" as "P256Validator",
+      module: P256Module,
+      signer: P256Signer,
     },
   },
 ];
 
-describe.each([
-  {
-    name: "secp256k1",
-    data: {
-      privateKey:
-        "0xb28ebb20fb1015da6e6367d1b5dba9b52862a06dbb3a4022e4749b6987ac1bd2",
-      publicKeyArray: [
-        "210289098249831467762502193281061856838",
-        "280617501412351006689952710290844664966",
-        "258172356515136873455592221375042794236",
-        "69849287226094710129367771214955413606",
-      ],
-      className: "EthValidator",
-      module: EthModule,
-    },
-  },
-])("secondary validator management", ({ name, data }) => {
+describe.each(dataset)("secondary validator management", ({ name, data }) => {
   let env: string;
   let counterContract: Counter;
   let smartrAccount: SmartrAccount;
-  let ethModule: EthModule;
-  let smartrAccountWithEth: SmartrAccount;
+  let smartrAccountWithModule: SmartrAccount;
   let connectedChain: string;
 
   beforeAll(() => {
@@ -266,9 +268,6 @@ describe.each([
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      if (data.className !== "EthValidator") {
-        throw new Error("Wrong class name");
-      }
       const c = await declareModuleClass(a, data.className);
       expect(c.classHash).toEqual(moduleClassHash(data.className));
     },
@@ -280,9 +279,6 @@ describe.each([
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
-      }
-      if (data.className !== "EthValidator") {
-        throw new Error("Wrong class name");
       }
       const isInstalled = await smartrAccount.isModule(
         moduleClassHash(data.className)
@@ -305,9 +301,6 @@ describe.each([
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
       }
-      if (data.className !== "EthValidator") {
-        throw new Error("Wrong class name");
-      }
       const output = await smartrAccount.isModule(
         moduleClassHash(data.className)
       );
@@ -319,9 +312,6 @@ describe.each([
   it(
     "set the ETH public key",
     async () => {
-      if (data.className !== "EthValidator") {
-        throw new Error("Wrong class name");
-      }
       if (!Array.isArray(data.publicKeyArray)) {
         throw new Error("Public key array not defined");
       }
@@ -339,9 +329,6 @@ describe.each([
   it(
     "gets the ETH public key",
     async () => {
-      if (data.className !== "EthValidator") {
-        throw new Error("Wrong class name");
-      }
       if (!Array.isArray(data.publicKeyArray)) {
         throw new Error("Public key array not defined");
       }
@@ -374,21 +361,9 @@ describe.each([
     default_timeout
   );
 
-  it(
-    "creates a typescript Validator module",
-    async () => {
-      const conf = config(env);
-      const next_timestamp = BigInt(
-        Math.floor(Date.now() / 1000) + 24 * 60 * 60
-      );
-      ethModule = new data.module(smartrAccount.address);
-    },
-    default_timeout
-  );
-
-  it("creates an account with the ETH Validator module", async () => {
-    if (!ethModule) {
-      expect(ethModule).toBeDefined();
+  it("creates an account with the Validator module", async () => {
+    if (!module) {
+      expect(module).toBeDefined();
       return;
     }
     if (!data.privateKey) {
@@ -396,12 +371,13 @@ describe.each([
     }
     const conf = config(env);
     const p = new RpcProvider({ nodeUrl: conf.providerURL });
-    const signer = new EthSigner(data.privateKey);
-    smartrAccountWithEth = new SmartrAccount(
+    const m = new data.module(smartrAccount.address);
+    const signer = new data.signer(data.privateKey);
+    smartrAccountWithModule = new SmartrAccount(
       p,
       smartrAccount.address,
       signer,
-      ethModule
+      m
     );
   });
 
@@ -411,16 +387,16 @@ describe.each([
       if (!counterContract) {
         throw new Error("Counter not deployed");
       }
-      if (!smartrAccountWithEth) {
+      if (!smartrAccountWithModule) {
         throw new Error("SmartrAccount with Eth Validator not installed");
       }
       const counterWithSmartrAccountAndModule = new Counter(
         counterContract.address,
-        smartrAccountWithEth
+        smartrAccountWithModule
       );
       const { transaction_hash } =
         await counterWithSmartrAccountAndModule.increment();
-      const receipt = await smartrAccountWithEth.waitForTransaction(
+      const receipt = await smartrAccountWithModule.waitForTransaction(
         transaction_hash
       );
       expect(receipt.isSuccess()).toBe(true);
@@ -431,8 +407,8 @@ describe.each([
   it(
     "increments the counter with wrong key and fails",
     async () => {
-      if (!ethModule) {
-        expect(ethModule).toBeDefined();
+      if (!module) {
+        expect(module).toBeDefined();
         return;
       }
       if (!data.privateKey) {
@@ -440,19 +416,20 @@ describe.each([
       }
       const conf = config(env);
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
-      const signer = new EthSigner(data.privateKey);
-      let failedSmartrAccountWithEth = new SmartrAccount(
+      const m = new data.module(smartrAccount.address);
+      const signer = new data.signer("0x1");
+      let failedsmartrAccountWithModule = new SmartrAccount(
         p,
         smartrAccount.address,
         signer,
-        ethModule
+        m
       );
       if (!counterContract) {
         throw new Error("Counter not deployed");
       }
       const counterWithSmartrAccountAndModule = new Counter(
         counterContract.address,
-        failedSmartrAccountWithEth
+        failedsmartrAccountWithModule
       );
       try {
         await counterWithSmartrAccountAndModule.increment();
@@ -465,13 +442,10 @@ describe.each([
   );
 
   it(
-    "removes the Eth Validator module from the account",
+    "removes the Validator module from the account",
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
-      }
-      if (data.className !== "EthValidator") {
-        throw new Error("Wrong class name");
       }
       const { transaction_hash } = await smartrAccount.removeModule(
         moduleClassHash(data.className)
@@ -483,13 +457,10 @@ describe.each([
   );
 
   it(
-    "checks the Eth Validator  is not installed",
+    "checks the Validator is not installe anymored",
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
-      }
-      if (data.className !== "EthValidator") {
-        throw new Error("Wrong class name");
       }
       const output = await smartrAccount.isModule(
         moduleClassHash(data.className)

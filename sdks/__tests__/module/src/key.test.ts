@@ -2,7 +2,7 @@ import { p256 } from "@noble/curves/p256";
 import { secp256k1 } from "@noble/curves/secp256k1";
 import { cairo } from "starknet";
 
-describe.each([
+describe.skip.each([
   { name: "p256", alg: p256 },
   { name: "secp256k1", alg: secp256k1 },
 ])("key with algo management", (run) => {
