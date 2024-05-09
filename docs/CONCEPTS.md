@@ -388,6 +388,15 @@ pub trait IPublicKeys{
 }
 ```
 
+- For the Eth validator
+
+```rust
+pub trait IPublicKey<TState> {
+    fn set_public_key(ref self: TState, new_public_key: EthPublicKey);
+    fn get_public_key(self: @TState) -> EthPublicKey;
+}
+```
+
 - For the sessionkey validator
 
 ```rust

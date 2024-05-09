@@ -15,6 +15,12 @@ with the Eth Validator Module.
     - [Run a transaction with the EthModule](#run-a-transaction-with-the-ethmodule)
     - [Remove the Eth Validator Module](#remove-the-eth-validator-module)
   - [Using the Eth Validator as the Core Validator](#using-the-eth-validator-as-the-core-validator)
+    - [Compute the Public Key as an Array of felt252](#compute-the-public-key-as-an-array-of-felt252)
+    - [Compute the Account Address](#compute-the-account-address)
+    - [Send ETH to the SmartrAccount Address to deploy it](#send-eth-to-the-smartraccount-address-to-deploy-it)
+    - [Deploy the Account with the Eth Validator as Core](#deploy-the-account-with-the-eth-validator-as-core)
+    - [The Script Code](#the-script-code)
+  - [Running a transaction with the Eth Validator as Core](#running-a-transaction-with-the-eth-validator-as-core)
 
 > Note: This section assumes the `SmartrAccount` class has been instantiated
 > in the `smartrAccount` variable as shown in
@@ -208,7 +214,142 @@ node dist/04-remove-module.js
 ## Using the Eth Validator as the Core Validator
 
 You can also use the Eth Validator as a Core Validator for the account. For that
-purpose we will deploy a new account and use the EthSigner to validate the
-account deployment.
+purpose you will deploy a new account and use the EthSigner to validate the
+account deployment **without** registering the `EthModule` in the
+`SmartrAccount`. In order to proceed you need to:
 
-> To Be Continued...
+- Generate the public key as an Array of felt252
+- Compute the account address
+- Send ETH to the modular account address
+- Deploy the Account
+
+### Compute the Public Key as an Array of felt252
+
+The EthSigner helps to generate the public key from the private key. Once you
+have the public key you should slice to get an array of 4 pieces like below:
+
+```typescript
+const signer = new EthSigner(ethPrivateKey);
+const publicKey = await signer.getPubKey();
+const coords = publicKey.slice(2, publicKey.length);
+const x = coords.slice(0, 64);
+const x_felts = cairo.uint256(`0x${x}`);
+const y = coords.slice(64, 128);
+const y_felts = cairo.uint256(`0x${y}`);
+const publicKeyArray = [
+  x_felts.low.toString(),
+  x_felts.high.toString(),
+  y_felts.low.toString(),
+  y_felts.high.toString(),
+];
+```
+
+### Compute the Account Address
+
+Once you have the public key, you should use the `accountAddress` function from 
+`@0xknwn/starknet-modular-account` to compute the address of the account you
+will install. As a Salt, we will use the `hash.computeHashOnElements` from
+the public key like below:
+
+```typescript
+const publicKeyHash = hash.computeHashOnElements(publicKeyArray);
+const computedAccountAddress = accountAddress(
+  "SmartrAccount",
+  publicKeyHash,
+  [ethClassHash("EthValidator"), "0x4", ...publicKeyArray]
+);
+```
+
+> Note: The "0x4" that is inserted in the calldata is here to indicate there are
+> 4 pieces to the publci key:
+
+### Send ETH to the SmartrAccount Address to deploy it
+
+To deploy the account, you need to have ETH associated with the target account
+address. Assuming you have access to an account with ETH, this is how you send
+eth to the `computedAccountAddress`:
+
+```typescript
+const account = new SmartrAccount(
+  provider,
+  ozAccountAddress,
+  smartrAccountPrivateKey
+);
+const ETH = new Contract(ERC20ABI, ethAddress, account);
+const initial_EthTransfer = cairo.uint256(5n * 10n ** 15n);
+const call = ETH.populate("transfer", {
+  recipient: computedAccountAddress,
+  amount: initial_EthTransfer,
+});
+const { transaction_hash } = await account.execute(call);
+const output = await account.waitForTransaction(transaction_hash);
+```
+
+### Deploy the Account with the Eth Validator as Core
+
+To deploy the account, you will need to use the `deployAccount` helper function
+from `@0xknwn/starknet-modular-account` with a `SmartrAccount` that has been
+instantiated with a `EthSigner` like below:
+
+```typescript
+const ethSmartrSigner = new EthSigner(smartrAccountPrivateKey);
+const ethAccount = new SmartrAccount(
+  provider,
+  computedAccountAddress,
+  ethSmartrSigner
+);
+const address = await deployAccount(
+  ethAccount,
+  "SmartrAccount",
+  publicKeyHash,
+  [ethClassHash("EthValidator"), "0x4", ...publicKeyArray]
+);
+```
+
+### The Script Code
+
+You will find below the whole script that does the account deployment:
+
+```typescript
+{{#include ../experiments/documentation-examples/src/04-deploy-account.ts}}
+```
+
+Transpile and run it:
+
+```shell
+npx tsc --build
+
+node dist/04-deploy-account.js
+```
+
+## Running a transaction with the Eth Validator as Core
+
+Running a transaction with the EthValidator as a Core is no more complex than
+running a transaction on a regular account. All you need to do is
+
+- get the account address that could have been saved from earlier
+- instantiate the `SmartrAccount` with the Starknet.js EthSigner
+- execute the transaction
+
+Below is an example that assumes you have deployed the account with the
+`04-deploy-account.ts` script earlier:
+
+```typescript
+{{#include ../experiments/documentation-examples/src/04-execute-tx-core.ts}}
+```
+
+Transpile and run it:
+
+```shell
+npx tsc --build
+
+node dist/04-execute-tx-core.js
+```
+
+As you can see from the script:
+
+- You do not need the `EthModule` to interact with the account. That is because
+  the validator is used as a Core Validator and, as such, the transaction does
+  not required to be prefixed
+- Running transactions is the same as running a transaction with the Stark
+  validator. Only the signature changes.
