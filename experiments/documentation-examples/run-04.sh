@@ -15,3 +15,5 @@ node dist/04-execute-tx.js
 node dist/04-remove-module.js
 
 # Use Eth Validator as a Core validator
+node dist//04-deploy-account.js
+node dist/04-execute-tx-core.js
