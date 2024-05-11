@@ -6,8 +6,10 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build:abi:EthValidator": "npx abi-wan-kanabi --input ../../target/dev/smartr_EthValidator.contract_class.json --output ./src/abi/EthValidator.ts",
+    "build:abi:MultisigValidator": "npx abi-wan-kanabi --input ../../target/dev/smartr_MultisigValidator.contract_class.json --output ./src/abi/MultisigValidator.ts",
     "build:abi:P256Validator": "npx abi-wan-kanabi --input ../../target/dev/smartr_P256Validator.contract_class.json --output ./src/abi/P256Validator.ts",
-    "build:abi": "mkdir -p src/abi && npm run build:abi:EthValidator && npm run build:abi:P256Validator",
+    "build:abi:StarkValidator": "npx abi-wan-kanabi --input ../../target/dev/smartr_StarkValidator.contract_class.json --output ./src/abi/StarkValidator.ts",
+    "build:abi": "mkdir -p src/abi && npm run build:abi:EthValidator && npm run build:abi:MultisigValidator && npm run build:abi:P256Validator && npm run build:abi:StarkValidator",
     "doc": "typedoc && mkdir -p ../../docs/starknet-module && cp -R docs/modules.md docs/classes ../../docs/starknet-module/",
     "registry": "npm publish --access=public"
   },

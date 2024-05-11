@@ -1,9 +1,14 @@
 import { hash, json, CompiledContract, Account } from "starknet";
 import { data as EthValidatorContract } from "./artifacts/EthValidator-contract";
 import { data as EthValidatorCompiled } from "./artifacts/EthValidator-compiled";
+import { data as MultisigValidatorContract } from "./artifacts/MultisigValidator-contract";
+import { data as MultisigValidatorCompiled } from "./artifacts/MultisigValidator-compiled";
 import { data as P256ValidatorContract } from "./artifacts/P256Validator-contract";
 import { data as P256ValidatorCompiled } from "./artifacts/P256Validator-compiled";
-
+import {
+  classHash as coreClassHash,
+  declareClass as coreDeclareClass,
+} from "@0xknwn/starknet-modular-account";
 export const __module_validate__ =
   "0x119c88dea7ff05dbe71c36247fc6682116f6dafa24089373d49aca7b2657017";
 
@@ -17,12 +22,22 @@ export const __module_validate__ =
  *
  */
 export const classHash = (
-  className: "EthValidator" | "P256Validator" = "EthValidator"
+  className:
+    | "EthValidator"
+    | "MultisigValidator"
+    | "P256Validator"
+    | "StarkValidator" = "EthValidator"
 ) => {
+  if (className === "StarkValidator") {
+    return coreClassHash("StarkValidator");
+  }
   let contract: string = "";
   switch (className) {
     case "EthValidator":
       contract = EthValidatorContract;
+      break;
+    case "MultisigValidator":
+      contract = MultisigValidatorContract;
       break;
     case "P256Validator":
       contract = P256ValidatorContract;
@@ -52,8 +67,15 @@ export const classHash = (
  */
 export const declareClass = async (
   account: Account,
-  className: "EthValidator" | "P256Validator" = "EthValidator"
+  className:
+    | "EthValidator"
+    | "MultisigValidator"
+    | "P256Validator"
+    | "StarkValidator" = "EthValidator"
 ) => {
+  if (className === "StarkValidator") {
+    return coreDeclareClass(account, "StarkValidator");
+  }
   const HelperClassHash = classHash(className);
 
   try {
@@ -68,6 +90,9 @@ export const declareClass = async (
     case "EthValidator":
       contract = EthValidatorContract;
       break;
+    case "MultisigValidator":
+      contract = MultisigValidatorContract;
+      break;
     case "P256Validator":
       contract = P256ValidatorContract;
       break;
@@ -79,6 +104,9 @@ export const declareClass = async (
   switch (className) {
     case "EthValidator":
       compiled = EthValidatorCompiled;
+      break;
+    case "MultisigValidator":
+      compiled = MultisigValidatorCompiled;
       break;
     case "P256Validator":
       compiled = P256ValidatorCompiled;
