@@ -179,16 +179,16 @@ export const ABI = [
   },
   {
     "type": "impl",
-    "name": "PublicKeys",
-    "interface_name": "smartr::modules::starkvalidator::starkvalidator::IPublicKeys"
+    "name": "PublicKey",
+    "interface_name": "smartr::modules::starkvalidator::starkvalidator::IPublicKey"
   },
   {
     "type": "interface",
-    "name": "smartr::modules::starkvalidator::starkvalidator::IPublicKeys",
+    "name": "smartr::modules::starkvalidator::starkvalidator::IPublicKey",
     "items": [
       {
         "type": "function",
-        "name": "add_public_key",
+        "name": "set_public_key",
         "inputs": [
           {
             "name": "new_public_key",
@@ -200,49 +200,14 @@ export const ABI = [
       },
       {
         "type": "function",
-        "name": "get_public_keys",
+        "name": "get_public_key",
         "inputs": [],
         "outputs": [
           {
-            "type": "core::array::Array::<core::felt252>"
-          }
-        ],
-        "state_mutability": "view"
-      },
-      {
-        "type": "function",
-        "name": "get_threshold",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::integer::u8"
-          }
-        ],
-        "state_mutability": "view"
-      },
-      {
-        "type": "function",
-        "name": "remove_public_key",
-        "inputs": [
-          {
-            "name": "old_public_key",
             "type": "core::felt252"
           }
         ],
-        "outputs": [],
-        "state_mutability": "external"
-      },
-      {
-        "type": "function",
-        "name": "set_threshold",
-        "inputs": [
-          {
-            "name": "new_threshold",
-            "type": "core::integer::u8"
-          }
-        ],
-        "outputs": [],
-        "state_mutability": "external"
+        "state_mutability": "view"
       }
     ]
   },
