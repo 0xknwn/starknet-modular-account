@@ -1,5 +1,6 @@
-// file src/02-execute-tx-pk2.ts
+// file src/02-execute-tx-pk2-with-module.ts
 import { SmartrAccount } from "@0xknwn/starknet-modular-account";
+import { StarkModule } from "@0xknwn/starknet-module";
 import { init, CounterABI } from "./02-init";
 import { RpcProvider, Contract } from "starknet";
 
@@ -9,10 +10,12 @@ const newSmartrAccountPrivateKey = "0x2";
 const main = async () => {
   const provider = new RpcProvider({ nodeUrl: providerURL });
   const { accountAddress, counterAddress } = await init();
+  const module = new StarkModule(accountAddress);
   const account = new SmartrAccount(
     provider,
     accountAddress,
-    newSmartrAccountPrivateKey
+    newSmartrAccountPrivateKey,
+    module
   );
   const counter = new Contract(CounterABI, counterAddress, account);
   let currentCounter = await counter.call("get");
