@@ -1,10 +1,12 @@
 // file src/03-remove-publickeys.ts
 import {
   SmartrAccountABI,
-  StarkValidatorABI,
   SmartrAccount,
-  classHash,
 } from "@0xknwn/starknet-modular-account";
+import {
+  MultisigValidatorABI,
+  classHash as moduleClassHash,
+} from "@0xknwn/starknet-module";
 import { init } from "./03-init";
 import { CallData, RpcProvider, Signer, hash, type Call } from "starknet";
 
@@ -20,13 +22,13 @@ const main = async () => {
     accountAddress,
     smartrAccountPrivateKey
   );
-  const module_class_hash = classHash("StarkValidator");
+  const module_class_hash = moduleClassHash("MultisigValidator");
   const calls: Call[] = [];
   for (const privateKey of [secondAccountPrivateKey, thirdAccountPrivateKey]) {
     const signer = new Signer(privateKey);
     const publicKey = await signer.getPubKey();
     console.log("account public key to remove", publicKey);
-    const moduleCallData = new CallData(StarkValidatorABI);
+    const moduleCallData = new CallData(MultisigValidatorABI);
     const moduleCalldata = moduleCallData.compile("remove_public_key", {
       old_public_key: publicKey,
     });

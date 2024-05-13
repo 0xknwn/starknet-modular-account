@@ -1,10 +1,11 @@
 # Using the Multisig Validator
 
-The starknet modular account not only can have multiple signers registered but
-it can also require N of those signers to agree to sign a transaction. This
-This Multisig feature takes place offchain and the `SmartrAccount` class
-provides the framework to have several accounts sign the same transaction. This
-is what is shown in this section.
+When installed with the Multisig Validator Module, the starknet modular account
+not only can have multiple signers registered but it can also require N of those
+signers to agree to sign a transaction. This Multisig feature takes place
+offchain and the `SmartrAccount` class provides the framework manage several
+signers on the same account to sign the a transaction. This is what is shown in
+this section.
 
 - [Using the Multisig Validator](#using-the-multisig-validator)
   - [Interacting with the Multisig Validator](#interacting-with-the-multisig-validator)
@@ -13,7 +14,6 @@ is what is shown in this section.
     - [Calling views functions in the module](#calling-views-functions-in-the-module)
     - [Executing external functions in the module](#executing-external-functions-in-the-module)
   - [Interacting with a Contract with the new registered key](#interacting-with-a-contract-with-the-new-registered-key)
-  - [An Account with 3 Registered Keys](#an-account-with-3-registered-keys)
   - [Changing the Account Threshold to 2](#changing-the-account-threshold-to-2)
   - [Checking you can **NOT** run a transaction with a single signer](#checking-you-can-not-run-a-transaction-with-a-single-signer)
   - [Running a Multiple Signer Transaction](#running-a-multiple-signer-transaction)
@@ -40,7 +40,7 @@ is what is shown in this section.
 
 The `SmartrAccount` class, however, provides more than just the regular
 `Account` class. It can interact with functions that are part of the module
-and not part of the account. In the case of the Stark Validator, those
+and not part of the account. In the case of the Multisig Validator, those
 functions are:
 
 ```rust
@@ -53,7 +53,7 @@ fn set_threshold(ref self: TState, new_threshold: u8);
 
 To execute a function that is part of the module you need:
 
-- to figure out the stark validator module class hash
+- to figure out the Multisig Validator module class hash
 - to check the module is installed on the account. That is something that is
   setup at the account deployment time
 - to use one of `callOnModule` for view functions or `executeOnModule` for
@@ -64,11 +64,11 @@ The sections below dig into the details of these operations.
 ### Getting the stark validator module class hash
 
 This is something we have already done previously. You can use
-`classHash("CoreValidator")` afther your imported the `classHash` function from
-`@0xknwn/starknet-modular-account` like below:
+`classHash("MultisigValidator")` after your imported the `classHash` function
+from `@0xknwn/starknet-module` like below:
 
 ```typescript
-{{#include ../experiments/documentation-examples/src/02-check-class.ts}}
+{{#include ../experiments/documentation-examples/src/03-check-class.ts}}
 ```
 
 To execute the script, make sure you have deployed the account in the network
@@ -77,7 +77,7 @@ and run the following commands:
 ```shell
 npx tsc --build
 
-node dist/02-check-class.js
+node dist/03-check-class.js
 ```
 
 ### Check the module is installed on the account
@@ -87,7 +87,7 @@ a module is installed with the account.
 
 
 ```typescript
-{{#include ../experiments/documentation-examples/src/02-module-installed.ts}}
+{{#include ../experiments/documentation-examples/src/03-module-installed.ts}}
 ```
 
 Transpile and run the script:
@@ -95,7 +95,7 @@ Transpile and run the script:
 ```shell
 npx tsc --build
 
-node dist/02-module-installed.js
+node dist/03-module-installed.js
 ```
 
 ### Calling views functions in the module
@@ -106,7 +106,7 @@ the `CallData` class. Thwn we can call the `callOnModule` function from
 like below:
 
 ```typescript
-{{#include ../experiments/documentation-examples/src/02-registered-publickeys.ts}}
+{{#include ../experiments/documentation-examples/src/03-registered-publickeys.ts}}
 ```
 
 Transpile and run the script:
@@ -114,7 +114,7 @@ Transpile and run the script:
 ```shell
 npx tsc --build
 
-node dist/02-registered-publickeys.js
+node dist/03-registered-publickeys.js
 ```
 
 ### Executing external functions in the module
@@ -123,51 +123,6 @@ To execute an external function on the module, we must build the argumemt list
 with the `CallData` class. Then we can call the `executeOnModule` function from
 `SmartrAccount` with the module class hash, the function name and the calldata
 like below. Here we will register a second public key for the same account:
-
-```typescript
-{{#include ../experiments/documentation-examples/src/02-add-publickey.ts}}
-```
-
-Transpile and run the script:
-
-```shell
-npx tsc --build
-
-node dist/02-add-publickey.js
-```
-
-You can re-run the script from the previous example to check the account has
-two registered public key:
-
-```shell
-node dist/02-registered-publickeys.js
-```
-
-## Interacting with a Contract with the new registered key
-
-You now can interact with the `SmartrAccount` with your second private key like
-below:
-
-```typescript
-{{#include ../experiments/documentation-examples/src/02-execute-tx-pk2.ts}}
-```
-
-Transpile and run the script:
-
-```shell
-npx tsc --build
-
-node dist/02-execute-tx-pk2.js
-```
-
-## An Account with 3 Registered Keys
-
-As seen in [Executing external functions in the module](./SDKS-SMARTRACCOUNT.md#executing-external-functions-in-the-module) from the previous section,
-registering new keys with the account requires you create the call with the
-Stark Validator ABI and the `CallData` class. Then we can call the
-`execute_on_module` function from from the modular account to register the key.
-The example below shows how to do it with a multiple call to the the `execute`
-of the account:
 
 ```typescript
 {{#include ../experiments/documentation-examples/src/03-add-publickeys.ts}}
@@ -181,13 +136,10 @@ npx tsc --build
 node dist/03-add-publickeys.js
 ```
 
-You can re-run the script from the previous section to check the currently
-registered public keys. We provide a copy of that script named
-`03-registered-publickeys.ts` that you can run:
+You can re-run the script from the previous example to check the account has
+two registered public key:
 
 ```shell
-npx tsc --build
-
 node dist/03-registered-publickeys.js
 ```
 
@@ -200,9 +152,26 @@ publickey # 2 0x759ca09377679ecd535a81e83039658bf40959283187c654c5416f439403cf5
 publickey # 3 0x411494b501a98abd8262b0da1351e17899a0c4ef23dd2f96fec5ba847310b20
 ```
 
+## Interacting with a Contract with the new registered key
+
+You now can interact with the `SmartrAccount` with your second private key like
+below:
+
+```typescript
+{{#include ../experiments/documentation-examples/src/03-execute-tx-pk2.ts}}
+```
+
+Transpile and run the script:
+
+```shell
+npx tsc --build
+
+node dist/03-execute-tx-pk2.js
+```
+
 ## Changing the Account Threshold to 2
 
-By changing the Stark Validator Threshold to 2, you force transactions to be
+By changing the Multisig Validator Threshold to 2, you force transactions to be
 signed by 2 of the 3 signers of the account. Run a script like below to
 change the threshold:
 

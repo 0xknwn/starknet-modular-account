@@ -13,6 +13,7 @@ import {
   deployAccount,
   SmartrAccountABI,
 } from "@0xknwn/starknet-modular-account";
+import { declareClass as declareModuleClass } from "@0xknwn/starknet-module";
 import { ABI as ERC20ABI } from "./abi/ERC20";
 import {
   declareClass as helperDeclareClass,
@@ -33,20 +34,17 @@ const main = async () => {
   const account = new Account(provider, ozAccountAddress, ozPrivateKey);
 
   // declare the classes
-  const { classHash: smartrAccountClassHash } = await declareClass(
+  await declareClass(account, "SmartrAccount");
+  const { classHash: moduleValidatorClassHash } = await declareModuleClass(
     account,
-    "SmartrAccount"
-  );
-  const { classHash: starkValidatorClassHash } = await declareClass(
-    account,
-    "StarkValidator"
+    "MultisigValidator"
   );
 
   // load ETH
   const smartrSigner = new Signer(smartrAccountPrivateKey);
   const smartrAccountPublicKey = await smartrSigner.getPubKey();
   const calldata = new CallData(SmartrAccountABI).compile("constructor", {
-    core_validator: starkValidatorClassHash,
+    core_validator: moduleValidatorClassHash,
     public_key: [smartrAccountPublicKey],
   });
   const smartrAccountAddress = accountAddress(

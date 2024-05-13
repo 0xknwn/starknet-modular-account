@@ -1,9 +1,9 @@
 import { Signer, CallData } from "starknet";
 import {
   accountAddress,
-  classHash,
   SmartrAccountABI,
 } from "@0xknwn/starknet-modular-account";
+import { classHash as moduleClassHash } from "@0xknwn/starknet-module";
 import {
   counterAddress as helperCounterAddress,
   CounterABI,
@@ -18,9 +18,9 @@ export const init = async () => {
   // compute the smartrAccount details
   const smartrSigner = new Signer(smartrAccountPrivateKey);
   const smartrAccountPublicKey = await smartrSigner.getPubKey();
-  const starkValidatorClassHash = classHash("StarkValidator");
+  const multisigValidatorClassHash = moduleClassHash("MultisigValidator");
   const calldata = new CallData(SmartrAccountABI).compile("constructor", {
-    core_validator: starkValidatorClassHash,
+    core_validator: multisigValidatorClassHash,
     public_key: [smartrAccountPublicKey],
   });
   const smartrAccountAddress = accountAddress(

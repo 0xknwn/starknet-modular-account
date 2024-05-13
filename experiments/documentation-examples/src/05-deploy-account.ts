@@ -9,7 +9,7 @@ import {
   classHash as moduleClassHash,
   P256Signer,
 } from "@0xknwn/starknet-module";
-import { init } from "./03-init";
+import { init } from "./05-init";
 import { ABI as ERC20ABI } from "./abi/ERC20";
 const ethAddress =
   "0x49D36570D4E46F48E99674BD3FCC84644DDD6B96F7C741B1562B82F9E004DC7";

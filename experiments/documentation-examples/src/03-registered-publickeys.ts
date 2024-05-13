@@ -1,9 +1,9 @@
-// file src/02-registered-publickeys.ts
+// file src/03-registered-publickeys.ts
+import { SmartrAccount } from "@0xknwn/starknet-modular-account";
 import {
-  StarkValidatorABI,
-  SmartrAccount,
-  classHash,
-} from "@0xknwn/starknet-modular-account";
+  MultisigValidatorABI,
+  classHash as moduleClassHash,
+} from "@0xknwn/starknet-module";
 import { init } from "./03-init";
 import { CallData, RpcProvider } from "starknet";
 
@@ -17,10 +17,10 @@ const main = async () => {
     accountAddress,
     smartrAccountPrivateKey
   );
-  const moduleCallData = new CallData(StarkValidatorABI);
-  const calldata = await moduleCallData.compile("get_public_keys", {});
+  const moduleCallData = new CallData(MultisigValidatorABI);
+  const calldata = moduleCallData.compile("get_public_keys", {});
   const publickeysList = await account.callOnModule(
-    classHash("StarkValidator"),
+    moduleClassHash("MultisigValidator"),
     "get_public_keys",
     calldata
   );
