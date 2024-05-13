@@ -130,10 +130,10 @@ describe("account management", () => {
     async () => {
       const conf = config(env);
       const calldata = new CallData(StarkValidatorABI);
-      const data = calldata.compile("get_public_keys", {});
+      const data = calldata.compile("get_public_key", {});
       const c = await smartrAccount.callOnModule(
         accountClassHash("StarkValidator"),
-        "get_public_keys",
+        "get_public_key",
         data
       );
       expect(Array.isArray(c)).toBe(true);

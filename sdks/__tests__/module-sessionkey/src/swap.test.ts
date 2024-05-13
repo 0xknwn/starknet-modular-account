@@ -243,32 +243,15 @@ describe("sessionkey swap", () => {
     async () => {
       const conf = config(env);
       const calldata = new CallData(StarkValidatorABI);
-      const data = calldata.compile("get_public_keys", {});
+      const data = calldata.compile("get_public_key", {});
       const c = await smartrAccount.callOnModule(
         accountClassHash("StarkValidator"),
-        "get_public_keys",
+        "get_public_key",
         data
       );
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(1);
       expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
-    },
-    default_timeout
-  );
-
-  it(
-    "checks the SmartAccount threshold",
-    async () => {
-      const calldata = new CallData(StarkValidatorABI);
-      const data = calldata.compile("get_threshold", {});
-      const c = await smartrAccount.callOnModule(
-        accountClassHash("StarkValidator"),
-        "get_threshold",
-        data
-      );
-      expect(Array.isArray(c)).toBe(true);
-      expect(c.length).toEqual(1);
-      expect(`${c[0].toString(10)}`).toEqual("1");
     },
     default_timeout
   );
@@ -321,7 +304,9 @@ describe("sessionkey swap", () => {
         return;
       }
       const conf = config(env);
-      const next_timestamp = BigInt(Math.floor(Date.now() / 1000) + 24 * 60 * 60);
+      const next_timestamp = BigInt(
+        Math.floor(Date.now() / 1000) + 24 * 60 * 60
+      );
       sessionKeyModule = new SessionKeyModule(
         conf.accounts[1].publicKey,
         smartrAccount.address,
