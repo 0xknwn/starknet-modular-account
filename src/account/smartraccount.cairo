@@ -16,7 +16,7 @@ mod SmartrAccount {
             'starknet-modular-account'
         }
         fn get_version(self: @ContractState) -> felt252 {
-            'v0.1.9'
+            'v0.1.10'
         }
     }
 

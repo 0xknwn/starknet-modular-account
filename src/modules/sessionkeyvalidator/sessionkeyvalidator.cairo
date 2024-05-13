@@ -57,7 +57,7 @@ mod SessionKeyValidator {
             'sessionkey-validator'
         }
         fn get_version(self: @ContractState) -> felt252 {
-            'v0.1.9'
+            'v0.1.10'
         }
     }
 
