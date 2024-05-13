@@ -1,6 +1,6 @@
 [package]
 name = "smartr"
-version = "0.1.9"
+version = "0.1.10"
 edition = "2023_11"
 experimental-features = ["negative_impls"]
 cairo-version = "2.6.3"

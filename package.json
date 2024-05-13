@@ -1,6 +1,6 @@
 {
   "name": "starknet-modular-account",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "a modular account for starknet",
   "scripts": {
     "artifacts:artifacts": "cp -R target/dev/smartr_StarkValidator.* target/dev/smartr_SimpleValidator.* target/dev/smartr_MultisigValidator.* target/dev/smartr_SmartrAccount.* target/dev/smartr_SessionKeyValidator.* target/dev/smartr_EthValidator.* target/dev/smartr_P256Validator.* artifacts/.",
