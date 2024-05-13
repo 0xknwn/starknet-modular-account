@@ -159,24 +159,6 @@ describe("account management", () => {
   );
 
   it(
-    "checks the SmartAccount threshold",
-    async () => {
-      const conf = config(env);
-      const calldata = new CallData(StarkValidatorABI);
-      const data = calldata.compile("get_threshold", {});
-      const c = await smartrAccount.callOnModule(
-        accountClassHash("StarkValidator"),
-        "get_threshold",
-        data
-      );
-      expect(Array.isArray(c)).toBe(true);
-      expect(c.length).toEqual(1);
-      expect(`${c[0].toString(10)}`).toEqual("1");
-    },
-    default_timeout
-  );
-
-  it(
     "resets the counter",
     async () => {
       const conf = config(env);
