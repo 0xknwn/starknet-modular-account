@@ -56,7 +56,6 @@ mod EthValidator {
         }
     }
 
-
     #[abi(embed_v0)]
     impl VersionImpl of IVersion<ContractState> {
         fn get_name(self: @ContractState) -> felt252 {
