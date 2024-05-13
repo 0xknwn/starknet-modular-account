@@ -1,12 +1,9 @@
 // SPDX-License-Identifier: MIT
 
 #[starknet::interface]
-pub trait IPublicKeys<TState> {
-    fn add_public_key(ref self: TState, new_public_key: felt252);
-    fn get_public_keys(self: @TState) -> Array<felt252>;
-    fn get_threshold(self: @TState) -> u8;
-    fn remove_public_key(ref self: TState, old_public_key: felt252);
-    fn set_threshold(ref self: TState, new_threshold: u8);
+pub trait IPublicKey<TState> {
+    fn set_public_key(ref self: TState, new_public_key: felt252);
+    fn get_public_key(self: @TState) -> felt252;
 }
 
 #[starknet::contract]
@@ -21,13 +18,12 @@ mod StarkValidator {
     use smartr::component::ValidatorComponent;
     use smartr::component::{IValidator, ICoreValidator, IValidator_ID, IConfigure};
     use smartr::component::IVersion;
-    use smartr::store::Felt252ArrayStore;
     use starknet::account::Call;
     use starknet::class_hash::ClassHash;
     use starknet::get_caller_address;
     use starknet::get_contract_address;
     use starknet::get_tx_info;
-    use super::IPublicKeys;
+    use super::IPublicKey;
 
     component!(path: ValidatorComponent, storage: validator, event: ValidatorEvent);
     component!(path: SRC5Component, storage: src5, event: SRC5Event);
@@ -85,28 +81,17 @@ mod StarkValidator {
         fn initialize(ref self: ContractState, public_key: Array<felt252>) {
             assert(public_key.len() == 1, 'Invalid public key');
             let public_key_felt = *public_key.at(0);
-            self.Account_public_key.write(public_key_felt);
-            self.Account_public_keys.write(array![public_key_felt]);
-            // self.account.notify_owner_addition(array![public_key_felt]);
-            self.Account_threshold.write(1);
-        }
+            self.Account_public_key.write(public_key_felt);        }
     }
 
     mod Errors {
-        pub const REGISTERED_KEY: felt252 = 'Account: key already registered';
-        pub const KEY_NOT_FOUND: felt252 = 'Account: key not found';
-        pub const MISSING_KEYS: felt252 = 'Account: not enough keys';
-        pub const THRESHOLD_TOO_BIG: felt252 = 'Account: threshold too big';
         pub const INVALID_SIGNATURE: felt252 = 'Account: invalid signature';
-        pub const INVALID_THRESHOLD: felt252 = 'Account: invalid threshold';
         pub const UNAUTHORIZED: felt252 = 'Account: unauthorized';
     }
 
     #[storage]
     struct Storage {
         Account_public_key: felt252,
-        Account_public_keys: Array<felt252>,
-        Account_threshold: u8,
         #[substorage(v0)]
         validator: ValidatorComponent::Storage,
         #[substorage(v0)]
@@ -132,20 +117,10 @@ mod StarkValidator {
         fn call(self: @ContractState, call: Call) -> Array<felt252> {
             let mut output = ArrayTrait::<felt252>::new();
             let mut found = false;
-            if call.selector == selector!("get_public_keys") {
+            if call.selector == selector!("get_public_key") {
                 found = true;
-                let keys = self.get_public_keys();
-                let mut i = 0;
-                while i < keys.len() {
-                    output.append(*keys.at(i));
-                    i += 1;
-                }
-            }
-            if call.selector == selector!("get_threshold") {
-                found = true;
-                let threshold = self.get_threshold();
-                let threshold_felt: felt252 = threshold.into();
-                output.append(threshold_felt);
+                let key = self.get_public_key();
+                output.append(key);
             }
             if call.selector == selector!("get_version") {
                 found = true;
@@ -166,30 +141,13 @@ mod StarkValidator {
         fn execute(ref self: ContractState, call: Call) -> Array<felt252> {
             let mut output = ArrayTrait::<felt252>::new();
             let mut found = false;
-            if call.selector == selector!("add_public_key") {
+            if call.selector == selector!("set_public_key") {
                 found = true;
                 if call.calldata.len() != 1 {
                     assert(false, 'Invalid payload');
                 }
                 let key = *call.calldata.at(0);
-                self.add_public_key(key);
-            }
-            if call.selector == selector!("remove_public_key") {
-                found = true;
-                if call.calldata.len() != 1 {
-                    assert(false, 'Invalid payload');
-                }
-                let key = *call.calldata.at(0);
-                self.remove_public_key(key);
-            }
-            if call.selector == selector!("set_threshold") {
-                found = true;
-                if call.calldata.len() != 1 {
-                    assert(false, 'Invalid payload');
-                }
-                let new_threshold_felt = *call.calldata.at(0);
-                let new_threshold: u8 = new_threshold_felt.try_into().unwrap();
-                self.set_threshold(new_threshold);
+                self.set_public_key(key);
             }
             if !found {
                 assert(false, 'Invalid selector');
@@ -200,77 +158,22 @@ mod StarkValidator {
 
 
     #[abi(embed_v0)]
-    pub impl PublicKeys of IPublicKeys<ContractState> {
+    pub impl PublicKey of IPublicKey<ContractState> {
         /// Add a key to the current public keys of the account.
-        fn add_public_key(ref self: ContractState, new_public_key: felt252) {
-            let mut public_keys = self.Account_public_keys.read();
-            let public_keys_snapshot = @public_keys;
-            let mut i: usize = 0;
-            let len = public_keys_snapshot.len();
-            while i < len {
-                let public_key = public_keys_snapshot.at(i);
-                assert(*public_key != new_public_key, Errors::REGISTERED_KEY);
-                i += 1;
-            };
-            public_keys.append(new_public_key);
-            self.Account_public_keys.write(public_keys);
+        fn set_public_key(ref self: ContractState, new_public_key: felt252) {
+            self.Account_public_key.write(new_public_key);
             self.account.notify_owner_addition(array![new_public_key]);
         }
 
         /// Returns the current public keys of the account.
-        fn get_public_keys(self: @ContractState) -> Array<felt252> {
-            self.Account_public_keys.read()
-        }
-
-        fn get_threshold(self: @ContractState) -> u8 {
-            self.Account_threshold.read()
-        }
-
-        /// Remove a key from the current public keys of the account.
-        fn remove_public_key(ref self: ContractState, old_public_key: felt252) {
-            /// @todo: make sure the key to be removed is not used as part of
-            // the signature otherwise the account could be locked.
-            let mut public_keys = ArrayTrait::<felt252>::new();
-            let mut is_found = false;
-            let previous_public_keys = self.Account_public_keys.read();
-            let len = previous_public_keys.len();
-            let threshold: u32 = self.Account_threshold.read().into();
-            assert(len > threshold, Errors::MISSING_KEYS);
-            let mut i: u32 = 0;
-            while i < len {
-                let public_key = *previous_public_keys.at(i);
-                if public_key == old_public_key {
-                    is_found = true;
-                } else {
-                    public_keys.append(public_key);
-                }
-                i += 1;
-            };
-            assert(is_found, Errors::KEY_NOT_FOUND);
-            self.Account_public_keys.write(public_keys);
-            self.account.notify_owner_removal(array![old_public_key]);
-        }
-
-        fn set_threshold(ref self: ContractState, new_threshold: u8) {
-            let public_keys = self.Account_public_keys.read();
-            let len = public_keys.len();
-            let threshold: u32 = new_threshold.into();
-            assert(threshold <= len, Errors::THRESHOLD_TOO_BIG);
-            self.Account_threshold.write(new_threshold);
+        fn get_public_key(self: @ContractState) -> felt252 {
+            self.Account_public_key.read()
         }
     }
 
 
     #[generate_trait]
     impl Internal of InternalTrait {
-        /// Initializes the account by setting the initial public key
-        /// and registering the ISRC6 interface Id.
-        fn initializer(ref self: ContractState, public_key: felt252) {
-            self.src5.register_interface(IValidator_ID);
-            self.Account_public_key.write(public_key);
-            self.Account_public_keys.write(array![public_key]);
-        }
-
         /// Validates that the caller is the account itself. Otherwise it reverts.
         fn assert_only_self(self: @ContractState) {
             let caller = get_caller_address();
@@ -283,32 +186,8 @@ mod StarkValidator {
         fn _is_valid_signature(
             self: @ContractState, hash: felt252, signature: Span<felt252>
         ) -> bool {
-            let threshold: u32 = self.Account_threshold.read().into();
-            assert(threshold >= 1, Errors::INVALID_THRESHOLD);
-            let signature_len = signature.len();
-            assert(signature_len == 2 * threshold, Errors::INVALID_SIGNATURE);
-            let public_keys: Array<felt252> = self.Account_public_keys.read();
-            let public_keys_snapshot = @public_keys;
-            let mut matching_signature = 0;
-            let mut j: usize = 0;
-            while j < (signature_len - 1) {
-                let mut sig: Array<felt252> = ArrayTrait::<felt252>::new();
-                sig.append(*signature.at(j));
-                sig.append(*signature.at(j + 1));
-                let mut i: usize = 0;
-                let len = public_keys_snapshot.len();
-                while i < len {
-                    let public_key = *public_keys_snapshot.at(i);
-                    if is_valid_stark_signature(hash, public_key, sig.span()) {
-                        matching_signature += 1;
-                        break;
-                    }
-                    i += 1;
-                };
-                j += 2;
-            };
-            assert(matching_signature >= threshold, Errors::INVALID_SIGNATURE);
-            true
+            let public_key: felt252 = self.Account_public_key.read();
+            is_valid_stark_signature(hash, public_key, signature)
         }
     }
 }

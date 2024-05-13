@@ -56,7 +56,6 @@ mod EthValidator {
         }
     }
 
-
     #[abi(embed_v0)]
     impl VersionImpl of IVersion<ContractState> {
         fn get_name(self: @ContractState) -> felt252 {
@@ -195,12 +194,6 @@ mod EthValidator {
 
     #[generate_trait]
     impl Internal of InternalTrait {
-        /// Initializes the account by setting the initial public key
-        /// and registering the ISRC6 interface Id.
-        fn initializer(ref self: ContractState, public_key: felt252) {
-            self.src5.register_interface(IValidator_ID);
-        }
-
         /// Validates that the caller is the account itself. Otherwise it reverts.
         fn assert_only_self(self: @ContractState) {
             let caller = get_caller_address();

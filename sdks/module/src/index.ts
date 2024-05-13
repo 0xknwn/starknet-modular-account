@@ -6,4 +6,5 @@ export * from "./stark";
 export * from "./p256signer";
 import { ABI as EthValidatorABI } from "./abi/EthValidator";
 import { ABI as P256ValidatorABI } from "./abi/P256Validator";
-export { EthValidatorABI, P256ValidatorABI };
+import { ABI as MultisigValidatorABI } from "./abi/MultisigValidator";
+export { EthValidatorABI, P256ValidatorABI, MultisigValidatorABI };

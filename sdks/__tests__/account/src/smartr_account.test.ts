@@ -130,10 +130,10 @@ describe("account management", () => {
     async () => {
       const conf = config(env);
       const calldata = new CallData(StarkValidatorABI);
-      const data = calldata.compile("get_public_keys", {});
+      const data = calldata.compile("get_public_key", {});
       const c = await smartrAccount.callOnModule(
         accountClassHash("StarkValidator"),
-        "get_public_keys",
+        "get_public_key",
         data
       );
       expect(Array.isArray(c)).toBe(true);
@@ -154,24 +154,6 @@ describe("account management", () => {
       expect(`0x${result.toString(16)}`).toEqual(
         shortString.encodeShortString("starknet-modular-account")
       );
-    },
-    default_timeout
-  );
-
-  it(
-    "checks the SmartAccount threshold",
-    async () => {
-      const conf = config(env);
-      const calldata = new CallData(StarkValidatorABI);
-      const data = calldata.compile("get_threshold", {});
-      const c = await smartrAccount.callOnModule(
-        accountClassHash("StarkValidator"),
-        "get_threshold",
-        data
-      );
-      expect(Array.isArray(c)).toBe(true);
-      expect(c.length).toEqual(1);
-      expect(`${c[0].toString(10)}`).toEqual("1");
     },
     default_timeout
   );

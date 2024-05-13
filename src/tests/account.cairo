@@ -87,7 +87,7 @@ fn test_account_module_execute() {
     let account = IModuleDispatcher { contract_address: account_address };
 
     let add_public_key_call = Call {
-        selector: selector!("add_public_key"),
+        selector: selector!("set_public_key"),
         to: account_address,
         calldata: (array!['public_key']).span(),
     };
@@ -96,9 +96,9 @@ fn test_account_module_execute() {
     stop_prank(CheatTarget::One(account_address));
     assert_eq!(result.len(), 0, "result len should be 0");
     let get_public_keys_call = Call {
-        selector: selector!("get_public_keys"), to: account_address, calldata: (array![]).span(),
+        selector: selector!("get_public_key"), to: account_address, calldata: (array![]).span(),
     };
     let result = account.call_on_module(core_validator_class.class_hash, get_public_keys_call);
-    assert_eq!(result.len(), 2, "result len should be 2");
-    assert_eq!(*result.at(1), 'public_key', "result[1] should be 'public_key'");
+    assert_eq!(result.len(), 1, "result len should be 1");
+    assert_eq!(*result.at(0), 'public_key', "result[0] should be 'public_key'");
 }
