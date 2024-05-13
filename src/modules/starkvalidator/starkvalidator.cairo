@@ -2,8 +2,8 @@
 
 #[starknet::interface]
 pub trait IPublicKey<TState> {
-    fn set_public_key(ref self: TState, new_public_key: EthPublicKey);
-    fn get_public_key(self: @TState) -> EthPublicKey;
+    fn set_public_key(ref self: TState, new_public_key: felt252);
+    fn get_public_key(self: @TState) -> felt252;
 }
 
 #[starknet::contract]
@@ -161,13 +161,13 @@ mod StarkValidator {
     pub impl PublicKey of IPublicKey<ContractState> {
         /// Add a key to the current public keys of the account.
         fn set_public_key(ref self: ContractState, new_public_key: felt252) {
-            self.Account_public_key.write(public_key);
+            self.Account_public_key.write(new_public_key);
             self.account.notify_owner_addition(array![new_public_key]);
         }
 
         /// Returns the current public keys of the account.
         fn get_public_key(self: @ContractState) -> felt252 {
-            self.Account_public_keys.read()
+            self.Account_public_key.read()
         }
     }
 
