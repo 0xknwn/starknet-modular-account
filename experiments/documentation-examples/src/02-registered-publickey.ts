@@ -18,16 +18,13 @@ const main = async () => {
     smartrAccountPrivateKey
   );
   const moduleCallData = new CallData(StarkValidatorABI);
-  const calldata = await moduleCallData.compile("get_public_keys", {});
-  const publickeysList = await account.callOnModule(
+  const calldata = await moduleCallData.compile("get_public_key", {});
+  const publickey = await account.callOnModule(
     classHash("StarkValidator"),
-    "get_public_keys",
+    "get_public_key",
     calldata
   );
-  console.log("number of public keys for module", publickeysList.length);
-  publickeysList.forEach((publickey, idx) => {
-    console.log("publickey #", idx + 1, `0x${publickey.toString(16)}`);
-  });
+  console.log("publickey is", `0x${BigInt(publickey[0]).toString(16)}`);
 };
 
 main()

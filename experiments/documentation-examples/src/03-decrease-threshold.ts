@@ -1,10 +1,12 @@
 // file src/03-decrease-threshold.ts
 import {
-  StarkValidatorABI,
   SmartrAccount,
-  classHash,
   SmartrAccountABI,
 } from "@0xknwn/starknet-modular-account";
+import {
+  MultisigValidatorABI,
+  classHash as moduleClassHash,
+} from "@0xknwn/starknet-module";
 import { init } from "./03-init";
 import {
   CallData,
@@ -32,13 +34,13 @@ const main = async () => {
   );
 
   // Before you start build the set_threshold call
-  const moduleCallData = new CallData(StarkValidatorABI);
+  const moduleCallData = new CallData(MultisigValidatorABI);
   const moduleCalldata = moduleCallData.compile("set_threshold", {
     new_threshold: 1,
   });
   const accountCallData = new CallData(SmartrAccountABI);
   const calldata = accountCallData.compile("execute_on_module", {
-    class_hash: classHash("StarkValidator"),
+    class_hash: moduleClassHash("MultisigValidator"),
     call: {
       selector: hash.getSelectorFromName("set_threshold"),
       to: accountAddress,

@@ -1,12 +1,11 @@
-# Using the Modular Account
+# Using the Stark Validator
 
-The Stark Validator Module is the Core Validator for the account. It is used by
-default by the modular account. It is currently referenced during the
-installation and used to compute the account address. In this section of the
-documentation, you will see how you can use the Moduler Account as well as
-how to interact with the Stark Validator Module.
+The Stark Validator Module can be used as a Core Validator for the account. It
+is used by default by the modular account in many configuration. In this section
+of the documentation, you will see how you can use the Moduler Account with the
+Stark Validator Module as a Core Module.
 
-- [Using the Modular Account](#using-the-modular-account)
+- [Using the Stark Validator](#using-the-stark-validator)
   - [Interacting with a Contract](#interacting-with-a-contract)
   - [Interacting with the Stark Validator](#interacting-with-the-stark-validator)
     - [Getting the stark validator module class hash](#getting-the-stark-validator-module-class-hash)
@@ -14,6 +13,7 @@ how to interact with the Stark Validator Module.
     - [Calling views functions in the module](#calling-views-functions-in-the-module)
     - [Executing external functions in the module](#executing-external-functions-in-the-module)
   - [Interacting with a Contract with the new registered key](#interacting-with-a-contract-with-the-new-registered-key)
+  - [Interacting with the Contract with the SDK Stark Module](#interacting-with-the-contract-with-the-sdk-stark-module)
 
 > Note: This section assumes the `SmartrAccount` class has been instantiated
 > in the `smartrAccount` variable as shown in
@@ -55,11 +55,8 @@ and not part of the account. In the case of the Stark Validator, those
 functions are:
 
 ```rust
-fn get_public_keys(self: @TState) -> Array<felt252>;
-fn add_public_key(ref self: TState, new_public_key: felt252);
-fn remove_public_key(ref self: TState, old_public_key: felt252);
-fn get_threshold(self: @TState) -> u8;
-fn set_threshold(ref self: TState, new_threshold: u8);
+fn get_public_key(self: @TState) -> felt252;
+fn set_public_key(ref self: TState, new_public_key: felt252);
 ```
 
 To execute a function that is part of the module you need:
@@ -75,7 +72,7 @@ The sections below dig into the details of these operations.
 ### Getting the stark validator module class hash
 
 This is something we have already done previously. You can use
-`classHash("CoreValidator")` afther your imported the `classHash` function from
+`classHash("StaekValidator")` after your imported the `classHash` function from
 `@0xknwn/starknet-modular-account` like below:
 
 ```typescript
@@ -117,7 +114,7 @@ the `CallData` class. Thwn we can call the `callOnModule` function from
 like below:
 
 ```typescript
-{{#include ../experiments/documentation-examples/src/02-registered-publickeys.ts}}
+{{#include ../experiments/documentation-examples/src/02-registered-publickey.ts}}
 ```
 
 Transpile and run the script:
@@ -125,7 +122,7 @@ Transpile and run the script:
 ```shell
 npx tsc --build
 
-node dist/02-registered-publickeys.js
+node dist/02-registered-publickey.js
 ```
 
 ### Executing external functions in the module
@@ -136,7 +133,7 @@ with the `CallData` class. Then we can call the `executeOnModule` function from
 like below. Here we will register a second public key for the same account:
 
 ```typescript
-{{#include ../experiments/documentation-examples/src/02-add-publickey.ts}}
+{{#include ../experiments/documentation-examples/src/02-update-publickey.ts}}
 ```
 
 Transpile and run the script:
@@ -144,19 +141,19 @@ Transpile and run the script:
 ```shell
 npx tsc --build
 
-node dist/02-add-publickey.js
+node dist/02-update-publickey.js
 ```
 
 You can re-run the script from the previous example to check the account has
 two registered public key:
 
 ```shell
-node dist/02-registered-publickeys.js
+node dist/02-registered-publickey.js
 ```
 
 ## Interacting with a Contract with the new registered key
 
-You now can interact with the `SmartrAccount` with your second private key like
+You now can interact with the `SmartrAccount` with your new private key like
 below:
 
 ```typescript
@@ -170,3 +167,29 @@ npx tsc --build
 
 node dist/02-execute-tx-pk2.js
 ```
+
+## Interacting with the Contract with the SDK Stark Module
+
+You can use the StarkValidator as a secondary module, even when installed as
+a Core module. To run a transaction with such a configuration, all you have
+to do is to call the StarkModule with the account address when creating the
+SmartrAccount by adding a 4th parameter to the constructor. The script
+below shows the change:
+
+```typescript
+{{#include ../experiments/documentation-examples/src/02-execute-tx-pk2-with-module.ts}}
+```
+
+If you check the transaction, you can see the call is prefixed by
+a call to `__validate_module__` with the account address and StarkValidator
+class hash as a first parameter. Transpile and run the script:
+
+```shell
+npx tsc --build
+
+node dist/02-execute-tx-pk2-with-module.js
+```
+
+> Note: The Starkmodule is part of `@0xknwn/starknet-module` and this SDK
+> as to be installed if you want to interact with the StarkModule as a
+> secondary module.

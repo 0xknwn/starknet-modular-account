@@ -1,6 +1,6 @@
 // file src/05-execute-tx.ts
 import { SmartrAccount } from "@0xknwn/starknet-modular-account";
-import { init, CounterABI } from "./03-init";
+import { init, CounterABI } from "./05-init";
 import { RpcProvider, Contract } from "starknet";
 import { P256Module, P256Signer } from "@0xknwn/starknet-module";
 

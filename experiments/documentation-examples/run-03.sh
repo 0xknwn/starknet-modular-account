@@ -4,8 +4,12 @@ set -e
 
 npx tsc --build
 node dist/03-setup.js
+node dist/03-check-class.js
+node dist/03-module-installed.js
+node dist/03-registered-publickeys.js
 node dist/03-add-publickeys.js
 node dist/03-registered-publickeys.js
+node dist/03-execute-tx-pk2.js
 node dist/03-increase-threshold.js
 node dist/03-get-threshold.js
 
