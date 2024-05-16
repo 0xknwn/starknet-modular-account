@@ -4,7 +4,7 @@ version = 1
 [[package]]
 name = "openzeppelin"
 version = "0.12.0"
-source = "git+https://github.com/0xknwn/cairo-contracts?branch=feature%2Fadd-secp256r1-support#d200f34d831098b0da1f1f4863e5a361d7d1c012"
+source = "git+https://github.com/0xknwn/cairo-contracts?branch=feature%2Fadd-secp256r1-support#d9a27446a90326eeb447872867f3399895eb586b"
 
 [[package]]
 name = "smartr"

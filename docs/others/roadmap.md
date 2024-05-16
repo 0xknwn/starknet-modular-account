@@ -115,16 +115,43 @@ call. Obviously that would require the user managed nonce is randomized
 > Note: For security reasons, we would strongly encourage to use an `expires`
 > attribute and to rely on a separate service to keep track of those "granted"
 
-### Passkeys/WebAuthn:
+### P256 and Passkeys/WebAuthn:
 
 secp256r1, with a **r** is the signature validated by the NIST and the basis for
 a number of protocols including TLS, DNSSEC, Apple's Secure Enclave, Passkeys,
 Android Keystore or Yubikey. Starknet supports with v0.12.3 secp256r1 as part of
 [Starknet OS](https://community.starknet.io/t/starknet-next-versions-v0-12-3-v0-13-0-and-sepolia-testnet-migration/106529)
+We have created a
+[PR/branch on OpenZeppelin/cairo-contracts](https://github.com/OpenZeppelin/cairo-contracts/pull/988)
+so that OpenZeppelin provides the tools to implement P-256 and we have created
+a P256 Validator that relies on the associated signature.
 
- That is for sure something
-that can easily be reproduced for other use cases with the help of the
-[WebAuthn Chrome Web Developer Codelabs](https://developers.google.com/codelabs/webauthn-reauth)
+We have investigated the issue and review the existing solution from Cartridge
+as well as how to implement it in website. Some very useful resources are:
+- [The passkeys playground](https://learnpasskeys.io/demo/create)
+- [The WebAuthn Tutorial](https://webauthn.me/)
+- [This blog about Webauthn and Passkeys](https://webauthn.me/passkeys)
+- [This Passkey debugger](https://webauthn.me/debugger)
+- [The Web Authentication API on MDN](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API)
+- [WebAuthn Chrome Web Developer Codelabs](https://developers.google.com/codelabs/webauthn-reauth)
+
+We could develop a passkeys signer even if it has some drawbacks and would
+prevent it from being used as a Core Signer. That is because
+- The passkey depends on a Rely Party (RP) that is a domain and as such, your
+  ability to sign from your phone depends on a 3rd party or the fact that you
+  manage a domain
+- In addition, the signature check probably requires we can check the content of
+  a token and the associated fields, like the challenge key this is in the
+  signed text. As a result, it would rely on some text or json parser that
+  should be in the contract.
+- The conditions are not easy to validate; the spec is quite hard and it would
+  for sure require some specialist/audit
+- Last but not least, the cost (gas) of the P256 signature and the number of
+  instruction that would require to be run in the `__validate__` part of the
+  contract might be an issue
+
+Our position on the matter and, unless there is an opportunity for a Dapp for
+instance is probably to wait on the matter.
 
 ### Other Validators
 
@@ -229,3 +256,8 @@ a setup in the storage from it.
 - present the project to starkware and/or be involved with hackathons. Also
   build a community to support the project and get help
 - [QR code for transaction encoding](https://community.starknet.io/t/qrcode-starknet-transaction-encoding/113885/3)
+- the __validate_deploy__ and __validate_declare__ use the is_valid_signature
+  method of the core module with a transaction_hash computed by the network.
+  This might have to be revisited or not. As a matter of fact, addresses of the
+  account and contract are based on the pedersen hash anyway so why not simply
+  sign those. A hunch is that somehow the pedersen hash is useful in that case.

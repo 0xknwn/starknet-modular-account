@@ -35,11 +35,6 @@ that have been identified and need to be addressed. Most of them are
 implementation details bit some of them might impact your usage. Those issues
 are the following:
 
-- the __validate_deploy__ and __validate_declare__ use the is_valid_signature
-  method of the core module with a transaction_hash computed by the network.
-  This might have to be revisited or not. As a matter of fact, addresses of the
-  account and contract are based on the pedersen hash anyway so why not simply
-  sign those. A hunch is that somehow the pedersen hash is useful in that case.
 - Version the contracts for both accounts and modules and maintain a
   compatibility matrix
 - Improve the upgrade management with the help of the bootstrap experiment.
