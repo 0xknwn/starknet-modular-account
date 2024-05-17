@@ -256,7 +256,11 @@ pub mod AccountComponent {
             self.Account_modules.read(class_hash)
         }
 
-        fn update_core_module(ref self: ComponentState<TContractState>, class_hash: ClassHash, forward_validate_module: bool) {
+        fn update_core_module(
+            ref self: ComponentState<TContractState>,
+            class_hash: ClassHash,
+            forward_validate_module: bool
+        ) {
             self.assert_only_self();
             self.assert_not_corevalidator(class_hash);
             // Note 1: leaves the current core module installed as a secondary validator.
