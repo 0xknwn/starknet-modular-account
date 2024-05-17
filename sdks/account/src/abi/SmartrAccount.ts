@@ -278,6 +278,10 @@ export const ABI = [
           {
             "name": "class_hash",
             "type": "core::starknet::class_hash::ClassHash"
+          },
+          {
+            "name": "core_exclusive",
+            "type": "core::bool"
           }
         ],
         "outputs": [],
@@ -290,6 +294,17 @@ export const ABI = [
         "outputs": [
           {
             "type": "core::starknet::class_hash::ClassHash"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "is_core_module_exclusive",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::bool"
           }
         ],
         "state_mutability": "view"

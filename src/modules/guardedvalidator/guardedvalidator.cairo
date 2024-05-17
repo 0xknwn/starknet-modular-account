@@ -1,9 +1,37 @@
 // SPDX-License-Identifier: MIT
 
 #[starknet::interface]
-pub trait IPublicKey<TState> {
-    fn set_public_key(ref self: TState, new_public_key: felt252);
-    fn get_public_key(self: @TState) -> felt252;
+pub trait IGuardedKeys<TState> {
+    fn cancel_ejection(ref self: TState);
+    fn change_backup_gardian(ref self: TState, new_guardian: felt252);
+    fn change_gardian(ref self: TState, new_guardian: felt252);
+    fn change_owner(ref self: TState, new_owner: felt252);
+    fn finalize_eject_guardian(ref self: TState);
+    fn finalize_eject_owner(ref self: TState);
+    fn get_ejection_status(self: @TState) -> EjectionStatus;
+    fn get_ejection(self: @TState) -> Ejection;
+    fn get_guardian_backup(self: @TState) -> felt252;
+    fn get_guardian_ejection_attempts(self: @TState) -> u32;
+    fn get_guardian(self: @TState) -> felt252;
+    fn get_owner_ejection_attempts(self: @TState) -> u32;
+    fn get_owner(self: @TState) -> felt252;
+    fn request_guardian_ejection(ref self: TState, new_guardian: felt252);
+    fn request_owner_ejection(ref self: TState, new_owner: felt252);
+}
+
+#[derive(Drop, Copy, Serde, PartialEq)]
+pub enum EjectionStatus {
+    None,
+    NotReady,
+    Ready,
+    Expired,
+}
+
+#[derive(Drop, Copy, Serde, starknet::Store)]
+pub struct Ejection {
+    ready_at: u64,
+    ejection_type: felt252,
+    signer: felt252,
 }
 
 // A guarded account should protect against the following attacks with a limited
@@ -60,7 +88,8 @@ mod GuardedValidator {
     use starknet::get_caller_address;
     use starknet::get_contract_address;
     use starknet::get_tx_info;
-    use super::IPublicKey;
+    use super::IGuardedKeys;
+    use super::{EjectionStatus, Ejection};
 
     component!(path: ValidatorComponent, storage: validator, event: ValidatorEvent);
     component!(path: SRC5Component, storage: src5, event: SRC5Event);
@@ -86,6 +115,43 @@ mod GuardedValidator {
             };
             self.is_valid_signature(tx_hash, sig)
         }
+    }
+
+    #[abi(embed_v0)]
+    pub impl GuardedKeysImpl of IGuardedKeys<ContractState> {
+        fn cancel_ejection(ref self: ContractState) {}
+        fn change_backup_gardian(ref self: ContractState, new_guardian: felt252) {}
+        fn change_gardian(ref self: ContractState, new_guardian: felt252) {}
+        fn change_owner(ref self: ContractState, new_owner: felt252) {}
+        fn finalize_eject_guardian(ref self: ContractState) {}
+        fn finalize_eject_owner(ref self: ContractState) {}
+        fn get_ejection_status(self: @ContractState) -> EjectionStatus {
+          EjectionStatus::None
+        }
+        fn get_ejection(self: @ContractState) -> Ejection {
+          Ejection {
+            ready_at: 0,
+            ejection_type: 0,
+            signer: 0,
+          }
+        }
+        fn get_guardian_backup(self: @ContractState) -> felt252 {
+            0
+        }
+        fn get_guardian_ejection_attempts(self: @ContractState) -> u32 {
+            0_u32
+        }
+        fn get_guardian(self: @ContractState) -> felt252 {
+            0
+        }
+        fn get_owner_ejection_attempts(self: @ContractState) -> u32 {
+            0_u32
+        }
+        fn get_owner(self: @ContractState) -> felt252 {
+            0
+        }
+        fn request_guardian_ejection(ref self: ContractState, new_guardian: felt252) {}
+        fn request_owner_ejection(ref self: ContractState, new_owner: felt252) {}
     }
 
     #[abi(embed_v0)]
@@ -118,7 +184,9 @@ mod GuardedValidator {
         fn initialize(ref self: ContractState, public_key: Array<felt252>) {
             assert(public_key.len() == 1, 'Invalid public key');
             let public_key_felt = *public_key.at(0);
-            self.Account_public_key.write(public_key_felt);        }
+            self.Account_public_key.write(public_key_felt);
+            self.account.Account_forward_validate_module.write(true);
+        }
     }
 
     mod Errors {
@@ -154,11 +222,6 @@ mod GuardedValidator {
         fn call(self: @ContractState, call: Call) -> Array<felt252> {
             let mut output = ArrayTrait::<felt252>::new();
             let mut found = false;
-            if call.selector == selector!("get_public_key") {
-                found = true;
-                let key = self.get_public_key();
-                output.append(key);
-            }
             if call.selector == selector!("get_version") {
                 found = true;
                 let out = self.get_version();
@@ -178,36 +241,12 @@ mod GuardedValidator {
         fn execute(ref self: ContractState, call: Call) -> Array<felt252> {
             let mut output = ArrayTrait::<felt252>::new();
             let mut found = false;
-            if call.selector == selector!("set_public_key") {
-                found = true;
-                if call.calldata.len() != 1 {
-                    assert(false, 'Invalid payload');
-                }
-                let key = *call.calldata.at(0);
-                self.set_public_key(key);
-            }
             if !found {
                 assert(false, 'Invalid selector');
             }
             output
         }
     }
-
-
-    #[abi(embed_v0)]
-    pub impl PublicKey of IPublicKey<ContractState> {
-        /// Add a key to the current public keys of the account.
-        fn set_public_key(ref self: ContractState, new_public_key: felt252) {
-            self.Account_public_key.write(new_public_key);
-            self.account.notify_owner_addition(array![new_public_key]);
-        }
-
-        /// Returns the current public keys of the account.
-        fn get_public_key(self: @ContractState) -> felt252 {
-            self.Account_public_key.read()
-        }
-    }
-
 
     #[generate_trait]
     impl Internal of InternalTrait {

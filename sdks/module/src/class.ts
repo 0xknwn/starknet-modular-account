@@ -1,4 +1,6 @@
 import { hash, json, CompiledContract, Account } from "starknet";
+import { data as GuardedValidatorContract } from "./artifacts/GuardedValidator-contract";
+import { data as GuardedValidatorCompiled } from "./artifacts/GuardedValidator-compiled";
 import { data as EthValidatorContract } from "./artifacts/EthValidator-contract";
 import { data as EthValidatorCompiled } from "./artifacts/EthValidator-compiled";
 import { data as MultisigValidatorContract } from "./artifacts/MultisigValidator-contract";
@@ -24,6 +26,7 @@ export const __module_validate__ =
 export const classHash = (
   className:
     | "EthValidator"
+    | "GuardedValidator"
     | "MultisigValidator"
     | "P256Validator"
     | "StarkValidator" = "EthValidator"
@@ -33,6 +36,9 @@ export const classHash = (
   }
   let contract: string = "";
   switch (className) {
+    case "GuardedValidator":
+      contract = GuardedValidatorContract;
+      break;
     case "EthValidator":
       contract = EthValidatorContract;
       break;
@@ -69,6 +75,7 @@ export const declareClass = async (
   account: Account,
   className:
     | "EthValidator"
+    | "GuardedValidator"
     | "MultisigValidator"
     | "P256Validator"
     | "StarkValidator" = "EthValidator"
@@ -90,6 +97,9 @@ export const declareClass = async (
     case "EthValidator":
       contract = EthValidatorContract;
       break;
+    case "GuardedValidator":
+      contract = GuardedValidatorContract;
+      break;
     case "MultisigValidator":
       contract = MultisigValidatorContract;
       break;
@@ -104,6 +114,9 @@ export const declareClass = async (
   switch (className) {
     case "EthValidator":
       compiled = EthValidatorCompiled;
+      break;
+    case "GuardedValidator":
+      compiled = GuardedValidatorCompiled;
       break;
     case "MultisigValidator":
       compiled = MultisigValidatorCompiled;
