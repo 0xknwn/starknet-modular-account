@@ -119,7 +119,7 @@ mod GuardedValidator {
             assert(public_key.len() == 1, 'Invalid public key');
             let public_key_felt = *public_key.at(0);
             self.Account_public_key.write(public_key_felt);
-            self.account.Account_core_exclusive.write(true);
+            self.account.Account_forward_validate_module.write(true);
         }
     }
 
