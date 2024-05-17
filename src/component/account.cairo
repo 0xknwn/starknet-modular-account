@@ -44,8 +44,9 @@ pub trait IModule<TState> {
     fn __module_validate__(self: @TState, calldata: Array<felt252>);
     fn add_module(ref self: TState, class_hash: ClassHash);
     fn remove_module(ref self: TState, class_hash: ClassHash);
-    fn update_core_module(ref self: TState, class_hash: ClassHash);
+    fn update_core_module(ref self: TState, class_hash: ClassHash, core_exclusive: bool);
     fn get_core_module(self: @TState) -> ClassHash;
+    fn is_core_module_exclusive(self: @TState) -> bool;
     fn is_module(self: @TState, class_hash: ClassHash) -> bool;
     fn call_on_module(self: @TState, class_hash: ClassHash, call: Call) -> Array<felt252>;
     fn execute_on_module(ref self: TState, class_hash: ClassHash, call: Call) -> Array<felt252>;
@@ -75,6 +76,7 @@ pub mod AccountComponent {
     #[storage]
     struct Storage {
         Account_core_validator: ClassHash,
+        Account_core_exclusive: bool,
         Account_modules: LegacyMap<ClassHash, bool>,
     }
 
@@ -111,6 +113,7 @@ pub mod AccountComponent {
         pub const MODULE_NOT_INSTALLED: felt252 = 'Module: module not installed';
         pub const MODULE_ALREADY_INSTALLED: felt252 = 'Module: already installed';
         pub const MODULE_IS_COREVALIDATOR: felt252 = 'Module: is core validator';
+        pub const MODULE_CORE_IS_EXCLUSIVE: felt252 = 'Module: core is exclusive';
     }
 
     #[embeddable_as(SRC6Impl)]
@@ -162,6 +165,8 @@ pub mod AccountComponent {
                 let felt = *calldata.at(1);
                 let class_hash: ClassHash = felt.try_into().unwrap();
                 assert(self.Account_modules.read(class_hash), Errors::MODULE_NOT_INSTALLED);
+                let is_core_exclusive = self.Account_core_exclusive.read();
+                assert(!is_core_exclusive, Errors::MODULE_CORE_IS_EXCLUSIVE);
                 return IValidatorLibraryDispatcher { class_hash: class_hash }
                     .validate(core_validator, calls);
             }
@@ -253,7 +258,7 @@ pub mod AccountComponent {
             self.Account_modules.read(class_hash)
         }
 
-        fn update_core_module(ref self: ComponentState<TContractState>, class_hash: ClassHash) {
+        fn update_core_module(ref self: ComponentState<TContractState>, class_hash: ClassHash, core_exclusive: bool) {
             self.assert_only_self();
             self.assert_not_corevalidator(class_hash);
             // Note 1: leaves the current core module installed as a secondary validator.
@@ -262,10 +267,15 @@ pub mod AccountComponent {
             let installed = self.Account_modules.read(class_hash);
             assert(installed, Errors::MODULE_NOT_INSTALLED);
             self.Account_core_validator.write(class_hash);
+            self.Account_core_exclusive.write(core_exclusive);
         }
 
         fn get_core_module(self: @ComponentState<TContractState>) -> ClassHash {
             self.Account_core_validator.read()
+        }
+
+        fn is_core_module_exclusive(self: @ComponentState<TContractState>) -> bool {
+            self.Account_core_exclusive.read()
         }
 
         fn call_on_module(

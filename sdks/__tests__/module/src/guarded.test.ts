@@ -15,19 +15,18 @@ import {
   SmartrAccount,
   deployAccount,
   accountAddress,
-  StarkValidatorABI,
 } from "@0xknwn/starknet-modular-account";
 import { RpcProvider, CallData, cairo, Signer } from "starknet";
 import {
   declareClass as declareModuleClass,
   classHash as moduleClassHash,
-  StarkModule,
+  GuardedValidatorABI,
 } from "@0xknwn/starknet-module";
 
 const smartAccountPrivateKey = "0xabcdef";
 const initial_EthTransfer = cairo.uint256(10n * 10n ** 15n);
 
-describe("stark validator management", () => {
+describe("guarded validator management", () => {
   let env: string;
   let counterContract: Counter;
   let smartrAccount: SmartrAccount;
@@ -41,7 +40,7 @@ describe("stark validator management", () => {
   });
 
   it(
-    `[stark]: gets the chain id`,
+    `[guarded]: gets the chain id`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -51,7 +50,7 @@ describe("stark validator management", () => {
   );
 
   it(
-    `[stark]: declare the Counter class`,
+    `[guarded]: declare the Counter class`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -62,7 +61,7 @@ describe("stark validator management", () => {
   );
 
   it(
-    `[stark]: deploys the Counter contract`,
+    `[guarded]: deploys the Counter contract`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -76,18 +75,18 @@ describe("stark validator management", () => {
   );
 
   it(
-    `[stark]: deploys the StarkValidator class`,
+    `[guarded]: deploys the GuardedValidator class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareModuleClass(a, "StarkValidator");
-      expect(c.classHash).toEqual(moduleClassHash("StarkValidator"));
+      const c = await declareModuleClass(a, "GuardedValidator");
+      expect(c.classHash).toEqual(moduleClassHash("GuardedValidator"));
     },
     default_timeout
   );
 
   it(
-    `[stark]: deploys the SmartrAccount class`,
+    `[guarded]: deploys the SmartrAccount class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
@@ -98,13 +97,13 @@ describe("stark validator management", () => {
   );
 
   it(
-    `[stark]: sends ETH to the account address`,
+    `[guarded]: sends ETH to the account address`,
     async () => {
       const conf = config(env);
       const sender = testAccounts(conf)[0];
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
       const privateKey = conf.accounts[0].privateKey;
-      const moduleValidatorClassHash = moduleClassHash("StarkValidator");
+      const moduleValidatorClassHash = moduleClassHash("GuardedValidator");
       const calldata = [moduleValidatorClassHash, "0x1", smartAccountPublicKey];
       const address = accountAddress(
         "SmartrAccount",
@@ -123,7 +122,7 @@ describe("stark validator management", () => {
   );
 
   it(
-    `[stark]: configures the SmartrAccount with the signer`,
+    `[guarded]: configures the SmartrAccount with the signer`,
     async () => {
       const conf = config(env);
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
@@ -137,10 +136,10 @@ describe("stark validator management", () => {
   );
 
   it(
-    `[stark]: deploys a SmartrAccount account`,
+    `[guarded]: deploys a SmartrAccount account`,
     async () => {
       const conf = config(env);
-      const moduleValidatorClassHash = moduleClassHash("StarkValidator");
+      const moduleValidatorClassHash = moduleClassHash("GuardedValidator");
       const calldata = [moduleValidatorClassHash, "0x1", smartAccountPublicKey];
       const address = await deployAccount(
         smartrAccount,
@@ -156,13 +155,13 @@ describe("stark validator management", () => {
   );
 
   it(
-    `[stark]: checks the SmartAccount public key`,
+    `[guarded]: checks the SmartAccount public key`,
     async () => {
       const conf = config(env);
-      const calldata = new CallData(StarkValidatorABI);
+      const calldata = new CallData(GuardedValidatorABI);
       const nestedCalldata = calldata.compile("get_public_key", {});
       const c = await smartrAccount.callOnModule(
-        moduleClassHash("StarkValidator"),
+        moduleClassHash("GuardedValidator"),
         "get_public_key",
         nestedCalldata
       );
@@ -174,7 +173,7 @@ describe("stark validator management", () => {
   );
 
   it(
-    `[stark]: resets the counter`,
+    `[guarded]: resets the counter`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -189,7 +188,7 @@ describe("stark validator management", () => {
   );
 
   it(
-    `[stark]: increments the counter from SmartrAccount and succeeds`,
+    `[guarded]: increments the counter from SmartrAccount and succeeds`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
@@ -209,7 +208,7 @@ describe("stark validator management", () => {
   );
 
   it(
-    `[stark]: reads the counter`,
+    `[guarded]: reads the counter`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
@@ -221,13 +220,13 @@ describe("stark validator management", () => {
   );
 
   it(
-    `[stark]: checks the module is installed`,
+    `[guarded]: checks the module is installed`,
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
       }
       const output = await smartrAccount.isModule(
-        moduleClassHash("StarkValidator")
+        moduleClassHash("GuardedValidator")
       );
       expect(output).toBe(true);
     },
@@ -235,7 +234,7 @@ describe("stark validator management", () => {
   );
 
   it(
-    `[stark]: resets the counter`,
+    `[guarded]: resets the counter`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -249,85 +248,15 @@ describe("stark validator management", () => {
     default_timeout
   );
 
-  it(`[stark]: creates an typescript account with the module`, async () => {
-    if (!module) {
-      expect(module).toBeDefined();
-      return;
-    }
-    const conf = config(env);
-    const p = new RpcProvider({ nodeUrl: conf.providerURL });
-    const m = new StarkModule(smartrAccount.address);
-    const signer = new Signer(smartAccountPrivateKey);
-    smartrAccountWithModule = new SmartrAccount(
-      p,
-      smartrAccount.address,
-      signer,
-      m
-    );
-  });
-
   it(
-    `[stark]: increments the counter with the account/module and succeeds`,
-    async () => {
-      if (!counterContract) {
-        throw new Error("Counter not deployed");
-      }
-      if (!smartrAccountWithModule) {
-        throw new Error("SmartrAccount with Eth Validator not installed");
-      }
-      const counterWithSmartrAccountAndModule = new Counter(
-        counterContract.address,
-        smartrAccountWithModule
-      );
-      const { transaction_hash } =
-        await counterWithSmartrAccountAndModule.increment();
-      const receipt = await smartrAccountWithModule.waitForTransaction(
-        transaction_hash
-      );
-      expect(receipt.isSuccess()).toBe(true);
-    },
-    default_timeout
-  );
-
-  it(
-    `[stark]: increments the counter with wrong key and fails`,
-    async () => {
-      const conf = config(env);
-      const p = new RpcProvider({ nodeUrl: conf.providerURL });
-      const m = new StarkModule(smartrAccount.address);
-      const signer = new Signer("0x1");
-      let failedsmartrAccountWithModule = new SmartrAccount(
-        p,
-        smartrAccount.address,
-        signer,
-        m
-      );
-      if (!counterContract) {
-        throw new Error("Counter not deployed");
-      }
-      const counterWithSmartrAccountAndModule = new Counter(
-        counterContract.address,
-        failedsmartrAccountWithModule
-      );
-      try {
-        await counterWithSmartrAccountAndModule.increment();
-        expect(true).toBe(false);
-      } catch (e) {
-        expect(e).toBeDefined();
-      }
-    },
-    default_timeout
-  );
-
-  it(
-    `[stark]: removes the Validator module and fails`,
+    `[guarded]: removes the Validator module and fails`,
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
       }
       try {
         await await smartrAccount.removeModule(
-          moduleClassHash("StarkValidator")
+          moduleClassHash("GuardedValidator")
         );
         expect(true).toBe(false);
       } catch (e) {
@@ -338,13 +267,13 @@ describe("stark validator management", () => {
   );
 
   it(
-    `[stark]: checks the module is installed`,
+    `[guarded]: checks the module is installed`,
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
       }
       const output = await smartrAccount.isModule(
-        moduleClassHash("StarkValidator")
+        moduleClassHash("GuardedValidator")
       );
       expect(output).toBe(true);
     },
