@@ -111,7 +111,7 @@ describe("sessionkey management", () => {
       const starkValidatorClassHash = accountClassHash("StarkValidator");
       const calldata = new CallData(SmartrAccountABI).compile("constructor", {
         core_validator: starkValidatorClassHash,
-        public_key: [publicKey],
+        args: [publicKey],
       });
       const address = accountAddress("SmartrAccount", publicKey, calldata);
       const { transaction_hash } = await ETH(sender).transfer(
@@ -133,7 +133,7 @@ describe("sessionkey management", () => {
       const starkValidatorClassHash = accountClassHash("StarkValidator");
       const calldata = new CallData(SmartrAccountABI).compile("constructor", {
         core_validator: starkValidatorClassHash,
-        public_key: [publicKey],
+        args: [publicKey],
       });
       const address = await deployAccount(
         smartrAccount,
