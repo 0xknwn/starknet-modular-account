@@ -26,11 +26,10 @@ import {
 const smartAccountPrivateKey = "0xabcdef";
 const initial_EthTransfer = cairo.uint256(10n * 10n ** 15n);
 
-describe("guarded validator management", () => {
+describe("guarded validator transaction management", () => {
   let env: string;
   let counterContract: Counter;
   let smartrAccount: SmartrAccount;
-  let smartrAccountWithModule: SmartrAccount;
   let smartAccountPublicKey: string;
 
   beforeAll(async () => {
@@ -155,14 +154,14 @@ describe("guarded validator management", () => {
   );
 
   it(
-    `[guarded]: checks the SmartAccount public key`,
+    `[guarded]: checks the SmartAccount owner key`,
     async () => {
       const conf = config(env);
       const calldata = new CallData(GuardedValidatorABI);
-      const nestedCalldata = calldata.compile("get_public_key", {});
+      const nestedCalldata = calldata.compile("get_owner_key", {});
       const c = await smartrAccount.callOnModule(
         moduleClassHash("GuardedValidator"),
-        "get_public_key",
+        "get_owner_key",
         nestedCalldata
       );
       expect(Array.isArray(c)).toBe(true);
@@ -171,7 +170,7 @@ describe("guarded validator management", () => {
     },
     default_timeout
   );
-
+  
   it(
     `[guarded]: resets the counter`,
     async () => {

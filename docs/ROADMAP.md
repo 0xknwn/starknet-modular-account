@@ -68,3 +68,5 @@ are the following:
 - Fees are not computed correctly when a large part comes from the signature and
   as a result, the deploy_account has a fixed maxFee. Improve the computation
   and remove that fix value.
+- Check existing audits and see if the recommendations apply. If yes, apply
+  them.

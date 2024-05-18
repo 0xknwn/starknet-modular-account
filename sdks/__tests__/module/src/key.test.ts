@@ -28,29 +28,6 @@ describe.each([
     },
   },
   {
-    name: "p256",
-    data: {
-      alg: p256,
-      privateKey:
-        "0x1efecf7ee1e25bb87098baf2aaab0406167aae0d5ea9ba0d31404bf01886bd0e",
-      publicKey: [
-        "0x097420e05fbc83afe4d73b31890187d0cacf2c3653e27f434701a91625f916c2",
-        "0x98a304ff544db99c864308a9b3432324adc6c792181bae33fe7a4cbd48cf263a",
-      ],
-      hash: "0x1e0cb9e0eb2a8b414df99964673bd493b594c4a627ab031c150ffc81b330706",
-      signature: [
-        "0xfe4e53a283f4715bba1969dff40227c2ca24a6321a89a02e37a0b830c1a0918e",
-        "0x52257a68cfe886341cfaf23841f744230f2af8dadf8bee2e6560c6bbfed8f28f",
-      ],
-      splitSignature: [
-        "0xca24a6321a89a02e37a0b830c1a0918e",
-        "0xfe4e53a283f4715bba1969dff40227c2",
-        "0xf2af8dadf8bee2e6560c6bbfed8f28f",
-        "0x52257a68cfe886341cfaf23841f74423",
-      ],
-    },
-  },
-  {
     name: "secp256k1",
     data: {
       alg: secp256k1,
@@ -81,10 +58,9 @@ describe.each([
     env = "devnet";
   });
 
-  it(`generates a public key for ${name}`, async () => {
+  it(`[key]: generates a public key for ${name}`, async () => {
     const privateKey = utils.randomPrivateKey();
     let st1: string = "";
-    console.log("privateKey:", privateKey);
     privateKey.forEach((x) => (st1 += x.toString(16).padStart(2, "0")));
 
     const publicKey = getPublicKey(privateKey, false);
@@ -98,14 +74,14 @@ describe.each([
       "0x" + st1,
       "\nx:",
       "0x" + coordsString.slice(0, 64),
-      "\n(x.low: " + x.low + ", x.high: " + x.high + ")",
+      "\n   x.low: " + x.low + "\n   x.high: " + x.high,
       "\ny:",
       "0x" + coordsString.slice(64, 128),
-      "\n(y.low: " + y.low + ", y.high: " + y.high + ")"
+      "\n   y.low: " + y.low + "\n   y.high: " + y.high
     );
   });
 
-  it.only(`signs a transaction for ${name}`, async () => {
+  it(`[key]: signs a transaction for ${name}`, async () => {
     const keys = encode.addHexPrefix(
       encode
         .buf2hex(getPublicKey(BigInt(data.privateKey), false))

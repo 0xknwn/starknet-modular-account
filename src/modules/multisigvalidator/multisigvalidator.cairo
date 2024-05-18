@@ -82,12 +82,12 @@ mod MultisigValidator {
             }
         }
 
-        fn initialize(ref self: ContractState, public_key: Array<felt252>) {
-            assert(public_key.len() == 1, 'Invalid public key');
-            let public_key_felt = *public_key.at(0);
-            self.Account_public_key.write(public_key_felt);
-            self.Account_public_keys.write(array![public_key_felt]);
-            // self.account.notify_owner_addition(array![public_key_felt]);
+        fn initialize(ref self: ContractState, args: Array<felt252>) {
+            assert(args.len() == 1, 'Invalid public key');
+            let public_key = *args.at(0);
+            self.Account_public_key.write(public_key);
+            self.Account_public_keys.write(array![public_key]);
+            // self.account.notify_owner_addition(array![public_key]);
             self.Account_threshold.write(1);
         }
     }

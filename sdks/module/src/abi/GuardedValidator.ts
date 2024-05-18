@@ -60,6 +60,215 @@ export const ABI = [
   },
   {
     "type": "impl",
+    "name": "GuardedKeysImpl",
+    "interface_name": "smartr::modules::guardedvalidator::guardedvalidator::IGuardedKeys"
+  },
+  {
+    "type": "enum",
+    "name": "smartr::modules::guardedvalidator::guardedvalidator::EjectionStatus",
+    "variants": [
+      {
+        "name": "None",
+        "type": "()"
+      },
+      {
+        "name": "NotReady",
+        "type": "()"
+      },
+      {
+        "name": "Ready",
+        "type": "()"
+      },
+      {
+        "name": "Expired",
+        "type": "()"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "smartr::modules::guardedvalidator::guardedvalidator::Ejection",
+    "members": [
+      {
+        "name": "ready_at",
+        "type": "core::integer::u64"
+      },
+      {
+        "name": "ejection_type",
+        "type": "core::felt252"
+      },
+      {
+        "name": "signer",
+        "type": "core::felt252"
+      }
+    ]
+  },
+  {
+    "type": "interface",
+    "name": "smartr::modules::guardedvalidator::guardedvalidator::IGuardedKeys",
+    "items": [
+      {
+        "type": "function",
+        "name": "cancel_ejection",
+        "inputs": [],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "change_backup_gardian",
+        "inputs": [
+          {
+            "name": "new_guardian",
+            "type": "core::felt252"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "change_gardian",
+        "inputs": [
+          {
+            "name": "new_guardian",
+            "type": "core::felt252"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "change_owner",
+        "inputs": [
+          {
+            "name": "new_owner",
+            "type": "core::felt252"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "finalize_guardian_ejection",
+        "inputs": [],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "finalize_owner_ejection",
+        "inputs": [],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "get_ejection_status",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "smartr::modules::guardedvalidator::guardedvalidator::EjectionStatus"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_ejection",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "smartr::modules::guardedvalidator::guardedvalidator::Ejection"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_guardian_backup_key",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::felt252"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_guardian_ejection_attempts",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u32"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_guardian_key",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::felt252"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_owner_ejection_attempts",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u32"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_owner_key",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::felt252"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "request_guardian_ejection",
+        "inputs": [
+          {
+            "name": "new_guardian",
+            "type": "core::felt252"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "request_owner_ejection",
+        "inputs": [
+          {
+            "name": "new_owner",
+            "type": "core::felt252"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      }
+    ]
+  },
+  {
+    "type": "impl",
     "name": "VersionImpl",
     "interface_name": "smartr::component::version::IVersion"
   },
@@ -125,7 +334,7 @@ export const ABI = [
         "name": "initialize",
         "inputs": [
           {
-            "name": "public_key",
+            "name": "args",
             "type": "core::array::Array::<core::felt252>"
           }
         ],
@@ -174,40 +383,6 @@ export const ABI = [
           }
         ],
         "state_mutability": "external"
-      }
-    ]
-  },
-  {
-    "type": "impl",
-    "name": "PublicKey",
-    "interface_name": "smartr::modules::guardedvalidator::guardedvalidator::IPublicKey"
-  },
-  {
-    "type": "interface",
-    "name": "smartr::modules::guardedvalidator::guardedvalidator::IPublicKey",
-    "items": [
-      {
-        "type": "function",
-        "name": "set_public_key",
-        "inputs": [
-          {
-            "name": "new_public_key",
-            "type": "core::felt252"
-          }
-        ],
-        "outputs": [],
-        "state_mutability": "external"
-      },
-      {
-        "type": "function",
-        "name": "get_public_key",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::felt252"
-          }
-        ],
-        "state_mutability": "view"
       }
     ]
   },

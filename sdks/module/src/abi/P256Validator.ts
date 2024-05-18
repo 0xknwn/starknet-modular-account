@@ -125,7 +125,7 @@ export const ABI = [
         "name": "initialize",
         "inputs": [
           {
-            "name": "public_key",
+            "name": "args",
             "type": "core::array::Array::<core::felt252>"
           }
         ],

@@ -310,7 +310,7 @@ pub mod AccountComponent {
         fn initializer(
             ref self: ComponentState<TContractState>,
             core_validator: felt252,
-            public_key: Array<felt252>
+            args: Array<felt252>
         ) {
             let mut src5_component = get_dep_component_mut!(ref self, SRC5);
             src5_component.register_interface(super::ISRC6_ID);
@@ -319,7 +319,7 @@ pub mod AccountComponent {
             self.Account_core_validator.write(core_validator_address);
             self.Account_modules.write(core_validator_address, true);
             let core = ICoreValidatorLibraryDispatcher { class_hash: core_validator_address };
-            core.initialize(public_key);
+            core.initialize(args);
         }
 
         /// Validates that the caller is the account itself. Otherwise it reverts.
