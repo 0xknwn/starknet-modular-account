@@ -10,11 +10,11 @@ pub trait IGuardedKeys<TState> {
     fn finalize_owner_ejection(ref self: TState);
     fn get_ejection_status(self: @TState) -> EjectionStatus;
     fn get_ejection(self: @TState) -> Ejection;
-    fn get_guardian_backup(self: @TState) -> felt252;
+    fn get_guardian_backup_key(self: @TState) -> felt252;
     fn get_guardian_ejection_attempts(self: @TState) -> u32;
-    fn get_guardian(self: @TState) -> felt252;
+    fn get_guardian_key(self: @TState) -> felt252;
     fn get_owner_ejection_attempts(self: @TState) -> u32;
-    fn get_owner(self: @TState) -> felt252;
+    fn get_owner_key(self: @TState) -> felt252;
     fn request_guardian_ejection(ref self: TState, new_guardian: felt252);
     fn request_owner_ejection(ref self: TState, new_owner: felt252);
 }
@@ -163,20 +163,20 @@ mod GuardedValidator {
             signer: 0,
           }
         }
-        fn get_guardian_backup(self: @ContractState) -> felt252 {
-            0
+        fn get_guardian_backup_key(self: @ContractState) -> felt252 {
+            self.Account_guardian_key.read()
         }
         fn get_guardian_ejection_attempts(self: @ContractState) -> u32 {
             0_u32
         }
-        fn get_guardian(self: @ContractState) -> felt252 {
-            0
+        fn get_guardian_key(self: @ContractState) -> felt252 {
+            self.Account_guardian_key.read()
         }
         fn get_owner_ejection_attempts(self: @ContractState) -> u32 {
             0_u32
         }
-        fn get_owner(self: @ContractState) -> felt252 {
-            0
+        fn get_owner_key(self: @ContractState) -> felt252 {
+            self.Account_public_key.read()
         }
         fn request_guardian_ejection(ref self: ContractState, new_guardian: felt252) {
           // do it, even if there is a pending owner ejection and cancel the
@@ -273,6 +273,11 @@ mod GuardedValidator {
         fn call(self: @ContractState, call: Call) -> Array<felt252> {
             let mut output = ArrayTrait::<felt252>::new();
             let mut found = false;
+            if call.selector == selector!("get_owner_key") {
+                found = true;
+                let key = self.get_owner_key();
+                output.append(key);
+            }
             if call.selector == selector!("get_version") {
                 found = true;
                 let out = self.get_version();

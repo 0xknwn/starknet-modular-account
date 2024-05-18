@@ -154,14 +154,14 @@ describe("guarded validator transaction management", () => {
   );
 
   it(
-    `[guarded]: checks the SmartAccount public key`,
+    `[guarded]: checks the SmartAccount owner key`,
     async () => {
       const conf = config(env);
       const calldata = new CallData(GuardedValidatorABI);
-      const nestedCalldata = calldata.compile("get_public_key", {});
+      const nestedCalldata = calldata.compile("get_owner_key", {});
       const c = await smartrAccount.callOnModule(
         moduleClassHash("GuardedValidator"),
-        "get_public_key",
+        "get_owner_key",
         nestedCalldata
       );
       expect(Array.isArray(c)).toBe(true);
