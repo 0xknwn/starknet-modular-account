@@ -84,13 +84,13 @@ mod P256Validator {
             }
         }
 
-        fn initialize(ref self: ContractState, public_key: Array<felt252>) {
-            let mut value = public_key.span();
+        fn initialize(ref self: ContractState, args: Array<felt252>) {
+            let mut value = args.span();
             let p256_public_key = Serde::<P256PublicKey>::deserialize(ref value);
             match p256_public_key {
                 Option::Some(key) => {
                     self.P256Account_public_key.write(key);
-                    self.account.notify_owner_addition(public_key);
+                    self.account.notify_owner_addition(args);
                 },
                 Option::None => { assert(false, 'Invalid public key'); },
             }

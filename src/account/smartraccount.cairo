@@ -61,8 +61,8 @@ mod SmartrAccount {
     }
 
     #[constructor]
-    fn constructor(ref self: ContractState, core_validator: felt252, public_key: Array<felt252>) {
-        self.account.initializer(core_validator, public_key);
+    fn constructor(ref self: ContractState, core_validator: felt252, args: Array<felt252>) {
+        self.account.initializer(core_validator, args);
     }
 
     #[abi(embed_v0)]

@@ -26,11 +26,10 @@ import {
 const smartAccountPrivateKey = "0xabcdef";
 const initial_EthTransfer = cairo.uint256(10n * 10n ** 15n);
 
-describe("guarded validator management", () => {
+describe("guarded validator transaction management", () => {
   let env: string;
   let counterContract: Counter;
   let smartrAccount: SmartrAccount;
-  let smartrAccountWithModule: SmartrAccount;
   let smartAccountPublicKey: string;
 
   beforeAll(async () => {
@@ -171,7 +170,7 @@ describe("guarded validator management", () => {
     },
     default_timeout
   );
-
+  
   it(
     `[guarded]: resets the counter`,
     async () => {

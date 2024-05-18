@@ -69,6 +69,7 @@
     "sdks/__tests__/account",
     "sdks/__tests__/helpers",
     "sdks/__tests__/module",
+    "sdks/__tests__/module-guarded",
     "sdks/__tests__/module-sessionkey",
     "sdks/account",
     "sdks/module",

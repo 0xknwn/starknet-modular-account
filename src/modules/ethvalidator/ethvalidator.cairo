@@ -83,13 +83,13 @@ mod EthValidator {
             }
         }
 
-        fn initialize(ref self: ContractState, public_key: Array<felt252>) {
-            let mut value = public_key.span();
+        fn initialize(ref self: ContractState, args: Array<felt252>) {
+            let mut value = args.span();
             let eth_public_key = Serde::<EthPublicKey>::deserialize(ref value);
             match eth_public_key {
                 Option::Some(key) => {
                     self.EthAccount_public_key.write(key);
-                    self.account.notify_owner_addition(public_key);
+                    self.account.notify_owner_addition(args);
                 },
                 Option::None => { assert(false, 'Invalid public key'); },
             }

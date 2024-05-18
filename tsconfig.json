@@ -6,6 +6,7 @@
     { "path": "sdks/__tests__/account" },
     { "path": "sdks/__tests__/helpers" },
     { "path": "sdks/__tests__/module" },
+    { "path": "sdks/__tests__/module-guarded" },
     { "path": "sdks/__tests__/module-sessionkey" },
     { "path": "sdks/account" },
     { "path": "sdks/module" },
