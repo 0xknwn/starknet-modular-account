@@ -280,7 +280,7 @@ export const ABI = [
             "type": "core::starknet::class_hash::ClassHash"
           },
           {
-            "name": "core_exclusive",
+            "name": "forward_validate_module",
             "type": "core::bool"
           }
         ],
@@ -300,7 +300,7 @@ export const ABI = [
       },
       {
         "type": "function",
-        "name": "is_core_module_exclusive",
+        "name": "is_validate_module_forwarded",
         "inputs": [],
         "outputs": [
           {
@@ -403,7 +403,7 @@ export const ABI = [
         "type": "core::felt252"
       },
       {
-        "name": "public_key",
+        "name": "args",
         "type": "core::array::Array::<core::felt252>"
       }
     ]
