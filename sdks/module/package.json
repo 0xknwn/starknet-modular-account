@@ -14,9 +14,6 @@
     "doc": "typedoc && mkdir -p ../../docs/starknet-module && cp -R docs/modules.md docs/classes ../../docs/starknet-module/",
     "registry": "npm publish --access=public"
   },
-  "peerDependencies": {
-    "starknet": "6.8.0"
-  },
   "author": "0xknwn",
   "license": "MIT"
 }

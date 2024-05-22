@@ -80,7 +80,7 @@
     "@types/node": "^20.12.7",
     "abi-wan-kanabi": "^2.2.2",
     "jest": "^29.7.0",
-    "starknet": "^6.8.0",
+    "starknet": "^6.9.0",
     "ts-jest": "^29.1.2",
     "typedoc": "^0.25.13",
     "typedoc-plugin-markdown": "^3.17.1",
