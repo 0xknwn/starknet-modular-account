@@ -1,6 +1,6 @@
 use core::traits::Into;
 use snforge_std::{declare, ContractClassTrait};
-use snforge_std::{start_prank, stop_prank, CheatTarget};
+use snforge_std::{start_cheat_caller_address, stop_cheat_caller_address};
 use snforge_std::errors::{SyscallResultStringErrorTrait, PanicDataOrString};
 use starknet::{ClassHash, ContractAddress};
 use openzeppelin::account::interface::{IPublicKeyDispatcherTrait, IPublicKeyDispatcher};
@@ -91,9 +91,9 @@ fn test_account_module_execute() {
         to: account_address,
         calldata: (array!['public_key']).span(),
     };
-    start_prank(CheatTarget::One(account_address), account_address);
+    start_cheat_caller_address(account_address, account_address);
     let result = account.execute_on_module(core_validator_class.class_hash, add_public_key_call);
-    stop_prank(CheatTarget::One(account_address));
+    stop_cheat_caller_address(account_address);
     assert_eq!(result.len(), 0, "result len should be 0");
     let get_public_keys_call = Call {
         selector: selector!("get_public_key"), to: account_address, calldata: (array![]).span(),
