@@ -13,7 +13,9 @@
     "@0xknwn/starknet-modular-account": "^0.1.10",
     "@0xknwn/starknet-module": "^0.1.10",
     "@0xknwn/starknet-module-sessionkey": "^0.1.10",
-    "@0xknwn/starknet-test-helpers": "^0.1.10",
-    "starknet": "^6.8.0"
+    "@0xknwn/starknet-test-helpers": "^0.1.10"
+  },
+  "devDependencies": {
+    "starknet": "^6.9.0"
   }
 }

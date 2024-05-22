@@ -11,9 +11,6 @@
     "registry": "npm publish --access=public",
     "test": "jest --runInBand --verbose"
   },
-  "peerDependencies": {
-    "starknet": "6.8.0"
-  },
   "author": "0xknwn",
   "license": "MIT"
 }

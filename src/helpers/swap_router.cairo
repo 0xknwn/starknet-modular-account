@@ -171,7 +171,7 @@ mod SwapRouter {
 mod tests {
     use super::{SwapRouter, ISwapRouterDispatcher, ISwapRouterDispatcherTrait};
     use snforge_std::{declare, ContractClassTrait};
-    use snforge_std::{start_prank, stop_prank, CheatTarget};
+    use snforge_std::{start_cheat_caller_address, stop_cheat_caller_address};
     use starknet::contract_address_const;
     use core::traits::Into;
     use openzeppelin::token::erc20::interface::{IERC20DispatcherTrait, IERC20Dispatcher};
@@ -194,9 +194,9 @@ mod tests {
         let token_a = contract_address_const::<'token_a'>();
         let token_b = contract_address_const::<'token_b'>();
         let dispatcher = ISwapRouterDispatcher { contract_address };
-        start_prank(CheatTarget::One(contract_address), owner);
+        start_cheat_caller_address(contract_address, owner);
         dispatcher.set_tokens(token_a, token_b);
-        stop_prank(CheatTarget::One(contract_address));
+        stop_cheat_caller_address(contract_address);
         let addr_a = dispatcher.get_token_a();
         assert_eq!(addr_a, token_a, "token should be 'token_a'");
         let addr_b = dispatcher.get_token_b();
@@ -221,11 +221,11 @@ mod tests {
         let token_a = IERC20Dispatcher { contract_address: token_a_address };
         let token_b = IERC20Dispatcher { contract_address: token_b_address };
 
-        start_prank(CheatTarget::One(swaprouter_address), owner);
+        start_cheat_caller_address(swaprouter_address, owner);
         swaprouter.set_tokens(token_a_address, token_b_address);
         let status = swaprouter.faucet(2000000000000000000);
         assert_eq!(status, true, "status should be true");
-        stop_prank(CheatTarget::One(swaprouter_address));
+        stop_cheat_caller_address(swaprouter_address);
 
         let balance = token_a.balance_of(owner);
         assert_eq!(balance, 2000000000000000000, "balance should be 2000000000000000000");
@@ -242,16 +242,16 @@ mod tests {
             "balance should be 1000000000000000000000000"
         );
 
-        start_prank(CheatTarget::One(token_a_address), owner);
+        start_cheat_caller_address(token_a_address, owner);
         token_a.approve(swaprouter_address, 1000000000000000000);
-        stop_prank(CheatTarget::One(token_a_address));
+        stop_cheat_caller_address(token_a_address);
 
         let allowed = token_a.allowance(owner, swaprouter_address);
         assert_eq!(allowed, 1000000000000000000, "balance should be 1000000000000000000");
 
-        start_prank(CheatTarget::One(swaprouter_address), owner);
+        start_cheat_caller_address(swaprouter_address, owner);
         swaprouter.swap(1000000000000000000_u256);
-        stop_prank(CheatTarget::One(swaprouter_address));
+        stop_cheat_caller_address(swaprouter_address);
 
         let new_balance_a = token_a.balance_of(owner);
         assert_eq!(new_balance_a, 1000000000000000000, "balance should be 1000000000000000000");

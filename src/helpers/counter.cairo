@@ -96,7 +96,7 @@ mod tests {
     // use snforge_std::cheatcodes::contract_class::ContractClassTrait;
     use openzeppelin::access::ownable::interface::{IOwnable, IOwnableCamelOnly};
     use snforge_std::{declare, ContractClassTrait};
-    use snforge_std::{start_prank, stop_prank, CheatTarget};
+    use snforge_std::{start_cheat_caller_address, stop_cheat_caller_address};
     use starknet::{SyscallResultTrait, ContractAddress};
     use super::{ICounterDispatcher, ICounterDispatcherTrait};
 
@@ -123,10 +123,10 @@ mod tests {
         let counter = dispatcher.get();
         assert_eq!(counter, 1, "counter should be 1");
         let caller_address: ContractAddress = 1.try_into().unwrap();
-        start_prank(CheatTarget::One(contract_address), caller_address);
+        start_cheat_caller_address(contract_address, caller_address);
         dispatcher.reset();
         let counter = dispatcher.get();
-        stop_prank(CheatTarget::One(contract_address));
+        stop_cheat_caller_address(contract_address);
         assert_eq!(counter, 0, "counter should be 0");
     }
 
@@ -138,8 +138,8 @@ mod tests {
         let (contract_address, _) = contract.deploy(@array![owner]).unwrap();
         let dispatcher = ICounterDispatcher { contract_address };
         let caller_address: ContractAddress = 2.try_into().unwrap();
-        start_prank(CheatTarget::One(contract_address), caller_address);
+        start_cheat_caller_address(contract_address, caller_address);
         dispatcher.reset();
-        stop_prank(CheatTarget::One(contract_address));
+        stop_cheat_caller_address(contract_address);
     }
 }
