@@ -15,9 +15,16 @@ jobs:
 
     services:
       devnet:
-        image: shardlabs/starknet-devnet-rs:0.0.5-seed0
+        image: shardlabs/starknet-devnet-rs:0.0.6-seed0
         ports:
           - 5050:5050
+        entrypoint: tini
+        args:
+          - --
+          - starknet-devnet
+          - --host=0.0.0.0
+          - --seed=0
+          - --blocks-on-demand
 
     steps:
       - uses: actions/checkout@v4
