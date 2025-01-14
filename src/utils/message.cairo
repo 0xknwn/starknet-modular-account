@@ -1,7 +1,6 @@
-use starknet::account::Call;
 use starknet::{ContractAddress, ClassHash};
 use core::pedersen::pedersen;
-use core::traits::Into;
+// use core::traits::Into;
 
 pub const SESSION_TYPE_HASH: felt252 =
     selector!(

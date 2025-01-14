@@ -2,8 +2,7 @@
 ///
 /// The Account component enables contracts to behave as accounts.
 
-use openzeppelin::account::utils::secp256k1::Secp256k1PointSerde;
-use starknet::ContractAddress;
+// use starknet::secp256k1::Secp256k1Point;
 use starknet::account::Call;
 use starknet::ClassHash;
 
@@ -54,30 +53,32 @@ pub trait IModule<TState> {
 
 #[starknet::component]
 pub mod AccountComponent {
+    use starknet::storage::{StorageMapReadAccess, StoragePointerWriteAccess, StorageMapWriteAccess, StoragePointerReadAccess};
     use smartr::store::Felt252ArrayStore;
     use smartr::component::{
         ICoreValidatorDispatcherTrait, ICoreValidatorLibraryDispatcher, IValidatorDispatcherTrait,
         IValidatorLibraryDispatcher
     };
     use smartr::component::{IConfigureDispatcherTrait, IConfigureLibraryDispatcher};
-    use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
-    use openzeppelin::account::utils::execute_calls;
-    use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SRC5InternalTrait;
-    use openzeppelin::introspection::src5::SRC5Component::SRC5;
-    use openzeppelin::introspection::src5::SRC5Component;
+    use openzeppelin_account::utils::{MIN_TRANSACTION_VERSION, QUERY_OFFSET};
+    use openzeppelin_account::utils::execute_calls;
+    use openzeppelin_introspection::src5::SRC5Component::InternalTrait as SRC5InternalTrait;
+    // use openzeppelin_introspection::src5::SRC5Component::SRC5;
+    use openzeppelin_introspection::src5::SRC5Component;
     use starknet::account::Call;
+    use starknet::storage::Map;
     use starknet::get_caller_address;
     use starknet::get_contract_address;
     use starknet::get_tx_info;
     use core::num::traits::Zero;
-    use starknet::{ClassHash, ContractAddress};
+    use starknet::ClassHash;
     use core::traits::Into;
 
     #[storage]
     struct Storage {
         Account_core_validator: ClassHash,
         Account_forward_validate_module: bool,
-        Account_modules: LegacyMap<ClassHash, bool>,
+        Account_modules: Map<ClassHash, bool>,
     }
 
     #[event]
@@ -148,7 +149,7 @@ pub mod AccountComponent {
             } else {
                 assert(MIN_TRANSACTION_VERSION <= tx_version, Errors::INVALID_TX_VERSION);
             }
-            execute_calls(calls)
+            execute_calls(calls.span())
         }
 
         /// Verifies the validity of the signature for the current transaction.

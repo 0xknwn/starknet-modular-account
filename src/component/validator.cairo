@@ -28,8 +28,8 @@ pub trait IConfigure<TState> {
 
 #[starknet::component]
 pub mod ValidatorComponent {
-    use openzeppelin::introspection::src5::SRC5Component::SRC5;
-    use openzeppelin::introspection::src5::SRC5Component;
+    //use openzeppelin_introspection::src5::SRC5Component::SRC5;
+    use openzeppelin_introspection::src5::SRC5Component;
     use smartr::component::AccountComponent;
     use super::{IValidator, IConfigure};
     use starknet::class_hash::ClassHash;
