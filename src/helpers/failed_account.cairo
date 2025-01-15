@@ -2,16 +2,17 @@
 
 #[starknet::contract(account)]
 mod FailedAccount {
-    use core::num::traits::Zero;
+    use UpgradeableComponent::InternalTrait;
+use core::num::traits::Zero;
     use core::traits::Into;
-    use openzeppelin::account::AccountComponent;
-    use openzeppelin::account::AccountComponent::Errors;
-    use openzeppelin::account::interface::ISRC6;
-    use openzeppelin::account::utils::{execute_calls, is_valid_stark_signature};
-    use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
-    use openzeppelin::introspection::src5::SRC5Component;
-    use openzeppelin::upgrades::interface::IUpgradeable;
-    use openzeppelin::upgrades::UpgradeableComponent;
+    use openzeppelin_account::AccountComponent;
+    use openzeppelin_account::AccountComponent::Errors;
+    use openzeppelin_account::interface::ISRC6;
+    use openzeppelin_account::utils::{execute_calls};
+    use openzeppelin_account::utils::{MIN_TRANSACTION_VERSION, QUERY_OFFSET};
+    use openzeppelin_introspection::src5::SRC5Component;
+    use openzeppelin_upgrades::interface::IUpgradeable;
+    use openzeppelin_upgrades::UpgradeableComponent;
     use starknet::{get_caller_address, get_tx_info};
     use starknet::account::Call;
     use starknet::ClassHash;
@@ -46,7 +47,7 @@ mod FailedAccount {
                 assert(num_nonce < 2, 'nonce is too high');
             }
 
-            execute_calls(calls)
+            execute_calls(calls.span())
         }
 
         /// Verifies the validity of the signature for the current transaction.
@@ -110,7 +111,7 @@ mod FailedAccount {
     impl UpgradeableImpl of IUpgradeable<ContractState> {
         fn upgrade(ref self: ContractState, new_class_hash: ClassHash) {
             self.account.assert_only_self();
-            self.upgradeable._upgrade(new_class_hash);
+            self.upgradeable.upgrade(new_class_hash);
         }
     }
 }

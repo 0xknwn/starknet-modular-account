@@ -9,9 +9,11 @@ trait ICounter<TContractState> {
 
 #[starknet::contract]
 mod Counter {
-    use openzeppelin::access::ownable::OwnableComponent;
-    use openzeppelin::upgrades::UpgradeableComponent;
-    use openzeppelin::upgrades::interface::IUpgradeable;
+    use starknet::storage::StoragePointerWriteAccess;
+    use starknet::storage::StoragePointerReadAccess;
+    use openzeppelin_access::ownable::OwnableComponent;
+    use openzeppelin_upgrades::UpgradeableComponent;
+    use openzeppelin_upgrades::interface::IUpgradeable;
     use core::traits::Into;
 
     use starknet::{ClassHash, ContractAddress};
@@ -85,24 +87,22 @@ mod Counter {
     impl UpgradeableImpl of IUpgradeable<ContractState> {
         fn upgrade(ref self: ContractState, new_class_hash: ClassHash) {
             self.ownable.assert_only_owner();
-            self.upgradeable._upgrade(new_class_hash);
+            self.upgradeable.upgrade(new_class_hash);
         }
     }
 }
 
-use snforge_std::errors::{SyscallResultStringErrorTrait, PanicDataOrString};
 #[cfg(test)]
 mod tests {
-    // use snforge_std::cheatcodes::contract_class::ContractClassTrait;
-    use openzeppelin::access::ownable::interface::{IOwnable, IOwnableCamelOnly};
+    use snforge_std::DeclareResultTrait;
     use snforge_std::{declare, ContractClassTrait};
     use snforge_std::{start_cheat_caller_address, stop_cheat_caller_address};
-    use starknet::{SyscallResultTrait, ContractAddress};
+    use starknet:: ContractAddress;
     use super::{ICounterDispatcher, ICounterDispatcherTrait};
 
     #[test]
     fn test_counter_increment() {
-        let contract = declare("Counter").unwrap();
+        let contract = declare("Counter").unwrap().contract_class();
         let owner: felt252 = 1;
         let (contract_address, _) = contract.deploy(@array![owner]).unwrap();
         let dispatcher = ICounterDispatcher { contract_address };
@@ -113,7 +113,7 @@ mod tests {
 
     #[test]
     fn test_success_reset() {
-        let contract = declare("Counter").unwrap();
+        let contract = declare("Counter").unwrap().contract_class();
         let owner: felt252 = 1;
         let (contract_address, _) = contract.deploy(@array![owner]).unwrap();
         let dispatcher = ICounterDispatcher { contract_address };
@@ -133,7 +133,7 @@ mod tests {
     #[test]
     #[should_panic(expected: ('Caller is not the owner',))]
     fn test_fail_reset() {
-        let contract = declare("Counter").unwrap();
+        let contract = declare("Counter").unwrap().contract_class();
         let owner: felt252 = 1;
         let (contract_address, _) = contract.deploy(@array![owner]).unwrap();
         let dispatcher = ICounterDispatcher { contract_address };

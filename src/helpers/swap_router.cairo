@@ -17,12 +17,14 @@ trait ISwapRouter<TContractState> {
 
 #[starknet::contract]
 mod SwapRouter {
-    use core::traits::Into;
-    use openzeppelin::access::ownable::OwnableComponent;
-    use openzeppelin::security::pausable::PausableComponent;
-    use openzeppelin::token::erc20::interface::{IERC20DispatcherTrait, IERC20Dispatcher};
-    use openzeppelin::upgrades::interface::IUpgradeable;
-    use openzeppelin::upgrades::UpgradeableComponent;
+    use starknet::storage::StoragePointerWriteAccess;
+use starknet::storage::StoragePointerReadAccess;
+use core::traits::Into;
+    use openzeppelin_access::ownable::OwnableComponent;
+    use openzeppelin_security::pausable::PausableComponent;
+    use openzeppelin_token::erc20::interface::{IERC20DispatcherTrait, IERC20Dispatcher};
+    use openzeppelin_upgrades::interface::IUpgradeable;
+    use openzeppelin_upgrades::UpgradeableComponent;
     use starknet::{ClassHash, ContractAddress};
     use starknet::{get_contract_address, get_caller_address};
 
@@ -66,7 +68,7 @@ mod SwapRouter {
     #[constructor]
     fn constructor(ref self: ContractState, owner: ContractAddress) {
         self.ownable.initializer(owner);
-        self.pausable._pause();
+        self.pausable.pause();
     }
 
     #[abi(embed_v0)]
@@ -153,7 +155,7 @@ mod SwapRouter {
             self.tokenAAddress.write(tokenAAddress);
             self.tokenBAddress.write(tokenBAddress);
             self.tokenConversionRate.write(1000000000000000000);
-            self.pausable._unpause();
+            self.pausable.unpause();
         }
     }
 
@@ -161,25 +163,24 @@ mod SwapRouter {
     impl UpgradeableImpl of IUpgradeable<ContractState> {
         fn upgrade(ref self: ContractState, new_class_hash: ClassHash) {
             self.ownable.assert_only_owner();
-            self.upgradeable._upgrade(new_class_hash);
+            self.upgradeable.upgrade(new_class_hash);
         }
     }
 }
 
-// use snforge_std::errors::{SyscallResultStringErrorTrait, PanicDataOrString};
 #[cfg(test)]
 mod tests {
-    use super::{SwapRouter, ISwapRouterDispatcher, ISwapRouterDispatcherTrait};
+    use snforge_std::DeclareResultTrait;
+    use super::{ISwapRouterDispatcher, ISwapRouterDispatcherTrait};
     use snforge_std::{declare, ContractClassTrait};
     use snforge_std::{start_cheat_caller_address, stop_cheat_caller_address};
     use starknet::contract_address_const;
-    use core::traits::Into;
-    use openzeppelin::token::erc20::interface::{IERC20DispatcherTrait, IERC20Dispatcher};
+    use openzeppelin_token::erc20::interface::{IERC20DispatcherTrait, IERC20Dispatcher};
 
     #[test]
     #[should_panic(expected: ('Pausable: paused',))]
     fn test_faucet() {
-        let contract = declare("SwapRouter").unwrap();
+        let contract = declare("SwapRouter").unwrap().contract_class();
         let (contract_address, _) = contract.deploy(@array!['owner']).unwrap();
         let dispatcher = ISwapRouterDispatcher { contract_address };
         let status = dispatcher.faucet(100000);
@@ -189,7 +190,7 @@ mod tests {
     #[test]
     fn test_set_tokens() {
         let owner = contract_address_const::<'owner'>();
-        let contract = declare("SwapRouter").unwrap();
+        let contract = declare("SwapRouter").unwrap().contract_class();
         let (contract_address, _) = contract.deploy(@array!['owner']).unwrap();
         let token_a = contract_address_const::<'token_a'>();
         let token_b = contract_address_const::<'token_b'>();
@@ -206,14 +207,14 @@ mod tests {
     #[test]
     fn test_simple_swap() {
         let owner = contract_address_const::<'owner'>();
-        let swaprouter_class = declare("SwapRouter").unwrap();
+        let swaprouter_class = declare("SwapRouter").unwrap().contract_class();
         let (swaprouter_address, _) = swaprouter_class.deploy(@array!['owner']).unwrap();
         let swaprouter_address_felt: felt252 = swaprouter_address.try_into().unwrap();
-        let token_a_class = declare("TokenA").unwrap();
+        let token_a_class = declare("TokenA").unwrap().contract_class();
         let (token_a_address, _) = token_a_class
             .deploy(@array![swaprouter_address_felt, 'owner'])
             .unwrap();
-        let token_b_class = declare("TokenB").unwrap();
+        let token_b_class = declare("TokenB").unwrap().contract_class();
         let (token_b_address, _) = token_b_class
             .deploy(@array![swaprouter_address_felt, 'owner'])
             .unwrap();

@@ -2,6 +2,15 @@
 version = 1
 
 [[package]]
+name = "openzeppelin_access"
+version = "0.20.0"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:7734901a0ca7a7065e69416fea615dd1dc586c8dc9e76c032f25ee62e8b2a06c"
+dependencies = [
+ "openzeppelin_introspection",
+]
+
+[[package]]
 name = "openzeppelin_account"
 version = "0.20.0"
 source = "registry+https://scarbs.xyz/"
@@ -18,6 +27,30 @@ source = "registry+https://scarbs.xyz/"
 checksum = "sha256:13e04a2190684e6804229a77a6c56de7d033db8b9ef519e5e8dee400a70d8a3d"
 
 [[package]]
+name = "openzeppelin_security"
+version = "0.20.0"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:27155597019ecf971c48d7bfb07fa58cdc146d5297745570071732abca17f19f"
+
+[[package]]
+name = "openzeppelin_token"
+version = "0.20.0"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:4452f449dc6c1ea97cf69d1d9182749abd40e85bd826cd79652c06a627eafd91"
+dependencies = [
+ "openzeppelin_access",
+ "openzeppelin_account",
+ "openzeppelin_introspection",
+ "openzeppelin_utils",
+]
+
+[[package]]
+name = "openzeppelin_upgrades"
+version = "0.20.0"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:15fdd63f6b50a0fda7b3f8f434120aaf7637bcdfe6fd8d275ad57343d5ede5e1"
+
+[[package]]
 name = "openzeppelin_utils"
 version = "0.20.0"
 source = "registry+https://scarbs.xyz/"
@@ -27,8 +60,12 @@ checksum = "sha256:44f32d242af1e43982decc49c563e613a9b67ade552f5c3d5cde504e92f74
 name = "smartr"
 version = "0.1.0"
 dependencies = [
+ "openzeppelin_access",
  "openzeppelin_account",
  "openzeppelin_introspection",
+ "openzeppelin_security",
+ "openzeppelin_token",
+ "openzeppelin_upgrades",
  "snforge_std",
 ]
 

@@ -13,11 +13,12 @@ pub trait IDeployable<TState> {
 
 #[starknet::contract(account)]
 mod SimpleAccount {
+    use UpgradeableComponent::InternalTrait;
     use super::IDeployable;
-    use openzeppelin::account::AccountComponent;
-    use openzeppelin::introspection::src5::SRC5Component;
-    use openzeppelin::upgrades::UpgradeableComponent;
-    use openzeppelin::upgrades::interface::IUpgradeable;
+    use openzeppelin_account::AccountComponent;
+    use openzeppelin_introspection::src5::SRC5Component;
+    use openzeppelin_upgrades::UpgradeableComponent;
+    use openzeppelin_upgrades::interface::IUpgradeable;
     use starknet::ClassHash;
 
     component!(path: AccountComponent, storage: account, event: AccountEvent);
@@ -77,7 +78,7 @@ mod SimpleAccount {
     impl UpgradeableImpl of IUpgradeable<ContractState> {
         fn upgrade(ref self: ContractState, new_class_hash: ClassHash) {
             self.account.assert_only_self();
-            self.upgradeable._upgrade(new_class_hash);
+            self.upgradeable.upgrade(new_class_hash);
         }
     }
 }
