@@ -5,4 +5,4 @@ project. For details about how to use it, check the Starknet Modular Account
 [documentation](https://0xknwn.github.io/starknet-modular-account/) and the
 `@0xknwn/starknet-module`
 [reference documentation]
-(https://0xknwn.github.io/starknet-modular-account/starknet-module/modules.html)
+(https://0xknwn.github.io/starknet-modular-account/starknet-module/globals.html)
