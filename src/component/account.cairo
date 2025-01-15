@@ -33,7 +33,7 @@ pub trait IDeployable<TState> {
         class_hash: felt252,
         contract_address_salt: felt252,
         core_validator: felt252,
-        public_key: Array<felt252>
+        args: Array<felt252>
     ) -> felt252;
 }
 
@@ -217,7 +217,7 @@ pub mod AccountComponent {
             class_hash: felt252,
             contract_address_salt: felt252,
             core_validator: felt252,
-            public_key: Array<felt252>
+            args: Array<felt252>
         ) -> felt252 {
             // @todo: we should be able to rebuild the call with the class hash
             // and replace the call to validate_transaction() that is currently

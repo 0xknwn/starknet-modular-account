@@ -91,7 +91,8 @@ describe("upgrade management", () => {
       const conf = config(env);
       const publicKey = conf.accounts[0].publicKey;
       const starkValidatorClassHash = accountClassHash("StarkValidator");
-      const calldata = new CallData(SmartrAccountABI).compile("constructor", {
+      const x = new CallData(SmartrAccountABI)
+      const calldata = x.compile("constructor", {
         core_validator: starkValidatorClassHash,
         args: [publicKey],
       });

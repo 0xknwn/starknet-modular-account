@@ -41,11 +41,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "UpgradeableImpl",
-    "interface_name": "openzeppelin::upgrades::interface::IUpgradeable"
+    "interface_name": "openzeppelin_upgrades::interface::IUpgradeable"
   },
   {
     "type": "interface",
-    "name": "openzeppelin::upgrades::interface::IUpgradeable",
+    "name": "openzeppelin_upgrades::interface::IUpgradeable",
     "items": [
       {
         "type": "function",
@@ -64,7 +64,7 @@ export const ABI = [
   {
     "type": "impl",
     "name": "SRC6Impl",
-    "interface_name": "openzeppelin::account::interface::ISRC6"
+    "interface_name": "openzeppelin_account::interface::ISRC6"
   },
   {
     "type": "struct",
@@ -96,7 +96,7 @@ export const ABI = [
   },
   {
     "type": "interface",
-    "name": "openzeppelin::account::interface::ISRC6",
+    "name": "openzeppelin_account::interface::ISRC6",
     "items": [
       {
         "type": "function",
@@ -155,11 +155,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "DeclarerImpl",
-    "interface_name": "openzeppelin::account::interface::IDeclarer"
+    "interface_name": "openzeppelin_account::interface::IDeclarer"
   },
   {
     "type": "interface",
-    "name": "openzeppelin::account::interface::IDeclarer",
+    "name": "openzeppelin_account::interface::IDeclarer",
     "items": [
       {
         "type": "function",
@@ -182,11 +182,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "PublicKeyImpl",
-    "interface_name": "openzeppelin::account::interface::IPublicKey"
+    "interface_name": "openzeppelin_account::interface::IPublicKey"
   },
   {
     "type": "interface",
-    "name": "openzeppelin::account::interface::IPublicKey",
+    "name": "openzeppelin_account::interface::IPublicKey",
     "items": [
       {
         "type": "function",
@@ -206,6 +206,10 @@ export const ABI = [
           {
             "name": "new_public_key",
             "type": "core::felt252"
+          },
+          {
+            "name": "signature",
+            "type": "core::array::Span::<core::felt252>"
           }
         ],
         "outputs": [],
@@ -229,7 +233,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::account::account::AccountComponent::OwnerAdded",
+    "name": "openzeppelin_account::account::AccountComponent::OwnerAdded",
     "kind": "struct",
     "members": [
       {
@@ -241,7 +245,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::account::account::AccountComponent::OwnerRemoved",
+    "name": "openzeppelin_account::account::AccountComponent::OwnerRemoved",
     "kind": "struct",
     "members": [
       {
@@ -253,30 +257,30 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::account::account::AccountComponent::Event",
+    "name": "openzeppelin_account::account::AccountComponent::Event",
     "kind": "enum",
     "variants": [
       {
         "name": "OwnerAdded",
-        "type": "openzeppelin::account::account::AccountComponent::OwnerAdded",
+        "type": "openzeppelin_account::account::AccountComponent::OwnerAdded",
         "kind": "nested"
       },
       {
         "name": "OwnerRemoved",
-        "type": "openzeppelin::account::account::AccountComponent::OwnerRemoved",
+        "type": "openzeppelin_account::account::AccountComponent::OwnerRemoved",
         "kind": "nested"
       }
     ]
   },
   {
     "type": "event",
-    "name": "openzeppelin::introspection::src5::SRC5Component::Event",
+    "name": "openzeppelin_introspection::src5::SRC5Component::Event",
     "kind": "enum",
     "variants": []
   },
   {
     "type": "event",
-    "name": "openzeppelin::upgrades::upgradeable::UpgradeableComponent::Upgraded",
+    "name": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Upgraded",
     "kind": "struct",
     "members": [
       {
@@ -288,12 +292,12 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::upgrades::upgradeable::UpgradeableComponent::Event",
+    "name": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Event",
     "kind": "enum",
     "variants": [
       {
         "name": "Upgraded",
-        "type": "openzeppelin::upgrades::upgradeable::UpgradeableComponent::Upgraded",
+        "type": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Upgraded",
         "kind": "nested"
       }
     ]
@@ -305,17 +309,17 @@ export const ABI = [
     "variants": [
       {
         "name": "AccountEvent",
-        "type": "openzeppelin::account::account::AccountComponent::Event",
+        "type": "openzeppelin_account::account::AccountComponent::Event",
         "kind": "flat"
       },
       {
         "name": "SRC5Event",
-        "type": "openzeppelin::introspection::src5::SRC5Component::Event",
+        "type": "openzeppelin_introspection::src5::SRC5Component::Event",
         "kind": "flat"
       },
       {
         "name": "UpgradeableEvent",
-        "type": "openzeppelin::upgrades::upgradeable::UpgradeableComponent::Event",
+        "type": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Event",
         "kind": "flat"
       }
     ]
