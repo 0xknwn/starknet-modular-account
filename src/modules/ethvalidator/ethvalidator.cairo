@@ -96,8 +96,9 @@ mod EthValidator {
             let mut value = args.span();
             let eth_public_key = Serde::<EthPublicKey>::deserialize(ref value);
             match eth_public_key {
-                Option::Some(key) => { self.EthAccount_public_key.write(key); // @todo: implement notify_owner_addition
-                // self.account.notify_owner_addition(args);
+                Option::Some(key) => {
+                    self.EthAccount_public_key.write(key); // @todo: implement notify_owner_addition
+                    // self.account.notify_owner_addition(args);
                 },
                 Option::None => { assert(false, 'Invalid public key'); },
             }

@@ -95,8 +95,11 @@ mod P256Validator {
             let mut value = args.span();
             let p256_public_key = Serde::<P256PublicKey>::deserialize(ref value);
             match p256_public_key {
-                Option::Some(key) => { self.P256Account_public_key.write(key); // @todo: implement notify_owner_addition
-                // self.account.notify_owner_addition(args);
+                Option::Some(key) => {
+                    self
+                        .P256Account_public_key
+                        .write(key); // @todo: implement notify_owner_addition
+                    // self.account.notify_owner_addition(args);
                 },
                 Option::None => { assert(false, 'Invalid public key'); },
             }

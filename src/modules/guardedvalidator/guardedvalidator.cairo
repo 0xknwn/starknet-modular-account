@@ -197,10 +197,14 @@ mod GuardedValidator {
         fn get_owner_key(self: @ContractState) -> felt252 {
             self.Account_public_key.read()
         }
-        fn request_guardian_ejection(ref self: ContractState, new_guardian: felt252) {// do it, even if there is a pending owner ejection and cancel the
+        fn request_guardian_ejection(
+            ref self: ContractState, new_guardian: felt252,
+        ) { // do it, even if there is a pending owner ejection and cancel the
         // pending owner ejection
         }
-        fn request_owner_ejection(ref self: ContractState, new_owner: felt252) {// if there is a pending guardian ejection, do nothing
+        fn request_owner_ejection(
+            ref self: ContractState, new_owner: felt252,
+        ) { // if there is a pending guardian ejection, do nothing
         }
     }
 
