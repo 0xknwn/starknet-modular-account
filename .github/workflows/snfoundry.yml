@@ -24,11 +24,8 @@ jobs:
         with:
           node-version: '22.x'
           cache: 'npm'
-      - name: Install scarb
-        run: curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh
       - name: Setup Starknet Foundry
         uses: foundry-rs/setup-snfoundry@v3
-        run: snfoundryup && snforge --version
       - name: Setup Scarb
         uses: software-mansion/setup-scarb@v1
         with:
