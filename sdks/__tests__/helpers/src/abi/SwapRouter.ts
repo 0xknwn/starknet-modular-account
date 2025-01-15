@@ -162,11 +162,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "UpgradeableImpl",
-    "interface_name": "openzeppelin::upgrades::interface::IUpgradeable"
+    "interface_name": "openzeppelin_upgrades::interface::IUpgradeable"
   },
   {
     "type": "interface",
-    "name": "openzeppelin::upgrades::interface::IUpgradeable",
+    "name": "openzeppelin_upgrades::interface::IUpgradeable",
     "items": [
       {
         "type": "function",
@@ -185,11 +185,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "OwnableImpl",
-    "interface_name": "openzeppelin::access::ownable::interface::IOwnable"
+    "interface_name": "openzeppelin_access::ownable::interface::IOwnable"
   },
   {
     "type": "interface",
-    "name": "openzeppelin::access::ownable::interface::IOwnable",
+    "name": "openzeppelin_access::ownable::interface::IOwnable",
     "items": [
       {
         "type": "function",
@@ -226,11 +226,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "PausableImpl",
-    "interface_name": "openzeppelin::security::interface::IPausable"
+    "interface_name": "openzeppelin_security::interface::IPausable"
   },
   {
     "type": "interface",
-    "name": "openzeppelin::security::interface::IPausable",
+    "name": "openzeppelin_security::interface::IPausable",
     "items": [
       {
         "type": "function",
@@ -257,7 +257,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::security::pausable::PausableComponent::Paused",
+    "name": "openzeppelin_security::pausable::PausableComponent::Paused",
     "kind": "struct",
     "members": [
       {
@@ -269,7 +269,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::security::pausable::PausableComponent::Unpaused",
+    "name": "openzeppelin_security::pausable::PausableComponent::Unpaused",
     "kind": "struct",
     "members": [
       {
@@ -281,24 +281,24 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::security::pausable::PausableComponent::Event",
+    "name": "openzeppelin_security::pausable::PausableComponent::Event",
     "kind": "enum",
     "variants": [
       {
         "name": "Paused",
-        "type": "openzeppelin::security::pausable::PausableComponent::Paused",
+        "type": "openzeppelin_security::pausable::PausableComponent::Paused",
         "kind": "nested"
       },
       {
         "name": "Unpaused",
-        "type": "openzeppelin::security::pausable::PausableComponent::Unpaused",
+        "type": "openzeppelin_security::pausable::PausableComponent::Unpaused",
         "kind": "nested"
       }
     ]
   },
   {
     "type": "event",
-    "name": "openzeppelin::access::ownable::ownable::OwnableComponent::OwnershipTransferred",
+    "name": "openzeppelin_access::ownable::ownable::OwnableComponent::OwnershipTransferred",
     "kind": "struct",
     "members": [
       {
@@ -315,7 +315,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::access::ownable::ownable::OwnableComponent::OwnershipTransferStarted",
+    "name": "openzeppelin_access::ownable::ownable::OwnableComponent::OwnershipTransferStarted",
     "kind": "struct",
     "members": [
       {
@@ -332,24 +332,24 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::access::ownable::ownable::OwnableComponent::Event",
+    "name": "openzeppelin_access::ownable::ownable::OwnableComponent::Event",
     "kind": "enum",
     "variants": [
       {
         "name": "OwnershipTransferred",
-        "type": "openzeppelin::access::ownable::ownable::OwnableComponent::OwnershipTransferred",
+        "type": "openzeppelin_access::ownable::ownable::OwnableComponent::OwnershipTransferred",
         "kind": "nested"
       },
       {
         "name": "OwnershipTransferStarted",
-        "type": "openzeppelin::access::ownable::ownable::OwnableComponent::OwnershipTransferStarted",
+        "type": "openzeppelin_access::ownable::ownable::OwnableComponent::OwnershipTransferStarted",
         "kind": "nested"
       }
     ]
   },
   {
     "type": "event",
-    "name": "openzeppelin::upgrades::upgradeable::UpgradeableComponent::Upgraded",
+    "name": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Upgraded",
     "kind": "struct",
     "members": [
       {
@@ -361,12 +361,12 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::upgrades::upgradeable::UpgradeableComponent::Event",
+    "name": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Event",
     "kind": "enum",
     "variants": [
       {
         "name": "Upgraded",
-        "type": "openzeppelin::upgrades::upgradeable::UpgradeableComponent::Upgraded",
+        "type": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Upgraded",
         "kind": "nested"
       }
     ]
@@ -378,17 +378,17 @@ export const ABI = [
     "variants": [
       {
         "name": "PausableEvent",
-        "type": "openzeppelin::security::pausable::PausableComponent::Event",
+        "type": "openzeppelin_security::pausable::PausableComponent::Event",
         "kind": "flat"
       },
       {
         "name": "OwnableEvent",
-        "type": "openzeppelin::access::ownable::ownable::OwnableComponent::Event",
+        "type": "openzeppelin_access::ownable::ownable::OwnableComponent::Event",
         "kind": "flat"
       },
       {
         "name": "UpgradeableEvent",
-        "type": "openzeppelin::upgrades::upgradeable::UpgradeableComponent::Event",
+        "type": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Event",
         "kind": "flat"
       }
     ]

@@ -2,11 +2,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "UpgradeableImpl",
-    "interface_name": "openzeppelin::upgrades::interface::IUpgradeable"
+    "interface_name": "openzeppelin_upgrades::interface::IUpgradeable"
   },
   {
     "type": "interface",
-    "name": "openzeppelin::upgrades::interface::IUpgradeable",
+    "name": "openzeppelin_upgrades::interface::IUpgradeable",
     "items": [
       {
         "type": "function",
@@ -25,7 +25,7 @@ export const ABI = [
   {
     "type": "impl",
     "name": "ERC20MetadataImpl",
-    "interface_name": "openzeppelin::token::erc20::interface::IERC20Metadata"
+    "interface_name": "openzeppelin_token::erc20::interface::IERC20Metadata"
   },
   {
     "type": "struct",
@@ -47,7 +47,7 @@ export const ABI = [
   },
   {
     "type": "interface",
-    "name": "openzeppelin::token::erc20::interface::IERC20Metadata",
+    "name": "openzeppelin_token::erc20::interface::IERC20Metadata",
     "items": [
       {
         "type": "function",
@@ -87,7 +87,7 @@ export const ABI = [
   {
     "type": "impl",
     "name": "ERC20Impl",
-    "interface_name": "openzeppelin::token::erc20::interface::IERC20"
+    "interface_name": "openzeppelin_token::erc20::interface::IERC20"
   },
   {
     "type": "struct",
@@ -119,7 +119,7 @@ export const ABI = [
   },
   {
     "type": "interface",
-    "name": "openzeppelin::token::erc20::interface::IERC20",
+    "name": "openzeppelin_token::erc20::interface::IERC20",
     "items": [
       {
         "type": "function",
@@ -237,11 +237,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "OwnableMixinImpl",
-    "interface_name": "openzeppelin::access::ownable::interface::OwnableABI"
+    "interface_name": "openzeppelin_access::ownable::interface::OwnableABI"
   },
   {
     "type": "interface",
-    "name": "openzeppelin::access::ownable::interface::OwnableABI",
+    "name": "openzeppelin_access::ownable::interface::OwnableABI",
     "items": [
       {
         "type": "function",
@@ -310,7 +310,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::token::erc20::erc20::ERC20Component::Transfer",
+    "name": "openzeppelin_token::erc20::erc20::ERC20Component::Transfer",
     "kind": "struct",
     "members": [
       {
@@ -332,7 +332,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::token::erc20::erc20::ERC20Component::Approval",
+    "name": "openzeppelin_token::erc20::erc20::ERC20Component::Approval",
     "kind": "struct",
     "members": [
       {
@@ -354,24 +354,24 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::token::erc20::erc20::ERC20Component::Event",
+    "name": "openzeppelin_token::erc20::erc20::ERC20Component::Event",
     "kind": "enum",
     "variants": [
       {
         "name": "Transfer",
-        "type": "openzeppelin::token::erc20::erc20::ERC20Component::Transfer",
+        "type": "openzeppelin_token::erc20::erc20::ERC20Component::Transfer",
         "kind": "nested"
       },
       {
         "name": "Approval",
-        "type": "openzeppelin::token::erc20::erc20::ERC20Component::Approval",
+        "type": "openzeppelin_token::erc20::erc20::ERC20Component::Approval",
         "kind": "nested"
       }
     ]
   },
   {
     "type": "event",
-    "name": "openzeppelin::access::ownable::ownable::OwnableComponent::OwnershipTransferred",
+    "name": "openzeppelin_access::ownable::ownable::OwnableComponent::OwnershipTransferred",
     "kind": "struct",
     "members": [
       {
@@ -388,7 +388,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::access::ownable::ownable::OwnableComponent::OwnershipTransferStarted",
+    "name": "openzeppelin_access::ownable::ownable::OwnableComponent::OwnershipTransferStarted",
     "kind": "struct",
     "members": [
       {
@@ -405,24 +405,24 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::access::ownable::ownable::OwnableComponent::Event",
+    "name": "openzeppelin_access::ownable::ownable::OwnableComponent::Event",
     "kind": "enum",
     "variants": [
       {
         "name": "OwnershipTransferred",
-        "type": "openzeppelin::access::ownable::ownable::OwnableComponent::OwnershipTransferred",
+        "type": "openzeppelin_access::ownable::ownable::OwnableComponent::OwnershipTransferred",
         "kind": "nested"
       },
       {
         "name": "OwnershipTransferStarted",
-        "type": "openzeppelin::access::ownable::ownable::OwnableComponent::OwnershipTransferStarted",
+        "type": "openzeppelin_access::ownable::ownable::OwnableComponent::OwnershipTransferStarted",
         "kind": "nested"
       }
     ]
   },
   {
     "type": "event",
-    "name": "openzeppelin::upgrades::upgradeable::UpgradeableComponent::Upgraded",
+    "name": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Upgraded",
     "kind": "struct",
     "members": [
       {
@@ -434,12 +434,12 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::upgrades::upgradeable::UpgradeableComponent::Event",
+    "name": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Event",
     "kind": "enum",
     "variants": [
       {
         "name": "Upgraded",
-        "type": "openzeppelin::upgrades::upgradeable::UpgradeableComponent::Upgraded",
+        "type": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Upgraded",
         "kind": "nested"
       }
     ]
@@ -451,17 +451,17 @@ export const ABI = [
     "variants": [
       {
         "name": "ERC20Event",
-        "type": "openzeppelin::token::erc20::erc20::ERC20Component::Event",
+        "type": "openzeppelin_token::erc20::erc20::ERC20Component::Event",
         "kind": "flat"
       },
       {
         "name": "OwnableEvent",
-        "type": "openzeppelin::access::ownable::ownable::OwnableComponent::Event",
+        "type": "openzeppelin_access::ownable::ownable::OwnableComponent::Event",
         "kind": "flat"
       },
       {
         "name": "UpgradeableEvent",
-        "type": "openzeppelin::upgrades::upgradeable::UpgradeableComponent::Event",
+        "type": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Event",
         "kind": "flat"
       }
     ]

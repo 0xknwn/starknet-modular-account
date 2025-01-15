@@ -35,11 +35,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "UpgradeableImpl",
-    "interface_name": "openzeppelin::upgrades::interface::IUpgradeable"
+    "interface_name": "openzeppelin_upgrades::interface::IUpgradeable"
   },
   {
     "type": "interface",
-    "name": "openzeppelin::upgrades::interface::IUpgradeable",
+    "name": "openzeppelin_upgrades::interface::IUpgradeable",
     "items": [
       {
         "type": "function",
@@ -199,7 +199,7 @@ export const ABI = [
             "type": "core::felt252"
           },
           {
-            "name": "public_key",
+            "name": "args",
             "type": "core::array::Array::<core::felt252>"
           }
         ],
@@ -370,11 +370,11 @@ export const ABI = [
   {
     "type": "impl",
     "name": "SRC5Impl",
-    "interface_name": "openzeppelin::introspection::interface::ISRC5"
+    "interface_name": "openzeppelin_introspection::interface::ISRC5"
   },
   {
     "type": "interface",
-    "name": "openzeppelin::introspection::interface::ISRC5",
+    "name": "openzeppelin_introspection::interface::ISRC5",
     "items": [
       {
         "type": "function",
@@ -451,13 +451,13 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::introspection::src5::SRC5Component::Event",
+    "name": "openzeppelin_introspection::src5::SRC5Component::Event",
     "kind": "enum",
     "variants": []
   },
   {
     "type": "event",
-    "name": "openzeppelin::upgrades::upgradeable::UpgradeableComponent::Upgraded",
+    "name": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Upgraded",
     "kind": "struct",
     "members": [
       {
@@ -469,12 +469,12 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::upgrades::upgradeable::UpgradeableComponent::Event",
+    "name": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Event",
     "kind": "enum",
     "variants": [
       {
         "name": "Upgraded",
-        "type": "openzeppelin::upgrades::upgradeable::UpgradeableComponent::Upgraded",
+        "type": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Upgraded",
         "kind": "nested"
       }
     ]
@@ -491,12 +491,12 @@ export const ABI = [
       },
       {
         "name": "SRC5Event",
-        "type": "openzeppelin::introspection::src5::SRC5Component::Event",
+        "type": "openzeppelin_introspection::src5::SRC5Component::Event",
         "kind": "flat"
       },
       {
         "name": "UpgradeableEvent",
-        "type": "openzeppelin::upgrades::upgradeable::UpgradeableComponent::Event",
+        "type": "openzeppelin_upgrades::upgradeable::UpgradeableComponent::Event",
         "kind": "flat"
       }
     ]

@@ -117,14 +117,9 @@ export const deployAccount = async (
   // check if the account is already deployed and if it has been, return the
   // account instance, otherwise continue with the deployment
   try {
-    const deployedClassHash = await deployerAccount.getClassHashAt(
+    const deployedClass = await deployerAccount.getClassAt(
       computedAccountAddress
     );
-    if (deployedClassHash !== computedClassHash) {
-      throw new Error(
-        `Class mismatch: expect ${computedClassHash}, got ${deployedClassHash}`
-      );
-    }
     return computedAccountAddress;
   } catch (e) {}
 

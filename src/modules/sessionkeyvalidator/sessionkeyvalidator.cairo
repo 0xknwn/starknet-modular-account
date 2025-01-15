@@ -8,22 +8,26 @@ pub trait IDisableSessionKey<TState> {
 
 #[starknet::contract]
 mod SessionKeyValidator {
+    use starknet::storage::StoragePointerReadAccess;
+    use starknet::storage::Map;
+    use starknet::storage::StorageMapReadAccess;
+    use starknet::storage::StorageMapWriteAccess;
     use core::pedersen::pedersen;
     use core::traits::Into;
-    use openzeppelin::account::utils::{is_valid_stark_signature};
-    use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
-    use openzeppelin::introspection::src5::SRC5Component;
+    use openzeppelin_account::utils::{is_valid_stark_signature};
+    use openzeppelin_account::utils::{MIN_TRANSACTION_VERSION, QUERY_OFFSET};
+    use openzeppelin_introspection::src5::SRC5Component;
     use smartr::component::AccountComponent;
     use smartr::utils::hash_auth_message;
-    use super::{IDisableSessionKeyDispatcherTrait, IDisableSessionKey};
+    use super::{IDisableSessionKey};
     use smartr::component::IConfigure;
     use smartr::component::IVersion;
     use smartr::component::{
-        ValidatorComponent, IValidator, ICoreValidator, ICoreValidatorDispatcherTrait,
+        ValidatorComponent, IValidator, ICoreValidatorDispatcherTrait,
         ICoreValidatorLibraryDispatcher,
     };
     use smartr::utils::merkle_tree::is_valid_root;
-    use starknet::{get_caller_address, get_contract_address, get_tx_info, get_block_timestamp};
+    use starknet::{get_tx_info, get_block_timestamp};
     use starknet::account::Call;
     use starknet::class_hash::ClassHash;
     use starknet::ContractAddress;
@@ -57,7 +61,7 @@ mod SessionKeyValidator {
             'sessionkey-validator'
         }
         fn get_version(self: @ContractState) -> felt252 {
-            'v0.1.10'
+            'v0.2.0'
         }
     }
 
@@ -80,7 +84,8 @@ mod SessionKeyValidator {
             let tx_version: u256 = tx_info.version.into();
             if (tx_version >= QUERY_OFFSET) {
                 assert(
-                    QUERY_OFFSET + MIN_TRANSACTION_VERSION <= tx_version, Errors::INVALID_TX_VERSION
+                    QUERY_OFFSET + MIN_TRANSACTION_VERSION <= tx_version,
+                    Errors::INVALID_TX_VERSION,
                 );
             } else {
                 assert(MIN_TRANSACTION_VERSION <= tx_version, Errors::INVALID_TX_VERSION);
@@ -115,7 +120,7 @@ mod SessionKeyValidator {
             // Check the tx signature is valid with the authz key
             assert(
                 is_valid_stark_signature(tx_hash, authz_key, tx_signature),
-                Errors::INVALID_MODULE_SIGNATURE
+                Errors::INVALID_MODULE_SIGNATURE,
             );
 
             // Parse the authz Signature
@@ -149,7 +154,7 @@ mod SessionKeyValidator {
                 let mut proof_start = signature_len + 8;
                 while j < calls_len {
                     assert(
-                        proof_len < authz_len + 1 - proof_start, Errors::INVALID_SESSION_PROOF_LEN
+                        proof_len < authz_len + 1 - proof_start, Errors::INVALID_SESSION_PROOF_LEN,
                     );
                     let account_address: ContractAddress = *calls.at(j).to;
                     let account_address_felt: felt252 = account_address.try_into().unwrap();
@@ -170,7 +175,7 @@ mod SessionKeyValidator {
 
             // Check the authz signature is valid
             let auth_hash = hash_auth_message(
-                account_address, validator_class, grantor_class, authz_key, expires, root, chain_id
+                account_address, validator_class, grantor_class, authz_key, expires, root, chain_id,
             );
 
             // check the sessionkey has not been blocked
@@ -184,7 +189,7 @@ mod SessionKeyValidator {
 
     #[storage]
     struct Storage {
-        Sessionkey_disabled: LegacyMap<felt252, bool>,
+        Sessionkey_disabled: Map<felt252, bool>,
         #[substorage(v0)]
         validator: ValidatorComponent::Storage,
         #[substorage(v0)]

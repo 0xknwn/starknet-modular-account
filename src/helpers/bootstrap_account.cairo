@@ -7,17 +7,17 @@ pub trait IDeployable<TState> {
         class_hash: felt252,
         contract_address_salt: felt252,
         public_key: felt252,
-        target_class: felt252
+        target_class: felt252,
     ) -> felt252;
 }
 
 #[starknet::contract(account)]
 mod BootstrapAccount {
+    use UpgradeableComponent::InternalTrait;
     use super::IDeployable;
-    use openzeppelin::account::AccountComponent;
-    use openzeppelin::introspection::src5::SRC5Component;
-    use openzeppelin::upgrades::UpgradeableComponent;
-    use openzeppelin::upgrades::interface::IUpgradeable;
+    use openzeppelin_account::AccountComponent;
+    use openzeppelin_introspection::src5::SRC5Component;
+    use openzeppelin_upgrades::UpgradeableComponent;
     use starknet::ClassHash;
     use core::traits::Into;
 
@@ -42,7 +42,7 @@ mod BootstrapAccount {
             class_hash: felt252,
             contract_address_salt: felt252,
             public_key: felt252,
-            target_class: felt252
+            target_class: felt252,
         ) -> felt252 {
             self.account.validate_transaction()
         }
@@ -73,6 +73,6 @@ mod BootstrapAccount {
     fn constructor(ref self: ContractState, public_key: felt252, target_class: felt252) {
         self.account.initializer(public_key);
         let new_class_hash: ClassHash = target_class.try_into().unwrap();
-        self.upgradeable._upgrade(new_class_hash);
+        self.upgradeable.upgrade(new_class_hash);
     }
 }

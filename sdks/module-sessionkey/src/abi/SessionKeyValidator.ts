@@ -200,7 +200,7 @@ export const ABI = [
   },
   {
     "type": "event",
-    "name": "openzeppelin::introspection::src5::SRC5Component::Event",
+    "name": "openzeppelin_introspection::src5::SRC5Component::Event",
     "kind": "enum",
     "variants": []
   },
@@ -257,7 +257,7 @@ export const ABI = [
       },
       {
         "name": "SRC5Event",
-        "type": "openzeppelin::introspection::src5::SRC5Component::Event",
+        "type": "openzeppelin_introspection::src5::SRC5Component::Event",
         "kind": "flat"
       },
       {

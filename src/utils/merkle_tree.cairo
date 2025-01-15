@@ -46,7 +46,7 @@ mod tests {
         assert_eq!(
             hash,
             0x5774fa77b3d843ae9167abd61cf80365a9b2b02218fc2f628494b5bdc9b33b8,
-            "hash should match 0x5774fa77b3d843ae9167abd61cf80365a9b2b02218fc2f628494b5bdc9b33b8"
+            "hash should match 0x5774fa77b3d843ae9167abd61cf80365a9b2b02218fc2f628494b5bdc9b33b8",
         );
     }
 
@@ -56,7 +56,7 @@ mod tests {
         assert_eq!(
             hash,
             0x5774fa77b3d843ae9167abd61cf80365a9b2b02218fc2f628494b5bdc9b33b8,
-            "hash should match 0x5774fa77b3d843ae9167abd61cf80365a9b2b02218fc2f628494b5bdc9b33b8"
+            "hash should match 0x5774fa77b3d843ae9167abd61cf80365a9b2b02218fc2f628494b5bdc9b33b8",
         );
     }
 
@@ -67,7 +67,7 @@ mod tests {
         assert_eq!(
             root,
             0x5774fa77b3d843ae9167abd61cf80365a9b2b02218fc2f628494b5bdc9b33b8,
-            "root should match 0x5774fa77b3d843ae9167abd61cf80365a9b2b02218fc2f628494b5bdc9b33b8"
+            "root should match 0x5774fa77b3d843ae9167abd61cf80365a9b2b02218fc2f628494b5bdc9b33b8",
         );
     }
 
@@ -75,12 +75,12 @@ mod tests {
     fn test_compute_merkle_root_l2() {
         let leaf = 3;
         let root = super::merkle_root(
-            leaf, array![2, 0x57166f9476d0a2d6875124251841eb85a9ae37462fae3cbf7304bcd593938e7,]
+            leaf, array![2, 0x57166f9476d0a2d6875124251841eb85a9ae37462fae3cbf7304bcd593938e7],
         );
         assert_eq!(
             root,
             0x782df77aa09d84b9a8d118e358efda98c7c45c1fd9238933702de807c83b75d,
-            "root should match 0x782df77aa09d84b9a8d118e358efda98c7c45c1fd9238933702de807c83b75d"
+            "root should match 0x782df77aa09d84b9a8d118e358efda98c7c45c1fd9238933702de807c83b75d",
         );
     }
 
@@ -92,13 +92,13 @@ mod tests {
             array![
                 2,
                 0x57166f9476d0a2d6875124251841eb85a9ae37462fae3cbf7304bcd593938e7,
-                0x49b2777d6f4f3301c487cc4506b7fbb5a2758e99ee1c34211a74a7e288b1ccb
-            ]
+                0x49b2777d6f4f3301c487cc4506b7fbb5a2758e99ee1c34211a74a7e288b1ccb,
+            ],
         );
         assert_eq!(
             root,
             0x382f071ccfa16a06da967fe7713fae94a57eef176a6a9117c00f768fd8637a7,
-            "root should match 0x382f071ccfa16a06da967fe7713fae94a57eef176a6a9117c00f768fd8637a7"
+            "root should match 0x382f071ccfa16a06da967fe7713fae94a57eef176a6a9117c00f768fd8637a7",
         );
     }
 
@@ -112,8 +112,8 @@ mod tests {
             array![
                 2,
                 0x57166f9476d0a2d6875124251841eb85a9ae37462fae3cbf7304bcd593938e7,
-                0x49b2777d6f4f3301c487cc4506b7fbb5a2758e99ee1c34211a74a7e288b1ccb
-            ]
+                0x49b2777d6f4f3301c487cc4506b7fbb5a2758e99ee1c34211a74a7e288b1ccb,
+            ],
         );
         assert!(is_valid, "root should match the proof");
     }
@@ -128,8 +128,8 @@ mod tests {
             array![
                 2,
                 0x57166f9476d0a2d6875124251841eb85a9ae37462fae3cbf7304bcd593938e7,
-                0x49b2777d6f4f3301c487cc4506b7fbb5a2758e99ee1c34211a74a7e288b1ccb
-            ]
+                0x49b2777d6f4f3301c487cc4506b7fbb5a2758e99ee1c34211a74a7e288b1ccb,
+            ],
         );
         assert!(!is_valid, "root should not match the proof");
     }

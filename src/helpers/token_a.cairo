@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-// Compatible with OpenZeppelin Contracts for Cairo ^0.11.0
+// Compatible with OpenZeppelin Contracts for Cairo ^0.20.0
 
 #[starknet::contract]
 mod TokenA {
-    use openzeppelin::access::ownable::OwnableComponent;
-    use openzeppelin::token::erc20::{ERC20Component, ERC20HooksEmptyImpl};
-    use openzeppelin::token::erc20::interface;
-    use openzeppelin::upgrades::UpgradeableComponent;
-    use openzeppelin::upgrades::interface::IUpgradeable;
+    use openzeppelin_access::ownable::OwnableComponent;
+    use openzeppelin_token::erc20::{ERC20Component, ERC20HooksEmptyImpl};
+    // use openzeppelin_token::erc20::interface;
+    use openzeppelin_upgrades::UpgradeableComponent;
+    use openzeppelin_upgrades::interface::IUpgradeable;
     use starknet::ClassHash;
     use starknet::ContractAddress;
 
@@ -51,14 +51,14 @@ mod TokenA {
     fn constructor(ref self: ContractState, recipient: ContractAddress, owner: ContractAddress) {
         self.erc20.initializer("TokenA", "A");
         self.ownable.initializer(owner);
-        self.erc20._mint(recipient, 1000000000000000000000000);
+        self.erc20.mint(recipient, 1000000000000000000000000);
     }
 
     #[abi(embed_v0)]
     impl UpgradeableImpl of IUpgradeable<ContractState> {
         fn upgrade(ref self: ContractState, new_class_hash: ClassHash) {
             self.ownable.assert_only_owner();
-            self.upgradeable._upgrade(new_class_hash);
+            self.upgradeable.upgrade(new_class_hash);
         }
     }
 }

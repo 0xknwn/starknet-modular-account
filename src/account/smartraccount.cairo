@@ -3,11 +3,10 @@
 #[starknet::contract(account)]
 mod SmartrAccount {
     use smartr::component::AccountComponent;
-    use smartr::component::AccountComponent::Errors;
     use smartr::component::IVersion;
-    use openzeppelin::introspection::src5::SRC5Component;
-    use openzeppelin::upgrades::UpgradeableComponent;
-    use openzeppelin::upgrades::interface::IUpgradeable;
+    use openzeppelin_introspection::src5::SRC5Component;
+    use openzeppelin_upgrades::UpgradeableComponent;
+    use openzeppelin_upgrades::interface::IUpgradeable;
     use starknet::ClassHash;
 
     #[abi(embed_v0)]
@@ -16,7 +15,7 @@ mod SmartrAccount {
             'starknet-modular-account'
         }
         fn get_version(self: @ContractState) -> felt252 {
-            'v0.1.11-alpha'
+            'v0.2.0'
         }
     }
 
@@ -69,7 +68,7 @@ mod SmartrAccount {
     impl UpgradeableImpl of IUpgradeable<ContractState> {
         fn upgrade(ref self: ContractState, new_class_hash: ClassHash) {
             self.account.assert_only_self();
-            self.upgradeable._upgrade(new_class_hash);
+            self.upgradeable.upgrade(new_class_hash);
         }
     }
 }

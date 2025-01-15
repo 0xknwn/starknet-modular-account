@@ -8,15 +8,15 @@ pub trait IPublicKey<TState> {
 
 #[starknet::contract]
 mod StarkValidator {
+    use starknet::storage::StoragePointerReadAccess;
+    use starknet::storage::StoragePointerWriteAccess;
     use core::traits::Into;
-    use openzeppelin::account::utils::is_valid_stark_signature;
-    use openzeppelin::introspection::src5::SRC5Component;
-    use openzeppelin::introspection::src5::SRC5Component::SRC5;
-    use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SRC5InternalTrait;
+    use openzeppelin_account::utils::is_valid_stark_signature;
+    use openzeppelin_introspection::src5::SRC5Component;
     use smartr::component::AccountComponent;
     use smartr::component::AccountComponent::InternalTrait as AccountInternalTrait;
     use smartr::component::ValidatorComponent;
-    use smartr::component::{IValidator, ICoreValidator, IValidator_ID, IConfigure};
+    use smartr::component::{IValidator, ICoreValidator, IConfigure};
     use smartr::component::IVersion;
     use starknet::account::Call;
     use starknet::class_hash::ClassHash;
@@ -57,7 +57,7 @@ mod StarkValidator {
             'stark-validator'
         }
         fn get_version(self: @ContractState) -> felt252 {
-            'v0.1.10'
+            'v0.2.0'
         }
     }
 
@@ -65,7 +65,7 @@ mod StarkValidator {
     pub impl CoreValidator of ICoreValidator<ContractState> {
         /// Verifies that the given signature is valid for the given hash.
         fn is_valid_signature(
-            self: @ContractState, hash: Array<felt252>, signature: Array<felt252>
+            self: @ContractState, hash: Array<felt252>, signature: Array<felt252>,
         ) -> felt252 {
             if hash.len() != 1 {
                 return 0;
@@ -185,7 +185,7 @@ mod StarkValidator {
         /// Returns whether the given signature is valid for the given hash
         /// using the account's current public key.
         fn _is_valid_signature(
-            self: @ContractState, hash: felt252, signature: Span<felt252>
+            self: @ContractState, hash: felt252, signature: Span<felt252>,
         ) -> bool {
             let public_key: felt252 = self.Account_public_key.read();
             is_valid_stark_signature(hash, public_key, signature)

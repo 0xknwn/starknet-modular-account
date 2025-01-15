@@ -10,7 +10,7 @@ pub const IValidator_ID: felt252 =
 #[starknet::interface]
 pub trait ICoreValidator<TState> {
     fn is_valid_signature(
-        self: @TState, hash: Array<felt252>, signature: Array<felt252>
+        self: @TState, hash: Array<felt252>, signature: Array<felt252>,
     ) -> felt252;
     fn initialize(ref self: TState, args: Array<felt252>);
 }
@@ -28,15 +28,15 @@ pub trait IConfigure<TState> {
 
 #[starknet::component]
 pub mod ValidatorComponent {
-    use openzeppelin::introspection::src5::SRC5Component::SRC5;
-    use openzeppelin::introspection::src5::SRC5Component;
+    //use openzeppelin_introspection::src5::SRC5Component::SRC5;
+    use openzeppelin_introspection::src5::SRC5Component;
     use smartr::component::AccountComponent;
     use super::{IValidator, IConfigure};
     use starknet::class_hash::ClassHash;
     use starknet::account::Call;
 
     #[storage]
-    struct Storage {}
+    pub struct Storage {}
 
     #[event]
     #[derive(Drop, PartialEq, starknet::Event)]
@@ -48,10 +48,10 @@ pub mod ValidatorComponent {
         +HasComponent<TContractState>,
         +SRC5Component::HasComponent<TContractState>,
         +AccountComponent::HasComponent<TContractState>,
-        +Drop<TContractState>
+        +Drop<TContractState>,
     > of IValidator<ComponentState<TContractState>> {
         fn validate(
-            self: @ComponentState<TContractState>, grantor_class: ClassHash, calls: Array<Call>
+            self: @ComponentState<TContractState>, grantor_class: ClassHash, calls: Array<Call>,
         ) -> felt252 {
             0
         }
@@ -63,7 +63,7 @@ pub mod ValidatorComponent {
         +HasComponent<TContractState>,
         +SRC5Component::HasComponent<TContractState>,
         +AccountComponent::HasComponent<TContractState>,
-        +Drop<TContractState>
+        +Drop<TContractState>,
     > of IConfigure<ComponentState<TContractState>> {
         fn call(self: @ComponentState<TContractState>, call: Call) -> Array<felt252> {
             array![]

@@ -3,9 +3,7 @@
 #[starknet::contract]
 mod SimpleValidator {
     use smartr::component::{ValidatorComponent, IValidator};
-    use openzeppelin::account::utils::{is_valid_stark_signature};
-    use openzeppelin::introspection::src5::SRC5Component;
-    use starknet::{get_caller_address, get_contract_address};
+    use openzeppelin_introspection::src5::SRC5Component;
     use smartr::component::AccountComponent;
     use smartr::component::IConfigure;
     use smartr::component::IVersion;
@@ -34,7 +32,7 @@ mod SimpleValidator {
             'simple-validator'
         }
         fn get_version(self: @ContractState) -> felt252 {
-            'v0.1.10'
+            'v0.2.0'
         }
     }
 
