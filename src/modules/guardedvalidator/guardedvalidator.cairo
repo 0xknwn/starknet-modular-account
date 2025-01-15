@@ -19,8 +19,10 @@ pub trait IGuardedKeys<TState> {
     fn request_owner_ejection(ref self: TState, new_owner: felt252);
 }
 
-#[derive(Drop, Copy, Serde, PartialEq, starknet::Store)]
+// #[derive(Default, Drop, Copy, Serde, PartialEq, starknet::Store)]
+#[derive(Default, Drop, Serde, PartialEq)]
 pub enum EjectionStatus {
+    #[default]
     None,
     NotReady,
     Ready,
@@ -73,15 +75,14 @@ pub struct Ejection {
 
 #[starknet::contract]
 mod GuardedValidator {
-    use core::traits::Into;
-    use openzeppelin::account::utils::is_valid_stark_signature;
-    use openzeppelin::introspection::src5::SRC5Component;
-    use openzeppelin::introspection::src5::SRC5Component::SRC5;
-    use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SRC5InternalTrait;
+    use starknet::storage::StoragePointerWriteAccess;
+use starknet::storage::StoragePointerReadAccess;
+use core::traits::Into;
+    use openzeppelin_account::utils::is_valid_stark_signature;
+    use openzeppelin_introspection::src5::SRC5Component;
     use smartr::component::AccountComponent;
-    use smartr::component::AccountComponent::InternalTrait as AccountInternalTrait;
     use smartr::component::ValidatorComponent;
-    use smartr::component::{IValidator, ICoreValidator, IValidator_ID, IConfigure};
+    use smartr::component::{IValidator, ICoreValidator, IConfigure};
     use smartr::component::IVersion;
     use starknet::account::Call;
     use starknet::class_hash::ClassHash;
@@ -95,6 +96,22 @@ mod GuardedValidator {
     component!(path: ValidatorComponent, storage: validator, event: ValidatorEvent);
     component!(path: SRC5Component, storage: src5, event: SRC5Event);
     component!(path: AccountComponent, storage: account, event: AccountEvent);
+
+    #[storage]
+    struct Storage {
+        Account_public_key: felt252,
+        Account_guardian_key: felt252,
+        Account_backup_guardian_key: felt252,
+        Account_ejection_current: Ejection,
+        Account_ejection_status: EjectionStatus,
+        Account_ejection_attempts: u64,
+        #[substorage(v0)]
+        validator: ValidatorComponent::Storage,
+        #[substorage(v0)]
+        src5: SRC5Component::Storage,
+        #[substorage(v0)]
+        account: AccountComponent::Storage,
+    }
 
     #[constructor]
     fn constructor(ref self: ContractState) {
@@ -238,22 +255,6 @@ mod GuardedValidator {
         pub const INVALID_GUARDIAN: felt252 = 'Account: invalid guardian';
         pub const INVALID_GUARDIAN_SIGNATURE: felt252 = 'Account: invalid guardian sig.';
         pub const UNAUTHORIZED: felt252 = 'Account: unauthorized';
-    }
-
-    #[storage]
-    struct Storage {
-        Account_public_key: felt252,
-        Account_guardian_key: felt252,
-        Account_backup_guardian_key: felt252,
-        Account_ejection_current: Ejection,
-        Account_ejection_status: EjectionStatus,
-        Account_ejection_attempts: u64,
-        #[substorage(v0)]
-        validator: ValidatorComponent::Storage,
-        #[substorage(v0)]
-        src5: SRC5Component::Storage,
-        #[substorage(v0)]
-        account: AccountComponent::Storage,
     }
 
     #[event]

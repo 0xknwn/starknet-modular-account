@@ -8,22 +8,26 @@ pub trait IDisableSessionKey<TState> {
 
 #[starknet::contract]
 mod SessionKeyValidator {
+    use starknet::storage::StoragePointerReadAccess;
+    use starknet::storage::Map;
+    use starknet::storage::StorageMapReadAccess;
+    use starknet::storage::StorageMapWriteAccess;
     use core::pedersen::pedersen;
     use core::traits::Into;
-    use openzeppelin::account::utils::{is_valid_stark_signature};
-    use openzeppelin::account::utils::{MIN_TRANSACTION_VERSION, QUERY_VERSION, QUERY_OFFSET};
-    use openzeppelin::introspection::src5::SRC5Component;
+    use openzeppelin_account::utils::{is_valid_stark_signature};
+    use openzeppelin_account::utils::{MIN_TRANSACTION_VERSION, QUERY_OFFSET};
+    use openzeppelin_introspection::src5::SRC5Component;
     use smartr::component::AccountComponent;
     use smartr::utils::hash_auth_message;
-    use super::{IDisableSessionKeyDispatcherTrait, IDisableSessionKey};
+    use super::{IDisableSessionKey};
     use smartr::component::IConfigure;
     use smartr::component::IVersion;
     use smartr::component::{
-        ValidatorComponent, IValidator, ICoreValidator, ICoreValidatorDispatcherTrait,
+        ValidatorComponent, IValidator, ICoreValidatorDispatcherTrait,
         ICoreValidatorLibraryDispatcher,
     };
     use smartr::utils::merkle_tree::is_valid_root;
-    use starknet::{get_caller_address, get_contract_address, get_tx_info, get_block_timestamp};
+    use starknet::{ get_tx_info, get_block_timestamp};
     use starknet::account::Call;
     use starknet::class_hash::ClassHash;
     use starknet::ContractAddress;
@@ -102,7 +106,7 @@ mod SessionKeyValidator {
             let validator_class: ClassHash = validator_class_felt.try_into().unwrap();
             let grantor_class_felt = *authz.at(2);
             let grantor_class: ClassHash = grantor_class_felt.try_into().unwrap();
-
+    
             // @todo: unblock the core validator check
             let core_validator: ClassHash = self.account.Account_core_validator.read();
             let core_validator_felt: felt252 = core_validator.try_into().unwrap();
@@ -184,7 +188,7 @@ mod SessionKeyValidator {
 
     #[storage]
     struct Storage {
-        Sessionkey_disabled: LegacyMap<felt252, bool>,
+        Sessionkey_disabled: Map<felt252, bool>,
         #[substorage(v0)]
         validator: ValidatorComponent::Storage,
         #[substorage(v0)]

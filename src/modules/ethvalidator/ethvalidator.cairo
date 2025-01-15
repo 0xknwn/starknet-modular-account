@@ -1,22 +1,25 @@
 // SPDX-License-Identifier: MIT
 
+use openzeppelin_account::interface::EthPublicKey;
+
 #[starknet::interface]
 pub trait IPublicKey<TState> {
-    fn set_public_key(ref self: TState, new_public_key: felt252);
-    fn get_public_key(self: @TState) -> felt252;
+    fn set_public_key(ref self: TState, new_public_key: EthPublicKey);
+    fn get_public_key(self: @TState) -> EthPublicKey;
 }
 
 #[starknet::contract]
-mod StarkValidator {
+mod EthValidator {
+    use starknet::storage::StoragePointerReadAccess;
+    use starknet::storage::StoragePointerWriteAccess;
     use core::traits::Into;
-    use openzeppelin::account::utils::is_valid_stark_signature;
-    use openzeppelin::introspection::src5::SRC5Component;
-    use openzeppelin::introspection::src5::SRC5Component::SRC5;
-    use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SRC5InternalTrait;
+    use openzeppelin_account::utils::is_valid_eth_signature;
+    use openzeppelin_introspection::src5::SRC5Component;
+    use openzeppelin_account::interface::EthPublicKey;
+    use openzeppelin_account::utils::secp256_point::Secp256PointStorePacking;
     use smartr::component::AccountComponent;
-    use smartr::component::AccountComponent::InternalTrait as AccountInternalTrait;
     use smartr::component::ValidatorComponent;
-    use smartr::component::{IValidator, ICoreValidator, IValidator_ID, IConfigure};
+    use smartr::component::{IValidator, ICoreValidator, IConfigure};
     use smartr::component::IVersion;
     use starknet::account::Call;
     use starknet::class_hash::ClassHash;
@@ -32,6 +35,17 @@ mod StarkValidator {
     #[constructor]
     fn constructor(ref self: ContractState) {
         assert(false, 'deployment not allowed')
+    }
+
+    #[storage]
+    struct Storage {
+        EthAccount_public_key: EthPublicKey,
+        #[substorage(v0)]
+        validator: ValidatorComponent::Storage,
+        #[substorage(v0)]
+        src5: SRC5Component::Storage,
+        #[substorage(v0)]
+        account: AccountComponent::Storage,
     }
 
     #[abi(embed_v0)]
@@ -54,7 +68,7 @@ mod StarkValidator {
     #[abi(embed_v0)]
     impl VersionImpl of IVersion<ContractState> {
         fn get_name(self: @ContractState) -> felt252 {
-            'stark-validator'
+            'eth-validator'
         }
         fn get_version(self: @ContractState) -> felt252 {
             'v0.1.10'
@@ -79,26 +93,22 @@ mod StarkValidator {
         }
 
         fn initialize(ref self: ContractState, args: Array<felt252>) {
-            assert(args.len() == 1, 'Invalid public key');
-            let public_key = *args.at(0);
-            self.Account_public_key.write(public_key);
+            let mut value = args.span();
+            let eth_public_key = Serde::<EthPublicKey>::deserialize(ref value);
+            match eth_public_key {
+                Option::Some(key) => {
+                    self.EthAccount_public_key.write(key);
+                    // @todo: implement notify_owner_addition
+                    // self.account.notify_owner_addition(args);
+                },
+                Option::None => { assert(false, 'Invalid public key'); },
+            }
         }
     }
 
     mod Errors {
         pub const INVALID_SIGNATURE: felt252 = 'Account: invalid signature';
         pub const UNAUTHORIZED: felt252 = 'Account: unauthorized';
-    }
-
-    #[storage]
-    struct Storage {
-        Account_public_key: felt252,
-        #[substorage(v0)]
-        validator: ValidatorComponent::Storage,
-        #[substorage(v0)]
-        src5: SRC5Component::Storage,
-        #[substorage(v0)]
-        account: AccountComponent::Storage,
     }
 
     #[event]
@@ -120,8 +130,8 @@ mod StarkValidator {
             let mut found = false;
             if call.selector == selector!("get_public_key") {
                 found = true;
-                let key = self.get_public_key();
-                output.append(key);
+                let keys = self.get_public_key();
+                keys.serialize(ref output);
             }
             if call.selector == selector!("get_version") {
                 found = true;
@@ -144,11 +154,17 @@ mod StarkValidator {
             let mut found = false;
             if call.selector == selector!("set_public_key") {
                 found = true;
-                if call.calldata.len() != 1 {
+                if call.calldata.len() != 4 {
                     assert(false, 'Invalid payload');
                 }
-                let key = *call.calldata.at(0);
-                self.set_public_key(key);
+                // let me: Array<felt252> = call.calldata;
+                let mut value = call.calldata;
+                assert(value.len() == 4, 'Ough, try again!');
+                let eth_public_key = Serde::<EthPublicKey>::deserialize(ref value);
+                match eth_public_key {
+                    Option::Some(key) => { self.set_public_key(key); },
+                    Option::None => { assert(false, 'Invalid public key'); },
+                }
             }
             if !found {
                 assert(false, 'Invalid selector');
@@ -157,18 +173,21 @@ mod StarkValidator {
         }
     }
 
-
     #[abi(embed_v0)]
     pub impl PublicKey of IPublicKey<ContractState> {
         /// Add a key to the current public keys of the account.
-        fn set_public_key(ref self: ContractState, new_public_key: felt252) {
-            self.Account_public_key.write(new_public_key);
-            self.account.notify_owner_addition(array![new_public_key]);
+        fn set_public_key(ref self: ContractState, new_public_key: EthPublicKey) {
+            self.EthAccount_public_key.write(new_public_key);
+            // self.eth_account.write(new_public_key);
+            let mut public_key_felt = ArrayTrait::<felt252>::new();
+            new_public_key.serialize(ref public_key_felt);
+            // @todo: implement notify_owner_addition
+            // self.eth_account.notify_owner_addition(public_key_felt);
         }
 
         /// Returns the current public keys of the account.
-        fn get_public_key(self: @ContractState) -> felt252 {
-            self.Account_public_key.read()
+        fn get_public_key(self: @ContractState) -> EthPublicKey {
+            self.EthAccount_public_key.read()
         }
     }
 
@@ -187,8 +206,54 @@ mod StarkValidator {
         fn _is_valid_signature(
             self: @ContractState, hash: felt252, signature: Span<felt252>
         ) -> bool {
-            let public_key: felt252 = self.Account_public_key.read();
-            is_valid_stark_signature(hash, public_key, signature)
+            let public_key: EthPublicKey = self.EthAccount_public_key.read();
+            is_valid_eth_signature(hash, public_key, signature)
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use openzeppelin_account::interface::EthPublicKey;
+
+    #[test]
+    fn value_match_key() {
+        let value: Array<felt252> = array![
+            3, 0, 215399990735478923917501906261422522596, 277625874459002347535277135431259155380
+        ];
+        let mut value = value.span();
+        let eth_public_key = Serde::<EthPublicKey>::deserialize(ref value);
+        match eth_public_key {
+            Option::Some(_key) => { assert(true, 'valid public key'); },
+            Option::None => { assert(false, 'option is none'); },
+        }
+    }
+
+    #[test]
+    fn play_with_u256() {
+        let _privateKey: u256 =
+            0xb28ebb20fb1015da6e6367d1b5dba9b52862a06dbb3a4022e4749b6987ac1bd2_u256;
+        let x: u256 = 0xd31cf702f5c89d49c567dcfd568bc4869e343506749f69d849eb408802cfa646_u256;
+        let y: u256 = 0x348c7bbf341964c306669365292c0066c23a2fedd131907534677aa3e22db2fc_u256;
+        assert_eq!(x.low, 210289098249831467762502193281061856838, "x.low");
+        assert_eq!(x.high, 280617501412351006689952710290844664966, "x.high");
+        assert_eq!(y.low, 258172356515136873455592221375042794236, "y.low");
+        assert_eq!(y.high, 69849287226094710129367771214955413606, "y.high");
+    }
+
+    #[test]
+    fn value_match_key_from_u256() {
+        let value: Array<felt252> = array![
+            210289098249831467762502193281061856838,
+            280617501412351006689952710290844664966,
+            258172356515136873455592221375042794236,
+            69849287226094710129367771214955413606
+        ];
+        let mut value = value.span();
+        let eth_public_key = Serde::<EthPublicKey>::deserialize(ref value);
+        match eth_public_key {
+            Option::Some(_key) => { assert(true, 'valid public key'); },
+            Option::None => { assert(false, 'option is none'); },
         }
     }
 }

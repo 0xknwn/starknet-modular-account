@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-use openzeppelin::account::utils::secp256r1::Secp256r1PointSerde;
-use openzeppelin::account::interface::P256PublicKey;
+use openzeppelin_account::interface::P256PublicKey;
 
 #[starknet::interface]
 pub trait IPublicKey<TState> {
@@ -11,17 +10,16 @@ pub trait IPublicKey<TState> {
 
 #[starknet::contract]
 mod P256Validator {
+    use starknet::storage::StoragePointerReadAccess;
+    use starknet::storage::StoragePointerWriteAccess;
     use core::traits::Into;
-    use openzeppelin::account::utils::is_valid_p256_signature;
-    use openzeppelin::account::utils::secp256r1::{Secp256r1PointStorePacking, Secp256r1PointSerde};
-    use openzeppelin::account::interface::P256PublicKey;
-    use openzeppelin::introspection::src5::SRC5Component;
-    use openzeppelin::introspection::src5::SRC5Component::SRC5;
-    use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SRC5InternalTrait;
+    use openzeppelin_account::utils::is_valid_p256_signature;
+    use openzeppelin_introspection::src5::SRC5Component;
+    use openzeppelin_account::interface::P256PublicKey;
+    use openzeppelin_account::utils::secp256_point::Secp256PointStorePacking;
     use smartr::component::AccountComponent;
-    use smartr::component::AccountComponent::InternalTrait as AccountInternalTrait;
     use smartr::component::ValidatorComponent;
-    use smartr::component::{IValidator, ICoreValidator, IValidator_ID, IConfigure};
+    use smartr::component::{IValidator, ICoreValidator, IConfigure};
     use smartr::component::IVersion;
     use starknet::account::Call;
     use starknet::class_hash::ClassHash;
@@ -37,6 +35,16 @@ mod P256Validator {
     #[constructor]
     fn constructor(ref self: ContractState) {
         assert(false, 'deployment not allowed')
+    }
+    #[storage]
+    struct Storage {
+        P256Account_public_key: P256PublicKey,
+        #[substorage(v0)]
+        validator: ValidatorComponent::Storage,
+        #[substorage(v0)]
+        src5: SRC5Component::Storage,
+        #[substorage(v0)]
+        account: AccountComponent::Storage,
     }
 
     #[abi(embed_v0)]
@@ -55,7 +63,6 @@ mod P256Validator {
             self.is_valid_signature(tx_hash, sig)
         }
     }
-
 
     #[abi(embed_v0)]
     impl VersionImpl of IVersion<ContractState> {
@@ -90,7 +97,8 @@ mod P256Validator {
             match p256_public_key {
                 Option::Some(key) => {
                     self.P256Account_public_key.write(key);
-                    self.account.notify_owner_addition(args);
+                    // @todo: implement notify_owner_addition
+                    // self.account.notify_owner_addition(args);
                 },
                 Option::None => { assert(false, 'Invalid public key'); },
             }
@@ -100,17 +108,6 @@ mod P256Validator {
     mod Errors {
         pub const INVALID_SIGNATURE: felt252 = 'Account: invalid signature';
         pub const UNAUTHORIZED: felt252 = 'Account: unauthorized';
-    }
-
-    #[storage]
-    struct Storage {
-        P256Account_public_key: P256PublicKey,
-        #[substorage(v0)]
-        validator: ValidatorComponent::Storage,
-        #[substorage(v0)]
-        src5: SRC5Component::Storage,
-        #[substorage(v0)]
-        account: AccountComponent::Storage,
     }
 
     #[event]
@@ -175,7 +172,6 @@ mod P256Validator {
         }
     }
 
-
     #[abi(embed_v0)]
     pub impl PublicKey of IPublicKey<ContractState> {
         /// Add a key to the current public keys of the account.
@@ -183,7 +179,8 @@ mod P256Validator {
             self.P256Account_public_key.write(new_public_key);
             let mut public_key_felt = ArrayTrait::<felt252>::new();
             new_public_key.serialize(ref public_key_felt);
-            self.account.notify_owner_addition(public_key_felt);
+            // @todo: implement notify_owner_addition
+            // self.account.notify_owner_addition(public_key_felt);
         }
 
         /// Returns the current public keys of the account.
@@ -215,10 +212,7 @@ mod P256Validator {
 
 #[cfg(test)]
 mod tests {
-    use openzeppelin::account::utils::secp256r1::Secp256r1PointStorePacking;
-    use openzeppelin::account::interface::P256PublicKey;
-    use openzeppelin::account::utils::secp256r1::Secp256r1PointSerde;
-    use openzeppelin::account::utils::secp256r1::DebugSecp256r1Point;
+    use openzeppelin_account::interface::P256PublicKey;
 
     #[test]
     fn value_match_key() {

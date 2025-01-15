@@ -75,10 +75,10 @@ pub mod AccountComponent {
     use core::traits::Into;
 
     #[storage]
-    struct Storage {
-        Account_core_validator: ClassHash,
-        Account_forward_validate_module: bool,
-        Account_modules: Map<ClassHash, bool>,
+    pub struct Storage {
+        pub Account_core_validator: ClassHash,
+        pub Account_forward_validate_module: bool,
+        pub Account_modules: Map<ClassHash, bool>,
     }
 
     #[event]

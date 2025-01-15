@@ -11,15 +11,15 @@ pub trait IPublicKeys<TState> {
 
 #[starknet::contract]
 mod MultisigValidator {
-    use core::traits::Into;
-    use openzeppelin::account::utils::is_valid_stark_signature;
-    use openzeppelin::introspection::src5::SRC5Component;
-    use openzeppelin::introspection::src5::SRC5Component::SRC5;
-    use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SRC5InternalTrait;
+    use starknet::storage::StoragePointerReadAccess;
+use starknet::storage::StoragePointerWriteAccess;
+use core::traits::Into;
+    use openzeppelin_account::utils::is_valid_stark_signature;
+    use openzeppelin_introspection::src5::SRC5Component;
     use smartr::component::AccountComponent;
     use smartr::component::AccountComponent::InternalTrait as AccountInternalTrait;
     use smartr::component::ValidatorComponent;
-    use smartr::component::{IValidator, ICoreValidator, IValidator_ID, IConfigure};
+    use smartr::component::{IValidator, ICoreValidator, IConfigure};
     use smartr::component::IVersion;
     use smartr::store::Felt252ArrayStore;
     use starknet::account::Call;

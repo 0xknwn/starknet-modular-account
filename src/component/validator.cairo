@@ -36,7 +36,7 @@ pub mod ValidatorComponent {
     use starknet::account::Call;
 
     #[storage]
-    struct Storage {}
+    pub struct Storage {}
 
     #[event]
     #[derive(Drop, PartialEq, starknet::Event)]

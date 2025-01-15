@@ -1,1 +1,1 @@
-// mod smartraccount;
+mod smartraccount;

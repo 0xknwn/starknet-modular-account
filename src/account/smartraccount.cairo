@@ -3,11 +3,10 @@
 #[starknet::contract(account)]
 mod SmartrAccount {
     use smartr::component::AccountComponent;
-    use smartr::component::AccountComponent::Errors;
     use smartr::component::IVersion;
-    use openzeppelin::introspection::src5::SRC5Component;
-    use openzeppelin::upgrades::UpgradeableComponent;
-    use openzeppelin::upgrades::interface::IUpgradeable;
+    use openzeppelin_introspection::src5::SRC5Component;
+    use openzeppelin_upgrades::UpgradeableComponent;
+    use openzeppelin_upgrades::interface::IUpgradeable;
     use starknet::ClassHash;
 
     #[abi(embed_v0)]
@@ -61,15 +60,15 @@ mod SmartrAccount {
     }
 
     #[constructor]
-    fn constructor(ref self: ContractState, core_validator: felt252, args: Array<felt252>) {
-        self.account.initializer(core_validator, args);
+    fn constructor(ref self: ContractState, core_validator: felt252, public_key: Array<felt252>) {
+        self.account.initializer(core_validator, public_key);
     }
 
     #[abi(embed_v0)]
     impl UpgradeableImpl of IUpgradeable<ContractState> {
         fn upgrade(ref self: ContractState, new_class_hash: ClassHash) {
             self.account.assert_only_self();
-            self.upgradeable._upgrade(new_class_hash);
+            self.upgradeable.upgrade(new_class_hash);
         }
     }
 }
