@@ -1,6 +1,6 @@
 {
   "name": "starknet-failed-account",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -13,6 +13,6 @@
   "author": "0xknwn",
   "license": "MIT",
   "dependencies": {
-    "@0xknwn/starknet-test-helpers": "^0.1.0"
+    "@0xknwn/starknet-test-helpers": "^0.2.0"
   }
 }
