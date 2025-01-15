@@ -10,7 +10,7 @@
     "build:abi": "mkdir -p src/abi && npm run build:abi:SmartrAccount && npm run build:abi:StarkValidator",
     "build": "tsc --build",
     "registry": "npm publish --access=public",
-    "doc": "typedoc && mkdir -p ../../docs/starknet-account && cp -R docs/modules.md docs/classes ./docs/interfaces ../../docs/starknet-account/"
+    "doc": "typedoc && mkdir -p ../../docs/starknet-account && cp -R modules.md docs/classes ./docs/interfaces ../../docs/starknet-account/"
   },
   "author": "0xknwn",
   "license": "MIT"
