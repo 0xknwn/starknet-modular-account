@@ -43,7 +43,7 @@ pub struct Ejection {
 // - scenario 3: your email is hijacked and the attacker can request the account
 //   key to be changed
 // - scenario 4: your password gets hijacked
-// 
+//
 // > Notes: for the later scenarios, we can not guaranty there will not be any
 // > loss but, at least, we can limit the amount at stake. Also, the guardian
 // > is a very active third party because it will sign almost all the
@@ -76,8 +76,8 @@ pub struct Ejection {
 #[starknet::contract]
 mod GuardedValidator {
     use starknet::storage::StoragePointerWriteAccess;
-use starknet::storage::StoragePointerReadAccess;
-use core::traits::Into;
+    use starknet::storage::StoragePointerReadAccess;
+    use core::traits::Into;
     use openzeppelin_account::utils::is_valid_stark_signature;
     use openzeppelin_introspection::src5::SRC5Component;
     use smartr::component::AccountComponent;
@@ -127,12 +127,18 @@ use core::traits::Into;
             let signature = tx_info.signature;
 
             if calls.len() == 1 {
-                if *calls.at(0).to == get_contract_address() && *calls.at(0).selector == selector!("execute_on_module") {
+                if *calls.at(0).to == get_contract_address()
+                    && *calls.at(0).selector == selector!("execute_on_module") {
                     let calldata = *calls.at(0).calldata;
                     assert(calldata.len() >= 3, 'Validator: invalid call');
                     let module_account_address_felt = *calldata.at(1);
-                    let module_account_address: ContractAddress = module_account_address_felt.try_into().unwrap();
-                    assert(module_account_address == get_contract_address(), 'Validator: invalid account');
+                    let module_account_address: ContractAddress = module_account_address_felt
+                        .try_into()
+                        .unwrap();
+                    assert(
+                        module_account_address == get_contract_address(),
+                        'Validator: invalid account',
+                    );
                     let module_selector = *calldata.at(2);
                     if module_selector == selector!("request_owner_ejection") {
                         let is_valid = self._is_valid_guardian_signature(tx_hash, signature);
@@ -154,8 +160,8 @@ use core::traits::Into;
                         assert(is_valid, Errors::INVALID_OWNER_SIGNATURE);
                         return starknet::VALIDATED;
                     }
-                } 
-            } 
+                }
+            }
             let is_valid = self._is_valid_signature(tx_hash, signature);
             assert(is_valid, Errors::INVALID_SIGNATURE);
             return starknet::VALIDATED;
@@ -171,14 +177,10 @@ use core::traits::Into;
         fn finalize_guardian_ejection(ref self: ContractState) {}
         fn finalize_owner_ejection(ref self: ContractState) {}
         fn get_ejection_status(self: @ContractState) -> EjectionStatus {
-          EjectionStatus::None
+            EjectionStatus::None
         }
         fn get_ejection(self: @ContractState) -> Ejection {
-          Ejection {
-            ready_at: 0,
-            ejection_type: 0,
-            signer: 0,
-          }
+            Ejection { ready_at: 0, ejection_type: 0, signer: 0 }
         }
         fn get_guardian_backup_key(self: @ContractState) -> felt252 {
             self.Account_guardian_key.read()
@@ -195,12 +197,10 @@ use core::traits::Into;
         fn get_owner_key(self: @ContractState) -> felt252 {
             self.Account_public_key.read()
         }
-        fn request_guardian_ejection(ref self: ContractState, new_guardian: felt252) {
-          // do it, even if there is a pending owner ejection and cancel the
-          // pending owner ejection
+        fn request_guardian_ejection(ref self: ContractState, new_guardian: felt252) {// do it, even if there is a pending owner ejection and cancel the
+        // pending owner ejection
         }
-        fn request_owner_ejection(ref self: ContractState, new_owner: felt252) {
-          // if there is a pending guardian ejection, do nothing
+        fn request_owner_ejection(ref self: ContractState, new_owner: felt252) {// if there is a pending guardian ejection, do nothing
         }
     }
 
@@ -210,7 +210,7 @@ use core::traits::Into;
             'guarded-validator'
         }
         fn get_version(self: @ContractState) -> felt252 {
-            'v0.1.10-alpha'
+            'v0.2.0'
         }
     }
 
@@ -218,7 +218,7 @@ use core::traits::Into;
     pub impl CoreValidator of ICoreValidator<ContractState> {
         /// Verifies that the given signature is valid for the given hash.
         fn is_valid_signature(
-            self: @ContractState, hash: Array<felt252>, signature: Array<felt252>
+            self: @ContractState, hash: Array<felt252>, signature: Array<felt252>,
         ) -> felt252 {
             if hash.len() != 1 {
                 return 0;
@@ -233,7 +233,7 @@ use core::traits::Into;
 
         fn initialize(ref self: ContractState, args: Array<felt252>) {
             let key_number = args.len();
-            assert(key_number >= 1 && key_number <= 3 , Errors::INVALID_SIGNERS);
+            assert(key_number >= 1 && key_number <= 3, Errors::INVALID_SIGNERS);
             let public_key = *args.at(0);
             self.Account_public_key.write(public_key);
             self.account.Account_forward_validate_module.write(true);
@@ -323,7 +323,11 @@ use core::traits::Into;
             let account_address = get_contract_address();
             let mut i: usize = 0;
             while i < call_num {
-                assert(account_address != *calls.at(i).to && *calls.at(i).selector != selector!("execute_on_module"), Errors::UNAUTHORIZED);
+                assert(
+                    account_address != *calls.at(i).to
+                        && *calls.at(i).selector != selector!("execute_on_module"),
+                    Errors::UNAUTHORIZED,
+                );
                 i += 1;
             }
         }
@@ -331,65 +335,73 @@ use core::traits::Into;
         /// Returns whether the given signature is valid for the given hash
         /// using the account's current public key.
         fn _is_valid_signature(
-            self: @ContractState, hash: felt252, signature: Span<felt252>
+            self: @ContractState, hash: felt252, signature: Span<felt252>,
         ) -> bool {
             let signature_len = signature.len();
-            assert(signature_len >= 2 , Errors::INVALID_SIGNATURE);
+            assert(signature_len >= 2, Errors::INVALID_SIGNATURE);
             let public_key: felt252 = self.Account_public_key.read();
             let mut signature_owner: Array<felt252> = ArrayTrait::<felt252>::new();
             signature_owner.append(*signature.at(0));
             signature_owner.append(*signature.at(1));
-            assert(is_valid_stark_signature(hash, public_key, signature_owner.span()), Errors::INVALID_OWNER_SIGNATURE);
+            assert(
+                is_valid_stark_signature(hash, public_key, signature_owner.span()),
+                Errors::INVALID_OWNER_SIGNATURE,
+            );
             let guardian_key = self.Account_guardian_key.read();
             let backup_guardian_key = self.Account_backup_guardian_key.read();
             if guardian_key == 0 && backup_guardian_key == 0 {
                 return true;
             }
-            assert(signature_len == 4 , Errors::INVALID_GUARDIAN_SIGNATURE);
+            assert(signature_len == 4, Errors::INVALID_GUARDIAN_SIGNATURE);
             let mut signature_guardian: Array<felt252> = ArrayTrait::<felt252>::new();
             signature_guardian.append(*signature.at(2));
             signature_guardian.append(*signature.at(3));
             let signature = signature_guardian.span();
             let mut is_valid_guardian_key = is_valid_stark_signature(hash, guardian_key, signature);
             if !is_valid_guardian_key && backup_guardian_key != 0 {
-              is_valid_guardian_key = is_valid_stark_signature(hash, backup_guardian_key, signature);
+                is_valid_guardian_key =
+                    is_valid_stark_signature(hash, backup_guardian_key, signature);
             }
             assert(is_valid_guardian_key, Errors::INVALID_GUARDIAN_SIGNATURE);
             true
         }
 
         fn _is_valid_owner_signature(
-            self: @ContractState, hash: felt252, signature: Span<felt252>
+            self: @ContractState, hash: felt252, signature: Span<felt252>,
         ) -> bool {
             let signature_len = signature.len();
-            assert(signature_len == 2 , Errors::INVALID_OWNER_SIGNATURE);
+            assert(signature_len == 2, Errors::INVALID_OWNER_SIGNATURE);
             let public_key: felt252 = self.Account_public_key.read();
             let mut signature_owner: Array<felt252> = ArrayTrait::<felt252>::new();
             signature_owner.append(*signature.at(0));
             signature_owner.append(*signature.at(1));
-            assert(is_valid_stark_signature(hash, public_key, signature_owner.span()), Errors::INVALID_OWNER_SIGNATURE);
+            assert(
+                is_valid_stark_signature(hash, public_key, signature_owner.span()),
+                Errors::INVALID_OWNER_SIGNATURE,
+            );
             true
         }
 
         fn _is_valid_guardian_signature(
-            self: @ContractState, hash: felt252, signature: Span<felt252>
+            self: @ContractState, hash: felt252, signature: Span<felt252>,
         ) -> bool {
             let signature_len = signature.len();
-            assert(signature_len == 2 , Errors::INVALID_GUARDIAN_SIGNATURE);
+            assert(signature_len == 2, Errors::INVALID_GUARDIAN_SIGNATURE);
             let guardian_key = self.Account_guardian_key.read();
             assert(guardian_key != 0, Errors::INVALID_GUARDIAN_SIGNATURE);
             let backup_guardian_key = self.Account_backup_guardian_key.read();
             if guardian_key == 0 && backup_guardian_key == 0 {
                 return false;
             }
-            assert(signature_len == 2 , Errors::INVALID_GUARDIAN_SIGNATURE);
+            assert(signature_len == 2, Errors::INVALID_GUARDIAN_SIGNATURE);
             let mut signature_guardian: Array<felt252> = ArrayTrait::<felt252>::new();
             signature_guardian.append(*signature.at(0));
             signature_guardian.append(*signature.at(1));
             let signature = signature_guardian.span();
             let mut is_valid_guardian_key = is_valid_stark_signature(hash, guardian_key, signature);
             if !is_valid_guardian_key && backup_guardian_key != 0 {
-              is_valid_guardian_key = is_valid_stark_signature(hash, backup_guardian_key, signature);
+                is_valid_guardian_key =
+                    is_valid_stark_signature(hash, backup_guardian_key, signature);
             }
             assert(is_valid_guardian_key, Errors::INVALID_GUARDIAN_SIGNATURE);
             true

@@ -70,7 +70,7 @@ mod P256Validator {
             'p256-validator'
         }
         fn get_version(self: @ContractState) -> felt252 {
-            'v0.1.10'
+            'v0.2.0'
         }
     }
 
@@ -78,7 +78,7 @@ mod P256Validator {
     pub impl CoreValidator of ICoreValidator<ContractState> {
         /// Verifies that the given signature is valid for the given hash.
         fn is_valid_signature(
-            self: @ContractState, hash: Array<felt252>, signature: Array<felt252>
+            self: @ContractState, hash: Array<felt252>, signature: Array<felt252>,
         ) -> felt252 {
             if hash.len() != 1 {
                 return 0;
@@ -95,10 +95,8 @@ mod P256Validator {
             let mut value = args.span();
             let p256_public_key = Serde::<P256PublicKey>::deserialize(ref value);
             match p256_public_key {
-                Option::Some(key) => {
-                    self.P256Account_public_key.write(key);
-                    // @todo: implement notify_owner_addition
-                    // self.account.notify_owner_addition(args);
+                Option::Some(key) => { self.P256Account_public_key.write(key); // @todo: implement notify_owner_addition
+                // self.account.notify_owner_addition(args);
                 },
                 Option::None => { assert(false, 'Invalid public key'); },
             }
@@ -180,7 +178,7 @@ mod P256Validator {
             let mut public_key_felt = ArrayTrait::<felt252>::new();
             new_public_key.serialize(ref public_key_felt);
             // @todo: implement notify_owner_addition
-            // self.account.notify_owner_addition(public_key_felt);
+        // self.account.notify_owner_addition(public_key_felt);
         }
 
         /// Returns the current public keys of the account.
@@ -202,7 +200,7 @@ mod P256Validator {
         /// Returns wher the given signature is valid for the given hash
         /// using the account's current public key.
         fn _is_valid_signature(
-            self: @ContractState, hash: felt252, signature: Span<felt252>
+            self: @ContractState, hash: felt252, signature: Span<felt252>,
         ) -> bool {
             let public_key: P256PublicKey = self.P256Account_public_key.read();
             is_valid_p256_signature(hash, public_key, signature)
@@ -220,7 +218,7 @@ mod tests {
             84367212547305142575912199700718371262,
             258400589869575108989031672267243838881,
             116613713336784839275036561532313383696,
-            333360036780834669843466872615052783706
+            333360036780834669843466872615052783706,
         ];
         let mut value = value.span();
         let p256_public_key = Serde::<P256PublicKey>::deserialize(ref value);
@@ -250,7 +248,7 @@ mod tests {
             269579757328574126121444003492591638210,
             12566025211498978771503502663570524112,
             230988565823064299531546210785320445498,
-            202889101106158949967186230758848275236
+            202889101106158949967186230758848275236,
         ];
         let mut value = value.span();
         let p256_public_key = Serde::<P256PublicKey>::deserialize(ref value);

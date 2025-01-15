@@ -7,14 +7,14 @@ pub trait IDeployable<TState> {
         class_hash: felt252,
         contract_address_salt: felt252,
         public_key: felt252,
-        target_class: felt252
+        target_class: felt252,
     ) -> felt252;
 }
 
 #[starknet::contract(account)]
 mod BootstrapAccount {
     use UpgradeableComponent::InternalTrait;
-use super::IDeployable;
+    use super::IDeployable;
     use openzeppelin_account::AccountComponent;
     use openzeppelin_introspection::src5::SRC5Component;
     use openzeppelin_upgrades::UpgradeableComponent;
@@ -42,7 +42,7 @@ use super::IDeployable;
             class_hash: felt252,
             contract_address_salt: felt252,
             public_key: felt252,
-            target_class: felt252
+            target_class: felt252,
         ) -> felt252 {
             self.account.validate_transaction()
         }

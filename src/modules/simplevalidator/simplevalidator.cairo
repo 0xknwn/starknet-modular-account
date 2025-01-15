@@ -32,7 +32,7 @@ mod SimpleValidator {
             'simple-validator'
         }
         fn get_version(self: @ContractState) -> felt252 {
-            'v0.1.10'
+            'v0.2.0'
         }
     }
 

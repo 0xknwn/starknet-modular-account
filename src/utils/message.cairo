@@ -1,10 +1,9 @@
 use starknet::{ContractAddress, ClassHash};
 use core::pedersen::pedersen;
 
-pub const SESSION_TYPE_HASH: felt252 =
-    selector!(
-        "Session(account:felt,validator:felt,grantor:felt,key:felt,expires:felt,root:merkletree)"
-    );
+pub const SESSION_TYPE_HASH: felt252 = selector!(
+    "Session(account:felt,validator:felt,grantor:felt,key:felt,expires:felt,root:merkletree)",
+);
 pub const STARKNET_DOMAIN_TYPE_HASH: felt252 = selector!("StarkNetDomain(chainId:felt)");
 pub const STARKNET_PREFIX_MESSAGE: felt252 = 'StarkNet Message';
 pub const POLICY_TYPE_HASH: felt252 = selector!("Policy(contractAddress:felt,selector:selector)");
@@ -16,7 +15,7 @@ pub fn hash_auth_message(
     authz_key: felt252,
     expires: felt252,
     root: felt252,
-    chain_id: felt252
+    chain_id: felt252,
 ) -> felt252 {
     let chain_hash = array_hash(array![STARKNET_DOMAIN_TYPE_HASH, chain_id]);
     let authz_hash = array_hash(array![SESSION_TYPE_HASH, authz_key, expires, root]);
@@ -30,8 +29,8 @@ pub fn hash_auth_message(
             validator_class_felt,
             grantor_class_felt,
             authz_hash,
-            chain_hash
-        ]
+            chain_hash,
+        ],
     )
 }
 
@@ -53,7 +52,9 @@ mod tests {
     #[test]
     fn test_short_message() {
         assert_eq!(
-            super::STARKNET_PREFIX_MESSAGE, 0x537461726b4e6574204d657373616765, "value should match"
+            super::STARKNET_PREFIX_MESSAGE,
+            0x537461726b4e6574204d657373616765,
+            "value should match",
         );
     }
 
@@ -62,17 +63,17 @@ mod tests {
         assert_eq!(
             super::STARKNET_DOMAIN_TYPE_HASH,
             559829204566802802769333095934997962208934200349121683389685917736841749624,
-            "domain should match"
+            "domain should match",
         );
         assert_eq!(
             super::SESSION_TYPE_HASH,
             300158337552274304490739948149127820835543586625599349706216852674177038348,
-            "session should match"
+            "session should match",
         );
         assert_eq!(
             super::POLICY_TYPE_HASH,
             1328685774472303838129974879115470406966524039382350505658868861646452794728,
-            "policy should match"
+            "policy should match",
         );
     }
 }

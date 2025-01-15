@@ -3,7 +3,7 @@
 #[starknet::contract(account)]
 mod FailedAccount {
     use UpgradeableComponent::InternalTrait;
-use core::num::traits::Zero;
+    use core::num::traits::Zero;
     use core::traits::Into;
     use openzeppelin_account::AccountComponent;
     use openzeppelin_account::AccountComponent::Errors;
@@ -33,7 +33,8 @@ use core::num::traits::Zero;
             // Check if tx is a query
             if (tx_version >= QUERY_OFFSET) {
                 assert(
-                    QUERY_OFFSET + MIN_TRANSACTION_VERSION <= tx_version, Errors::INVALID_TX_VERSION
+                    QUERY_OFFSET + MIN_TRANSACTION_VERSION <= tx_version,
+                    Errors::INVALID_TX_VERSION,
                 );
             } else {
                 assert(MIN_TRANSACTION_VERSION <= tx_version, Errors::INVALID_TX_VERSION);
@@ -58,7 +59,7 @@ use core::num::traits::Zero;
 
         /// Verifies that the given signature is valid for the given hash.
         fn is_valid_signature(
-            self: @ContractState, hash: felt252, signature: Array<felt252>
+            self: @ContractState, hash: felt252, signature: Array<felt252>,
         ) -> felt252 {
             if self.account._is_valid_signature(hash, signature.span()) {
                 starknet::VALIDATED

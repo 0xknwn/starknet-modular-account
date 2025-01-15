@@ -14,11 +14,11 @@ fn test_hash_auth_message() {
     let root: felt252 = 0x3;
     let chain_id: felt252 = 0x4;
     let hash = hash_auth_message(
-        account_address, validator_class, grantor_class, authn_key, expires, root, chain_id
+        account_address, validator_class, grantor_class, authn_key, expires, root, chain_id,
     );
     assert_eq!(
         hash,
         3607702933816136767961445235909759424846066858635070681944709519388181433692,
-        "value should match"
+        "value should match",
     );
 }

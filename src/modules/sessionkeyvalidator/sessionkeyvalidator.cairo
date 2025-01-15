@@ -27,7 +27,7 @@ mod SessionKeyValidator {
         ICoreValidatorLibraryDispatcher,
     };
     use smartr::utils::merkle_tree::is_valid_root;
-    use starknet::{ get_tx_info, get_block_timestamp};
+    use starknet::{get_tx_info, get_block_timestamp};
     use starknet::account::Call;
     use starknet::class_hash::ClassHash;
     use starknet::ContractAddress;
@@ -61,7 +61,7 @@ mod SessionKeyValidator {
             'sessionkey-validator'
         }
         fn get_version(self: @ContractState) -> felt252 {
-            'v0.1.10'
+            'v0.2.0'
         }
     }
 
@@ -84,7 +84,8 @@ mod SessionKeyValidator {
             let tx_version: u256 = tx_info.version.into();
             if (tx_version >= QUERY_OFFSET) {
                 assert(
-                    QUERY_OFFSET + MIN_TRANSACTION_VERSION <= tx_version, Errors::INVALID_TX_VERSION
+                    QUERY_OFFSET + MIN_TRANSACTION_VERSION <= tx_version,
+                    Errors::INVALID_TX_VERSION,
                 );
             } else {
                 assert(MIN_TRANSACTION_VERSION <= tx_version, Errors::INVALID_TX_VERSION);
@@ -106,7 +107,7 @@ mod SessionKeyValidator {
             let validator_class: ClassHash = validator_class_felt.try_into().unwrap();
             let grantor_class_felt = *authz.at(2);
             let grantor_class: ClassHash = grantor_class_felt.try_into().unwrap();
-    
+
             // @todo: unblock the core validator check
             let core_validator: ClassHash = self.account.Account_core_validator.read();
             let core_validator_felt: felt252 = core_validator.try_into().unwrap();
@@ -119,7 +120,7 @@ mod SessionKeyValidator {
             // Check the tx signature is valid with the authz key
             assert(
                 is_valid_stark_signature(tx_hash, authz_key, tx_signature),
-                Errors::INVALID_MODULE_SIGNATURE
+                Errors::INVALID_MODULE_SIGNATURE,
             );
 
             // Parse the authz Signature
@@ -153,7 +154,7 @@ mod SessionKeyValidator {
                 let mut proof_start = signature_len + 8;
                 while j < calls_len {
                     assert(
-                        proof_len < authz_len + 1 - proof_start, Errors::INVALID_SESSION_PROOF_LEN
+                        proof_len < authz_len + 1 - proof_start, Errors::INVALID_SESSION_PROOF_LEN,
                     );
                     let account_address: ContractAddress = *calls.at(j).to;
                     let account_address_felt: felt252 = account_address.try_into().unwrap();
@@ -174,7 +175,7 @@ mod SessionKeyValidator {
 
             // Check the authz signature is valid
             let auth_hash = hash_auth_message(
-                account_address, validator_class, grantor_class, authz_key, expires, root, chain_id
+                account_address, validator_class, grantor_class, authz_key, expires, root, chain_id,
             );
 
             // check the sessionkey has not been blocked

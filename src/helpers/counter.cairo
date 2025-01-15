@@ -97,7 +97,7 @@ mod tests {
     use snforge_std::DeclareResultTrait;
     use snforge_std::{declare, ContractClassTrait};
     use snforge_std::{start_cheat_caller_address, stop_cheat_caller_address};
-    use starknet:: ContractAddress;
+    use starknet::ContractAddress;
     use super::{ICounterDispatcher, ICounterDispatcherTrait};
 
     #[test]

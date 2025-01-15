@@ -9,8 +9,8 @@ pub trait IPublicKey<TState> {
 #[starknet::contract]
 mod StarkValidator {
     use starknet::storage::StoragePointerReadAccess;
-use starknet::storage::StoragePointerWriteAccess;
-use core::traits::Into;
+    use starknet::storage::StoragePointerWriteAccess;
+    use core::traits::Into;
     use openzeppelin_account::utils::is_valid_stark_signature;
     use openzeppelin_introspection::src5::SRC5Component;
     use smartr::component::AccountComponent;
@@ -57,7 +57,7 @@ use core::traits::Into;
             'stark-validator'
         }
         fn get_version(self: @ContractState) -> felt252 {
-            'v0.1.10'
+            'v0.2.0'
         }
     }
 
@@ -65,7 +65,7 @@ use core::traits::Into;
     pub impl CoreValidator of ICoreValidator<ContractState> {
         /// Verifies that the given signature is valid for the given hash.
         fn is_valid_signature(
-            self: @ContractState, hash: Array<felt252>, signature: Array<felt252>
+            self: @ContractState, hash: Array<felt252>, signature: Array<felt252>,
         ) -> felt252 {
             if hash.len() != 1 {
                 return 0;
@@ -185,7 +185,7 @@ use core::traits::Into;
         /// Returns whether the given signature is valid for the given hash
         /// using the account's current public key.
         fn _is_valid_signature(
-            self: @ContractState, hash: felt252, signature: Span<felt252>
+            self: @ContractState, hash: felt252, signature: Span<felt252>,
         ) -> bool {
             let public_key: felt252 = self.Account_public_key.read();
             is_valid_stark_signature(hash, public_key, signature)

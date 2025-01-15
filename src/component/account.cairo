@@ -17,7 +17,7 @@ pub trait ISRC6<TState> {
     fn __execute__(self: @TState, calls: Array<Call>) -> Array<Span<felt252>>;
     fn __validate__(self: @TState, calls: Array<Call>) -> felt252;
     fn is_valid_signature(
-        self: @TState, hash: Array<felt252>, signature: Array<felt252>
+        self: @TState, hash: Array<felt252>, signature: Array<felt252>,
     ) -> felt252;
 }
 
@@ -33,7 +33,7 @@ pub trait IDeployable<TState> {
         class_hash: felt252,
         contract_address_salt: felt252,
         core_validator: felt252,
-        args: Array<felt252>
+        args: Array<felt252>,
     ) -> felt252;
 }
 
@@ -53,11 +53,14 @@ pub trait IModule<TState> {
 
 #[starknet::component]
 pub mod AccountComponent {
-    use starknet::storage::{StorageMapReadAccess, StoragePointerWriteAccess, StorageMapWriteAccess, StoragePointerReadAccess};
+    use starknet::storage::{
+        StorageMapReadAccess, StoragePointerWriteAccess, StorageMapWriteAccess,
+        StoragePointerReadAccess,
+    };
     use smartr::store::Felt252ArrayStore;
     use smartr::component::{
         ICoreValidatorDispatcherTrait, ICoreValidatorLibraryDispatcher, IValidatorDispatcherTrait,
-        IValidatorLibraryDispatcher
+        IValidatorLibraryDispatcher,
     };
     use smartr::component::{IConfigureDispatcherTrait, IConfigureLibraryDispatcher};
     use openzeppelin_account::utils::{MIN_TRANSACTION_VERSION, QUERY_OFFSET};
@@ -85,19 +88,19 @@ pub mod AccountComponent {
     #[derive(Drop, PartialEq, starknet::Event)]
     pub enum Event {
         OwnerAdded: OwnerAdded,
-        OwnerRemoved: OwnerRemoved
+        OwnerRemoved: OwnerRemoved,
     }
 
     #[derive(Drop, PartialEq, starknet::Event)]
     pub struct OwnerAdded {
         #[key]
-        new_owner_guid: Array<felt252>
+        new_owner_guid: Array<felt252>,
     }
 
     #[derive(Drop, PartialEq, starknet::Event)]
     pub struct OwnerRemoved {
         #[key]
-        removed_owner_guid: Array<felt252>
+        removed_owner_guid: Array<felt252>,
     }
 
     pub mod Errors {
@@ -121,7 +124,7 @@ pub mod AccountComponent {
         TContractState,
         +HasComponent<TContractState>,
         +SRC5Component::HasComponent<TContractState>,
-        +Drop<TContractState>
+        +Drop<TContractState>,
     > of super::ISRC6<ComponentState<TContractState>> {
         /// Executes a list of calls from the account.
         ///
@@ -131,7 +134,7 @@ pub mod AccountComponent {
         /// - If the transaction is a simulation (version than `QUERY_OFFSET`), it must be
         /// greater than or equal to `QUERY_OFFSET` + `MIN_TRANSACTION_VERSION`.
         fn __execute__(
-            self: @ComponentState<TContractState>, mut calls: Array<Call>
+            self: @ComponentState<TContractState>, mut calls: Array<Call>,
         ) -> Array<Span<felt252>> {
             // Avoid calls from other contracts
             // https://github.com/OpenZeppelin/cairo-contracts/issues/344
@@ -144,7 +147,8 @@ pub mod AccountComponent {
             // Check if tx is a query
             if (tx_version >= QUERY_OFFSET) {
                 assert(
-                    QUERY_OFFSET + MIN_TRANSACTION_VERSION <= tx_version, Errors::INVALID_TX_VERSION
+                    QUERY_OFFSET + MIN_TRANSACTION_VERSION <= tx_version,
+                    Errors::INVALID_TX_VERSION,
                 );
             } else {
                 assert(MIN_TRANSACTION_VERSION <= tx_version, Errors::INVALID_TX_VERSION);
@@ -175,7 +179,7 @@ pub mod AccountComponent {
 
         /// Verifies that the given signature is valid for the given hash.
         fn is_valid_signature(
-            self: @ComponentState<TContractState>, hash: Array<felt252>, signature: Array<felt252>
+            self: @ComponentState<TContractState>, hash: Array<felt252>, signature: Array<felt252>,
         ) -> felt252 {
             let core_validator = self.Account_core_validator.read();
             ICoreValidatorLibraryDispatcher { class_hash: core_validator }
@@ -188,12 +192,12 @@ pub mod AccountComponent {
         TContractState,
         +HasComponent<TContractState>,
         +SRC5Component::HasComponent<TContractState>,
-        +Drop<TContractState>
+        +Drop<TContractState>,
     > of super::IDeclarer<ComponentState<TContractState>> {
         /// Verifies the validity of the signature for the current transaction.
         /// This function is used by the protocol to verify `declare` transactions.
         fn __validate_declare__(
-            self: @ComponentState<TContractState>, class_hash: felt252
+            self: @ComponentState<TContractState>, class_hash: felt252,
         ) -> felt252 {
             // @todo: we should be able to rebuild the call with the class hash
             // and replace the call to validate_transaction() that is currently
@@ -208,7 +212,7 @@ pub mod AccountComponent {
         TContractState,
         +HasComponent<TContractState>,
         +SRC5Component::HasComponent<TContractState>,
-        +Drop<TContractState>
+        +Drop<TContractState>,
     > of super::IDeployable<ComponentState<TContractState>> {
         /// Verifies the validity of the signature for the current transaction.
         /// This function is used by the protocol to verify `deploy_account` transactions.
@@ -217,7 +221,7 @@ pub mod AccountComponent {
             class_hash: felt252,
             contract_address_salt: felt252,
             core_validator: felt252,
-            args: Array<felt252>
+            args: Array<felt252>,
         ) -> felt252 {
             // @todo: we should be able to rebuild the call with the class hash
             // and replace the call to validate_transaction() that is currently
@@ -232,7 +236,7 @@ pub mod AccountComponent {
         TContractState,
         +HasComponent<TContractState>,
         +SRC5Component::HasComponent<TContractState>,
-        +Drop<TContractState>
+        +Drop<TContractState>,
     > of super::IModule<ComponentState<TContractState>> {
         fn __module_validate__(self: @ComponentState<TContractState>, calldata: Array<felt252>) {
             self.assert_only_self();
@@ -260,7 +264,7 @@ pub mod AccountComponent {
         fn update_core_module(
             ref self: ComponentState<TContractState>,
             class_hash: ClassHash,
-            forward_validate_module: bool
+            forward_validate_module: bool,
         ) {
             self.assert_only_self();
             self.assert_not_corevalidator(class_hash);
@@ -282,7 +286,7 @@ pub mod AccountComponent {
         }
 
         fn call_on_module(
-            self: @ComponentState<TContractState>, class_hash: ClassHash, call: Call
+            self: @ComponentState<TContractState>, class_hash: ClassHash, call: Call,
         ) -> Array<felt252> {
             let is_module = self.is_module(class_hash);
             assert(is_module, Errors::MODULE_NOT_INSTALLED);
@@ -290,7 +294,7 @@ pub mod AccountComponent {
         }
 
         fn execute_on_module(
-            ref self: ComponentState<TContractState>, class_hash: ClassHash, call: Call
+            ref self: ComponentState<TContractState>, class_hash: ClassHash, call: Call,
         ) -> Array<felt252> {
             self.assert_only_self();
             let is_module = self.is_module(class_hash);
@@ -304,14 +308,12 @@ pub mod AccountComponent {
         TContractState,
         +HasComponent<TContractState>,
         impl SRC5: SRC5Component::HasComponent<TContractState>,
-        +Drop<TContractState>
+        +Drop<TContractState>,
     > of InternalTrait<TContractState> {
         /// Initializes the account by setting the initial public key
         /// and registering the ISRC6 interface Id.
         fn initializer(
-            ref self: ComponentState<TContractState>,
-            core_validator: felt252,
-            args: Array<felt252>
+            ref self: ComponentState<TContractState>, core_validator: felt252, args: Array<felt252>,
         ) {
             let mut src5_component = get_dep_component_mut!(ref self, SRC5);
             src5_component.register_interface(super::ISRC6_ID);
@@ -364,14 +366,14 @@ pub mod AccountComponent {
         }
 
         fn notify_owner_addition(
-            ref self: ComponentState<TContractState>, owner_public_key: Array<felt252>
+            ref self: ComponentState<TContractState>, owner_public_key: Array<felt252>,
         ) {
             self.assert_only_self_or_deploy_account();
             self.emit(OwnerAdded { new_owner_guid: owner_public_key });
         }
 
         fn notify_owner_removal(
-            ref self: ComponentState<TContractState>, owner_public_key: Array<felt252>
+            ref self: ComponentState<TContractState>, owner_public_key: Array<felt252>,
         ) {
             self.assert_only_self();
             self.emit(OwnerRemoved { removed_owner_guid: owner_public_key });

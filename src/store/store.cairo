@@ -14,13 +14,13 @@ pub impl Felt252ArrayStore of Store<Array<felt252>> {
     }
 
     fn write(
-        address_domain: u32, base: StorageBaseAddress, value: Array<felt252>
+        address_domain: u32, base: StorageBaseAddress, value: Array<felt252>,
     ) -> SyscallResult<()> {
         Self::write_at_offset(address_domain, base, 0, value)
     }
 
     fn read_at_offset(
-        address_domain: u32, base: StorageBaseAddress, mut offset: u8
+        address_domain: u32, base: StorageBaseAddress, mut offset: u8,
     ) -> SyscallResult<Array<felt252>> {
         let mut arr: Array<felt252> = array![];
 
@@ -46,7 +46,7 @@ pub impl Felt252ArrayStore of Store<Array<felt252>> {
     }
 
     fn write_at_offset(
-        address_domain: u32, base: StorageBaseAddress, mut offset: u8, mut value: Array<felt252>
+        address_domain: u32, base: StorageBaseAddress, mut offset: u8, mut value: Array<felt252>,
     ) -> SyscallResult<()> {
         // // Store the length of the array in the first storage slot.
         let len: u8 = value.len().try_into().expect('Storage - Span too large');
@@ -61,7 +61,7 @@ pub impl Felt252ArrayStore of Store<Array<felt252>> {
                         .unwrap();
                     offset += Store::<felt252>::size();
                 },
-                Option::None(_) => { break Result::Ok(()); }
+                Option::None(_) => { break Result::Ok(()); },
             };
         }
     }

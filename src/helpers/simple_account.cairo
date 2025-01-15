@@ -7,7 +7,7 @@ pub trait IDeployable<TState> {
         class_hash: felt252,
         contract_address_salt: felt252,
         public_key: felt252,
-        more: felt252
+        more: felt252,
     ) -> felt252;
 }
 
@@ -42,7 +42,7 @@ mod SimpleAccount {
             class_hash: felt252,
             contract_address_salt: felt252,
             public_key: felt252,
-            more: felt252
+            more: felt252,
         ) -> felt252 {
             self.account.validate_transaction()
         }

@@ -71,7 +71,7 @@ mod EthValidator {
             'eth-validator'
         }
         fn get_version(self: @ContractState) -> felt252 {
-            'v0.1.10'
+            'v0.2.0'
         }
     }
 
@@ -79,7 +79,7 @@ mod EthValidator {
     pub impl CoreValidator of ICoreValidator<ContractState> {
         /// Verifies that the given signature is valid for the given hash.
         fn is_valid_signature(
-            self: @ContractState, hash: Array<felt252>, signature: Array<felt252>
+            self: @ContractState, hash: Array<felt252>, signature: Array<felt252>,
         ) -> felt252 {
             if hash.len() != 1 {
                 return 0;
@@ -96,10 +96,8 @@ mod EthValidator {
             let mut value = args.span();
             let eth_public_key = Serde::<EthPublicKey>::deserialize(ref value);
             match eth_public_key {
-                Option::Some(key) => {
-                    self.EthAccount_public_key.write(key);
-                    // @todo: implement notify_owner_addition
-                    // self.account.notify_owner_addition(args);
+                Option::Some(key) => { self.EthAccount_public_key.write(key); // @todo: implement notify_owner_addition
+                // self.account.notify_owner_addition(args);
                 },
                 Option::None => { assert(false, 'Invalid public key'); },
             }
@@ -182,7 +180,7 @@ mod EthValidator {
             let mut public_key_felt = ArrayTrait::<felt252>::new();
             new_public_key.serialize(ref public_key_felt);
             // @todo: implement notify_owner_addition
-            // self.eth_account.notify_owner_addition(public_key_felt);
+        // self.eth_account.notify_owner_addition(public_key_felt);
         }
 
         /// Returns the current public keys of the account.
@@ -204,7 +202,7 @@ mod EthValidator {
         /// Returns whether the given signature is valid for the given hash
         /// using the account's current public key.
         fn _is_valid_signature(
-            self: @ContractState, hash: felt252, signature: Span<felt252>
+            self: @ContractState, hash: felt252, signature: Span<felt252>,
         ) -> bool {
             let public_key: EthPublicKey = self.EthAccount_public_key.read();
             is_valid_eth_signature(hash, public_key, signature)
@@ -219,7 +217,7 @@ mod tests {
     #[test]
     fn value_match_key() {
         let value: Array<felt252> = array![
-            3, 0, 215399990735478923917501906261422522596, 277625874459002347535277135431259155380
+            3, 0, 215399990735478923917501906261422522596, 277625874459002347535277135431259155380,
         ];
         let mut value = value.span();
         let eth_public_key = Serde::<EthPublicKey>::deserialize(ref value);
@@ -247,7 +245,7 @@ mod tests {
             210289098249831467762502193281061856838,
             280617501412351006689952710290844664966,
             258172356515136873455592221375042794236,
-            69849287226094710129367771214955413606
+            69849287226094710129367771214955413606,
         ];
         let mut value = value.span();
         let eth_public_key = Serde::<EthPublicKey>::deserialize(ref value);
