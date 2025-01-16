@@ -35,11 +35,11 @@ jobs:
         with:
           scarb-lock: ./starknet-modular-account/Scarb.lock
 
-      - name: Build starknet contracts
-        run: scarb build
-
       - name: Configure environment for devnet and seed=0
         run: cp .env.template.json .env.devnet.json
+
+      - name: Build starknet contracts
+        run: scarb build
 
       - name: build the project
         run: npm run build
