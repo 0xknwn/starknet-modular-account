@@ -9,7 +9,7 @@ import { data as TokenAContract } from "./artifacts/TokenA-contract";
 import { data as TokenACompiled } from "./artifacts/TokenA-compiled";
 import { data as TokenBContract } from "./artifacts/TokenB-contract";
 import { data as TokenBCompiled } from "./artifacts/TokenB-compiled";
-
+import type { UniversalDetails } from "starknet";
 /**
  * Computes the hash of the requested class that is part of the
  * 0xknwn/starknet-modular-account project.
@@ -76,7 +76,8 @@ export const declareClass = async (
     | "SimpleAccount"
     | "SwapRouter"
     | "TokenA"
-    | "TokenB" = "Counter"
+    | "TokenB",
+    details?: UniversalDetails,
 ) => {
   const HelperClassHash = classHash(className);
 
@@ -138,7 +139,7 @@ export const declareClass = async (
   const declare = await account.declare({
     contract: compiledTestSierra,
     casm: compiledTestCasm,
-  });
+  }, details);
   return {
     ...(await account.waitForTransaction(declare.transaction_hash)),
     classHash: declare.class_hash,

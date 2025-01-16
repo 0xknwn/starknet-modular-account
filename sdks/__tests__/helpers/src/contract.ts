@@ -1,8 +1,8 @@
 import { classHash } from "./class";
 import { Contract, Account, hash, ec } from "starknet";
-import { udcAddress, ETH } from "./natives";
-import { initial_EthTransfer } from "./parameters";
-import { type Abi } from "starknet";
+import { udcAddress, ETH, STRK } from "./natives";
+import { initial_EthTransfer, initial_StrkTransfer } from "./parameters";
+import type { Abi, UniversalDetails } from "starknet";
 
 /**
  * Calculates the contract address for a given contract name, deployer address,
@@ -63,7 +63,8 @@ export const deployContract = async (
   contractName: "Counter" | "SwapRouter" | "TokenA" | "TokenB" = "Counter",
   ABI: Abi,
   deployerAccount: Account,
-  constructorCalldata: any[]
+  constructorCalldata: any[],
+  details?: UniversalDetails,
 ): Promise<Contract> => {
   const classH = classHash(contractName);
   // check if the contract is already deployed and if it has been, return the
@@ -84,7 +85,8 @@ export const deployContract = async (
     classHash: classH,
     constructorCalldata: constructorCalldata,
     salt: "0x0",
-  });
+  }, 
+  details);
   await deployerAccount.waitForTransaction(deployResponse.transaction_hash);
   return new Contract(ABI, deployResponse.contract_address, deployerAccount);
 };
@@ -103,7 +105,8 @@ export const deployAccount = async (
   deployerAccount: Account,
   accountName: "SimpleAccount",
   publicKey: string,
-  constructorCalldata: any[]
+  constructorCalldata: any[],
+  details?: UniversalDetails,
 ) => {
   if (!accountName) {
     throw new Error(`the account name is required`);
@@ -124,9 +127,19 @@ export const deployAccount = async (
   } catch (e) {}
 
   // transfer some eth to the account
-  const { transaction_hash } = await ETH(deployerAccount).transfer(
+  let version = deployerAccount.transactionVersion
+  if (details && details.version) {
+    if (details.version === 3) {
+      version = "0x3";
+    } else if (details.version === 2) {
+      version = "0x2";
+    }
+  } 
+  const TOKEN = (version === "0x2" ? ETH : STRK)
+  const initial_Transfer = (version === "0x2" ? initial_EthTransfer : initial_StrkTransfer)
+  const { transaction_hash } = await TOKEN(deployerAccount).transfer(
     computedAccountAddress,
-    initial_EthTransfer
+    initial_Transfer
   );
   let receipt = await deployerAccount.waitForTransaction(transaction_hash);
   if (!receipt.isSuccess()) {
@@ -141,7 +154,7 @@ export const deployAccount = async (
       classHash: computedClassHash,
       constructorCalldata,
       addressSalt: publicKey,
-    });
+    }, details);
   receipt = await deployerAccount.waitForTransaction(tx);
   if (!receipt.isSuccess()) {
     throw new Error(`Failed to deploy account: ${receipt.status}`);

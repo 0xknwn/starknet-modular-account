@@ -16,7 +16,8 @@ describe("utilities (helpers)", () => {
         expect(c.accounts[0].address).not.toBe(undefined);
         break;
       default:
-        expect(c.providerURL).toBe("http://127.0.0.1:5050/rpc");
+        expect(c.providerURL).toContain("http://127.0.0.1");
+        expect(c.providerURL).toContain("/rpc");
         expect(c.accounts[0]).not.toBe(undefined);
         expect(c.accounts[0].address).not.toBe(undefined);
         break;

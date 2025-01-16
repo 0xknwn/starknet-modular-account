@@ -13,8 +13,9 @@ import { swapRouterAddress, deploySwapRouter } from "./swap_router";
 import { default_timeout } from "./parameters";
 import { ec, hash, cairo, Contract } from "starknet";
 import { SwapRouter } from "./swap_router";
+import { data } from "./data.fixture";
 
-describe("swap router", () => {
+describe.each(data)("swap router", ({ name, version, accountID }) => {
   let env: string;
   let altProviderURL: string;
   let swapRouterContract: SwapRouter;
@@ -29,22 +30,22 @@ describe("swap router", () => {
   });
 
   it(
-    "declares the SwapRouter class",
+    `[${name}] declares the SwapRouter class`,
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "SwapRouter");
+      const a = testAccounts(conf)[accountID];
+      const c = await declareClass(a, "SwapRouter", { version: version.declare });
       expect(c.classHash).toEqual(classHash("SwapRouter"));
     },
     default_timeout
   );
 
   it(
-    "deploys the SwapRouter contract",
+    `[${name}] deploys the SwapRouter contract`,
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await deploySwapRouter(a, a.address);
+      const a = testAccounts(conf)[accountID];
+      const c = await deploySwapRouter(a, a.address, { version: version.invoke });
       const routerAddress = await swapRouterAddress(a.address, a.address);
       swapRouterContract = new SwapRouter(routerAddress, a);
       expect(c.address).toEqual(routerAddress);
@@ -53,22 +54,22 @@ describe("swap router", () => {
   );
 
   it(
-    "declares the TokenA class",
+    `[${name}] declares the TokenA class`,
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "TokenA");
+      const a = testAccounts(conf)[accountID];
+      const c = await declareClass(a, "TokenA", { version: version.declare });
       expect(c.classHash).toEqual(classHash("TokenA"));
     },
     default_timeout
   );
 
   it(
-    "deploys the TokenA contract",
+    `[${name}] deploys the TokenA contract`,
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await deployTokenA(a, swapRouterContract.address, a.address);
+      const a = testAccounts(conf)[accountID];
+      const c = await deployTokenA(a, swapRouterContract.address, a.address, { version: version.invoke });
       tokenA = new Contract(
         TokenAABI,
         await tokenAAddress(a.address, swapRouterContract.address, a.address),
@@ -82,22 +83,22 @@ describe("swap router", () => {
   );
 
   it(
-    "declares the TokenB class",
+    `[${name}] declares the TokenB class`,
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "TokenB");
+      const a = testAccounts(conf)[accountID];
+      const c = await declareClass(a, "TokenB", { version: version.declare });
       expect(c.classHash).toEqual(classHash("TokenB"));
     },
     default_timeout
   );
 
   it(
-    "deploys the TokenB contract",
+    `[${name}] deploys the TokenB contract`,
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await deployTokenB(a, swapRouterContract.address, a.address);
+      const a = testAccounts(conf)[accountID];
+      const c = await deployTokenB(a, swapRouterContract.address, a.address, { version: version.invoke });
       tokenB = new Contract(
         TokenBABI,
         await tokenBAddress(a.address, swapRouterContract.address, a.address),
@@ -110,9 +111,10 @@ describe("swap router", () => {
     default_timeout
   );
 
-  it("compute and check TokenA address", async () => {
+  it(
+    `[${name}] compute and check TokenA address`, async () => {
     const conf = config(env);
-    const a = testAccounts(conf)[0];
+    const a = testAccounts(conf)[accountID];
     const creatorAddress = a.address;
     const recipientAddress = swapRouterContract.address;
     const ownerAddress = a.address;
@@ -134,7 +136,7 @@ describe("swap router", () => {
   });
 
   it(
-    "sets the tokens in the SwapRouter",
+    `[${name}] sets the tokens in the SwapRouter`,
     async () => {
       const is_paused = await swapRouterContract.is_paused();
       if (!is_paused) {
@@ -151,10 +153,10 @@ describe("swap router", () => {
   );
 
   it(
-    "checks tokenA and tokenB initial account balance",
+    `[${name}] checks tokenA and tokenB initial account balance`,
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
+      const a = testAccounts(conf)[accountID];
       let balance = await tokenA.balance_of(a.address);
       expect(balance).toBeGreaterThanOrEqual(0n);
       tokenAInitialBalance = balance;
@@ -166,7 +168,7 @@ describe("swap router", () => {
   );
 
   it(
-    "requests tokenA to the faucet",
+    `[${name}] requests tokenA to the faucet`,
     async () => {
       const receipt = await swapRouterContract.faucet(
         cairo.uint256(2n * 10n ** 18n)
@@ -177,13 +179,13 @@ describe("swap router", () => {
   );
 
   it(
-    "checks the account has been funded with tokenA",
+    `[${name}] checks the account has been funded with tokenA`,
     async () => {
       if (tokenAInitialBalance === undefined) {
         throw new Error("tokenAInitialBalance is undefined");
       }
       const conf = config(env);
-      const a = testAccounts(conf)[0];
+      const a = testAccounts(conf)[accountID];
       const balance = await tokenA.balance_of(a.address);
       expect(balance - tokenAInitialBalance).toBeGreaterThanOrEqual(
         2000000000000000000n
@@ -193,10 +195,10 @@ describe("swap router", () => {
   );
 
   it(
-    "swaps tokenA for tokenB",
+    `[${name}] swaps tokenA for tokenB`,
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
+      const a = testAccounts(conf)[accountID];
       // @todo: fix this test and/or the swap function
       const receipt = await swapRouterContract.swap(
         tokenA.address,
@@ -208,13 +210,13 @@ describe("swap router", () => {
   );
 
   it(
-    "checks the account has been funded with tokenB",
+    `[${name}] checks the account has been funded with tokenB`,
     async () => {
       if (tokenBInitialBalance === undefined) {
         throw new Error("tokenAInitialBalance is undefined");
       }
       const conf = config(env);
-      const a = testAccounts(conf)[0];
+      const a = testAccounts(conf)[accountID];
       const balance = await tokenB.balance_of(a.address);
       expect(balance - tokenBInitialBalance).toBeGreaterThanOrEqual(10n ** 15n);
     },

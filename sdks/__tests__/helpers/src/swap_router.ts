@@ -1,9 +1,9 @@
 import { Contract, Call, Account, CallData } from "starknet";
 import { ABI as SwapRouterABI } from "./abi/SwapRouter";
 import { contractAddress, deployContract } from "./contract";
-import { type Uint256 } from "starknet";
+import type { Uint256, UniversalDetails } from "starknet";
 import { ABI as TokenAABI } from "./abi/TokenA";
-import { ABI as TokenBABI } from "./abi/TokenB";
+
 /**
  * Retrieves the swap router address from its deployer and owner.
  * @param deployerAddress - The address of the deployer.
@@ -29,7 +29,8 @@ export const swapRouterAddress = async (
  */
 export const deploySwapRouter = async (
   deployerAccount: Account,
-  ownerAddress: string
+  ownerAddress: string,
+  details?: UniversalDetails
 ): Promise<Contract> => {
   const myCallData = new CallData(SwapRouterABI);
   const _calldata = myCallData.compile("constructor", {
@@ -39,7 +40,8 @@ export const deploySwapRouter = async (
     "SwapRouter",
     SwapRouterABI,
     deployerAccount,
-    _calldata
+    _calldata,
+    details
   );
 };
 

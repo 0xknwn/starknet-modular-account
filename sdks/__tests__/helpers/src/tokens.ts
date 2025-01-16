@@ -1,4 +1,4 @@
-import { Contract, RpcProvider, Account, CallData, uint256 } from "starknet";
+import { Contract, type UniversalDetails, Account, CallData } from "starknet";
 import { deployContract } from "./contract";
 import { ABI as TokenAABI } from "./abi/TokenA";
 import { ABI as TokenBABI } from "./abi/TokenB";
@@ -29,14 +29,15 @@ export const tokenAAddress = async (
 export const deployTokenA = async (
   deployerAccount: Account,
   recipientAddress: string,
-  ownerAddress: string
+  ownerAddress: string,
+  details?: UniversalDetails
 ): Promise<Contract> => {
   const myCallData = new CallData(TokenAABI);
   const _calldata = myCallData.compile("constructor", {
     recipient: recipientAddress,
     owner: ownerAddress,
   });
-  return deployContract("TokenA", TokenAABI, deployerAccount, _calldata);
+  return deployContract("TokenA", TokenAABI, deployerAccount, _calldata, details);
 };
 
 /**
@@ -63,12 +64,13 @@ export const tokenBAddress = async (
 export const deployTokenB = async (
   deployerAccount: Account,
   recipientAddress: string,
-  ownerAddress: string
+  ownerAddress: string,
+  details?: UniversalDetails
 ): Promise<Contract> => {
   const myCallData = new CallData(TokenBABI);
   const _calldata = myCallData.compile("constructor", {
     recipient: recipientAddress,
     owner: ownerAddress,
   });
-  return deployContract("TokenB", TokenBABI, deployerAccount, _calldata);
+  return deployContract("TokenB", TokenBABI, deployerAccount, _calldata, details);
 };

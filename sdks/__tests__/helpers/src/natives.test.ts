@@ -1,27 +1,30 @@
 import { config, testAccounts } from "./utils";
 import { initial_EthTransfer, default_timeout } from "./parameters";
-import { ETH } from "./natives";
-import { RpcProvider, uint256, cairo } from "starknet";
+import { ETH, STRK } from "./natives";
+import { RpcProvider, uint256 } from "starknet";
 
-describe("native tokens management", () => {
+import { data } from "./data.fixture";
+
+
+describe.each(data)("native tokens management", ({ name, accountID }) => {
   let env = "devnet";
 
-  it("checks an $ETH balance", async () => {
+  it(`[${name}] checks an $ETH balance`, async () => {
     const conf = config(env);
     const provider = new RpcProvider({ nodeUrl: conf.providerURL });
     const amount = await (
       await ETH(provider)
-    ).balance_of(testAccounts(conf)[0].address);
+    ).balance_of(testAccounts(conf)[accountID].address);
     expect(amount).toBeGreaterThanOrEqual(
       3n * uint256.uint256ToBN(initial_EthTransfer)
     );
   });
 
-  it("checks an $STRK balance", async () => {
+  it(`[${name}] checks an $STRK balance`, async () => {
     const conf = config(env);
     const provider = new RpcProvider({ nodeUrl: conf.providerURL });
     const amount = await ETH(provider).balance_of(
-      testAccounts(conf)[0].address
+      testAccounts(conf)[accountID].address
     );
     switch (env) {
       case "sepolia":
@@ -36,12 +39,13 @@ describe("native tokens management", () => {
   });
 
   it(
-    "transfers $ETH",
+    `[${name}] transfers ${name === "WEI" ? "$ETH" : "$STRK"}`,
     async () => {
       const conf = config(env);
       const accounts = testAccounts(conf);
-      const eth = ETH(accounts[0]);
-      const destAddress = accounts[1].address;
+      const TOKEN = (name === "WEI" ? ETH : STRK)
+      const eth = TOKEN(accounts[accountID]);
+      const destAddress = accounts[2].address;
       const initialAmount = (await eth.balance_of(destAddress)) as bigint;
 
       const { transaction_hash } = await eth.transfer(

@@ -10,26 +10,31 @@ take the coming weeks and months.
 Ideas to enhance the account are legions. However, we plan to stay focus on a
 small set of features:
 
-1. Develop a Guarded Validator. This would require it to be a core validators.
+1. Add support for the version 3 of the transaction as described in
+   [SNIP-8](https://github.com/starknet-io/SNIPs/blob/main/SNIPS/snip-8.md).
+2. Add an entrypoint to allow `execute_from_outside` with the signature from
+   the core validator and some limitation as described in
+   [SNIP-9](https://github.com/starknet-io/SNIPs/blob/main/SNIPS/snip-9.md).
+   This entrypoint would require to manage a user defined Nonce to prevent
+   replay-scenarios. It would also battle test the model. The benefit from that
+   entrypoint besides is that it allows a 3rd party to pay for your transaction.
+   A consolation prize for the paymaster to not be implemented yet. For some
+   implementation details:
+   - [Outside execution on Starknet Community](https://community.starknet.io/t/snip-outside-execution/101058)
+   - [Enabling meta-transactions on Starknet](https://docs.argent.xyz/aa-use-cases/outside-execution)
+   - [Using paymaster on AVNU Portal](https://doc.avnu.fi/avnu-paymaster/using-paymaster-on-avnu-portal)
+3. Develop a Guarded Validator. This would require it to be a core validators.
    It would provide more value for the modular account because the
    implementation requires some different signature depending on the calls so
    it would validate/invalidate the current set of interfaces.
-2. Add an entrypoint to allow `execute_from_outside` with the signature from
-   the core validator and some limitation. This entrypoint would require to
-   manage a user defined Nonce to prevent replay-scenarios. It would also
-   battle test the model. The benefit from that entrypoint besides is that it
-   allows a 3rd party to pay for your transaction. A consolation prize for the
-   paymaster to not be implemented yet.
-3. Move the Validator Module data from a prefix call to the account signature.
+4. Move the Validator Module data from a prefix call to the account signature.
    This might not be feasible but it makes sense because the validation is
    supposed to rely on the signature.
-4. Add support for Executor Modules. Some scenario like the ability to delay the
+5. Add support for Executor Modules. Some scenario like the ability to delay the
    execution of a transaction or the ability to track some data like an amount
    of ERC20 dedicated to a 3rd party requires those modules to work.
-5. Add support for the version 3 of the transaction as described in
-   [SNIP-8](https://github.com/starknet-io/SNIPs/blob/main/SNIPS/snip-8.md).
-6. Ensure the compatibility between session key and
-   [SNIP-12](https://github.com/starknet-io/SNIPs/blob/main/SNIPS/snip-12.md).
+6. Ensure the compatibility between session key and offchain signature à la
+   EIP-712 or [SNIP-12](https://github.com/starknet-io/SNIPs/blob/main/SNIPS/snip-12.md).
 7. Check what can be done to support upgrades from OpenZeppelin, Argent and
    Braavo Accounts
 
