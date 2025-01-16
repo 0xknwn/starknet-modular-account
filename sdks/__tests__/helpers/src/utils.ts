@@ -13,6 +13,8 @@ export type AccountConfig = {
   privateKey: string;
   // The public key.
   publicKey: string;
+  // The public key.
+  defaultTransactionVersion: "0x2" | "0x3";
 };
 
 /**
@@ -58,7 +60,9 @@ export const testAccounts = (config: Config): Account[] => {
     const account = new Account(
       provider,
       configAccount.address,
-      configAccount.privateKey
+      configAccount.privateKey,
+      '1',
+      configAccount.defaultTransactionVersion,
     );
     accounts.push(account);
   }

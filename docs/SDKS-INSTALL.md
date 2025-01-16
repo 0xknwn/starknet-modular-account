@@ -65,7 +65,7 @@ to your project, run the command below:
 ```shell
 npm install --save @0xknwn/starknet-modular-account
 
-npm install --save starknet@6.8.0
+npm install --save starknet@next
 ```
 
 ## Install the SessionKey Module SDK
@@ -78,5 +78,5 @@ npm install --save \
   @0xknwn/starknet-modular-account \
   @0xknwn/starknet-module-sessionkey
 
-npm install --save starknet@6.8.0
+npm install --save starknet@next
 ```

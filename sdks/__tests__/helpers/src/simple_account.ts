@@ -1,4 +1,4 @@
-import { Account, CallData } from "starknet";
+import { Account, CallData, type UniversalDetails } from "starknet";
 import { ABI as SimpleAccountABI } from "./abi/SimpleAccount";
 import { accountAddress, deployAccount } from "./contract";
 export { SimpleAccountABI };
@@ -32,7 +32,8 @@ export const simpleAccountAddress = (
 export const deploySimpleAccount = async (
   deployerAccount: Account,
   publicKey: string,
-  more: string
+  more: string,
+  details?: UniversalDetails
 ) => {
   const callData = new CallData(SimpleAccountABI).compile("constructor", {
     public_key: publicKey,
@@ -42,6 +43,7 @@ export const deploySimpleAccount = async (
     deployerAccount,
     "SimpleAccount",
     publicKey,
-    callData
+    callData,
+    details
   );
 };

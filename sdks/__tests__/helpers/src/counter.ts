@@ -1,4 +1,4 @@
-import { Contract, Call, Account, CallData } from "starknet";
+import { Contract, Call, Account, CallData, UniversalDetails } from "starknet";
 import { ABI as CounterABI } from "./abi/Counter";
 import { contractAddress, deployContract } from "./contract";
 
@@ -27,13 +27,14 @@ export const counterAddress = async (
  */
 export const deployCounter = async (
   deployerAccount: Account,
-  ownerAddress: string
+  ownerAddress: string,
+  details?: UniversalDetails,
 ): Promise<Contract> => {
   const myCallData = new CallData(CounterABI);
   const _calldata = myCallData.compile("constructor", {
     owner: ownerAddress,
   });
-  return deployContract("Counter", CounterABI, deployerAccount, _calldata);
+  return deployContract("Counter", CounterABI, deployerAccount, _calldata, details);
 };
 
 export { CounterABI };

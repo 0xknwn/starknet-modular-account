@@ -3,8 +3,9 @@ import { deploySimpleAccount, simpleAccountAddress } from "./simple_account";
 import { config, testAccounts } from "./utils";
 import { Account, RpcProvider } from "starknet";
 import { default_timeout } from "./parameters";
+import { data } from "./data.fixture";
 
-describe("simple account management", () => {
+describe.each(data)("simple account management", ({ name, version, accountID }) => {
   let env: string;
   let simpleAccount: Account;
   beforeAll(() => {
@@ -18,25 +19,25 @@ describe("simple account management", () => {
   });
 
   it(
-    "deploys the Account class",
+    `[${name}] deploys the Account class`,
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await declareClass(a, "SimpleAccount");
+      const a = testAccounts(conf)[accountID];
+      const c = await declareClass(a, "SimpleAccount", { version: version.declare });
       expect(c.classHash).toEqual(classHash("SimpleAccount"));
     },
     default_timeout
   );
 
   it(
-    "deploys the account contract",
+    `[${name}] deploys the account contract`,
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const publicKey = conf.accounts[0].publicKey;
-      const c = await deploySimpleAccount(a, publicKey, "0x10");
+      const a = testAccounts(conf)[accountID];
+      const publicKey = conf.accounts[accountID].publicKey;
+      const c = await deploySimpleAccount(a, publicKey, "0x10", { version: version.invoke });
       expect(c).toEqual(
-        simpleAccountAddress(conf.accounts[0].publicKey, "0x10")
+        simpleAccountAddress(conf.accounts[accountID].publicKey, "0x10")
       );
     },
     default_timeout
