@@ -47,7 +47,7 @@ const main = async () => {
   const smartrAccountPublicKey = await smartrSigner.getPubKey();
   const calldata = new CallData(SmartrAccountABI).compile("constructor", {
     core_validator: starkValidatorClassHash,
-    public_key: [smartrAccountPublicKey],
+    args: [smartrAccountPublicKey],
   });
   const smartrAccountAddress = accountAddress(
     "SmartrAccount",

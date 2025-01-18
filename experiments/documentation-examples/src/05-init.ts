@@ -10,7 +10,8 @@ import {
 } from "@0xknwn/starknet-test-helpers";
 
 const ozAccountAddress =
-  "0x3b2d6d0edcbdbdf6548d2b79531263628887454a0a608762c71056172d36240";
+  "0x64b48806902a367c8598f4f95c305e8c1a1acba5f082d294a43793113115691";
+const ozAccountPrivateKey = "0x71d7bb07b9a64f6f78ac4c816aff4da9";
 const smartrAccountPrivateKey = "0x1";
 
 export { CounterABI };
@@ -21,7 +22,7 @@ export const init = async () => {
   const starkValidatorClassHash = classHash("StarkValidator");
   const calldata = new CallData(SmartrAccountABI).compile("constructor", {
     core_validator: starkValidatorClassHash,
-    public_key: [smartrAccountPublicKey],
+    args: [smartrAccountPublicKey],
   });
   const smartrAccountAddress = accountAddress(
     "SmartrAccount",
@@ -35,6 +36,8 @@ export const init = async () => {
     ozAccountAddress
   );
   return {
+    ozAccountAddress,
+    ozAccountPrivateKey,
     accountAddress: smartrAccountAddress,
     counterAddress,
     smartrAccountPrivateKey,

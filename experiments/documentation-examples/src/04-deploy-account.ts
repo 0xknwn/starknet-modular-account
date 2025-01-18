@@ -1,5 +1,5 @@
 // file src/04-deploy-account.ts
-import { RpcProvider, EthSigner, Contract, cairo, hash } from "starknet";
+import { RpcProvider, EthSigner, Contract, cairo, hash, Account } from "starknet";
 import {
   accountAddress,
   deployAccount,
@@ -14,12 +14,13 @@ const ethAddress =
 // these are the settings for the devnet with --seed=0
 // change them to mee your requirements
 const providerURL = "http://127.0.0.1:5050/rpc";
+// const providerURL = "http://127.0.0.1:8080/rpc";
 const ethPrivateKey =
   "0xb28ebb20fb1015da6e6367d1b5dba9b52862a06dbb3a4022e4749b6987ac1bd2";
 
 const main = async () => {
   const provider = new RpcProvider({ nodeUrl: providerURL });
-  const { accountAddress: ozAccountAddress, smartrAccountPrivateKey } =
+  const { ozAccountAddress, ozAccountPrivateKey } =
     await init();
 
   // Step 1 - Get the public key from the Eth Signer
@@ -46,18 +47,14 @@ const main = async () => {
   );
 
   // Step 3 - Send ETH to the computed account address
-  const account = new SmartrAccount(
+  const account = new Account(
     provider,
     ozAccountAddress,
-    smartrAccountPrivateKey
+    ozAccountPrivateKey
   );
   const ETH = new Contract(ERC20ABI, ethAddress, account);
-  const initial_EthTransfer = cairo.uint256(5n * 10n ** 15n);
-  const call = ETH.populate("transfer", {
-    recipient: computedAccountAddress,
-    amount: initial_EthTransfer,
-  });
-  const { transaction_hash } = await account.execute(call);
+  const initial_EthTransfer = cairo.uint256(3n * 10n ** 15n);
+  const { transaction_hash } = await ETH.transfer(computedAccountAddress, initial_EthTransfer);
   const output = await account.waitForTransaction(transaction_hash);
   if (!output.isSuccess()) {
     throw new Error("Could not send ETH to the expected address");

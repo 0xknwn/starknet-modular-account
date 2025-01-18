@@ -21,7 +21,7 @@ export const init = async () => {
   const multisigValidatorClassHash = moduleClassHash("MultisigValidator");
   const calldata = new CallData(SmartrAccountABI).compile("constructor", {
     core_validator: multisigValidatorClassHash,
-    public_key: [smartrAccountPublicKey],
+    args: [smartrAccountPublicKey],
   });
   const smartrAccountAddress = accountAddress(
     "SmartrAccount",

@@ -13,7 +13,6 @@ import {
   deployAccount,
   SmartrAccountABI,
 } from "@0xknwn/starknet-modular-account";
-import { declareClass as ethDeclareClass } from "@0xknwn/starknet-module";
 import { ABI as ERC20ABI } from "./abi/ERC20";
 import {
   declareClass as helperDeclareClass,
@@ -48,7 +47,7 @@ const main = async () => {
   const smartrAccountPublicKey = await smartrSigner.getPubKey();
   const calldata = new CallData(SmartrAccountABI).compile("constructor", {
     core_validator: starkValidatorClassHash,
-    public_key: [smartrAccountPublicKey],
+    args: [smartrAccountPublicKey],
   });
   const smartrAccountAddress = accountAddress(
     "SmartrAccount",
@@ -56,7 +55,7 @@ const main = async () => {
     calldata
   );
   const ETH = new Contract(ERC20ABI, ethAddress, account);
-  const initial_EthTransfer = cairo.uint256(10n * 10n ** 15n);
+  const initial_EthTransfer = cairo.uint256(3n * 10n ** 15n);
   const call = ETH.populate("transfer", {
     recipient: smartrAccountAddress,
     amount: initial_EthTransfer,
