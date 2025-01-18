@@ -1,7 +1,6 @@
-import { Account, Contract, hash, num } from "starknet";
+import { Account, Contract, hash, num, UniversalDetails } from "starknet";
 import { classHash } from "./class";
-import { ABI as ERC20ABI } from "./abi/ERC20";
-import { ethAddress } from "./natives";
+import { ETH, STRK } from "./natives";
 /**
  * Calculates the account address for a given account name, public key, and constructor call data.
  * @param class_hash - The class hash of the contract.
@@ -39,8 +38,12 @@ export const deployAccount = async (
   deployerAccount: Account,
   accountName: "SmartrAccount",
   salt: string,
-  constructorCalldata: any[]
+  constructorCalldata: any[],
+  details?: UniversalDetails
 ) => {
+  if (!accountName) {
+    throw new Error(`the account name is required`);
+  }
   const computedAccountAddress = accountAddress(
     accountName,
     salt,
@@ -69,8 +72,19 @@ export const deployAccount = async (
   } catch (e) {}
 
   // Check if the account has enough eth to deploy the account
-  const eth = new Contract(ERC20ABI, ethAddress, deployerAccount);
-  const result = await eth.call("balance_of", [computedAccountAddress]);
+  // transfer some eth to the account
+  let version = deployerAccount.transactionVersion;
+  if (details && details.version) {
+    if (details.version === 3) {
+      version = "0x3";
+    } else if (details.version === 2 || details.version === 1) {
+      version = "0x2";
+    }
+  }
+  const TOKEN = version === "0x2" ? ETH : STRK;
+  const result = await TOKEN(deployerAccount).call("balance_of", [
+    computedAccountAddress,
+  ]);
   const balance = num.toBigInt(result.toString());
   if (balance <= 10n ** 15n) {
     throw new Error(
@@ -87,7 +101,7 @@ export const deployAccount = async (
         addressSalt: salt,
       },
       // @todo: remove this once the fee is fixed
-      { maxFee: "0x2000000000000" }
+      { ...details, version: version === "0x3" ? "0x3" : "0x1" }
     );
   const receipt = await deployerAccount.waitForTransaction(tx);
   if (!receipt.isSuccess()) {

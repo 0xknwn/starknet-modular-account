@@ -1,4 +1,10 @@
-import { hash, json, CompiledContract, Account } from "starknet";
+import {
+  hash,
+  json,
+  CompiledContract,
+  Account,
+  UniversalDetails,
+} from "starknet";
 import { data as StarkValidatorContract } from "./artifacts/StarkValidator-contract";
 import { data as StarkValidatorCompiled } from "./artifacts/StarkValidator-compiled";
 import { data as SimpleValidatorContract } from "./artifacts/SimpleValidator-contract";
@@ -57,10 +63,8 @@ export const classHash = (
  */
 export const declareClass = async (
   account: Account,
-  className:
-    | "StarkValidator"
-    | "SmartrAccount"
-    | "SimpleValidator" = "SmartrAccount"
+  className: "StarkValidator" | "SmartrAccount" | "SimpleValidator",
+  details?: UniversalDetails
 ) => {
   const HelperClassHash = classHash(className);
 
@@ -107,10 +111,13 @@ export const declareClass = async (
   const compiledTestCasm = json.parse(
     Buffer.from(compiled, "base64").toString("ascii")
   );
-  const declare = await account.declare({
-    contract: compiledTestSierra,
-    casm: compiledTestCasm,
-  });
+  const declare = await account.declare(
+    {
+      contract: compiledTestSierra,
+      casm: compiledTestCasm,
+    },
+    details
+  );
   return {
     ...(await account.waitForTransaction(declare.transaction_hash)),
     classHash: declare.class_hash,
