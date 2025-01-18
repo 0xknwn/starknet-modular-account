@@ -101,7 +101,7 @@ export const deployAccount = async (
         addressSalt: salt,
       },
       // @todo: remove this once the fee is fixed
-      { version: version === "0x3" ? "0x3" : "0x1" }
+      { ...details, version: version === "0x3" ? "0x3" : "0x1" }
     );
   const receipt = await deployerAccount.waitForTransaction(tx);
   if (!receipt.isSuccess()) {

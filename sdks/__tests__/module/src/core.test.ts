@@ -186,7 +186,8 @@ describe.each(dataset)("core validator management", ({ name, data }) => {
         smartrAccountWithModule,
         "SmartrAccount",
         salt,
-        calldata
+        calldata,
+        { maxFee: "0x2000000000000" }
       );
       expect(address).toEqual(accountAddress("SmartrAccount", salt, calldata));
     },
