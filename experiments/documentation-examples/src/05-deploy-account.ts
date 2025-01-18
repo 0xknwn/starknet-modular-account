@@ -1,12 +1,12 @@
 // file src/05-deploy-account.ts
-import { RpcProvider, Contract, cairo, hash } from "starknet";
+import { RpcProvider, Contract, cairo, hash, Account } from "starknet";
 import {
   accountAddress,
   deployAccount,
   SmartrAccount,
 } from "@0xknwn/starknet-modular-account";
 import {
-  classHash as moduleClassHash,
+  classHash as P256ClassHash,
   P256Signer,
 } from "@0xknwn/starknet-module";
 import { init } from "./05-init";
@@ -22,7 +22,7 @@ const p256PrivateKey =
 
 const main = async () => {
   const provider = new RpcProvider({ nodeUrl: providerURL });
-  const { accountAddress: ozAccountAddress, smartrAccountPrivateKey } =
+  const { ozAccountAddress, ozAccountPrivateKey } =
     await init();
 
   // Step 1 - Get the public key from the Eth Signer
@@ -45,22 +45,18 @@ const main = async () => {
   const computedAccountAddress = accountAddress(
     "SmartrAccount",
     publicKeyHash,
-    [moduleClassHash("P256Validator"), "0x4", ...publicKeyArray]
+    [P256ClassHash("P256Validator"), "0x4", ...publicKeyArray]
   );
 
   // Step 3 - Send ETH to the computed account address
-  const account = new SmartrAccount(
+  const account = new Account(
     provider,
     ozAccountAddress,
-    smartrAccountPrivateKey
+    ozAccountPrivateKey
   );
   const ETH = new Contract(ERC20ABI, ethAddress, account);
-  const initial_EthTransfer = cairo.uint256(5n * 10n ** 15n);
-  const call = ETH.populate("transfer", {
-    recipient: computedAccountAddress,
-    amount: initial_EthTransfer,
-  });
-  const { transaction_hash } = await account.execute(call);
+  const initial_EthTransfer = cairo.uint256(3n * 10n ** 15n);
+  const { transaction_hash } = await ETH.transfer(computedAccountAddress, initial_EthTransfer);
   const output = await account.waitForTransaction(transaction_hash);
   if (!output.isSuccess()) {
     throw new Error("Could not send ETH to the expected address");
@@ -76,15 +72,13 @@ const main = async () => {
     p256Account,
     "SmartrAccount",
     publicKeyHash,
-    [moduleClassHash("P256Validator"), "0x4", ...publicKeyArray]
+    [P256ClassHash("P256Validator"), "0x4", ...publicKeyArray]
   );
   if (address !== computedAccountAddress) {
     throw new Error(
       `The account should have been deployed to ${computedAccountAddress}, instead ${address}`
     );
   }
-  console.log("accountAddress", computedAccountAddress);
-  console.log("public key", publicKeyArray);
 };
 
 main()

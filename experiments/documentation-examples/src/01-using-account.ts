@@ -19,7 +19,7 @@ const main = async () => {
   const starkValidatorClassHash = classHash("StarkValidator");
   const calldata = new CallData(SmartrAccountABI).compile("constructor", {
     core_validator: starkValidatorClassHash,
-    public_key: [smartrAccountPublicKey],
+    args: [smartrAccountPublicKey],
   });
   const smartrAccountAddress = accountAddress(
     "SmartrAccount",
