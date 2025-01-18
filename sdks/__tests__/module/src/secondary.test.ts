@@ -27,10 +27,41 @@ import {
 } from "../../../module/src";
 import { P256Signer } from "@0xknwn/starknet-module";
 import { StarkValidatorABI } from "@0xknwn/starknet-modular-account";
+import { V1, V2, V3 } from "./data.fixture";
 
 const dataset = [
   {
     name: "secp256k1",
+    fees: "WEI",
+    version: {
+      invoke: V1,
+      declare: V2,
+      deploy_account: V1,
+    },
+    accountID: 0,
+    data: {
+      privateKey:
+        "0xb28ebb20fb1015da6e6367d1b5dba9b52862a06dbb3a4022e4749b6987ac1bd2",
+      publicKeyArray: [
+        "210289098249831467762502193281061856838",
+        "280617501412351006689952710290844664966",
+        "258172356515136873455592221375042794236",
+        "69849287226094710129367771214955413606",
+      ],
+      className: "EthValidator" as "EthValidator",
+      module: EthModule,
+      signer: EthSigner,
+    },
+  },
+  {
+    name: "secp256k1",
+    fees: "FRI",
+    version: {
+      invoke: V3,
+      declare: V3,
+      deploy_account: V3,
+    },
+    accountID: 1,
     data: {
       privateKey:
         "0xb28ebb20fb1015da6e6367d1b5dba9b52862a06dbb3a4022e4749b6987ac1bd2",
@@ -47,6 +78,13 @@ const dataset = [
   },
   {
     name: "p256",
+    fees: "FRI",
+    version: {
+      invoke: V3,
+      declare: V3,
+      deploy_account: V3,
+    },
+    accountID: 1,
     data: {
       privateKey:
         "0x1efecf7ee1e25bb87098baf2aaab0406167aae0d5ea9ba0d31404bf01886bd0e",
@@ -65,7 +103,7 @@ const dataset = [
   },
 ];
 
-describe.each(dataset)("secondary validator management", ({ name, data }) => {
+describe.each(dataset)("secondary validator management", ({ name, data, fees }) => {
   let env: string;
   let counterContract: Counter;
   let smartrAccount: SmartrAccount;
@@ -379,9 +417,8 @@ describe.each(dataset)("secondary validator management", ({ name, data }) => {
       );
       const { transaction_hash } =
         await counterWithSmartrAccountAndModule.increment();
-      const receipt = await smartrAccountWithModule.waitForTransaction(
-        transaction_hash
-      );
+      const receipt =
+        await smartrAccountWithModule.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
     },
     default_timeout

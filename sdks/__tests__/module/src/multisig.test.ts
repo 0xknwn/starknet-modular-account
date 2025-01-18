@@ -25,8 +25,9 @@ import {
   MultisigValidatorABI,
 } from "@0xknwn/starknet-module";
 import { Contract, RpcProvider, CallData } from "starknet";
+import { data } from "./data.fixture";
 
-describe("multiple signature", () => {
+describe.each(data)("multiple signature", () => {
   let env: string;
   let counterContract: Counter;
   let smartrAccount: SmartrAccount;

@@ -26,8 +26,9 @@ import {
 
 const smartAccountPrivateKey = "0xabcdef";
 const initial_EthTransfer = cairo.uint256(10n * 10n ** 15n);
+import { data } from "./data.fixture";
 
-describe("stark validator management", () => {
+describe.each(data)("stark validator management", () => {
   let env: string;
   let counterContract: Counter;
   let smartrAccount: SmartrAccount;
