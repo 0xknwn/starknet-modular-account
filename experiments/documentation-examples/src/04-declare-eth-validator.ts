@@ -11,7 +11,13 @@ const ozPrivateKey = "0x71d7bb07b9a64f6f78ac4c816aff4da9";
 
 const main = async () => {
   const provider = new RpcProvider({ nodeUrl: providerURL });
-  const account = new Account(provider, ozAccountAddress, ozPrivateKey);
+  const account = new Account(
+    provider,
+    ozAccountAddress,
+    ozPrivateKey,
+    "1",
+    "0x3"
+  );
 
   const { classHash: ethValidatorClassHash } = await declareClass(
     account,
