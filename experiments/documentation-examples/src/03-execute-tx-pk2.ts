@@ -3,7 +3,7 @@ import { SmartrAccount } from "@0xknwn/starknet-modular-account";
 import { init, CounterABI } from "./03-init";
 import { RpcProvider, Contract } from "starknet";
 
-const providerURL = "http://127.0.0.1:5050/rpc";
+const providerURL = "http://127.0.0.1:8080/rpc";
 const secondAccountPrivateKey = "0x2";
 
 const main = async () => {
@@ -12,7 +12,10 @@ const main = async () => {
   const account = new SmartrAccount(
     provider,
     accountAddress,
-    secondAccountPrivateKey
+    secondAccountPrivateKey,
+    undefined,
+    "1",
+    "0x3"
   );
   const counter = new Contract(CounterABI, counterAddress, account);
   let currentCounter = await counter.call("get");

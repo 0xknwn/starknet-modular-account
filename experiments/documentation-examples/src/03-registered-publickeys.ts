@@ -7,7 +7,7 @@ import {
 import { init } from "./03-init";
 import { CallData, RpcProvider } from "starknet";
 
-const providerURL = "http://127.0.0.1:5050/rpc";
+const providerURL = "http://127.0.0.1:8080/rpc";
 
 const main = async () => {
   const provider = new RpcProvider({ nodeUrl: providerURL });
@@ -15,7 +15,10 @@ const main = async () => {
   const account = new SmartrAccount(
     provider,
     accountAddress,
-    smartrAccountPrivateKey
+    smartrAccountPrivateKey,
+    undefined,
+    "1",
+    "0x3"
   );
   const moduleCallData = new CallData(MultisigValidatorABI);
   const calldata = moduleCallData.compile("get_public_keys", {});

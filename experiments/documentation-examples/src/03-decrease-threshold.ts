@@ -16,7 +16,7 @@ import {
   type ArraySignatureType,
 } from "starknet";
 
-const providerURL = "http://127.0.0.1:5050/rpc";
+const providerURL = "http://127.0.0.1:8080/rpc";
 const secondSmartrAccountPrivateKey = "0x2";
 
 const main = async () => {
@@ -25,12 +25,18 @@ const main = async () => {
   const firstAccount = new SmartrAccount(
     provider,
     accountAddress,
-    smartrAccountPrivateKey
+    smartrAccountPrivateKey,
+    undefined,
+    "1",
+    "0x3"
   );
   const secondAccount = new SmartrAccount(
     provider,
     accountAddress,
-    secondSmartrAccountPrivateKey
+    secondSmartrAccountPrivateKey,
+    undefined,
+    "1",
+    "0x3"
   );
 
   // Before you start build the set_threshold call
