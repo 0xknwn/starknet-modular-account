@@ -21,7 +21,7 @@ import { data } from "./data.fixture";
 
 describe.each(data)(
   "call and execute on validator",
-  ({ name, version, accountID }) => {
+  ({ fees, version, accountID }) => {
     let env: string;
     let smartrAccount: SmartrAccount;
 
@@ -30,7 +30,7 @@ describe.each(data)(
     });
 
     it(
-      `[${name}] deploys the starkValidator class`,
+      `[${fees}] deploys the starkValidator class`,
       async () => {
         const conf = config(env);
         const a = testAccounts(conf)[accountID];
@@ -43,7 +43,7 @@ describe.each(data)(
     );
 
     it(
-      `[${name}] deploys the SmartrAccount class`,
+      `[${fees}] deploys the SmartrAccount class`,
       async () => {
         const conf = config(env);
         const a = testAccounts(conf)[accountID];
@@ -56,7 +56,7 @@ describe.each(data)(
     );
 
     it(
-      `[${name}] sends ${name === "WEI" ? "$ETH" : "FRI"} to the account address`,
+      `[${fees}] sends ${fees === "WEI" ? "$ETH" : "FRI"} to the account address`,
       async () => {
         const conf = config(env);
         const sender = testAccounts(conf)[accountID];
@@ -69,9 +69,9 @@ describe.each(data)(
           args: [publicKey],
         });
         const address = accountAddress("SmartrAccount", publicKey, calldata);
-        const TOKEN = name === "WEI" ? ETH : STRK;
+        const TOKEN = fees === "WEI" ? ETH : STRK;
         const initial_transfer =
-          name === "WEI" ? initial_EthTransfer : initial_StrkTransfer;
+          fees === "WEI" ? initial_EthTransfer : initial_StrkTransfer;
         const { transaction_hash } = await TOKEN(sender).transfer(
           address,
           initial_transfer
@@ -84,14 +84,14 @@ describe.each(data)(
           privateKey,
           undefined,
           "1",
-          name === "WEI" ? "0x2" : "0x3"
+          fees === "WEI" ? "0x2" : "0x3"
         );
       },
       default_timeout
     );
 
     it(
-      `[${name}] deploys a SmartrAccount account`,
+      `[${fees}] deploys a SmartrAccount account`,
       async () => {
         const conf = config(env);
         const publicKey = conf.accounts[accountID].publicKey;
@@ -115,7 +115,7 @@ describe.each(data)(
     );
 
     it(
-      `[${name}] checks the StarkValidator name`,
+      `[${fees}] checks the StarkValidator name`,
       async () => {
         const conf = config(env);
 

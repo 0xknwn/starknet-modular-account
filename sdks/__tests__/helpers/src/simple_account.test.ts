@@ -5,7 +5,7 @@ import { Account, RpcProvider } from "starknet";
 import { default_timeout } from "./parameters";
 import { data } from "./data.fixture";
 
-describe.each(data)("simple account management", ({ name, version, accountID }) => {
+describe.each(data)("simple account management", ({ fees, version, accountID }) => {
   let env: string;
   let simpleAccount: Account;
   beforeAll(() => {
@@ -19,7 +19,7 @@ describe.each(data)("simple account management", ({ name, version, accountID }) 
   });
 
   it(
-    `[${name}] deploys the Account class`,
+    `[${fees}] deploys the Account class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
@@ -30,7 +30,7 @@ describe.each(data)("simple account management", ({ name, version, accountID }) 
   );
 
   it(
-    `[${name}] deploys the account contract`,
+    `[${fees}] deploys the account contract`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];

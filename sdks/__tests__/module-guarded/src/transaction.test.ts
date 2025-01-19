@@ -31,7 +31,7 @@ const smartAccountPrivateKey = "0xabcdef";
 
 describe.each(data)(
   "guarded validator transaction management",
-  ({ name, version, accountID }) => {
+  ({ fees, version, accountID }) => {
     let env: string;
     let counterContract: Counter;
     let smartrAccount: SmartrAccount;
@@ -44,7 +44,7 @@ describe.each(data)(
     });
 
     it(
-      `[${name}][guarded]: gets the chain id`,
+      `[${fees}][guarded]: gets the chain id`,
       async () => {
         const conf = config(env);
         const account = testAccounts(conf)[accountID];
@@ -54,7 +54,7 @@ describe.each(data)(
     );
 
     it(
-      `[${name}][guarded]: declare the Counter class`,
+      `[${fees}][guarded]: declare the Counter class`,
       async () => {
         const conf = config(env);
         const account = testAccounts(conf)[accountID];
@@ -65,7 +65,7 @@ describe.each(data)(
     );
 
     it(
-      `[${name}][guarded]: deploys the Counter contract`,
+      `[${fees}][guarded]: deploys the Counter contract`,
       async () => {
         const conf = config(env);
         const account = testAccounts(conf)[accountID];
@@ -79,7 +79,7 @@ describe.each(data)(
     );
 
     it(
-      `[${name}][guarded]: deploys the GuardedValidator class`,
+      `[${fees}][guarded]: deploys the GuardedValidator class`,
       async () => {
         const conf = config(env);
         const a = testAccounts(conf)[accountID];
@@ -90,7 +90,7 @@ describe.each(data)(
     );
 
     it(
-      `[${name}][guarded]: deploys the SmartrAccount class`,
+      `[${fees}][guarded]: deploys the SmartrAccount class`,
       async () => {
         const conf = config(env);
         const a = testAccounts(conf)[accountID];
@@ -101,7 +101,7 @@ describe.each(data)(
     );
 
     it(
-      `[${name}][guarded]: sends ${name === "WEI" ? "$ETH" : "FRI"} to the account address`,
+      `[${fees}][guarded]: sends ${fees === "WEI" ? "$ETH" : "FRI"} to the account address`,
       async () => {
         const conf = config(env);
         const sender = testAccounts(conf)[accountID];
@@ -118,9 +118,9 @@ describe.each(data)(
           smartAccountPublicKey,
           calldata
         );
-        const TOKEN = name === "WEI" ? ETH : STRK;
+        const TOKEN = fees === "WEI" ? ETH : STRK;
         const initial_transfer =
-          name === "WEI" ? initial_EthTransfer : initial_StrkTransfer;
+          fees === "WEI" ? initial_EthTransfer : initial_StrkTransfer;
         const { transaction_hash } = await TOKEN(sender).transfer(
           address,
           initial_transfer
@@ -133,14 +133,14 @@ describe.each(data)(
           privateKey,
           undefined,
           "1",
-          name === "WEI" ? "0x2" : "0x3"
+          fees === "WEI" ? "0x2" : "0x3"
         );
       },
       default_timeout
     );
 
     it(
-      `[${name}][guarded]: configures the SmartrAccount with the signer`,
+      `[${fees}][guarded]: configures the SmartrAccount with the signer`,
       async () => {
         const conf = config(env);
         const p = new RpcProvider({ nodeUrl: conf.providerURL });
@@ -154,7 +154,7 @@ describe.each(data)(
     );
 
     it(
-      `[${name}][guarded]: deploys a SmartrAccount account`,
+      `[${fees}][guarded]: deploys a SmartrAccount account`,
       async () => {
         const conf = config(env);
         const moduleValidatorClassHash = moduleClassHash("GuardedValidator");
@@ -177,7 +177,7 @@ describe.each(data)(
     );
 
     it(
-      `[${name}][guarded]: checks the SmartAccount owner key`,
+      `[${fees}][guarded]: checks the SmartAccount owner key`,
       async () => {
         const conf = config(env);
         const calldata = new CallData(GuardedValidatorABI);
@@ -195,7 +195,7 @@ describe.each(data)(
     );
 
     it(
-      `[${name}][guarded]: resets the counter`,
+      `[${fees}][guarded]: resets the counter`,
       async () => {
         const conf = config(env);
         const account = testAccounts(conf)[accountID];
@@ -210,7 +210,7 @@ describe.each(data)(
     );
 
     it(
-      `[${name}][guarded]: increments the counter from SmartrAccount and succeeds`,
+      `[${fees}][guarded]: increments the counter from SmartrAccount and succeeds`,
       async () => {
         if (!counterContract) {
           throw new Error("Counter not deployed");
@@ -231,7 +231,7 @@ describe.each(data)(
     );
 
     it(
-      `[${name}][guarded]: reads the counter`,
+      `[${fees}][guarded]: reads the counter`,
       async () => {
         if (!counterContract) {
           throw new Error("Counter not deployed");
@@ -243,7 +243,7 @@ describe.each(data)(
     );
 
     it(
-      `[${name}][guarded]: checks the module is installed`,
+      `[${fees}][guarded]: checks the module is installed`,
       async () => {
         if (!smartrAccount) {
           throw new Error("SmartrAccount is not deployed");
@@ -257,7 +257,7 @@ describe.each(data)(
     );
 
     it(
-      `[${name}][guarded]: resets the counter`,
+      `[${fees}][guarded]: resets the counter`,
       async () => {
         const conf = config(env);
         const account = testAccounts(conf)[accountID];
@@ -272,7 +272,7 @@ describe.each(data)(
     );
 
     it(
-      `[${name}][guarded]: removes the Validator module and fails`,
+      `[${fees}][guarded]: removes the Validator module and fails`,
       async () => {
         if (!smartrAccount) {
           throw new Error("SmartrAccount is not deployed");
@@ -290,7 +290,7 @@ describe.each(data)(
     );
 
     it(
-      `[${name}][guarded]: checks the module is installed`,
+      `[${fees}][guarded]: checks the module is installed`,
       async () => {
         if (!smartrAccount) {
           throw new Error("SmartrAccount is not deployed");

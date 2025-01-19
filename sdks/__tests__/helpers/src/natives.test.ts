@@ -6,10 +6,10 @@ import { RpcProvider, uint256 } from "starknet";
 import { data } from "./data.fixture";
 
 
-describe.each(data)("native tokens management", ({ name, accountID }) => {
+describe.each(data)("native tokens management", ({ fees, accountID }) => {
   let env = "devnet";
 
-  it(`[${name}] checks an $ETH balance`, async () => {
+  it(`[${fees}] checks an $ETH balance`, async () => {
     const conf = config(env);
     const provider = new RpcProvider({ nodeUrl: conf.providerURL });
     const amount = await (
@@ -20,7 +20,7 @@ describe.each(data)("native tokens management", ({ name, accountID }) => {
     );
   });
 
-  it(`[${name}] checks an $STRK balance`, async () => {
+  it(`[${fees}] checks an $STRK balance`, async () => {
     const conf = config(env);
     const provider = new RpcProvider({ nodeUrl: conf.providerURL });
     const amount = await ETH(provider).balance_of(
@@ -39,11 +39,11 @@ describe.each(data)("native tokens management", ({ name, accountID }) => {
   });
 
   it(
-    `[${name}] transfers ${name === "WEI" ? "$ETH" : "$STRK"}`,
+    `[${fees}] transfers ${fees === "WEI" ? "$ETH" : "$STRK"}`,
     async () => {
       const conf = config(env);
       const accounts = testAccounts(conf);
-      const TOKEN = (name === "WEI" ? ETH : STRK)
+      const TOKEN = (fees === "WEI" ? ETH : STRK)
       const eth = TOKEN(accounts[accountID]);
       const destAddress = accounts[2].address;
       const initialAmount = (await eth.balance_of(destAddress)) as bigint;

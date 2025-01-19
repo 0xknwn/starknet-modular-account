@@ -24,7 +24,7 @@ import { RpcProvider, CallData, Contract, shortString, num } from "starknet";
 import { StarkValidatorABI } from "@0xknwn/starknet-modular-account";
 import { data } from "./data.fixture";
 
-describe.each(data)("account management", ({ name, version, accountID }) => {
+describe.each(data)("account management", ({ fees, version, accountID }) => {
   let env: string;
   let counterContract: Counter;
   let smartrAccount: SmartrAccount;
@@ -34,7 +34,7 @@ describe.each(data)("account management", ({ name, version, accountID }) => {
   });
 
   it(
-    `[${name}] declare the Counter class`,
+    `[${fees}] declare the Counter class`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[accountID];
@@ -45,7 +45,7 @@ describe.each(data)("account management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] deploys the Counter contract`,
+    `[${fees}] deploys the Counter contract`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[accountID];
@@ -59,7 +59,7 @@ describe.each(data)("account management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] deploys the starkValidator class`,
+    `[${fees}] deploys the starkValidator class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
@@ -70,7 +70,7 @@ describe.each(data)("account management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] deploys the SmartrAccount class`,
+    `[${fees}] deploys the SmartrAccount class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
@@ -81,7 +81,7 @@ describe.each(data)("account management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] sends ${name === "WEI" ? "$ETH" : "FRI"} to the account address`,
+    `[${fees}] sends ${fees === "WEI" ? "$ETH" : "FRI"} to the account address`,
     async () => {
       const conf = config(env);
       const sender = testAccounts(conf)[accountID];
@@ -94,9 +94,9 @@ describe.each(data)("account management", ({ name, version, accountID }) => {
         args: [publicKey],
       });
       const address = accountAddress("SmartrAccount", publicKey, calldata);
-      const TOKEN = name === "WEI" ? ETH : STRK;
+      const TOKEN = fees === "WEI" ? ETH : STRK;
       const initial_transfer =
-        name === "WEI" ? initial_EthTransfer : initial_StrkTransfer;
+        fees === "WEI" ? initial_EthTransfer : initial_StrkTransfer;
       const { transaction_hash } = await TOKEN(sender).transfer(
         address,
         initial_transfer
@@ -109,14 +109,14 @@ describe.each(data)("account management", ({ name, version, accountID }) => {
         privateKey,
         undefined,
         "1",
-        name === "WEI" ? "0x2" : "0x3"
+        fees === "WEI" ? "0x2" : "0x3"
       );
     },
     default_timeout
   );
 
   it(
-    `[${name}] deploys a SmartrAccount account`,
+    `[${fees}] deploys a SmartrAccount account`,
     async () => {
       const conf = config(env);
       const publicKey = conf.accounts[accountID].publicKey;
@@ -140,7 +140,7 @@ describe.each(data)("account management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] checks the SmartAccount public keys`,
+    `[${fees}] checks the SmartAccount public keys`,
     async () => {
       const conf = config(env);
       const calldata = new CallData(StarkValidatorABI);
@@ -160,7 +160,7 @@ describe.each(data)("account management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] checks the SmartAccount name`,
+    `[${fees}] checks the SmartAccount name`,
     async () => {
       const conf = config(env);
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
@@ -175,7 +175,7 @@ describe.each(data)("account management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] resets the counter`,
+    `[${fees}] resets the counter`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[accountID];
@@ -190,7 +190,7 @@ describe.each(data)("account management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] increments the counter from SmartrAccount and succeed`,
+    `[${fees}] increments the counter from SmartrAccount and succeed`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
@@ -210,7 +210,7 @@ describe.each(data)("account management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] reads the counter`,
+    `[${fees}] reads the counter`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
@@ -222,7 +222,7 @@ describe.each(data)("account management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] resets the counter from SmartrAccount and fails`,
+    `[${fees}] resets the counter from SmartrAccount and fails`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");

@@ -22,7 +22,7 @@ import { RpcProvider, Contract, Account, type Call, CallData } from "starknet";
 import { StarkValidatorABI } from "@0xknwn/starknet-modular-account";
 import { data } from "./data.fixture";
 
-describe.each(data)("upgrade management", ({ name, version, accountID }) => {
+describe.each(data)("upgrade management", ({ fees, version, accountID }) => {
   let env: string;
   let smartrAccount: SmartrAccount;
 
@@ -31,7 +31,7 @@ describe.each(data)("upgrade management", ({ name, version, accountID }) => {
   });
 
   it(
-    `[${name}] declares the SimpleAccount class`,
+    `[${fees}] declares the SimpleAccount class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
@@ -44,7 +44,7 @@ describe.each(data)("upgrade management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] declares the starkValidator class`,
+    `[${fees}] declares the starkValidator class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
@@ -57,7 +57,7 @@ describe.each(data)("upgrade management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] declares the SmartrAccount class`,
+    `[${fees}] declares the SmartrAccount class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
@@ -70,7 +70,7 @@ describe.each(data)("upgrade management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] sends ${name === "WEI" ? "$ETH" : "FRI"} to the account address`,
+    `[${fees}] sends ${fees === "WEI" ? "$ETH" : "FRI"} to the account address`,
     async () => {
       const conf = config(env);
       const sender = testAccounts(conf)[accountID];
@@ -83,9 +83,9 @@ describe.each(data)("upgrade management", ({ name, version, accountID }) => {
         args: [publicKey],
       });
       const address = accountAddress("SmartrAccount", publicKey, calldata);
-      const TOKEN = name === "WEI" ? ETH : STRK;
+      const TOKEN = fees === "WEI" ? ETH : STRK;
       const initial_transfer =
-        name === "WEI" ? initial_EthTransfer : initial_StrkTransfer;
+        fees === "WEI" ? initial_EthTransfer : initial_StrkTransfer;
       const { transaction_hash } = await TOKEN(sender).transfer(
         address,
         initial_transfer
@@ -98,14 +98,14 @@ describe.each(data)("upgrade management", ({ name, version, accountID }) => {
         privateKey,
         undefined,
         "1",
-        name === "WEI" ? "0x2" : "0x3"
+        fees === "WEI" ? "0x2" : "0x3"
       );
     },
     default_timeout
   );
 
   it(
-    `[${name}] deploys a SmartrAccount account`,
+    `[${fees}] deploys a SmartrAccount account`,
     async () => {
       const conf = config(env);
       const publicKey = conf.accounts[accountID].publicKey;
@@ -130,7 +130,7 @@ describe.each(data)("upgrade management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] checks the SmartAccount public keys`,
+    `[${fees}] checks the SmartAccount public keys`,
     async () => {
       const conf = config(env);
       const calldata = new CallData(StarkValidatorABI);
@@ -150,7 +150,7 @@ describe.each(data)("upgrade management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] checks the account class hash`,
+    `[${fees}] checks the account class hash`,
     async () => {
       const c = await smartrAccount.getClassHashAt(smartrAccount.address);
       expect(c).toEqual(accountClassHash("SmartrAccount"));
@@ -159,7 +159,7 @@ describe.each(data)("upgrade management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] upgrades the account with SimpleAccount`,
+    `[${fees}] upgrades the account with SimpleAccount`,
     async () => {
       const { transaction_hash } = await smartrAccount.upgrade(
         helperClassHash("SimpleAccount")
@@ -171,7 +171,7 @@ describe.each(data)("upgrade management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] checks the account class hash`,
+    `[${fees}] checks the account class hash`,
     async () => {
       const c = await smartrAccount.getClassHashAt(smartrAccount.address);
       expect(c).toEqual(helperClassHash("SimpleAccount"));
@@ -180,7 +180,7 @@ describe.each(data)("upgrade management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] checks the SimpleAccount public keys`,
+    `[${fees}] checks the SimpleAccount public keys`,
     async () => {
       const conf = config(env);
       const contract = new Contract(
@@ -195,7 +195,7 @@ describe.each(data)("upgrade management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] downgrade the account with SmartrAccount`,
+    `[${fees}] downgrade the account with SmartrAccount`,
     async () => {
       const conf = config(env);
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
@@ -204,7 +204,7 @@ describe.each(data)("upgrade management", ({ name, version, accountID }) => {
         smartrAccount.address,
         conf.accounts[accountID].privateKey,
         "1",
-        name === "WEI" ? "0x2" : "0x3"
+        fees === "WEI" ? "0x2" : "0x3"
       );
       const contract = new Contract(
         SimpleAccountABI,
@@ -223,7 +223,7 @@ describe.each(data)("upgrade management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] checks the account class hash`,
+    `[${fees}] checks the account class hash`,
     async () => {
       const c = await smartrAccount.getClassHashAt(smartrAccount.address);
       expect(c).toEqual(accountClassHash("SmartrAccount"));

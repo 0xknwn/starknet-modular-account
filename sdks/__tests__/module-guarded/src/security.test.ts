@@ -26,7 +26,7 @@ const smartAccountPrivateKey = "0xabcdef";
 
 describe.each(data)(
   "guarded validator security management",
-  ({ name, version, accountID }) => {
+  ({ fees, version, accountID }) => {
     let env: string;
     let smartrAccount: SmartrAccount;
     let smartAccountPublicKey: string;
@@ -38,7 +38,7 @@ describe.each(data)(
     });
 
     it(
-      `[${name}][guarded]: gets the chain id`,
+      `[${fees}][guarded]: gets the chain id`,
       async () => {
         const conf = config(env);
         const account = testAccounts(conf)[accountID];
@@ -48,7 +48,7 @@ describe.each(data)(
     );
 
     it(
-      `[${name}][guarded]: deploys the GuardedValidator class`,
+      `[${fees}][guarded]: deploys the GuardedValidator class`,
       async () => {
         const conf = config(env);
         const a = testAccounts(conf)[accountID];
@@ -61,7 +61,7 @@ describe.each(data)(
     );
 
     it(
-      `[${name}][guarded]: deploys the SmartrAccount class`,
+      `[${fees}][guarded]: deploys the SmartrAccount class`,
       async () => {
         const conf = config(env);
         const a = testAccounts(conf)[accountID];
@@ -74,7 +74,7 @@ describe.each(data)(
     );
 
     it(
-      `[${name}][guarded]: sends ${name === "WEI" ? "$ETH" : "FRI"} to the account address`,
+      `[${fees}][guarded]: sends ${fees === "WEI" ? "$ETH" : "FRI"} to the account address`,
       async () => {
         const conf = config(env);
         const sender = testAccounts(conf)[accountID];
@@ -92,9 +92,9 @@ describe.each(data)(
           smartAccountPublicKey,
           calldata
         );
-        const TOKEN = name === "WEI" ? ETH : STRK;
+        const TOKEN = fees === "WEI" ? ETH : STRK;
         const initial_transfer =
-          name === "WEI" ? initial_EthTransfer : initial_StrkTransfer;
+          fees === "WEI" ? initial_EthTransfer : initial_StrkTransfer;
         const { transaction_hash } = await TOKEN(sender).transfer(
           address,
           initial_transfer
@@ -107,14 +107,14 @@ describe.each(data)(
           privateKey,
           undefined,
           "1",
-          name === "WEI" ? "0x2" : "0x3"
+          fees === "WEI" ? "0x2" : "0x3"
         );
       },
       default_timeout
     );
 
     it(
-      `[${name}][guarded]: configures the SmartrAccount with the signer`,
+      `[${fees}][guarded]: configures the SmartrAccount with the signer`,
       async () => {
         const conf = config(env);
         const p = new RpcProvider({ nodeUrl: conf.providerURL });
@@ -124,14 +124,14 @@ describe.each(data)(
           smartAccountPrivateKey,
           undefined,
           "1",
-          name === "WEI" ? "0x2" : "0x3"
+          fees === "WEI" ? "0x2" : "0x3"
         );
       },
       default_timeout
     );
 
     it(
-      `[${name}][guarded]: deploys a SmartrAccount account`,
+      `[${fees}][guarded]: deploys a SmartrAccount account`,
       async () => {
         const conf = config(env);
         const moduleValidatorClassHash = moduleClassHash("GuardedValidator");
@@ -155,7 +155,7 @@ describe.each(data)(
     );
 
     it(
-      `[${name}][guarded]: checks the SmartAccount owner key`,
+      `[${fees}][guarded]: checks the SmartAccount owner key`,
       async () => {
         const conf = config(env);
         const calldata = new CallData(GuardedValidatorABI);
@@ -172,125 +172,125 @@ describe.each(data)(
       default_timeout
     );
 
-    it.todo(`[${name}][guarded]: checks you cannot run multicalls on modules`);
+    it.todo(`[${fees}][guarded]: checks you cannot run multicalls on modules`);
 
     // Note: a critical issue in the current model is that the guardian is also
     // the one that secures the owner keys and might be able to block the access
     // to the account with its cencorship power
     it.todo(
-      `[${name}][guarded]: prevents guardian from blocking access to keys`
+      `[${fees}][guarded]: prevents guardian from blocking access to keys`
     );
 
     it.todo(
-      `[${name}][guarded]: checks you cannot install a new module right away`
+      `[${fees}][guarded]: checks you cannot install a new module right away`
     );
 
     it.todo(
-      `[${name}][guarded]: checks you bypass the guardian with a rogue module`
+      `[${fees}][guarded]: checks you bypass the guardian with a rogue module`
     );
 
-    describe(`[${name}][guarded]: manages the owner key lost`, () => {
-      it.todo(`[${name}][guarded]: requires owner to reset the account`);
+    describe(`[${fees}][guarded]: manages the owner key lost`, () => {
+      it.todo(`[${fees}][guarded]: requires owner to reset the account`);
       it.todo(
-        `[${name}][guarded]: requires the guardian to request the owner ejection`
+        `[${fees}][guarded]: requires the guardian to request the owner ejection`
       );
       it.todo(
-        `[${name}][guarded]: requires 1 week to pass before the guardian can eject the owner`
+        `[${fees}][guarded]: requires 1 week to pass before the guardian can eject the owner`
       );
       it.todo(
-        `[${name}][guarded]: requires the guardian to finalize the owner ejection`
+        `[${fees}][guarded]: requires the guardian to finalize the owner ejection`
       );
       it.todo(
-        `[${name}][guarded]: requires the owner to gain access back to the account`
-      );
-    });
-
-    describe(`[${name}][guarded]: manages the gardian goes rogue`, () => {
-      it.todo(
-        `[${name}][guarded]: could be that the guardian requests to eject the owner`
-      );
-      it.todo(
-        `[${name}][guarded]: requires the owner to request the guardian ejection`
-      );
-      it.todo(
-        `[${name}][guarded]: could be that the guardian tries to cancel its ejection`
-      );
-      it.todo(
-        `[${name}][guarded]: requires the owner to gain access back to the account`
+        `[${fees}][guarded]: requires the owner to gain access back to the account`
       );
     });
 
-    describe(`[${name}][guarded]: manages owner key stolen - scenario 1`, () => {
+    describe(`[${fees}][guarded]: manages the gardian goes rogue`, () => {
+      it.todo(
+        `[${fees}][guarded]: could be that the guardian requests to eject the owner`
+      );
+      it.todo(
+        `[${fees}][guarded]: requires the owner to request the guardian ejection`
+      );
+      it.todo(
+        `[${fees}][guarded]: could be that the guardian tries to cancel its ejection`
+      );
+      it.todo(
+        `[${fees}][guarded]: requires the owner to gain access back to the account`
+      );
+    });
+
+    describe(`[${fees}][guarded]: manages owner key stolen - scenario 1`, () => {
       // Note: here we assume the email is not compromized
       it.todo(
-        `[${name}][guarded]: could be that the rogue owner requests to eject the legit owner`
+        `[${fees}][guarded]: could be that the rogue owner requests to eject the legit owner`
       );
       it.todo(
-        `[${name}][guarded]: requires the legit owner to block transactions other than reset`
+        `[${fees}][guarded]: requires the legit owner to block transactions other than reset`
       );
       it.todo(
-        `[${name}][guarded]: requires the legit owner request to rotate the keys`
+        `[${fees}][guarded]: requires the legit owner request to rotate the keys`
       );
       it.todo(
-        `[${name}][guarded]: could be that the rogue owner requests to eject the legit request again`
+        `[${fees}][guarded]: could be that the rogue owner requests to eject the legit request again`
       );
       it.todo(
-        `[${name}][guarded]: requires the legit owner request to rotate the keys again`
+        `[${fees}][guarded]: requires the legit owner request to rotate the keys again`
       );
       it.todo(
-        `[${name}][guarded]: could be that the rogue owner fails to request the legit ejection because of the max attempts`
+        `[${fees}][guarded]: could be that the rogue owner fails to request the legit ejection because of the max attempts`
       );
       it.todo(
-        `[${name}][guarded]: requires the legit owner to regain access to the account`
+        `[${fees}][guarded]: requires the legit owner to regain access to the account`
       );
     });
 
-    describe(`[${name}][guarded]: manages owner key stolen - scenario 2`, () => {
+    describe(`[${fees}][guarded]: manages owner key stolen - scenario 2`, () => {
       // Note: here we assume the email is not compromized
       it.todo(
-        `[${name}][guarded]: could be that the rogue owner requests to eject the guardian`
+        `[${fees}][guarded]: could be that the rogue owner requests to eject the guardian`
       );
       it.todo(
-        `[${name}][guarded]: requires the guardian to notify the legit owner of the ejection`
+        `[${fees}][guarded]: requires the guardian to notify the legit owner of the ejection`
       );
       it.todo(
-        `[${name}][guarded]: requires the legit owner request to rotate the keys`
+        `[${fees}][guarded]: requires the legit owner request to rotate the keys`
       );
       it.todo(
-        `[${name}][guarded]: could be that the rogue owner requests to eject the legit request again`
+        `[${fees}][guarded]: could be that the rogue owner requests to eject the legit request again`
       );
       it.todo(
-        `[${name}][guarded]: requires the legit owner request to rotate the keys again`
+        `[${fees}][guarded]: requires the legit owner request to rotate the keys again`
       );
       it.todo(
-        `[${name}][guarded]: could be that the rogue owner fails to request the legit ejection because of the max attempts`
+        `[${fees}][guarded]: could be that the rogue owner fails to request the legit ejection because of the max attempts`
       );
       it.todo(
-        `[${name}][guarded]: requires the legit owner to regain access to the account`
+        `[${fees}][guarded]: requires the legit owner to regain access to the account`
       );
     });
 
-    describe(`[${name}][guarded]: manages owner key stolen - scenario 3`, () => {
+    describe(`[${fees}][guarded]: manages owner key stolen - scenario 3`, () => {
       // Note: here we assume the email is not compromized
       it.todo(
-        `[${name}][guarded]: could be that the rogue owner send token to another account`
+        `[${fees}][guarded]: could be that the rogue owner send token to another account`
       );
     });
 
-    describe(`[${name}][guarded]: manages owner key stolen - scenario 4`, () => {
+    describe(`[${fees}][guarded]: manages owner key stolen - scenario 4`, () => {
       // Note: here we assume the email is not compromized
       it.todo(
-        `[${name}][guarded]: could be that the rogue owner request to change the email`
+        `[${fees}][guarded]: could be that the rogue owner request to change the email`
       );
     });
 
-    describe(`[${name}][guarded]: manages owner email compromised`, () => {});
+    describe(`[${fees}][guarded]: manages owner email compromised`, () => {});
     // Note: here we assume the owner key is not compromized
     it.todo(
-      `[${name}][guarded]: could be that the rogue owner requests the guardian to eject the legit owner`
+      `[${fees}][guarded]: could be that the rogue owner requests the guardian to eject the legit owner`
     );
     it.todo(
-      `[${name}][guarded]: requires the legit owner request to rotate the keys`
+      `[${fees}][guarded]: requires the legit owner request to rotate the keys`
     );
   }
 );

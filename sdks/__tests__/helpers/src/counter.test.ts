@@ -6,7 +6,7 @@ import { Contract, type Call, RpcProvider, Account, UniversalDetails } from "sta
 
 import { data } from "./data.fixture";
   
-describe.each(data)("counter contract (helper)", ({ name, version, accountID }) => {
+describe.each(data)("counter contract (helper)", ({ fees, version, accountID }) => {
   let env: string;
   let counter: Contract;
   let altURL: string;
@@ -26,7 +26,7 @@ describe.each(data)("counter contract (helper)", ({ name, version, accountID }) 
   });
 
   it(
-    `[${name}] declare the Counter class`,
+    `[${fees}] declare the Counter class`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[accountID];
@@ -37,7 +37,7 @@ describe.each(data)("counter contract (helper)", ({ name, version, accountID }) 
   );
 
   it(
-    `[${name}] deploys the Counter contract`,
+    `[${fees}] deploys the Counter contract`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[accountID];
@@ -51,7 +51,7 @@ describe.each(data)("counter contract (helper)", ({ name, version, accountID }) 
   );
 
   it(
-    `[${name}] increments the counter`,
+    `[${fees}] increments the counter`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[accountID];
@@ -65,7 +65,7 @@ describe.each(data)("counter contract (helper)", ({ name, version, accountID }) 
   );
 
   it(
-    `[${name}] reads the counter`,
+    `[${fees}] reads the counter`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[accountID];
@@ -77,7 +77,7 @@ describe.each(data)("counter contract (helper)", ({ name, version, accountID }) 
   );
 
   it(
-    `[${name}] increments the counter by 5 and 6`,
+    `[${fees}] increments the counter by 5 and 6`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[accountID];
@@ -93,7 +93,7 @@ describe.each(data)("counter contract (helper)", ({ name, version, accountID }) 
   );
 
   it(
-    `[${name}] reads the counter again`,
+    `[${fees}] reads the counter again`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[accountID];
@@ -105,7 +105,7 @@ describe.each(data)("counter contract (helper)", ({ name, version, accountID }) 
   );
 
   it(
-    `[${name}] resets the counter`,
+    `[${fees}] resets the counter`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[accountID];
@@ -119,7 +119,7 @@ describe.each(data)("counter contract (helper)", ({ name, version, accountID }) 
   );
 
   it(
-    `[${name}] reads the counter again`,
+    `[${fees}] reads the counter again`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[accountID];
@@ -131,7 +131,7 @@ describe.each(data)("counter contract (helper)", ({ name, version, accountID }) 
   );
 
   it(
-    `[${name}] increments the counter from another account`,
+    `[${fees}] increments the counter from another account`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[2];
@@ -145,7 +145,7 @@ describe.each(data)("counter contract (helper)", ({ name, version, accountID }) 
   );
 
   it(
-    `[${name}] reads the counter`,
+    `[${fees}] reads the counter`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[accountID];
@@ -157,7 +157,7 @@ describe.each(data)("counter contract (helper)", ({ name, version, accountID }) 
   );
 
   it(
-    `[${name}] resets the counter and fails`,
+    `[${fees}] resets the counter and fails`,
     async () => {
       const conf = config(env);
       let account = testAccounts(conf)[accountID];
@@ -176,7 +176,7 @@ describe.each(data)("counter contract (helper)", ({ name, version, accountID }) 
   );
 
   it(
-    `[${name}] reads the counter again`,
+    `[${fees}] reads the counter again`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[accountID];
@@ -188,7 +188,7 @@ describe.each(data)("counter contract (helper)", ({ name, version, accountID }) 
   );
 
   it(
-    `[${name}] increments the counter with an alt provider URL`,
+    `[${fees}] increments the counter with an alt provider URL`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[accountID];
@@ -208,7 +208,7 @@ describe.each(data)("counter contract (helper)", ({ name, version, accountID }) 
   );
 
   it(
-    `[${name}] reads the counter from an alt. provider URL`,
+    `[${fees}] reads the counter from an alt. provider URL`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[accountID];
