@@ -1,4 +1,10 @@
-import { hash, json, CompiledContract, Account } from "starknet";
+import {
+  hash,
+  json,
+  CompiledContract,
+  Account,
+  UniversalDetails,
+} from "starknet";
 import { data as SessionKeyValidatorContract } from "./artifacts/SessionKeyValidator-contract";
 import { data as SessionKeyValidatorCompiled } from "./artifacts/SessionKeyValidator-compiled";
 
@@ -44,7 +50,8 @@ export const classHash = (
  */
 export const declareClass = async (
   account: Account,
-  className: "SessionKeyValidator" = "SessionKeyValidator"
+  className: "SessionKeyValidator",
+  details?: UniversalDetails
 ) => {
   const HelperClassHash = classHash(className);
 
@@ -79,10 +86,13 @@ export const declareClass = async (
   const compiledTestCasm = json.parse(
     Buffer.from(compiled, "base64").toString("ascii")
   );
-  const declare = await account.declare({
-    contract: compiledTestSierra,
-    casm: compiledTestCasm,
-  });
+  const declare = await account.declare(
+    {
+      contract: compiledTestSierra,
+      casm: compiledTestCasm,
+    },
+    details
+  );
   return {
     ...(await account.waitForTransaction(declare.transaction_hash)),
     classHash: declare.class_hash,

@@ -12,7 +12,9 @@ import {
   SwapRouter,
   default_timeout,
   initial_EthTransfer,
+  initial_StrkTransfer,
   ETH,
+  STRK,
 } from "@0xknwn/starknet-test-helpers";
 import {
   declareClass as declareAccountClass,
@@ -31,8 +33,9 @@ import {
   classHash as sessionkeyClassHash,
 } from "@0xknwn/starknet-module-sessionkey";
 import { StarkValidatorABI } from "@0xknwn/starknet-modular-account";
+import { data } from "./data.fixture";
 
-describe("sessionkey swap", () => {
+describe.each([data[1]])("sessionkey swap", ({ fees, accountID, version }) => {
   let env: string;
   let altProviderURL: string;
   let swapRouterContract: SwapRouter;
@@ -53,32 +56,36 @@ describe("sessionkey swap", () => {
   });
 
   it(
-    "gets the chain id",
+    `[${fees}]gets the chain id`,
     async () => {
       const conf = config(env);
-      const account = testAccounts(conf)[0];
+      const account = testAccounts(conf)[accountID];
       connectedChain = await account.getChainId();
     },
     default_timeout
   );
 
   it(
-    "declares the SwapRouter class",
+    `[${fees}]declares the SwapRouter class`,
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await declareHelperClass(a, "SwapRouter");
+      const a = testAccounts(conf)[accountID];
+      const c = await declareHelperClass(a, "SwapRouter", {
+        version: version.declare,
+      });
       expect(c.classHash).toEqual(helperClassHash("SwapRouter"));
     },
     default_timeout
   );
 
   it(
-    "deploys the SwapRouter contract",
+    `[${fees}]deploys the SwapRouter contract`,
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await deploySwapRouter(a, a.address);
+      const a = testAccounts(conf)[accountID];
+      const c = await deploySwapRouter(a, a.address, {
+        version: version.invoke,
+      });
       const routerAddress = await swapRouterAddress(a.address, a.address);
       swapRouterContract = new SwapRouter(routerAddress, a);
       expect(c.address).toEqual(routerAddress);
@@ -87,22 +94,26 @@ describe("sessionkey swap", () => {
   );
 
   it(
-    "declares the TokenA class",
+    `[${fees}]declares the TokenA class`,
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await declareHelperClass(a, "TokenA");
+      const a = testAccounts(conf)[accountID];
+      const c = await declareHelperClass(a, "TokenA", {
+        version: version.declare,
+      });
       expect(c.classHash).toEqual(helperClassHash("TokenA"));
     },
     default_timeout
   );
 
   it(
-    "deploys the TokenA contract",
+    `[${fees}]deploys the TokenA contract`,
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await deployTokenA(a, swapRouterContract.address, a.address);
+      const a = testAccounts(conf)[accountID];
+      const c = await deployTokenA(a, swapRouterContract.address, a.address, {
+        version: version.invoke,
+      });
       tokenA = c;
       expect(c.address).toEqual(
         await tokenAAddress(a.address, swapRouterContract.address, a.address)
@@ -112,22 +123,26 @@ describe("sessionkey swap", () => {
   );
 
   it(
-    "declares the TokenB class",
+    `[${fees}]declares the TokenB class`,
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await declareHelperClass(a, "TokenB");
+      const a = testAccounts(conf)[accountID];
+      const c = await declareHelperClass(a, "TokenB", {
+        version: version.declare,
+      });
       expect(c.classHash).toEqual(helperClassHash("TokenB"));
     },
     default_timeout
   );
 
   it(
-    "deploys the TokenB contract",
+    `[${fees}]deploys the TokenB contract`,
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await deployTokenB(a, swapRouterContract.address, a.address);
+      const a = testAccounts(conf)[accountID];
+      const c = await deployTokenB(a, swapRouterContract.address, a.address, {
+        version: version.invoke,
+      });
       tokenB = c;
       expect(c.address).toEqual(
         await tokenBAddress(a.address, swapRouterContract.address, a.address)
@@ -137,7 +152,7 @@ describe("sessionkey swap", () => {
   );
 
   it(
-    "sets the tokens in the SwapRouter",
+    `[${fees}]sets the tokens in the SwapRouter`,
     async () => {
       const is_paused = await swapRouterContract.is_paused();
       if (!is_paused) {
@@ -154,10 +169,10 @@ describe("sessionkey swap", () => {
   );
 
   it(
-    "checks tokenA and tokenB initial account balance",
+    `[${fees}]checks tokenA and tokenB initial account balance`,
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
+      const a = testAccounts(conf)[accountID];
       let balance = await tokenA.balance_of(a.address);
       expect(balance).toBeGreaterThanOrEqual(0n);
       tokenAInitialBalance = balance;
@@ -169,57 +184,71 @@ describe("sessionkey swap", () => {
   );
 
   it(
-    "declares the starkValidator class",
+    `[${fees}]declares the starkValidator class`,
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await declareAccountClass(a, "StarkValidator");
+      const a = testAccounts(conf)[accountID];
+      const c = await declareAccountClass(a, "StarkValidator", {
+        version: version.declare,
+      });
       expect(c.classHash).toEqual(accountClassHash("StarkValidator"));
     },
     default_timeout
   );
 
   it(
-    "declares the SmartrAccount class",
+    `[${fees}]declares the SmartrAccount class`,
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await declareAccountClass(a, "SmartrAccount");
+      const a = testAccounts(conf)[accountID];
+      const c = await declareAccountClass(a, "SmartrAccount", {
+        version: version.declare,
+      });
       expect(c.classHash).toEqual(accountClassHash("SmartrAccount"));
     },
     default_timeout
   );
 
   it(
-    "sends ETH to the account address",
+    `[${fees}] sends ${fees === "WEI" ? "$ETH" : "FRI"} to the account address`,
     async () => {
       const conf = config(env);
-      const sender = testAccounts(conf)[0];
+      const sender = testAccounts(conf)[accountID];
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
-      const publicKey = conf.accounts[0].publicKey;
-      const privateKey = conf.accounts[0].privateKey;
+      const publicKey = conf.accounts[accountID].publicKey;
+      const privateKey = conf.accounts[accountID].privateKey;
       const starkValidatorClassHash = accountClassHash("StarkValidator");
       const calldata = new CallData(SmartrAccountABI).compile("constructor", {
         core_validator: starkValidatorClassHash,
         args: [publicKey],
       });
       const address = accountAddress("SmartrAccount", publicKey, calldata);
-      const { transaction_hash } = await ETH(sender).transfer(
+      const TOKEN = fees === "WEI" ? ETH : STRK;
+      const initial_transfer =
+        fees === "WEI" ? initial_EthTransfer : initial_StrkTransfer;
+      const { transaction_hash } = await TOKEN(sender).transfer(
         address,
-        initial_EthTransfer
+        initial_transfer
       );
       const receipt = await sender.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toEqual(true);
-      smartrAccount = new SmartrAccount(p, address, privateKey);
+      smartrAccount = new SmartrAccount(
+        p,
+        address,
+        privateKey,
+        undefined,
+        "1",
+        fees === "WEI" ? "0x2" : "0x3"
+      );
     },
     default_timeout
   );
 
   it(
-    "deploys a SmartrAccount account",
+    `[${fees}]deploys a SmartrAccount account`,
     async () => {
       const conf = config(env);
-      const publicKey = conf.accounts[0].publicKey;
+      const publicKey = conf.accounts[accountID].publicKey;
       const starkValidatorClassHash = accountClassHash("StarkValidator");
       const calldata = new CallData(SmartrAccountABI).compile("constructor", {
         core_validator: starkValidatorClassHash,
@@ -229,7 +258,8 @@ describe("sessionkey swap", () => {
         smartrAccount,
         "SmartrAccount",
         publicKey,
-        calldata
+        calldata,
+        { version: version.deploy_account }
       );
       expect(address).toEqual(
         accountAddress("SmartrAccount", publicKey, calldata)
@@ -239,7 +269,7 @@ describe("sessionkey swap", () => {
   );
 
   it(
-    "checks the SmartAccount public keys",
+    `[${fees}]checks the SmartAccount public keys`,
     async () => {
       const conf = config(env);
       const calldata = new CallData(StarkValidatorABI);
@@ -251,24 +281,28 @@ describe("sessionkey swap", () => {
       );
       expect(Array.isArray(c)).toBe(true);
       expect(c.length).toEqual(1);
-      expect(`0x${c[0].toString(16)}`).toEqual(conf.accounts[0].publicKey);
+      expect(`0x${c[0].toString(16)}`).toEqual(
+        conf.accounts[accountID].publicKey
+      );
     },
     default_timeout
   );
 
   it(
-    "deploys the SessionKeyValidator class",
+    `[${fees}]declares the SessionKeyValidator class`,
     async () => {
       const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await declareSessionkeyClass(a, "SessionKeyValidator");
+      const a = testAccounts(conf)[accountID];
+      const c = await declareSessionkeyClass(a, "SessionKeyValidator", {
+        version: version.declare,
+      });
       expect(c.classHash).toEqual(sessionkeyClassHash("SessionKeyValidator"));
     },
     default_timeout
   );
 
   it(
-    "adds a module to the account",
+    `[${fees}]adds a module to the account`,
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
@@ -283,7 +317,7 @@ describe("sessionkey swap", () => {
   );
 
   it(
-    "checks the SessionKeyValidator is installed",
+    `[${fees}]checks the SessionKeyValidator is installed`,
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
@@ -297,7 +331,7 @@ describe("sessionkey swap", () => {
   );
 
   it(
-    "creates a typescript session key module",
+    `[${fees}]creates a typescript session key module`,
     async () => {
       if (!connectedChain) {
         expect(connectedChain).toBeDefined();
@@ -332,7 +366,7 @@ describe("sessionkey swap", () => {
     default_timeout
   );
 
-  it("signs the typescript session key module", async () => {
+  it(`[${fees}]signs the typescript session key module`, async () => {
     if (!sessionKeyModule) {
       expect(sessionKeyModule).toBeDefined();
       return;
@@ -340,14 +374,14 @@ describe("sessionkey swap", () => {
     const conf = config(env);
     const grantor = new SessionKeyGrantor(
       accountClassHash("StarkValidator"),
-      conf.accounts[0].privateKey
+      conf.accounts[accountID].privateKey
     );
     const signature = await grantor.sign(sessionKeyModule);
     expect(signature.length).toEqual(2);
     sessionKeyModule.add_signature(signature);
   });
 
-  it("creates an account with the session key module", async () => {
+  it(`[${fees}]creates an account with the session key module`, async () => {
     if (!sessionKeyModule) {
       expect(sessionKeyModule).toBeDefined();
       return;
@@ -358,12 +392,14 @@ describe("sessionkey swap", () => {
       p,
       smartrAccount.address,
       conf.accounts[1].privateKey,
-      sessionKeyModule
+      sessionKeyModule,
+      "1",
+      fees === "WEI" ? "0x2" : "0x3"
     );
   });
 
   it(
-    "requests tokenA to the faucet",
+    `[${fees}]requests tokenA to the faucet`,
     async () => {
       const conf = config(env);
       swapRouterWithSmartAccountContract = new SwapRouter(
@@ -379,7 +415,7 @@ describe("sessionkey swap", () => {
   );
 
   it(
-    "checks the account has been funded with tokenA",
+    `[${fees}]checks the account has been funded with tokenA`,
     async () => {
       if (tokenAInitialBalance === undefined) {
         throw new Error("tokenAInitialBalance is undefined");
@@ -396,7 +432,7 @@ describe("sessionkey swap", () => {
   );
 
   it(
-    "swaps tokenA for tokenB",
+    `[${fees}]swaps tokenA for tokenB`,
     async () => {
       // @todo: fix this test and/or the swap function
       const receipt = await swapRouterWithSmartAccountContract.swap(
@@ -409,7 +445,7 @@ describe("sessionkey swap", () => {
   );
 
   it(
-    "checks the account has been funded with tokenB",
+    `[${fees}]checks the account has been funded with tokenB`,
     async () => {
       if (tokenBInitialBalance === undefined) {
         throw new Error("tokenAInitialBalance is undefined");
@@ -424,7 +460,7 @@ describe("sessionkey swap", () => {
   );
 
   it(
-    "removes the module from the account",
+    `[${fees}]removes the module from the account`,
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
@@ -439,7 +475,7 @@ describe("sessionkey swap", () => {
   );
 
   it(
-    "checks the SessionKeyValidator is not installed",
+    `[${fees}]checks the SessionKeyValidator is not installed`,
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
