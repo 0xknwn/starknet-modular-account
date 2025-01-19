@@ -100,7 +100,6 @@ export const deployAccount = async (
         constructorCalldata,
         addressSalt: salt,
       },
-      // @todo: remove this once the fee is fixed
       { ...details, version: version === "0x3" ? "0x3" : "0x1" }
     );
   const receipt = await deployerAccount.waitForTransaction(tx);
