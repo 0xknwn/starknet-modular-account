@@ -30,7 +30,7 @@ import {
 const smartAccountPrivateKey = "0xabcdef";
 import { data } from "./data.fixture";
 
-describe.each([data[0]])(
+describe.each([data[1]])(
   "stark validator management",
   ({ fees, accountID, version }) => {
     let env: string;
@@ -111,12 +111,11 @@ describe.each([data[0]])(
     );
 
     it(
-      `[${fees}][stark]:  sends ${fees === "WEI" ? "$ETH" : "FRI"} to the account address`,
+      `[${fees}][stark]: sends ${fees === "WEI" ? "$ETH" : "FRI"} to the account address`,
       async () => {
         const conf = config(env);
         const sender = testAccounts(conf)[accountID];
         const p = new RpcProvider({ nodeUrl: conf.providerURL });
-        const publicKey = conf.accounts[accountID].publicKey;
         const privateKey = conf.accounts[accountID].privateKey;
         const moduleValidatorClassHash = moduleClassHash("StarkValidator");
         const calldata = [
@@ -301,7 +300,9 @@ describe.each([data[0]])(
         p,
         smartrAccount.address,
         signer,
-        m
+        m,
+        "1",
+        fees === "WEI" ? "0x2" : "0x3"
       );
     });
 

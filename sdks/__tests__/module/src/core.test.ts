@@ -19,7 +19,15 @@ import {
   deployAccount,
   accountAddress,
 } from "@0xknwn/starknet-modular-account";
-import { RpcProvider, CallData, EthSigner, hash, cairo } from "starknet";
+import {
+  RpcProvider,
+  CallData,
+  EthSigner,
+  Signer,
+  hash,
+  cairo,
+  UniversalDetails,
+} from "starknet";
 import {
   declareClass as declareModuleClass,
   classHash as moduleClassHash,
@@ -30,6 +38,44 @@ import {
 import { V1, V2, V3 } from "./data.fixture";
 
 const dataset = [
+  {
+    name: "stark",
+    fees: "WEI",
+    version: {
+      invoke: V1,
+      declare: V2,
+      deploy_account: V1,
+    },
+    accountID: 0,
+    data: {
+      privateKey: "0xabcdef",
+      publicKeyArray: [
+        "0x636891ed7d6a8a4bf0c6c96cf3a1562b03d6fb63909691f9504f2f2b67d43be",
+      ],
+      className: "StarkValidator" as "StarkValidator",
+      signer: Signer,
+      validatorABI: EthValidatorABI,
+    },
+  },
+  {
+    name: "stark",
+    fees: "FRI",
+    version: {
+      invoke: V3,
+      declare: V3,
+      deploy_account: V3,
+    },
+    accountID: 1,
+    data: {
+      privateKey: "0xabcdef",
+      publicKeyArray: [
+        "0x636891ed7d6a8a4bf0c6c96cf3a1562b03d6fb63909691f9504f2f2b67d43be",
+      ],
+      className: "StarkValidator" as "StarkValidator",
+      signer: Signer,
+      validatorABI: EthValidatorABI,
+    },
+  },
   {
     name: "secp256k1",
     fees: "WEI",
@@ -128,12 +174,11 @@ const dataset = [
   },
 ];
 
-describe.each([dataset[0], dataset[2]])(
+describe.each([dataset[3], dataset[5]])(
   "core validator management",
   ({ name, fees, accountID, version, data }) => {
     let env: string;
     let counterContract: Counter;
-    let smartrAccount: SmartrAccount;
     let smartrAccountWithModule: SmartrAccount;
 
     beforeAll(() => {
@@ -206,13 +251,11 @@ describe.each([dataset[0], dataset[2]])(
     );
 
     it(
-      `[${fees}] sends ${fees === "WEI" ? "$ETH" : "FRI"} to the account address`,
+      `[${fees}][${name}]: sends ${fees === "WEI" ? "$ETH" : "FRI"} to the account address`,
       async () => {
         const conf = config(env);
         const sender = testAccounts(conf)[accountID];
         const p = new RpcProvider({ nodeUrl: conf.providerURL });
-        const publicKey = conf.accounts[accountID].publicKey;
-        const privateKey = conf.accounts[accountID].privateKey;
         const moduleValidatorClassHash = moduleClassHash(data.className);
         const calldata = [
           moduleValidatorClassHash,
@@ -230,10 +273,11 @@ describe.each([dataset[0], dataset[2]])(
         );
         const receipt = await sender.waitForTransaction(transaction_hash);
         expect(receipt.isSuccess()).toEqual(true);
-        smartrAccount = new SmartrAccount(
+        const signer = new data.signer(data.privateKey);
+        smartrAccountWithModule = new SmartrAccount(
           p,
           address,
-          privateKey,
+          signer,
           undefined,
           "1",
           fees === "WEI" ? "0x2" : "0x3"
@@ -243,15 +287,20 @@ describe.each([dataset[0], dataset[2]])(
     );
 
     it(
-      `[${fees}][${name}]: configures the SmartrAccount with the signer`,
+      `[${fees}][${name}]: checks ${fees === "WEI" ? "$ETH" : "$STRK"} to the account address`,
       async () => {
-        const conf = config(env);
-        const p = new RpcProvider({ nodeUrl: conf.providerURL });
-        const signer = new data.signer(data.privateKey);
-        smartrAccountWithModule = new SmartrAccount(
-          p,
-          smartrAccount.address,
-          signer
+        const moduleValidatorClassHash = moduleClassHash(data.className);
+        const calldata = [
+          moduleValidatorClassHash,
+          data.publicKeyArray.length.toString(10),
+          ...data.publicKeyArray,
+        ];
+        const salt = hash.computeHashOnElements(data.publicKeyArray);
+        const address = accountAddress("SmartrAccount", salt, calldata);
+        const TOKEN = fees === "WEI" ? ETH : STRK;
+        const value = await TOKEN(smartrAccountWithModule).balance_of(address);
+        expect(cairo.uint256(value)).toEqual(
+          fees === "WEI" ? initial_EthTransfer : initial_StrkTransfer
         );
       },
       default_timeout
@@ -267,13 +316,31 @@ describe.each([dataset[0], dataset[2]])(
           data.publicKeyArray.length.toString(10),
           ...data.publicKeyArray,
         ];
+        let options: UniversalDetails = { maxFee: "0x2000000000000" };
+        if (fees === "FRI") {
+          options = {
+            resourceBounds: {
+              l2_gas: {
+                max_amount: "0x0",
+                max_price_per_unit: "0x0",
+              },
+              l1_gas: {
+                max_amount: "0x2f100",
+                max_price_per_unit: "0x22ecb25c00",
+              },
+            },
+          };
+        }
         const salt = hash.computeHashOnElements(data.publicKeyArray);
         const address = await deployAccount(
           smartrAccountWithModule,
           "SmartrAccount",
           salt,
           calldata,
-          { maxFee: "0x2000000000000" }
+          {
+            ...options,
+            version: version.deploy_account,
+          }
         );
         expect(address).toEqual(
           accountAddress("SmartrAccount", salt, calldata)
@@ -288,14 +355,18 @@ describe.each([dataset[0], dataset[2]])(
         const conf = config(env);
         const calldata = new CallData(data.validatorABI);
         const nestedCalldata = calldata.compile("get_public_key", {});
-        const c = await smartrAccount.callOnModule(
+        const c = await smartrAccountWithModule.callOnModule(
           moduleClassHash(data.className),
           "get_public_key",
           nestedCalldata
         );
         expect(Array.isArray(c)).toBe(true);
-        expect(c.length).toEqual(4);
-        expect(c[0].toString(10)).toEqual(data.publicKeyArray[0]);
+        expect(c.length).toEqual(data.publicKeyArray.length);
+        expect(
+          data.publicKeyArray[0].startsWith("0x")
+            ? `0x${c[0].toString(16)}`
+            : c[0].toString(10)
+        ).toEqual(data.publicKeyArray[0]);
       },
       default_timeout
     );
@@ -328,9 +399,32 @@ describe.each([dataset[0], dataset[2]])(
           counterContract.address,
           smartrAccountWithModule
         );
-        const { transaction_hash } = await counterWithSmartrAccount.increment();
+        const transaction = counterWithSmartrAccount.populate("increment", []);
+        const transactions = [transaction];
+        let options: UniversalDetails = {};
+        if (fees === "FRI") {
+          options = {
+            resourceBounds: {
+              l2_gas: {
+                max_amount: "0x0",
+                max_price_per_unit: "0x0",
+              },
+              l1_gas: {
+                max_amount: "0x2f100",
+                max_price_per_unit: "0x22ecb25c00",
+              },
+            },
+          };
+        }
+        const { transaction_hash } = await smartrAccountWithModule.execute(
+          transactions,
+          {
+            ...options,
+            version: version.invoke,
+          }
+        );
         const receipt =
-          await smartrAccount.waitForTransaction(transaction_hash);
+          await smartrAccountWithModule.waitForTransaction(transaction_hash);
         expect(receipt.isSuccess()).toBe(true);
       },
       default_timeout
