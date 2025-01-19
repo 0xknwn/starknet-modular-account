@@ -12,11 +12,11 @@ const expected = {
     "FRI": "0x660009647f265d0038500552d4563331c2aa25e96f9a69506032ba30c085e4d",
   } as { [id: string]: string; },}
 
-describe.each(data)("contract management (helper)", ({name, version, accountID}) => {
+describe.each(data)("contract management (helper)", ({fees, version, accountID}) => {
   let env: string = "devnet";
 
   it(
-    `[${name}] computes an account adddress`,
+    `[${fees}] computes an account adddress`,
     async () => {
       const conf = config(env);
             
@@ -37,7 +37,7 @@ describe.each(data)("contract management (helper)", ({name, version, accountID})
         0
       );
       expect(account_address).toBe(
-        expected.SimpleAccountAddress[name]
+        expected.SimpleAccountAddress[fees]
       );
     },
     default_timeout

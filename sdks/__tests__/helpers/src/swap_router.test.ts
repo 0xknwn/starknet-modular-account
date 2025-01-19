@@ -15,7 +15,7 @@ import { ec, hash, cairo, Contract } from "starknet";
 import { SwapRouter } from "./swap_router";
 import { data } from "./data.fixture";
 
-describe.each(data)("swap router", ({ name, version, accountID }) => {
+describe.each(data)("swap router", ({ fees, version, accountID }) => {
   let env: string;
   let altProviderURL: string;
   let swapRouterContract: SwapRouter;
@@ -30,7 +30,7 @@ describe.each(data)("swap router", ({ name, version, accountID }) => {
   });
 
   it(
-    `[${name}] declares the SwapRouter class`,
+    `[${fees}] declares the SwapRouter class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
@@ -41,7 +41,7 @@ describe.each(data)("swap router", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] deploys the SwapRouter contract`,
+    `[${fees}] deploys the SwapRouter contract`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
@@ -54,7 +54,7 @@ describe.each(data)("swap router", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] declares the TokenA class`,
+    `[${fees}] declares the TokenA class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
@@ -65,7 +65,7 @@ describe.each(data)("swap router", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] deploys the TokenA contract`,
+    `[${fees}] deploys the TokenA contract`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
@@ -83,7 +83,7 @@ describe.each(data)("swap router", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] declares the TokenB class`,
+    `[${fees}] declares the TokenB class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
@@ -94,7 +94,7 @@ describe.each(data)("swap router", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] deploys the TokenB contract`,
+    `[${fees}] deploys the TokenB contract`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
@@ -112,7 +112,7 @@ describe.each(data)("swap router", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] compute and check TokenA address`, async () => {
+    `[${fees}] compute and check TokenA address`, async () => {
     const conf = config(env);
     const a = testAccounts(conf)[accountID];
     const creatorAddress = a.address;
@@ -136,7 +136,7 @@ describe.each(data)("swap router", ({ name, version, accountID }) => {
   });
 
   it(
-    `[${name}] sets the tokens in the SwapRouter`,
+    `[${fees}] sets the tokens in the SwapRouter`,
     async () => {
       const is_paused = await swapRouterContract.is_paused();
       if (!is_paused) {
@@ -153,7 +153,7 @@ describe.each(data)("swap router", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] checks tokenA and tokenB initial account balance`,
+    `[${fees}] checks tokenA and tokenB initial account balance`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
@@ -168,7 +168,7 @@ describe.each(data)("swap router", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] requests tokenA to the faucet`,
+    `[${fees}] requests tokenA to the faucet`,
     async () => {
       const receipt = await swapRouterContract.faucet(
         cairo.uint256(2n * 10n ** 18n)
@@ -179,7 +179,7 @@ describe.each(data)("swap router", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] checks the account has been funded with tokenA`,
+    `[${fees}] checks the account has been funded with tokenA`,
     async () => {
       if (tokenAInitialBalance === undefined) {
         throw new Error("tokenAInitialBalance is undefined");
@@ -195,7 +195,7 @@ describe.each(data)("swap router", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] swaps tokenA for tokenB`,
+    `[${fees}] swaps tokenA for tokenB`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
@@ -210,7 +210,7 @@ describe.each(data)("swap router", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] checks the account has been funded with tokenB`,
+    `[${fees}] checks the account has been funded with tokenB`,
     async () => {
       if (tokenBInitialBalance === undefined) {
         throw new Error("tokenAInitialBalance is undefined");

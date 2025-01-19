@@ -19,7 +19,7 @@ import { RpcProvider, CallData } from "starknet";
 import { StarkValidatorABI } from "@0xknwn/starknet-modular-account";
 import { data } from "./data.fixture";
 
-describe.each(data)("module management", ({ name, version, accountID }) => {
+describe.each(data)("module management", ({ fees, version, accountID }) => {
   let env: string;
   let smartrAccount: SmartrAccount;
 
@@ -28,7 +28,7 @@ describe.each(data)("module management", ({ name, version, accountID }) => {
   });
 
   it(
-    `[${name}] deploys the starkValidator class`,
+    `[${fees}] deploys the starkValidator class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
@@ -41,7 +41,7 @@ describe.each(data)("module management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] declares the SmartrAccount class`,
+    `[${fees}] declares the SmartrAccount class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
@@ -54,7 +54,7 @@ describe.each(data)("module management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] sends ${name === "WEI" ? "$ETH" : "FRI"} to the account address`,
+    `[${fees}] sends ${fees === "WEI" ? "$ETH" : "FRI"} to the account address`,
     async () => {
       const conf = config(env);
       const sender = testAccounts(conf)[accountID];
@@ -67,9 +67,9 @@ describe.each(data)("module management", ({ name, version, accountID }) => {
         args: [publicKey],
       });
       const address = accountAddress("SmartrAccount", publicKey, calldata);
-      const TOKEN = name === "WEI" ? ETH : STRK;
+      const TOKEN = fees === "WEI" ? ETH : STRK;
       const initial_transfer =
-        name === "WEI" ? initial_EthTransfer : initial_StrkTransfer;
+        fees === "WEI" ? initial_EthTransfer : initial_StrkTransfer;
       const { transaction_hash } = await TOKEN(sender).transfer(
         address,
         initial_transfer
@@ -82,14 +82,14 @@ describe.each(data)("module management", ({ name, version, accountID }) => {
         privateKey,
         undefined,
         "1",
-        name === "WEI" ? "0x2" : "0x3"
+        fees === "WEI" ? "0x2" : "0x3"
       );
     },
     default_timeout
   );
 
   it(
-    `[${name}] deploys a SmartrAccount account`,
+    `[${fees}] deploys a SmartrAccount account`,
     async () => {
       const conf = config(env);
       const publicKey = conf.accounts[accountID].publicKey;
@@ -113,7 +113,7 @@ describe.each(data)("module management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] checks the SmartAccount public keys`,
+    `[${fees}] checks the SmartAccount public keys`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
@@ -134,7 +134,7 @@ describe.each(data)("module management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] checks module 0x0 is not installed`,
+    `[${fees}] checks module 0x0 is not installed`,
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
@@ -146,7 +146,7 @@ describe.each(data)("module management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] declare the SimpleValidator class`,
+    `[${fees}] declare the SimpleValidator class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
@@ -157,7 +157,7 @@ describe.each(data)("module management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] adds a module to the account`,
+    `[${fees}] adds a module to the account`,
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
@@ -172,7 +172,7 @@ describe.each(data)("module management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] checks the SimpleValidator is installed`,
+    `[${fees}] checks the SimpleValidator is installed`,
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
@@ -186,7 +186,7 @@ describe.each(data)("module management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] adds a module to the account again and fails`,
+    `[${fees}] adds a module to the account again and fails`,
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
@@ -202,7 +202,7 @@ describe.each(data)("module management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] removes the module from the account`,
+    `[${fees}] removes the module from the account`,
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
@@ -217,7 +217,7 @@ describe.each(data)("module management", ({ name, version, accountID }) => {
   );
 
   it(
-    `[${name}] checks the SimpleValidator is not installed`,
+    `[${fees}] checks the SimpleValidator is not installed`,
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
