@@ -61,8 +61,8 @@ export const testAccounts = (config: Config): Account[] => {
       provider,
       configAccount.address,
       configAccount.privateKey,
-      '1',
-      configAccount.defaultTransactionVersion,
+      "1",
+      configAccount.defaultTransactionVersion
     );
     accounts.push(account);
   }
