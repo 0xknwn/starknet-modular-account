@@ -26,7 +26,13 @@ const strkAddress =
 
 const main = async () => {
   const provider = new RpcProvider({ nodeUrl: providerURL });
-  const account = new Account(provider, ozAccountAddress, ozPrivateKey);
+  const account = new Account(
+    provider,
+    ozAccountAddress,
+    ozPrivateKey,
+    "1",
+    "0x3"
+  );
   const smartrSigner = new Signer(smartrAccountPrivateKey);
   const smartrAccountPublicKey = await smartrSigner.getPubKey();
   const starkValidatorClassHash = classHash("StarkValidator");
@@ -39,11 +45,11 @@ const main = async () => {
     smartrAccountPublicKey,
     calldata
   );
-  const ETH = new Contract(ERC20ABI, strkAddress, account);
-  const initial_EthTransfer = cairo.uint256(5000n * 10n ** 15n);
-  const call = ETH.populate("transfer", {
+  const STRK = new Contract(ERC20ABI, strkAddress, account);
+  const initial_StrkTransfer = cairo.uint256(5000n * 10n ** 15n);
+  const call = STRK.populate("transfer", {
     recipient: smartrAccountAddress,
-    amount: initial_EthTransfer,
+    amount: initial_StrkTransfer,
   });
   const { transaction_hash } = await account.execute(call);
   const output = await account.waitForTransaction(transaction_hash);

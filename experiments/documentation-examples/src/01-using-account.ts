@@ -24,12 +24,12 @@ const main = async () => {
   const smartrAccountAddress = accountAddress(
     "SmartrAccount",
     smartrAccountPublicKey,
-    calldata,
+    calldata
   );
   const smartrAccount = new SmartrAccount(
     provider,
     smartrAccountAddress,
-    smartrAccountPrivateKey
+    smartrAccountPrivateKey,
     undefined,
     "1",
     "0x3"
