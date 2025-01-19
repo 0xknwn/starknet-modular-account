@@ -12,7 +12,10 @@ const main = async () => {
   const account = new SmartrAccount(
     provider,
     accountAddress,
-    smartrAccountPrivateKey
+    smartrAccountPrivateKey,
+    undefined,
+    "1",
+    "0x3"
   );
   const counter = new Contract(CounterABI, counterAddress, account);
   let currentCounter = await counter.call("get");

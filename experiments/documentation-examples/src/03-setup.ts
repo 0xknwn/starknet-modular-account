@@ -25,13 +25,19 @@ const ozAccountAddress =
 const ozPrivateKey = "0x71d7bb07b9a64f6f78ac4c816aff4da9";
 const providerURL = "http://127.0.0.1:5050/rpc";
 const smartrAccountPrivateKey = "0x1";
-const ethAddress =
-  "0x49D36570D4E46F48E99674BD3FCC84644DDD6B96F7C741B1562B82F9E004DC7";
+const strkAddress =
+  "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d";
 
 const main = async () => {
   // setup constants
   const provider = new RpcProvider({ nodeUrl: providerURL });
-  const account = new Account(provider, ozAccountAddress, ozPrivateKey);
+  const account = new Account(
+    provider,
+    ozAccountAddress,
+    ozPrivateKey,
+    "1",
+    "0x3"
+  );
 
   // declare the classes
   await declareClass(account, "SmartrAccount");
@@ -52,23 +58,26 @@ const main = async () => {
     smartrAccountPublicKey,
     calldata
   );
-  const ETH = new Contract(ERC20ABI, ethAddress, account);
-  const initial_EthTransfer = cairo.uint256(5n * 10n ** 15n);
-  const call = ETH.populate("transfer", {
+  const STRK = new Contract(ERC20ABI, strkAddress, account);
+  const initial_StrkTransfer = cairo.uint256(50000n * 10n ** 15n);
+  const call = STRK.populate("transfer", {
     recipient: smartrAccountAddress,
-    amount: initial_EthTransfer,
+    amount: initial_StrkTransfer,
   });
   const { transaction_hash } = await account.execute(call);
   const output = await account.waitForTransaction(transaction_hash);
   if (!output.isSuccess()) {
-    throw new Error("Could not send ETH to the expected address");
+    throw new Error("Could not send STRK to the expected address");
   }
 
   // deploy the account
   const smartrAccount = new SmartrAccount(
     provider,
     smartrAccountAddress,
-    smartrAccountPrivateKey
+    smartrAccountPrivateKey,
+    undefined,
+    "1",
+    "0x3"
   );
   const address = await deployAccount(
     smartrAccount,

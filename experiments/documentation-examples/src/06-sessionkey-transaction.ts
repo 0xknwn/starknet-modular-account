@@ -64,7 +64,9 @@ const main = async () => {
     provider,
     accountAddress,
     sessionkeyPrivateKey,
-    sessionKeyModule
+    sessionKeyModule,
+    "1",
+    "0x3"
   );
 
   // Step 7: Execute transactions with the session key module

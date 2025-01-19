@@ -15,7 +15,9 @@ const main = async () => {
     provider,
     accountAddress,
     newSmartrAccountPrivateKey,
-    module
+    module,
+    "1",
+    "0x3"
   );
   const counter = new Contract(CounterABI, counterAddress, account);
   let currentCounter = await counter.call("get");

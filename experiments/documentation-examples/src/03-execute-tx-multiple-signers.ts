@@ -13,12 +13,18 @@ const main = async () => {
   const firstAccount = new SmartrAccount(
     provider,
     accountAddress,
-    smartrAccountPrivateKey
+    smartrAccountPrivateKey,
+    undefined,
+    "1",
+    "0x3"
   );
   const secondAccount = new SmartrAccount(
     provider,
     accountAddress,
-    secondSmartrAccountPrivateKey
+    secondSmartrAccountPrivateKey,
+    undefined,
+    "1",
+    "0x3"
   );
 
   // Before you start check the value of the counter

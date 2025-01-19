@@ -11,11 +11,11 @@ const providerURL = "http://127.0.0.1:5050/rpc";
 
 const main = async () => {
   const provider = new RpcProvider({ nodeUrl: providerURL });
-  const account = new Account(provider, ozAccountAddress, ozPrivateKey);
+  const account = new Account(provider, ozAccountAddress, ozPrivateKey, "1", "0x3");
 
   const { classHash: p256ValidatorClassHash } = await declareClass(
     account,
-    "P256Validator"
+    "P256Validator",
   );
   console.log("P256Validator class hash:", p256ValidatorClassHash);
 };

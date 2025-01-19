@@ -12,7 +12,10 @@ const main = async () => {
   const account = new SmartrAccount(
     provider,
     accountAddress,
-    smartrAccountPrivateKey
+    smartrAccountPrivateKey,
+    undefined,
+    "1",
+    "0x3"
   );
   const isInstalled = await account.isModule(classHash("MultisigValidator"));
   console.log(

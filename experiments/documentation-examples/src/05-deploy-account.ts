@@ -11,8 +11,8 @@ import {
 } from "@0xknwn/starknet-module";
 import { init } from "./05-init";
 import { ABI as ERC20ABI } from "./abi/ERC20";
-const ethAddress =
-  "0x49D36570D4E46F48E99674BD3FCC84644DDD6B96F7C741B1562B82F9E004DC7";
+const strkAddress =
+  "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d";
 
 // these are the settings for the devnet with --seed=0
 // change them to mee your requirements
@@ -22,8 +22,7 @@ const p256PrivateKey =
 
 const main = async () => {
   const provider = new RpcProvider({ nodeUrl: providerURL });
-  const { ozAccountAddress, ozAccountPrivateKey } =
-    await init();
+  const { ozAccountAddress, ozAccountPrivateKey } = await init();
 
   // Step 1 - Get the public key from the Eth Signer
   const p236SmartrSigner = new P256Signer(p256PrivateKey);
@@ -48,37 +47,60 @@ const main = async () => {
     [P256ClassHash("P256Validator"), "0x4", ...publicKeyArray]
   );
 
-  // Step 3 - Send ETH to the computed account address
+  // Step 3 - Send STRK to the computed account address
   const account = new Account(
     provider,
     ozAccountAddress,
-    ozAccountPrivateKey
+    ozAccountPrivateKey,
+    "1",
+    "0x3"
   );
-  const ETH = new Contract(ERC20ABI, ethAddress, account);
-  const initial_EthTransfer = cairo.uint256(3n * 10n ** 15n);
-  const { transaction_hash } = await ETH.transfer(computedAccountAddress, initial_EthTransfer);
+  const STRK = new Contract(ERC20ABI, strkAddress, account);
+  const initial_strkTransfer = cairo.uint256(50000n * 10n ** 15n);
+  const { transaction_hash } = await STRK.transfer(
+    computedAccountAddress,
+    initial_strkTransfer
+  );
   const output = await account.waitForTransaction(transaction_hash);
   if (!output.isSuccess()) {
-    throw new Error("Could not send ETH to the expected address");
+    throw new Error("Could not send STRK to the expected address");
   }
 
   // Step 4 - Deploy the account with the P256Validator as Core Validator
   const p256Account = new SmartrAccount(
     provider,
     computedAccountAddress,
-    p236SmartrSigner
+    p236SmartrSigner,
+    undefined,
+    "1",
+    "0x3"
   );
   const address = await deployAccount(
     p256Account,
     "SmartrAccount",
     publicKeyHash,
-    [P256ClassHash("P256Validator"), "0x4", ...publicKeyArray]
+    [P256ClassHash("P256Validator"), "0x4", ...publicKeyArray],
+    {
+      version: "0x3",
+      resourceBounds: {
+        l2_gas: {
+          max_amount: "0x0",
+          max_price_per_unit: "0x0",
+        },
+        l1_gas: {
+          max_amount: "0x2f10",
+          max_price_per_unit: "0x22ecb25c00",
+        },
+      },
+    }
   );
   if (address !== computedAccountAddress) {
     throw new Error(
       `The account should have been deployed to ${computedAccountAddress}, instead ${address}`
     );
   }
+  console.log("accountAddress", computedAccountAddress);
+  console.log("public key", publicKeyArray);
 };
 
 main()

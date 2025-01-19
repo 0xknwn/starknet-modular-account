@@ -30,7 +30,10 @@ const main = async () => {
   const smartrAccount = new SmartrAccount(
     provider,
     smartrAccountAddress,
-    smartrAccountPrivateKey
+    smartrAccountPrivateKey,
+    undefined,
+    "1",
+    "0x3"
   );
   const address = await deployAccount(
     smartrAccount,

@@ -20,7 +20,10 @@ const main = async () => {
   const account = new SmartrAccount(
     provider,
     accountAddress,
-    smartrAccountPrivateKey
+    smartrAccountPrivateKey,
+    undefined,
+    "1",
+    "0x3"
   );
   const module_class_hash = moduleClassHash("MultisigValidator");
   const calls: Call[] = [];

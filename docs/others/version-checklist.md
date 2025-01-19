@@ -51,6 +51,7 @@ git fetch -p
 git checkout develop
 git pull
 git reset --hard v0.2.1
+npm run build
 npm run registry
 ```
 
