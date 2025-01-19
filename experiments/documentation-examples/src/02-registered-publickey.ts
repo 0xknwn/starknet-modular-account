@@ -15,7 +15,10 @@ const main = async () => {
   const account = new SmartrAccount(
     provider,
     accountAddress,
-    smartrAccountPrivateKey
+    smartrAccountPrivateKey,
+    undefined,
+    "1",
+    "0x3"
   );
   const moduleCallData = new CallData(StarkValidatorABI);
   const calldata = await moduleCallData.compile("get_public_key", {});
