@@ -11,6 +11,9 @@ on:
     paths:
       - '**'
 
+permissions:
+  contents: read
+
 jobs:
   test:
     uses: ./.github/workflows/_sdks_jest.yml

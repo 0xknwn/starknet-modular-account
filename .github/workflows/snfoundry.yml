@@ -12,6 +12,9 @@ on:
     paths:
       - '**'
 
+permissions:
+  contents: read
+
 jobs:
   test:
     name: install, build and run snforge tests
