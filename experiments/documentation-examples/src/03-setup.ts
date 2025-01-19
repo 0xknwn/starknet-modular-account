@@ -23,7 +23,7 @@ import {
 const ozAccountAddress =
   "0x64b48806902a367c8598f4f95c305e8c1a1acba5f082d294a43793113115691";
 const ozPrivateKey = "0x71d7bb07b9a64f6f78ac4c816aff4da9";
-const providerURL = "http://127.0.0.1:8080/rpc";
+const providerURL = "http://127.0.0.1:5050/rpc";
 const smartrAccountPrivateKey = "0x1";
 const strkAddress =
   "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d";

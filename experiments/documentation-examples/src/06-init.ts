@@ -11,7 +11,8 @@ import {
 
 const ozAccountAddress =
   "0x64b48806902a367c8598f4f95c305e8c1a1acba5f082d294a43793113115691";
-const smartrAccountPrivateKey = "0x1";
+  const ozAccountPrivateKey = "0x71d7bb07b9a64f6f78ac4c816aff4da9";
+  const smartrAccountPrivateKey = "0x1";
 
 export { CounterABI };
 export const init = async () => {
@@ -35,6 +36,8 @@ export const init = async () => {
     ozAccountAddress
   );
   return {
+    ozAccountAddress,
+    ozAccountPrivateKey,
     accountAddress: smartrAccountAddress,
     counterAddress,
     smartrAccountPrivateKey,

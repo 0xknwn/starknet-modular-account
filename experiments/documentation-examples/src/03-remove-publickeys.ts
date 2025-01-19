@@ -10,7 +10,7 @@ import {
 import { init } from "./03-init";
 import { CallData, RpcProvider, Signer, hash, type Call } from "starknet";
 
-const providerURL = "http://127.0.0.1:8080/rpc";
+const providerURL = "http://127.0.0.1:5050/rpc";
 const secondAccountPrivateKey = "0x2";
 const thirdAccountPrivateKey = "0x3";
 

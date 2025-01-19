@@ -3,7 +3,7 @@ import { SmartrAccount } from "@0xknwn/starknet-modular-account";
 import { init, CounterABI } from "./03-init";
 import { RpcProvider, Contract, ArraySignatureType } from "starknet";
 
-const providerURL = "http://127.0.0.1:8080/rpc";
+const providerURL = "http://127.0.0.1:5050/rpc";
 const secondSmartrAccountPrivateKey = "0x2";
 
 const main = async () => {
