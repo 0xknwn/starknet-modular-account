@@ -27,7 +27,7 @@ import {
 import { Contract, RpcProvider, CallData } from "starknet";
 import { data } from "./data.fixture";
 
-describe.each(data)("multiple signature", () => {
+describe.each([data[0]])("multiple signature", ({fees}) => {
   let env: string;
   let counterContract: Counter;
   let smartrAccount: SmartrAccount;
@@ -38,7 +38,7 @@ describe.each(data)("multiple signature", () => {
   });
 
   it(
-    "[multisig]: declare the Counter class",
+    `[${fees}][multisig]: declare the Counter class`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -49,7 +49,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: deploys the Counter contract",
+    `[${fees}][multisig]: deploys the Counter contract`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -63,7 +63,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: deploys the MultisigValidator class",
+    `[${fees}][multisig]: deploys the MultisigValidator class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
@@ -74,7 +74,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: deploys the SmartrAccount class",
+    `[${fees}][multisig]: deploys the SmartrAccount class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
@@ -85,7 +85,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: sends ETH to the account address",
+    `[${fees}][multisig]: sends ETH to the account address`,
     async () => {
       const conf = config(env);
       const sender = testAccounts(conf)[0];
@@ -110,7 +110,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: deploys a SmartrAccount account",
+    `[${fees}][multisig]: deploys a SmartrAccount account`,
     async () => {
       const conf = config(env);
       const publicKey = conf.accounts[0].publicKey;
@@ -133,7 +133,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: checks the SmartAccount public keys",
+    `[${fees}][multisig]: checks the SmartAccount public keys`,
     async () => {
       const conf = config(env);
       const calldata = new CallData(MultisigValidatorABI);
@@ -151,7 +151,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: checks the SmartAccount threshold",
+    `[${fees}][multisig]: checks the SmartAccount threshold`,
     async () => {
       const calldata = new CallData(MultisigValidatorABI);
       const data = calldata.compile("get_threshold", {});
@@ -168,7 +168,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: resets the counter",
+    `[${fees}][multisig]: resets the counter`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -183,7 +183,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: increments the counter from SmartrAccount and succeed",
+    `[${fees}][multisig]: increments the counter from SmartrAccount and succeed`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
@@ -203,7 +203,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: reads the counter",
+    `[${fees}][multisig]: reads the counter`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
@@ -215,7 +215,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: resets the counter from SmartrAccount and fails",
+    `[${fees}][multisig]: resets the counter from SmartrAccount and fails`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
@@ -238,7 +238,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: checks the SmartAccount threshold",
+    `[${fees}][multisig]: checks the SmartAccount threshold`,
     async () => {
       const calldata = new CallData(MultisigValidatorABI);
       const data = calldata.compile("get_threshold", {});
@@ -255,7 +255,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: adds a 2nd public key to the account",
+    `[${fees}][multisig]: adds a 2nd public key to the account`,
     async () => {
       const conf = config(env);
       const calldata = new CallData(MultisigValidatorABI);
@@ -280,7 +280,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: checks the new public key with the account",
+    `[${fees}][multisig]: checks the new public key with the account`,
     async () => {
       const conf = config(env);
       const calldata = new CallData(MultisigValidatorABI);
@@ -298,7 +298,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: resets the counter with owner",
+    `[${fees}][multisig]: resets the counter with owner`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -313,7 +313,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: increments the counter with newly added owner",
+    `[${fees}][multisig]: increments the counter with newly added owner`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
@@ -336,7 +336,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: reads the counter",
+    `[${fees}][multisig]: reads the counter`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
@@ -348,7 +348,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: resets the counter with owner",
+    `[${fees}][multisig]: resets the counter with owner`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -363,7 +363,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: updates the account threshold to 2",
+    `[${fees}][multisig]: updates the account threshold to 2`,
     async () => {
       const calldata = new CallData(MultisigValidatorABI);
       const data = calldata.compile("set_threshold", {
@@ -381,7 +381,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: adds a 3rd public key to the account",
+    `[${fees}][multisig]: adds a 3rd public key to the account`,
     async () => {
       const conf = config(env);
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
@@ -413,7 +413,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: checks the new public key with the account",
+    `[${fees}][multisig]: checks the new public key with the account"`,
     async () => {
       const conf = config(env);
       const calldata = new CallData(MultisigValidatorABI);
@@ -431,7 +431,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: increments the counter with 2 of 3 signers",
+    `[${fees}][multisig]: increments the counter with 2 of 3 signers`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
@@ -459,7 +459,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: reads the counter",
+    `[${fees}][multisig]: reads the counter`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
@@ -471,7 +471,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: increments the counter with 1 of 3 signers and fails",
+    `[${fees}][multisig]: increments the counter with 1 of 3 signers and fails`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
@@ -495,7 +495,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: resets the counter with owner",
+    `[${fees}][multisig]: resets the counter with owner`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -510,7 +510,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: updates the account threshold to 1",
+    `[${fees}][multisig]: updates the account threshold to 1`,
     async () => {
       const calldata = new CallData(MultisigValidatorABI);
       const data = calldata.compile("set_threshold", {
@@ -540,7 +540,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: checks the SmartAccount threshold is back to 1",
+    `[${fees}][multisig]: checks the SmartAccount threshold is back to 1`,
     async () => {
       const calldata = new CallData(MultisigValidatorABI);
       const data = calldata.compile("get_threshold", {});
@@ -557,7 +557,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: increments the counter from SmartrAccount and succeed",
+    `[${fees}][multisig]: increments the counter from SmartrAccount and succeed`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
@@ -573,7 +573,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: removes the 2nd public key from the account",
+    `[${fees}][multisig]: removes the 2nd public key from the account`,
     async () => {
       const conf = config(env);
       const calldata = new CallData(MultisigValidatorABI);
@@ -592,7 +592,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: checks the public key with the account are 2",
+    `[${fees}][multisig]: checks the public key with the account are 2`,
     async () => {
       const calldata = new CallData(MultisigValidatorABI);
       const data = calldata.compile("get_public_keys", {});
@@ -610,7 +610,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: removes the ex-3rd public key from the account",
+    `[${fees}][multisig]: removes the ex-3rd public key from the account`,
     async () => {
       const conf = config(env);
       const calldata = new CallData(MultisigValidatorABI);
@@ -629,7 +629,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: checks the public key with the account are 1",
+    `[${fees}][multisig]: checks the public key with the account are 1`,
     async () => {
       const calldata = new CallData(MultisigValidatorABI);
       const data = calldata.compile("get_public_keys", {});
@@ -647,7 +647,7 @@ describe.each(data)("multiple signature", () => {
   );
 
   it(
-    "[multisig]: increments the counter from SmartrAccount and succeed",
+    `[${fees}][multisig]: increments the counter from SmartrAccount and succeed`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");

@@ -28,7 +28,7 @@ const smartAccountPrivateKey = "0xabcdef";
 const initial_EthTransfer = cairo.uint256(10n * 10n ** 15n);
 import { data } from "./data.fixture";
 
-describe.each([data[0]])("stark validator management", () => {
+describe.each([data[0]])("stark validator management", ({ fees }) => {
   let env: string;
   let counterContract: Counter;
   let smartrAccount: SmartrAccount;
@@ -42,7 +42,7 @@ describe.each([data[0]])("stark validator management", () => {
   });
 
   it(
-    `[stark]: gets the chain id`,
+    `[${fees}][stark]: gets the chain id`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -52,7 +52,7 @@ describe.each([data[0]])("stark validator management", () => {
   );
 
   it(
-    `[stark]: declare the Counter class`,
+    `[${fees}][stark]: declare the Counter class`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -63,7 +63,7 @@ describe.each([data[0]])("stark validator management", () => {
   );
 
   it(
-    `[stark]: deploys the Counter contract`,
+    `[${fees}][stark]: deploys the Counter contract`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -77,7 +77,7 @@ describe.each([data[0]])("stark validator management", () => {
   );
 
   it(
-    `[stark]: deploys the StarkValidator class`,
+    `[${fees}][stark]: deploys the StarkValidator class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
@@ -88,7 +88,7 @@ describe.each([data[0]])("stark validator management", () => {
   );
 
   it(
-    `[stark]: deploys the SmartrAccount class`,
+    `[${fees}][stark]: deploys the SmartrAccount class`,
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
@@ -99,7 +99,7 @@ describe.each([data[0]])("stark validator management", () => {
   );
 
   it(
-    `[stark]: sends ETH to the account address`,
+    `[${fees}][stark]: sends ETH to the account address`,
     async () => {
       const conf = config(env);
       const sender = testAccounts(conf)[0];
@@ -124,7 +124,7 @@ describe.each([data[0]])("stark validator management", () => {
   );
 
   it(
-    `[stark]: configures the SmartrAccount with the signer`,
+    `[${fees}][stark]: configures the SmartrAccount with the signer`,
     async () => {
       const conf = config(env);
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
@@ -138,7 +138,7 @@ describe.each([data[0]])("stark validator management", () => {
   );
 
   it(
-    `[stark]: deploys a SmartrAccount account`,
+    `[${fees}][stark]: deploys a SmartrAccount account`,
     async () => {
       const conf = config(env);
       const moduleValidatorClassHash = moduleClassHash("StarkValidator");
@@ -157,7 +157,7 @@ describe.each([data[0]])("stark validator management", () => {
   );
 
   it(
-    `[stark]: checks the SmartAccount public key`,
+    `[${fees}][stark]: checks the SmartAccount public key`,
     async () => {
       const conf = config(env);
       const calldata = new CallData(StarkValidatorABI);
@@ -175,7 +175,7 @@ describe.each([data[0]])("stark validator management", () => {
   );
 
   it(
-    `[stark]: resets the counter`,
+    `[${fees}][stark]: resets the counter`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -190,7 +190,7 @@ describe.each([data[0]])("stark validator management", () => {
   );
 
   it(
-    `[stark]: increments the counter from SmartrAccount and succeeds`,
+    `[${fees}][stark]: increments the counter from SmartrAccount and succeeds`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
@@ -210,7 +210,7 @@ describe.each([data[0]])("stark validator management", () => {
   );
 
   it(
-    `[stark]: reads the counter`,
+    `[${fees}][stark]: reads the counter`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
@@ -222,7 +222,7 @@ describe.each([data[0]])("stark validator management", () => {
   );
 
   it(
-    `[stark]: checks the module is installed`,
+    `[${fees}][stark]: checks the module is installed`,
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
@@ -236,7 +236,7 @@ describe.each([data[0]])("stark validator management", () => {
   );
 
   it(
-    `[stark]: resets the counter`,
+    `[${fees}][stark]: resets the counter`,
     async () => {
       const conf = config(env);
       const account = testAccounts(conf)[0];
@@ -250,7 +250,7 @@ describe.each([data[0]])("stark validator management", () => {
     default_timeout
   );
 
-  it(`[stark]: creates an typescript account with the module`, async () => {
+  it(`[${fees}][stark]: creates an typescript account with the module`, async () => {
     if (!module) {
       expect(module).toBeDefined();
       return;
@@ -268,7 +268,7 @@ describe.each([data[0]])("stark validator management", () => {
   });
 
   it(
-    `[stark]: increments the counter with the account/module and succeeds`,
+    `[${fees}][stark]: increments the counter with the account/module and succeeds`,
     async () => {
       if (!counterContract) {
         throw new Error("Counter not deployed");
@@ -282,16 +282,15 @@ describe.each([data[0]])("stark validator management", () => {
       );
       const { transaction_hash } =
         await counterWithSmartrAccountAndModule.increment();
-      const receipt = await smartrAccountWithModule.waitForTransaction(
-        transaction_hash
-      );
+      const receipt =
+        await smartrAccountWithModule.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toBe(true);
     },
     default_timeout
   );
 
   it(
-    `[stark]: increments the counter with wrong key and fails`,
+    `[${fees}][stark]: increments the counter with wrong key and fails`,
     async () => {
       const conf = config(env);
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
@@ -321,7 +320,7 @@ describe.each([data[0]])("stark validator management", () => {
   );
 
   it(
-    `[stark]: removes the Validator module and fails`,
+    `[${fees}][stark]: removes the Validator module and fails`,
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
@@ -339,7 +338,7 @@ describe.each([data[0]])("stark validator management", () => {
   );
 
   it(
-    `[stark]: checks the module is installed`,
+    `[${fees}][stark]: checks the module is installed`,
     async () => {
       if (!smartrAccount) {
         throw new Error("SmartrAccount is not deployed");
