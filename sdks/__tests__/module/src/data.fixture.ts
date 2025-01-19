@@ -9,6 +9,8 @@ export const data = [
       deploy_account: V1,
     },
     accountID: 0,
+    altAccountID: 2,
+    thirdAccountID: 4,
   },
   {
     fees: "FRI",
@@ -18,5 +20,7 @@ export const data = [
       deploy_account: V3,
     },
     accountID: 1,
+    altAccountID: 3,
+    thirdAccountID: 5,
   },
 ];

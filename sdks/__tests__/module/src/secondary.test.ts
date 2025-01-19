@@ -20,7 +20,7 @@ import {
   accountAddress,
   SmartrAccountABI,
 } from "@0xknwn/starknet-modular-account";
-import { RpcProvider, CallData, EthSigner } from "starknet";
+import { RpcProvider, CallData, EthSigner, UniversalDetails } from "starknet";
 import {
   declareClass as declareModuleClass,
   classHash as moduleClassHash,
@@ -130,7 +130,7 @@ const dataset = [
   },
 ];
 
-describe.each([dataset[0], dataset[2]])(
+describe.each([dataset[1], dataset[3]])(
   "secondary validator management",
   ({ name, data, fees, accountID, version }) => {
     let env: string;
@@ -209,7 +209,7 @@ describe.each([dataset[0], dataset[2]])(
     );
 
     it(
-      `[${fees}] sends ${fees === "WEI" ? "$ETH" : "FRI"} to the account address`,
+      `[${fees}][${name}]: sends ${fees === "WEI" ? "$ETH" : "$STRK"} to the account address`,
       async () => {
         const conf = config(env);
         const sender = testAccounts(conf)[accountID];
@@ -340,7 +340,9 @@ describe.each([dataset[0], dataset[2]])(
       async () => {
         const conf = config(env);
         const a = testAccounts(conf)[accountID];
-        const c = await declareModuleClass(a, data.className, {version: version.declare});
+        const c = await declareModuleClass(a, data.className, {
+          version: version.declare,
+        });
         expect(c.classHash).toEqual(moduleClassHash(data.className));
       },
       default_timeout
@@ -411,11 +413,10 @@ describe.each([dataset[0], dataset[2]])(
           "get_public_key",
           []
         );
-        expect(result.length).toEqual(4);
-        expect(result[0]).toEqual(BigInt(data.publicKeyArray[0]));
-        expect(result[1]).toEqual(BigInt(data.publicKeyArray[1]));
-        expect(result[2]).toEqual(BigInt(data.publicKeyArray[2]));
-        expect(result[3]).toEqual(BigInt(data.publicKeyArray[3]));
+        expect(result.length).toEqual(data.publicKeyArray.length);
+        for (let i = 0; i < result.length; i++) {
+          expect(result[i]).toEqual(BigInt(data.publicKeyArray[i]));
+        }
       },
       default_timeout
     );
@@ -451,7 +452,9 @@ describe.each([dataset[0], dataset[2]])(
         p,
         smartrAccount.address,
         signer,
-        m
+        m,
+        "1",
+        fees === "WEI" ? "0x2" : "0x3"
       );
     });
 
@@ -468,8 +471,33 @@ describe.each([dataset[0], dataset[2]])(
           counterContract.address,
           smartrAccountWithModule
         );
-        const { transaction_hash } =
-          await counterWithSmartrAccountAndModule.increment();
+        const transaction = counterWithSmartrAccountAndModule.populate(
+          "increment",
+          []
+        );
+        const transactions = [transaction];
+        let options: UniversalDetails = {};
+        if (fees === "FRI") {
+          options = {
+            resourceBounds: {
+              l2_gas: {
+                max_amount: "0x0",
+                max_price_per_unit: "0x0",
+              },
+              l1_gas: {
+                max_amount: "0x2f100",
+                max_price_per_unit: "0x22ecb25c00",
+              },
+            },
+          };
+        }
+        const { transaction_hash } = await smartrAccountWithModule.execute(
+          transactions,
+          {
+            ...options,
+            version: version.invoke,
+          }
+        );
         const receipt =
           await smartrAccountWithModule.waitForTransaction(transaction_hash);
         expect(receipt.isSuccess()).toBe(true);
@@ -495,7 +523,9 @@ describe.each([dataset[0], dataset[2]])(
           p,
           smartrAccount.address,
           signer,
-          m
+          m,
+          "1",
+          fees === "WEI" ? "0x2" : "0x3"
         );
         if (!counterContract) {
           throw new Error("Counter not deployed");

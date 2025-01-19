@@ -111,7 +111,7 @@ describe.each([data[1]])(
     );
 
     it(
-      `[${fees}][stark]: sends ${fees === "WEI" ? "$ETH" : "FRI"} to the account address`,
+      `[${fees}][stark]: sends ${fees === "WEI" ? "$ETH" : "$STRK"} to the account address`,
       async () => {
         const conf = config(env);
         const sender = testAccounts(conf)[accountID];

@@ -31,7 +31,7 @@ import { data } from "./data.fixture";
 
 describe.each([data[0]])(
   "multiple signature",
-  ({ fees, accountID, version }) => {
+  ({ fees, accountID, altAccountID, thirdAccountID, version }) => {
     let env: string;
     let counterContract: Counter;
     let smartrAccount: SmartrAccount;
@@ -97,7 +97,7 @@ describe.each([data[0]])(
     );
 
     it(
-      `[${fees}] sends ${fees === "WEI" ? "$ETH" : "FRI"} to the account address`,
+      `[${fees}][multisig]: sends ${fees === "WEI" ? "$ETH" : "$STRK"} to the account address`,
       async () => {
         const conf = config(env);
         const sender = testAccounts(conf)[accountID];
@@ -286,7 +286,7 @@ describe.each([data[0]])(
         const conf = config(env);
         const calldata = new CallData(MultisigValidatorABI);
         const data = calldata.compile("add_public_key", {
-          new_public_key: conf.accounts[1].publicKey,
+          new_public_key: conf.accounts[altAccountID].publicKey,
         });
         const { transaction_hash } = await smartrAccount.executeOnModule(
           moduleClassHash("MultisigValidator"),
@@ -300,7 +300,10 @@ describe.each([data[0]])(
         smartrAccount2 = new SmartrAccount(
           p,
           smartrAccount.address,
-          conf.accounts[1].privateKey
+          conf.accounts[altAccountID].privateKey,
+          undefined,
+          "1",
+          fees === "WEI" ? "0x2" : "0x3"
         );
       },
       default_timeout
@@ -319,7 +322,9 @@ describe.each([data[0]])(
         );
         expect(Array.isArray(c)).toBe(true);
         expect(c.length).toEqual(2);
-        expect(`0x${c[1].toString(16)}`).toEqual(conf.accounts[1].publicKey);
+        expect(`0x${c[1].toString(16)}`).toEqual(
+          conf.accounts[altAccountID].publicKey
+        );
       },
       default_timeout
     );
@@ -416,7 +421,7 @@ describe.each([data[0]])(
         const p = new RpcProvider({ nodeUrl: conf.providerURL });
         const calldata = new CallData(MultisigValidatorABI);
         const data = calldata.compile("add_public_key", {
-          new_public_key: conf.accounts[2].publicKey,
+          new_public_key: conf.accounts[thirdAccountID].publicKey,
         });
         const transactions = await smartrAccount.executeOnModule(
           moduleClassHash("MultisigValidator"),
@@ -458,7 +463,9 @@ describe.each([data[0]])(
         );
         expect(Array.isArray(c)).toBe(true);
         expect(c.length).toEqual(3);
-        expect(`0x${c[2].toString(16)}`).toEqual(conf.accounts[2].publicKey);
+        expect(`0x${c[2].toString(16)}`).toEqual(
+          conf.accounts[thirdAccountID].publicKey
+        );
       },
       default_timeout
     );
@@ -620,7 +627,7 @@ describe.each([data[0]])(
         const conf = config(env);
         const calldata = new CallData(MultisigValidatorABI);
         const data = calldata.compile("remove_public_key", {
-          old_public_key: conf.accounts[1].publicKey,
+          old_public_key: conf.accounts[altAccountID].publicKey,
         });
         const { transaction_hash } = await smartrAccount.executeOnModule(
           moduleClassHash("MultisigValidator"),
@@ -647,7 +654,9 @@ describe.each([data[0]])(
         expect(Array.isArray(c)).toBe(true);
         expect(c.length).toEqual(2);
         const conf = config(env);
-        expect(`0x${c[1].toString(16)}`).toEqual(conf.accounts[2].publicKey);
+        expect(`0x${c[1].toString(16)}`).toEqual(
+          conf.accounts[thirdAccountID].publicKey
+        );
       },
       default_timeout
     );
@@ -658,7 +667,7 @@ describe.each([data[0]])(
         const conf = config(env);
         const calldata = new CallData(MultisigValidatorABI);
         const data = calldata.compile("remove_public_key", {
-          old_public_key: conf.accounts[2].publicKey,
+          old_public_key: conf.accounts[thirdAccountID].publicKey,
         });
         const { transaction_hash } = await smartrAccount.executeOnModule(
           moduleClassHash("MultisigValidator"),
