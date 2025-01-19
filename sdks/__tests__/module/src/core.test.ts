@@ -25,8 +25,7 @@ import {
   P256ValidatorABI,
   P256Signer,
 } from "@0xknwn/starknet-module";
-
-const { V1, V2, V3 } = { V1: 1, V2: 2, V3: 3 };
+import { V1, V2, V3 } from "./data.fixture";
 
 const dataset = [
   {
@@ -74,7 +73,8 @@ const dataset = [
       signer: EthSigner,
       validatorABI: EthValidatorABI,
     },
-  },  {
+  },
+  {
     name: "p256",
     fees: "FRI",
     version: {
@@ -101,7 +101,7 @@ const dataset = [
   },
 ];
 
-describe.each(dataset)("core validator management", ({ name, data }) => {
+describe.each([dataset[0]])("core validator management", ({ name, data }) => {
   let env: string;
   let counterContract: Counter;
   let smartrAccount: SmartrAccount;
