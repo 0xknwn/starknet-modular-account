@@ -8,7 +8,9 @@ import {
   counterAddress,
   config,
   ETH,
+  STRK,
   initial_EthTransfer,
+  initial_StrkTransfer,
 } from "@0xknwn/starknet-test-helpers";
 import {
   declareClass as declareAccountClass,
@@ -128,7 +130,7 @@ const dataset = [
 
 describe.each([dataset[0], dataset[2]])(
   "core validator management",
-  ({ name, fees, data }) => {
+  ({ name, fees, accountID, version, data }) => {
     let env: string;
     let counterContract: Counter;
     let smartrAccount: SmartrAccount;
@@ -142,18 +144,20 @@ describe.each([dataset[0], dataset[2]])(
       `[${fees}][${name}]: gets the chain id`,
       async () => {
         const conf = config(env);
-        const account = testAccounts(conf)[0];
+        const account = testAccounts(conf)[accountID];
         await account.getChainId();
       },
       default_timeout
     );
 
     it(
-      `[${fees}][${name}]: declare the Counter class`,
+      `[${fees}][${name}]: declares the Counter class`,
       async () => {
         const conf = config(env);
-        const account = testAccounts(conf)[0];
-        const c = await declareHelperClass(account, "Counter");
+        const account = testAccounts(conf)[accountID];
+        const c = await declareHelperClass(account, "Counter", {
+          version: version.declare,
+        });
         expect(c.classHash).toEqual(helperClassHash("Counter"));
       },
       default_timeout
@@ -163,45 +167,52 @@ describe.each([dataset[0], dataset[2]])(
       `[${fees}][${name}]: deploys the Counter contract`,
       async () => {
         const conf = config(env);
-        const account = testAccounts(conf)[0];
-        const c = await deployCounter(account, account.address);
+        const account = testAccounts(conf)[accountID];
+        const c = await deployCounter(account, account.address, {
+          version: version.invoke,
+        });
         expect(c.address).toEqual(
           await counterAddress(account.address, account.address)
         );
-        counterContract = new Counter(c.address, testAccounts(conf)[0]);
+        counterContract = new Counter(c.address, testAccounts(conf)[accountID]);
       },
       default_timeout
     );
 
     it(
-      `[${fees}][${name}]: deploys the ${data.className} class`,
+      `[${fees}][${name}]: declares the ${data.className} class`,
       async () => {
         const conf = config(env);
-        const a = testAccounts(conf)[0];
-        const c = await declareModuleClass(a, data.className);
+        const a = testAccounts(conf)[accountID];
+        const c = await declareModuleClass(a, data.className, {
+          version: version.declare,
+        });
         expect(c.classHash).toEqual(moduleClassHash(data.className));
       },
       default_timeout
     );
 
     it(
-      `[${fees}][${name}]: deploys the SmartrAccount class`,
+      `[${fees}][${name}]: declares the SmartrAccount class`,
       async () => {
         const conf = config(env);
-        const a = testAccounts(conf)[0];
-        const c = await declareAccountClass(a, "SmartrAccount");
+        const a = testAccounts(conf)[accountID];
+        const c = await declareAccountClass(a, "SmartrAccount", {
+          version: version.declare,
+        });
         expect(c.classHash).toEqual(accountClassHash("SmartrAccount"));
       },
       default_timeout
     );
 
     it(
-      `[${fees}][${name}]: sends ETH to the account address`,
+      `[${fees}] sends ${fees === "WEI" ? "$ETH" : "FRI"} to the account address`,
       async () => {
         const conf = config(env);
-        const sender = testAccounts(conf)[0];
+        const sender = testAccounts(conf)[accountID];
         const p = new RpcProvider({ nodeUrl: conf.providerURL });
-        const privateKey = conf.accounts[0].privateKey;
+        const publicKey = conf.accounts[accountID].publicKey;
+        const privateKey = conf.accounts[accountID].privateKey;
         const moduleValidatorClassHash = moduleClassHash(data.className);
         const calldata = [
           moduleValidatorClassHash,
@@ -210,13 +221,23 @@ describe.each([dataset[0], dataset[2]])(
         ];
         const salt = hash.computeHashOnElements(data.publicKeyArray);
         const address = accountAddress("SmartrAccount", salt, calldata);
-        const { transaction_hash } = await ETH(sender).transfer(
+        const TOKEN = fees === "WEI" ? ETH : STRK;
+        const initial_transfer =
+          fees === "WEI" ? initial_EthTransfer : initial_StrkTransfer;
+        const { transaction_hash } = await TOKEN(sender).transfer(
           address,
-          initial_EthTransfer
+          initial_transfer
         );
         const receipt = await sender.waitForTransaction(transaction_hash);
         expect(receipt.isSuccess()).toEqual(true);
-        smartrAccount = new SmartrAccount(p, address, privateKey);
+        smartrAccount = new SmartrAccount(
+          p,
+          address,
+          privateKey,
+          undefined,
+          "1",
+          fees === "WEI" ? "0x2" : "0x3"
+        );
       },
       default_timeout
     );
@@ -283,7 +304,7 @@ describe.each([dataset[0], dataset[2]])(
       `[${fees}][${name}]: resets the counter`,
       async () => {
         const conf = config(env);
-        const account = testAccounts(conf)[0];
+        const account = testAccounts(conf)[accountID];
         if (!counterContract) {
           throw new Error("Counter not deployed");
         }
