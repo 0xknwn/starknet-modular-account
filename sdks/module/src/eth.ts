@@ -1,7 +1,7 @@
 import { Call } from "starknet";
 
 import { AccountModuleInterface } from "@0xknwn/starknet-modular-account";
-import { classHash } from "./class";
+import { classHash, classNames } from "./class";
 
 export class EthModule implements AccountModuleInterface {
   protected accountAddress: string;
@@ -10,7 +10,7 @@ export class EthModule implements AccountModuleInterface {
   }
 
   prefix(calls: Call[] | Call) {
-    let calldata: string[] = [classHash("EthValidator")];
+    let calldata: string[] = [classHash(classNames.EthValidator)];
     calldata.unshift(`0x${calldata.length.toString(16)}`);
     return {
       entrypoint: "__module_validate__",

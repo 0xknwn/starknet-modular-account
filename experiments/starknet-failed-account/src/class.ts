@@ -1,4 +1,5 @@
 import { hash, json, CompiledContract, Account } from "starknet";
+import { Buffer } from "buffer";
 import { data as FailedAccountContract } from "./artifacts/FailedAccount-contract";
 import { data as FailedAccountCompiled } from "./artifacts/FailedAccount-compiled";
 /**

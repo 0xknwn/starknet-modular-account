@@ -1,7 +1,7 @@
 import { Call } from "starknet";
 
 import { AccountModuleInterface } from "@0xknwn/starknet-modular-account";
-import { classHash } from "./class";
+import { classHash, classNames } from "./class";
 
 export class P256Module implements AccountModuleInterface {
   protected accountAddress: string;
@@ -10,7 +10,7 @@ export class P256Module implements AccountModuleInterface {
   }
 
   prefix(calls: Call[] | Call) {
-    let calldata: string[] = [classHash("P256Validator")];
+    let calldata: string[] = [classHash(classNames.P256Validator)];
     calldata.unshift(`0x${calldata.length.toString(16)}`);
     return {
       entrypoint: "__module_validate__",

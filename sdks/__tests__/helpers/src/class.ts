@@ -1,4 +1,5 @@
 import { hash, json, CompiledContract, Account } from "starknet";
+import { Buffer } from "buffer";
 import { data as CounterContract } from "./artifacts/Counter-contract";
 import { data as CounterCompiled } from "./artifacts/Counter-compiled";
 import { data as SimpleAccountContract } from "./artifacts/SimpleAccount-contract";
@@ -19,29 +20,30 @@ import type { UniversalDetails } from "starknet";
  * `scarb build` command at the root of the project.
  *
  */
-export const classHash = (
-  className:
-    | "Counter"
-    | "SimpleAccount"
-    | "SwapRouter"
-    | "TokenA"
-    | "TokenB" = "Counter"
-) => {
+export enum classNames {
+  Counter = "Counter",
+  SimpleAccount = "SimpleAccount",
+  SwapRouter = "SwapRouter",
+  TokenA = "TokenA",
+  TokenB = "TokenB",
+}
+
+export const classHash = (className: classNames = classNames.Counter) => {
   let contract: string = "";
   switch (className) {
-    case "Counter":
+    case classNames.Counter:
       contract = CounterContract;
       break;
-    case "SimpleAccount":
+    case classNames.SimpleAccount:
       contract = SimpleAccountContract;
       break;
-    case "SwapRouter":
+    case classNames.SwapRouter:
       contract = SwapRouterContract;
       break;
-    case "TokenA":
+    case classNames.TokenA:
       contract = TokenAContract;
       break;
-    case "TokenB":
+    case classNames.TokenB:
       contract = TokenBContract;
       break;
     default:
@@ -71,13 +73,8 @@ export const classHash = (
  */
 export const declareClass = async (
   account: Account,
-  className:
-    | "Counter"
-    | "SimpleAccount"
-    | "SwapRouter"
-    | "TokenA"
-    | "TokenB",
-    details?: UniversalDetails,
+  className: classNames,
+  details?: UniversalDetails
 ) => {
   const HelperClassHash = classHash(className);
 
@@ -90,19 +87,19 @@ export const declareClass = async (
 
   let contract: string = "";
   switch (className) {
-    case "Counter":
+    case classNames.Counter:
       contract = CounterContract;
       break;
-    case "SimpleAccount":
+    case classNames.SimpleAccount:
       contract = SimpleAccountContract;
       break;
-    case "SwapRouter":
+    case classNames.SwapRouter:
       contract = SwapRouterContract;
       break;
-    case "TokenA":
+    case classNames.TokenA:
       contract = TokenAContract;
       break;
-    case "TokenB":
+    case classNames.TokenB:
       contract = TokenBContract;
       break;
     default:
@@ -111,19 +108,19 @@ export const declareClass = async (
 
   let compiled: string = "";
   switch (className) {
-    case "Counter":
+    case classNames.Counter:
       compiled = CounterCompiled;
       break;
-    case "SimpleAccount":
+    case classNames.SimpleAccount:
       compiled = SimpleAccountCompiled;
       break;
-    case "SwapRouter":
+    case classNames.SwapRouter:
       compiled = SwapRouterCompiled;
       break;
-    case "TokenA":
+    case classNames.TokenA:
       compiled = TokenACompiled;
       break;
-    case "TokenB":
+    case classNames.TokenB:
       compiled = TokenBCompiled;
       break;
     default:
@@ -136,10 +133,13 @@ export const declareClass = async (
   const compiledTestCasm = json.parse(
     Buffer.from(compiled, "base64").toString("ascii")
   );
-  const declare = await account.declare({
-    contract: compiledTestSierra,
-    casm: compiledTestCasm,
-  }, details);
+  const declare = await account.declare(
+    {
+      contract: compiledTestSierra,
+      casm: compiledTestCasm,
+    },
+    details
+  );
   return {
     ...(await account.waitForTransaction(declare.transaction_hash)),
     classHash: declare.class_hash,

@@ -5,6 +5,7 @@ import {
   Account,
   UniversalDetails,
 } from "starknet";
+import { Buffer } from "buffer";
 import { data as SessionKeyValidatorContract } from "./artifacts/SessionKeyValidator-contract";
 import { data as SessionKeyValidatorCompiled } from "./artifacts/SessionKeyValidator-compiled";
 

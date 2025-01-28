@@ -1,4 +1,5 @@
 import { hash, json, CompiledContract, Account } from "starknet";
+import { Buffer } from "buffer";
 import { data as BootstrapAccountContract } from "./artifacts/BootstrapAccount-contract";
 import { data as BootstrapAccountCompiled } from "./artifacts/BootstrapAccount-compiled";
 /**
