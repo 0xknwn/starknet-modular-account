@@ -1,4 +1,5 @@
 import { hash, json, CompiledContract, Account } from "starknet";
+import { Buffer } from "buffer";
 import { data as FailedAccountContract } from "./artifacts/FailedAccount-contract";
 import { data as FailedAccountCompiled } from "./artifacts/FailedAccount-compiled";
 /**
@@ -10,11 +11,15 @@ import { data as FailedAccountCompiled } from "./artifacts/FailedAccount-compile
  * `scarb build` command at the root of the project.
  *
  */
-export const classHash = (className: "FailedAccount") => {
+export const classHash = (className: classNames.FailedAccount) => {
   const f = Buffer.from(FailedAccountContract, "base64");
   const contract: CompiledContract = json.parse(f.toString("ascii"));
   return hash.computeContractClassHash(contract);
 };
+
+export enum classNames {
+  FailedAccount = "FailedAccount",
+}
 
 /**
  * If not already declared, declare the requested class from the
@@ -32,7 +37,7 @@ export const classHash = (className: "FailedAccount") => {
  */
 export const declareClass = async (
   account: Account,
-  className: "FailedAccount" = "FailedAccount"
+  className: classNames.FailedAccount = classNames.FailedAccount
 ) => {
   const AccountClassHash = classHash(className);
 

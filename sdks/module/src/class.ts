@@ -5,6 +5,7 @@ import {
   Account,
   UniversalDetails,
 } from "starknet";
+import { Buffer } from "buffer";
 import { data as GuardedValidatorContract } from "./artifacts/GuardedValidator-contract";
 import { data as GuardedValidatorCompiled } from "./artifacts/GuardedValidator-compiled";
 import { data as EthValidatorContract } from "./artifacts/EthValidator-contract";
@@ -16,9 +17,17 @@ import { data as P256ValidatorCompiled } from "./artifacts/P256Validator-compile
 import {
   classHash as coreClassHash,
   declareClass as coreDeclareClass,
+  classNames as coreClassNames,
 } from "@0xknwn/starknet-modular-account";
 export const __module_validate__ =
   "0x119c88dea7ff05dbe71c36247fc6682116f6dafa24089373d49aca7b2657017";
+
+export enum classNames {
+  EthValidator = "EthValidator",
+  GuardedValidator = "GuardedValidator",
+  MultisigValidator = "MultisigValidator",
+  P256Validator = "P256Validator",
+}
 
 /**
  * Computes the hash of the requested class that is part of the
@@ -29,29 +38,19 @@ export const __module_validate__ =
  * `scarb build` command at the root of the project.
  *
  */
-export const classHash = (
-  className:
-    | "EthValidator"
-    | "GuardedValidator"
-    | "MultisigValidator"
-    | "P256Validator"
-    | "StarkValidator" = "EthValidator"
-) => {
-  if (className === "StarkValidator") {
-    return coreClassHash("StarkValidator");
-  }
+export const classHash = (className: classNames = classNames.EthValidator) => {
   let contract: string = "";
   switch (className) {
-    case "GuardedValidator":
+    case classNames.GuardedValidator:
       contract = GuardedValidatorContract;
       break;
-    case "EthValidator":
+    case classNames.EthValidator:
       contract = EthValidatorContract;
       break;
-    case "MultisigValidator":
+    case classNames.MultisigValidator:
       contract = MultisigValidatorContract;
       break;
-    case "P256Validator":
+    case classNames.P256Validator:
       contract = P256ValidatorContract;
       break;
     default:
@@ -79,17 +78,9 @@ export const classHash = (
  */
 export const declareClass = async (
   account: Account,
-  className:
-    | "EthValidator"
-    | "GuardedValidator"
-    | "MultisigValidator"
-    | "P256Validator"
-    | "StarkValidator",
+  className: classNames,
   details?: UniversalDetails
 ) => {
-  if (className === "StarkValidator") {
-    return coreDeclareClass(account, "StarkValidator", details);
-  }
   const HelperClassHash = classHash(className);
 
   try {
@@ -101,16 +92,16 @@ export const declareClass = async (
 
   let contract: string = "";
   switch (className) {
-    case "EthValidator":
+    case classNames.EthValidator:
       contract = EthValidatorContract;
       break;
-    case "GuardedValidator":
+    case classNames.GuardedValidator:
       contract = GuardedValidatorContract;
       break;
-    case "MultisigValidator":
+    case classNames.MultisigValidator:
       contract = MultisigValidatorContract;
       break;
-    case "P256Validator":
+    case classNames.P256Validator:
       contract = P256ValidatorContract;
       break;
     default:
@@ -119,16 +110,16 @@ export const declareClass = async (
 
   let compiled: string = "";
   switch (className) {
-    case "EthValidator":
+    case classNames.EthValidator:
       compiled = EthValidatorCompiled;
       break;
-    case "GuardedValidator":
+    case classNames.GuardedValidator:
       compiled = GuardedValidatorCompiled;
       break;
-    case "MultisigValidator":
+    case classNames.MultisigValidator:
       compiled = MultisigValidatorCompiled;
       break;
-    case "P256Validator":
+    case classNames.P256Validator:
       compiled = P256ValidatorCompiled;
       break;
     default:

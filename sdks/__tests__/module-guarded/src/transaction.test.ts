@@ -11,6 +11,7 @@ import {
   initial_EthTransfer,
   STRK,
   initial_StrkTransfer,
+  classNames as helperClassNames,
 } from "@0xknwn/starknet-test-helpers";
 import {
   declareClass as declareAccountClass,
@@ -18,12 +19,14 @@ import {
   SmartrAccount,
   deployAccount,
   accountAddress,
+  classNames as accountClassNames,
 } from "@0xknwn/starknet-modular-account";
 import { RpcProvider, CallData, cairo, Signer } from "starknet";
 import {
   declareClass as declareModuleClass,
   classHash as moduleClassHash,
   GuardedValidatorABI,
+  classNames as moduleClassNames,
 } from "@0xknwn/starknet-module";
 import { data } from "./data.fixture";
 
@@ -58,8 +61,8 @@ describe.each(data)(
       async () => {
         const conf = config(env);
         const account = testAccounts(conf)[accountID];
-        const c = await declareHelperClass(account, "Counter");
-        expect(c.classHash).toEqual(helperClassHash("Counter"));
+        const c = await declareHelperClass(account, helperClassNames.Counter);
+        expect(c.classHash).toEqual(helperClassHash(helperClassNames.Counter));
       },
       default_timeout
     );
@@ -83,8 +86,13 @@ describe.each(data)(
       async () => {
         const conf = config(env);
         const a = testAccounts(conf)[accountID];
-        const c = await declareModuleClass(a, "GuardedValidator");
-        expect(c.classHash).toEqual(moduleClassHash("GuardedValidator"));
+        const c = await declareModuleClass(
+          a,
+          moduleClassNames.GuardedValidator
+        );
+        expect(c.classHash).toEqual(
+          moduleClassHash(moduleClassNames.GuardedValidator)
+        );
       },
       default_timeout
     );
@@ -94,8 +102,10 @@ describe.each(data)(
       async () => {
         const conf = config(env);
         const a = testAccounts(conf)[accountID];
-        const c = await declareAccountClass(a, "SmartrAccount");
-        expect(c.classHash).toEqual(accountClassHash("SmartrAccount"));
+        const c = await declareAccountClass(a, accountClassNames.SmartrAccount);
+        expect(c.classHash).toEqual(
+          accountClassHash(accountClassNames.SmartrAccount)
+        );
       },
       default_timeout
     );
@@ -107,14 +117,16 @@ describe.each(data)(
         const sender = testAccounts(conf)[accountID];
         const p = new RpcProvider({ nodeUrl: conf.providerURL });
         const privateKey = conf.accounts[accountID].privateKey;
-        const moduleValidatorClassHash = moduleClassHash("GuardedValidator");
+        const moduleValidatorClassHash = moduleClassHash(
+          moduleClassNames.GuardedValidator
+        );
         const calldata = [
           moduleValidatorClassHash,
           "0x1",
           smartAccountPublicKey,
         ];
         const address = accountAddress(
-          "SmartrAccount",
+          accountClassNames.SmartrAccount,
           smartAccountPublicKey,
           calldata
         );
@@ -157,7 +169,9 @@ describe.each(data)(
       `[${fees}][guarded]: deploys a SmartrAccount account`,
       async () => {
         const conf = config(env);
-        const moduleValidatorClassHash = moduleClassHash("GuardedValidator");
+        const moduleValidatorClassHash = moduleClassHash(
+          moduleClassNames.GuardedValidator
+        );
         const calldata = [
           moduleValidatorClassHash,
           "0x1",
@@ -165,12 +179,16 @@ describe.each(data)(
         ];
         const address = await deployAccount(
           smartrAccount,
-          "SmartrAccount",
+          accountClassNames.SmartrAccount,
           smartAccountPublicKey,
           calldata
         );
         expect(address).toEqual(
-          accountAddress("SmartrAccount", smartAccountPublicKey, calldata)
+          accountAddress(
+            accountClassNames.SmartrAccount,
+            smartAccountPublicKey,
+            calldata
+          )
         );
       },
       default_timeout
@@ -183,7 +201,7 @@ describe.each(data)(
         const calldata = new CallData(GuardedValidatorABI);
         const nestedCalldata = calldata.compile("get_owner_key", {});
         const c = await smartrAccount.callOnModule(
-          moduleClassHash("GuardedValidator"),
+          moduleClassHash(moduleClassNames.GuardedValidator),
           "get_owner_key",
           nestedCalldata
         );
@@ -249,7 +267,7 @@ describe.each(data)(
           throw new Error("SmartrAccount is not deployed");
         }
         const output = await smartrAccount.isModule(
-          moduleClassHash("GuardedValidator")
+          moduleClassHash(moduleClassNames.GuardedValidator)
         );
         expect(output).toBe(true);
       },
@@ -278,8 +296,8 @@ describe.each(data)(
           throw new Error("SmartrAccount is not deployed");
         }
         try {
-          await await smartrAccount.removeModule(
-            moduleClassHash("GuardedValidator")
+          await smartrAccount.removeModule(
+            moduleClassHash(moduleClassNames.GuardedValidator)
           );
           expect(true).toBe(false);
         } catch (e) {
@@ -296,7 +314,7 @@ describe.each(data)(
           throw new Error("SmartrAccount is not deployed");
         }
         const output = await smartrAccount.isModule(
-          moduleClassHash("GuardedValidator")
+          moduleClassHash(moduleClassNames.GuardedValidator)
         );
         expect(output).toBe(true);
       },

@@ -6,9 +6,19 @@ import {
   config,
   initial_EthTransfer,
   ETH,
+  classNames as helperaccountClassNames,
 } from "@0xknwn/starknet-test-helpers";
+import {
+  declareClass as declareAccountClass,
+  classNames as accountClassNames,
+  classHash as accountClassHash,
+} from "@0xknwn/starknet-modular-account";
 import { bootstrapAccountAddress } from "./bootstrap_account";
-import { classHash, declareClass as declareBootstrapClass } from "./class";
+import {
+  classHash,
+  declareClass as declareBootstrapClass,
+  classNames,
+} from "./class";
 import { deployAccount } from "./contract";
 import { Account, RpcProvider, CallData } from "starknet";
 import { ABI as AccountABI } from "./abi/BootstrapAccount";
@@ -22,12 +32,14 @@ describe("bootstrapping an account", () => {
   });
 
   it(
-    "declares the SimpleAccount class",
+    "declares the SimpleValidator class",
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareHelperClass(a, "SimpleAccount");
-      expect(c.classHash).toEqual(helperClassHash("SimpleAccount"));
+      const c = await declareAccountClass(a, accountClassNames.SimpleValidator);
+      expect(c.classHash).toEqual(
+        accountClassHash(accountClassNames.SimpleValidator)
+      );
     },
     default_timeout
   );
@@ -37,8 +49,8 @@ describe("bootstrapping an account", () => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
-      const c = await declareBootstrapClass(a, "BootstrapAccount");
-      expect(c.classHash).toEqual(classHash("BootstrapAccount"));
+      const c = await declareBootstrapClass(a, classNames.BootstrapAccount);
+      expect(c.classHash).toEqual(classHash(classNames.BootstrapAccount));
     },
     default_timeout
   );
@@ -53,7 +65,7 @@ describe("bootstrapping an account", () => {
       const privateKey = conf.accounts[0].privateKey;
       const address = bootstrapAccountAddress(
         publicKey,
-        helperClassHash("SimpleAccount")
+        accountClassHash(accountClassNames.SimpleValidator)
       );
       const { transaction_hash } = await ETH(sender).transfer(
         address,
@@ -74,7 +86,7 @@ describe("bootstrapping an account", () => {
       const publicKey = conf.accounts[0].publicKey;
       const calldata = new CallData(AccountABI).compile("constructor", {
         public_key: publicKey,
-        target_class: helperClassHash("SimpleAccount"),
+        target_class: accountClassHash(accountClassNames.SimpleValidator),
       });
       const address = await deployAccount(
         account,
@@ -85,7 +97,7 @@ describe("bootstrapping an account", () => {
       expect(address).toEqual(
         bootstrapAccountAddress(
           conf.accounts[0].publicKey,
-          helperClassHash("SimpleAccount")
+          accountClassHash(accountClassNames.SimpleValidator)
         )
       );
     },
@@ -93,17 +105,19 @@ describe("bootstrapping an account", () => {
   );
 
   it(
-    "checks the account class is now SimpleAccount",
+    "checks the account class is now SimpleValidator",
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
       const accountClass = await a.getClassHashAt(
         bootstrapAccountAddress(
           conf.accounts[0].publicKey,
-          helperClassHash("SimpleAccount")
+          accountClassHash(accountClassNames.SimpleValidator)
         )
       );
-      expect(accountClass).toEqual(helperClassHash("SimpleAccount"));
+      expect(accountClass).toEqual(
+        accountClassHash(accountClassNames.SimpleValidator)
+      );
     },
     default_timeout
   );

@@ -1,6 +1,7 @@
 import { Contract, Call, Account, CallData, UniversalDetails } from "starknet";
 import { ABI as CounterABI } from "./abi/Counter";
 import { contractAddress, deployContract } from "./contract";
+import { classNames } from "./class";
 
 /**
  * Retrieves the address of the Counter contract.
@@ -16,7 +17,7 @@ export const counterAddress = async (
   const _calldata = myCallData.compile("constructor", {
     owner: ownerAddress,
   });
-  return contractAddress("Counter", deployerAddress, _calldata);
+  return contractAddress(classNames.Counter, deployerAddress, _calldata);
 };
 
 /**
@@ -28,13 +29,19 @@ export const counterAddress = async (
 export const deployCounter = async (
   deployerAccount: Account,
   ownerAddress: string,
-  details?: UniversalDetails,
+  details?: UniversalDetails
 ): Promise<Contract> => {
   const myCallData = new CallData(CounterABI);
   const _calldata = myCallData.compile("constructor", {
     owner: ownerAddress,
   });
-  return deployContract("Counter", CounterABI, deployerAccount, _calldata, details);
+  return deployContract(
+    classNames.Counter,
+    CounterABI,
+    deployerAccount,
+    _calldata,
+    details
+  );
 };
 
 export { CounterABI };

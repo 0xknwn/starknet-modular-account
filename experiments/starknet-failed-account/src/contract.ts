@@ -1,5 +1,5 @@
 import { Account, Contract, hash, num } from "starknet";
-import { classHash } from "./class";
+import { classHash, classNames } from "./class";
 import { ABI as ERC20ABI } from "./abi/ERC20";
 import { ethAddress } from "./natives";
 /**
@@ -12,7 +12,7 @@ import { ethAddress } from "./natives";
  * `scarb build` command at the root of the project.
  */
 export const accountAddress = (
-  accountName: "FailedAccount",
+  accountName: classNames.FailedAccount,
   publicKey: string,
   constructorCallData: string[]
 ): string => {
@@ -37,7 +37,7 @@ export const accountAddress = (
  */
 export const deployAccount = async (
   deployerAccount: Account,
-  accountName: "FailedAccount",
+  accountName: classNames.FailedAccount,
   publicKey: string,
   constructorCalldata: any[]
 ) => {

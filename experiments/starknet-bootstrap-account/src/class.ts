@@ -1,4 +1,5 @@
 import { hash, json, CompiledContract, Account } from "starknet";
+import { Buffer } from "buffer";
 import { data as BootstrapAccountContract } from "./artifacts/BootstrapAccount-contract";
 import { data as BootstrapAccountCompiled } from "./artifacts/BootstrapAccount-compiled";
 /**
@@ -16,6 +17,10 @@ export const classHash = (className: "BootstrapAccount") => {
   return hash.computeContractClassHash(contract);
 };
 
+export enum classNames {
+  BootstrapAccount = "BootstrapAccount",
+}
+
 /**
  * If not already declared, declare the requested class from the
  * 0xknwn/bootstrap-account project to the Starknet network used by the
@@ -32,7 +37,7 @@ export const classHash = (className: "BootstrapAccount") => {
  */
 export const declareClass = async (
   account: Account,
-  className: "BootstrapAccount" = "BootstrapAccount"
+  className: classNames.BootstrapAccount = classNames.BootstrapAccount
 ) => {
   const AccountClassHash = classHash(className);
 

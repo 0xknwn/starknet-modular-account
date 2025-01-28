@@ -1,6 +1,7 @@
 import { Account, Contract, hash, num, UniversalDetails } from "starknet";
 import { classHash } from "./class";
 import { ETH, STRK } from "./natives";
+import { classNames } from "./class";
 /**
  * Calculates the account address for a given account name, public key, and constructor call data.
  * @param class_hash - The class hash of the contract.
@@ -11,7 +12,7 @@ import { ETH, STRK } from "./natives";
  * `scarb build` command at the root of the project.
  */
 export const accountAddress = (
-  accountName: "SmartrAccount",
+  accountName: classNames.SmartrAccount,
   salt: string,
   constructorCallData: string[]
 ): string => {
@@ -36,7 +37,7 @@ export const accountAddress = (
  */
 export const deployAccount = async (
   deployerAccount: Account,
-  accountName: "SmartrAccount",
+  accountName: classNames.SmartrAccount,
   salt: string,
   constructorCalldata: any[],
   details?: UniversalDetails

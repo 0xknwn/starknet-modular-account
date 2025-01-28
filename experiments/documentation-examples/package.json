@@ -16,6 +16,6 @@
     "@0xknwn/starknet-test-helpers": "^0.2.1"
   },
   "devDependencies": {
-    "starknet": "^6.21.0"
+    "starknet": "^6.21.1"
   }
 }

@@ -1,4 +1,4 @@
-import { classHash, declareClass } from "./class";
+import { classHash, declareClass, classNames } from "./class";
 import { config, testAccounts } from "./utils";
 import { udcAddress } from "./natives";
 import {
@@ -34,8 +34,10 @@ describe.each(data)("swap router", ({ fees, version, accountID }) => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
-      const c = await declareClass(a, "SwapRouter", { version: version.declare });
-      expect(c.classHash).toEqual(classHash("SwapRouter"));
+      const c = await declareClass(a, classNames.SwapRouter, {
+        version: version.declare,
+      });
+      expect(c.classHash).toEqual(classHash(classNames.SwapRouter));
     },
     default_timeout
   );
@@ -45,7 +47,9 @@ describe.each(data)("swap router", ({ fees, version, accountID }) => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
-      const c = await deploySwapRouter(a, a.address, { version: version.invoke });
+      const c = await deploySwapRouter(a, a.address, {
+        version: version.invoke,
+      });
       const routerAddress = await swapRouterAddress(a.address, a.address);
       swapRouterContract = new SwapRouter(routerAddress, a);
       expect(c.address).toEqual(routerAddress);
@@ -58,8 +62,10 @@ describe.each(data)("swap router", ({ fees, version, accountID }) => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
-      const c = await declareClass(a, "TokenA", { version: version.declare });
-      expect(c.classHash).toEqual(classHash("TokenA"));
+      const c = await declareClass(a, classNames.TokenA, {
+        version: version.declare,
+      });
+      expect(c.classHash).toEqual(classHash(classNames.TokenA));
     },
     default_timeout
   );
@@ -69,7 +75,9 @@ describe.each(data)("swap router", ({ fees, version, accountID }) => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
-      const c = await deployTokenA(a, swapRouterContract.address, a.address, { version: version.invoke });
+      const c = await deployTokenA(a, swapRouterContract.address, a.address, {
+        version: version.invoke,
+      });
       tokenA = new Contract(
         TokenAABI,
         await tokenAAddress(a.address, swapRouterContract.address, a.address),
@@ -87,8 +95,10 @@ describe.each(data)("swap router", ({ fees, version, accountID }) => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
-      const c = await declareClass(a, "TokenB", { version: version.declare });
-      expect(c.classHash).toEqual(classHash("TokenB"));
+      const c = await declareClass(a, classNames.TokenB, {
+        version: version.declare,
+      });
+      expect(c.classHash).toEqual(classHash(classNames.TokenB));
     },
     default_timeout
   );
@@ -98,7 +108,9 @@ describe.each(data)("swap router", ({ fees, version, accountID }) => {
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[accountID];
-      const c = await deployTokenB(a, swapRouterContract.address, a.address, { version: version.invoke });
+      const c = await deployTokenB(a, swapRouterContract.address, a.address, {
+        version: version.invoke,
+      });
       tokenB = new Contract(
         TokenBABI,
         await tokenBAddress(a.address, swapRouterContract.address, a.address),
@@ -111,15 +123,14 @@ describe.each(data)("swap router", ({ fees, version, accountID }) => {
     default_timeout
   );
 
-  it(
-    `[${fees}] compute and check TokenA address`, async () => {
+  it(`[${fees}] compute and check TokenA address`, async () => {
     const conf = config(env);
     const a = testAccounts(conf)[accountID];
     const creatorAddress = a.address;
     const recipientAddress = swapRouterContract.address;
     const ownerAddress = a.address;
     const factoryAddress = udcAddress;
-    const h = classHash("TokenA");
+    const h = classHash(classNames.TokenA);
     // This test just shows how to use calculateContractAddressFromHash for new devs
     // see https://community.starknet.io/t/universal-deployer-contract-proposal/1864
     // to understand the calculateContractAddressFromHash function works

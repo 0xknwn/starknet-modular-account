@@ -5,7 +5,6 @@ import { RpcProvider, uint256 } from "starknet";
 
 import { data } from "./data.fixture";
 
-
 describe.each(data)("native tokens management", ({ fees, accountID }) => {
   let env = "devnet";
 
@@ -43,7 +42,7 @@ describe.each(data)("native tokens management", ({ fees, accountID }) => {
     async () => {
       const conf = config(env);
       const accounts = testAccounts(conf);
-      const TOKEN = (fees === "WEI" ? ETH : STRK)
+      const TOKEN = fees === "WEI" ? ETH : STRK;
       const eth = TOKEN(accounts[accountID]);
       const destAddress = accounts[2].address;
       const initialAmount = (await eth.balance_of(destAddress)) as bigint;

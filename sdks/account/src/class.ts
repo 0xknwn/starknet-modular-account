@@ -5,12 +5,19 @@ import {
   Account,
   UniversalDetails,
 } from "starknet";
+import { Buffer } from "buffer";
 import { data as StarkValidatorContract } from "./artifacts/StarkValidator-contract";
 import { data as StarkValidatorCompiled } from "./artifacts/StarkValidator-compiled";
 import { data as SimpleValidatorContract } from "./artifacts/SimpleValidator-contract";
 import { data as SimpleValidatorCompiled } from "./artifacts/SimpleValidator-compiled";
 import { data as SmartrAccountContract } from "./artifacts/SmartrAccount-contract";
 import { data as SmartrAccountCompiled } from "./artifacts/SmartrAccount-compiled";
+
+export enum classNames {
+  StarkValidator = "StarkValidator",
+  SimpleValidator = "SimpleValidator",
+  SmartrAccount = "SmartrAccount",
+}
 
 /**
  * Computes the hash of the requested class that is part of the
@@ -21,21 +28,16 @@ import { data as SmartrAccountCompiled } from "./artifacts/SmartrAccount-compile
  * `scarb build` command at the root of the project.
  *
  */
-export const classHash = (
-  className:
-    | "StarkValidator"
-    | "SmartrAccount"
-    | "SimpleValidator" = "SmartrAccount"
-) => {
+export const classHash = (className: classNames = classNames.SmartrAccount) => {
   let contract: string = "";
   switch (className) {
-    case "StarkValidator":
+    case classNames.StarkValidator:
       contract = StarkValidatorContract;
       break;
-    case "SimpleValidator":
+    case classNames.SimpleValidator:
       contract = SimpleValidatorContract;
       break;
-    case "SmartrAccount":
+    case classNames.SmartrAccount:
       contract = SmartrAccountContract;
       break;
     default:
@@ -63,7 +65,7 @@ export const classHash = (
  */
 export const declareClass = async (
   account: Account,
-  className: "StarkValidator" | "SmartrAccount" | "SimpleValidator",
+  className: classNames,
   details?: UniversalDetails
 ) => {
   const HelperClassHash = classHash(className);
@@ -77,13 +79,13 @@ export const declareClass = async (
 
   let contract: string = "";
   switch (className) {
-    case "StarkValidator":
+    case classNames.StarkValidator:
       contract = StarkValidatorContract;
       break;
-    case "SimpleValidator":
+    case classNames.SimpleValidator:
       contract = SimpleValidatorContract;
       break;
-    case "SmartrAccount":
+    case classNames.SmartrAccount:
       contract = SmartrAccountContract;
       break;
     default:
@@ -92,13 +94,13 @@ export const declareClass = async (
 
   let compiled: string = "";
   switch (className) {
-    case "StarkValidator":
+    case classNames.StarkValidator:
       compiled = StarkValidatorCompiled;
       break;
-    case "SimpleValidator":
+    case classNames.SimpleValidator:
       compiled = SimpleValidatorCompiled;
       break;
-    case "SmartrAccount":
+    case classNames.SmartrAccount:
       compiled = SmartrAccountCompiled;
       break;
     default:

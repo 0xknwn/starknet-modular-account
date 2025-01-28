@@ -5,7 +5,8 @@
     "outDir": "dist"
   },
   "references": [
-    { "path": "../../sdks/__tests__/helpers" }
+    { "path": "../../sdks/__tests__/helpers" },
+    { "path": "../../sdks/account" }
   ],
   "typedocOptions": {
     "entryPoints": ["src/index.ts"],
