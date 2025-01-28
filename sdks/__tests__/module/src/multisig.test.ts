@@ -12,6 +12,7 @@ import {
   initial_StrkTransfer,
   ETH,
   STRK,
+  classNames as helperClassNames,
 } from "@0xknwn/starknet-test-helpers";
 import {
   declareClass as declareAccountClass,
@@ -20,11 +21,13 @@ import {
   deployAccount,
   accountAddress,
   SmartrAccountABI,
+  classNames as accountClassNames,
 } from "@0xknwn/starknet-modular-account";
 import {
   declareClass as declareModuleClass,
   classHash as moduleClassHash,
   MultisigValidatorABI,
+  classNames as moduleClassNames,
 } from "@0xknwn/starknet-module";
 import { Contract, RpcProvider, CallData } from "starknet";
 import { data } from "./data.fixture";
@@ -46,10 +49,10 @@ describe.each([data[1]])(
       async () => {
         const conf = config(env);
         const account = testAccounts(conf)[accountID];
-        const c = await declareHelperClass(account, "Counter", {
+        const c = await declareHelperClass(account, helperClassNames.Counter, {
           version: version.declare,
         });
-        expect(c.classHash).toEqual(helperClassHash("Counter"));
+        expect(c.classHash).toEqual(helperClassHash(helperClassNames.Counter));
       },
       default_timeout
     );
@@ -75,10 +78,16 @@ describe.each([data[1]])(
       async () => {
         const conf = config(env);
         const a = testAccounts(conf)[accountID];
-        const c = await declareModuleClass(a, "MultisigValidator", {
-          version: version.declare,
-        });
-        expect(c.classHash).toEqual(moduleClassHash("MultisigValidator"));
+        const c = await declareModuleClass(
+          a,
+          moduleClassNames.MultisigValidator,
+          {
+            version: version.declare,
+          }
+        );
+        expect(c.classHash).toEqual(
+          moduleClassHash(moduleClassNames.MultisigValidator)
+        );
       },
       default_timeout
     );
@@ -88,10 +97,16 @@ describe.each([data[1]])(
       async () => {
         const conf = config(env);
         const a = testAccounts(conf)[accountID];
-        const c = await declareAccountClass(a, "SmartrAccount", {
-          version: version.declare,
-        });
-        expect(c.classHash).toEqual(accountClassHash("SmartrAccount"));
+        const c = await declareAccountClass(
+          a,
+          accountClassNames.SmartrAccount,
+          {
+            version: version.declare,
+          }
+        );
+        expect(c.classHash).toEqual(
+          accountClassHash(accountClassNames.SmartrAccount)
+        );
       },
       default_timeout
     );
@@ -104,12 +119,18 @@ describe.each([data[1]])(
         const p = new RpcProvider({ nodeUrl: conf.providerURL });
         const privateKey = conf.accounts[accountID].privateKey;
         const publicKey = conf.accounts[accountID].publicKey;
-        const moduleValidatorClassHash = moduleClassHash("MultisigValidator");
+        const moduleValidatorClassHash = moduleClassHash(
+          moduleClassNames.MultisigValidator
+        );
         const calldata = new CallData(SmartrAccountABI).compile("constructor", {
           core_validator: moduleValidatorClassHash,
           args: [publicKey],
         });
-        const address = accountAddress("SmartrAccount", publicKey, calldata);
+        const address = accountAddress(
+          accountClassNames.SmartrAccount,
+          publicKey,
+          calldata
+        );
         const TOKEN = fees === "WEI" ? ETH : STRK;
         const initial_transfer =
           fees === "WEI" ? initial_EthTransfer : initial_StrkTransfer;
@@ -136,20 +157,22 @@ describe.each([data[1]])(
       async () => {
         const conf = config(env);
         const publicKey = conf.accounts[accountID].publicKey;
-        const moduleValidatorClassHash = moduleClassHash("MultisigValidator");
+        const moduleValidatorClassHash = moduleClassHash(
+          moduleClassNames.MultisigValidator
+        );
         const calldata = new CallData(SmartrAccountABI).compile("constructor", {
           core_validator: moduleValidatorClassHash,
           args: [publicKey],
         });
         const address = await deployAccount(
           smartrAccount,
-          "SmartrAccount",
+          accountClassNames.SmartrAccount,
           publicKey,
           calldata,
           { version: version.deploy_account }
         );
         expect(address).toEqual(
-          accountAddress("SmartrAccount", publicKey, calldata)
+          accountAddress(accountClassNames.SmartrAccount, publicKey, calldata)
         );
       },
       default_timeout
@@ -162,7 +185,7 @@ describe.each([data[1]])(
         const calldata = new CallData(MultisigValidatorABI);
         const data = calldata.compile("get_public_keys", {});
         const c = await smartrAccount.callOnModule(
-          moduleClassHash("MultisigValidator"),
+          moduleClassHash(moduleClassNames.MultisigValidator),
           "get_public_keys",
           data
         );
@@ -181,7 +204,7 @@ describe.each([data[1]])(
         const calldata = new CallData(MultisigValidatorABI);
         const data = calldata.compile("get_threshold", {});
         const c = await smartrAccount.callOnModule(
-          moduleClassHash("MultisigValidator"),
+          moduleClassHash(moduleClassNames.MultisigValidator),
           "get_threshold",
           data
         );
@@ -269,7 +292,7 @@ describe.each([data[1]])(
         const calldata = new CallData(MultisigValidatorABI);
         const data = calldata.compile("get_threshold", {});
         const c = await smartrAccount.callOnModule(
-          moduleClassHash("MultisigValidator"),
+          moduleClassHash(moduleClassNames.MultisigValidator),
           "get_threshold",
           data
         );
@@ -290,7 +313,7 @@ describe.each([data[1]])(
           new_public_key: conf.accounts[altAccountID].publicKey,
         });
         const { transaction_hash } = await smartrAccount.executeOnModule(
-          moduleClassHash("MultisigValidator"),
+          moduleClassHash(moduleClassNames.MultisigValidator),
           "add_public_key",
           data
         );
@@ -317,7 +340,7 @@ describe.each([data[1]])(
         const calldata = new CallData(MultisigValidatorABI);
         const data = calldata.compile("get_public_keys", {});
         const c = await smartrAccount.callOnModule(
-          moduleClassHash("MultisigValidator"),
+          moduleClassHash(moduleClassNames.MultisigValidator),
           "get_public_keys",
           data
         );
@@ -404,7 +427,7 @@ describe.each([data[1]])(
           new_threshold: 2,
         });
         const { transaction_hash } = await smartrAccount.executeOnModule(
-          moduleClassHash("MultisigValidator"),
+          moduleClassHash(moduleClassNames.MultisigValidator),
           "set_threshold",
           data
         );
@@ -425,7 +448,7 @@ describe.each([data[1]])(
           new_public_key: conf.accounts[thirdAccountID].publicKey,
         });
         const transactions = await smartrAccount.executeOnModule(
-          moduleClassHash("MultisigValidator"),
+          moduleClassHash(moduleClassNames.MultisigValidator),
           "add_public_key",
           data,
           false
@@ -458,7 +481,7 @@ describe.each([data[1]])(
         const calldata = new CallData(MultisigValidatorABI);
         const data = calldata.compile("get_public_keys", {});
         const c = await smartrAccount.callOnModule(
-          moduleClassHash("MultisigValidator"),
+          moduleClassHash(moduleClassNames.MultisigValidator),
           "get_public_keys",
           data
         );
@@ -562,7 +585,7 @@ describe.each([data[1]])(
           new_threshold: 1,
         });
         const transactions = await smartrAccount.executeOnModule(
-          moduleClassHash("MultisigValidator"),
+          moduleClassHash(moduleClassNames.MultisigValidator),
           "set_threshold",
           data,
           false
@@ -594,7 +617,7 @@ describe.each([data[1]])(
         const calldata = new CallData(MultisigValidatorABI);
         const data = calldata.compile("get_threshold", {});
         const c = await smartrAccount.callOnModule(
-          moduleClassHash("MultisigValidator"),
+          moduleClassHash(moduleClassNames.MultisigValidator),
           "get_threshold",
           data
         );
@@ -631,7 +654,7 @@ describe.each([data[1]])(
           old_public_key: conf.accounts[altAccountID].publicKey,
         });
         const { transaction_hash } = await smartrAccount.executeOnModule(
-          moduleClassHash("MultisigValidator"),
+          moduleClassHash(moduleClassNames.MultisigValidator),
           "remove_public_key",
           data
         );
@@ -648,7 +671,7 @@ describe.each([data[1]])(
         const calldata = new CallData(MultisigValidatorABI);
         const data = calldata.compile("get_public_keys", {});
         const c = await smartrAccount.callOnModule(
-          moduleClassHash("MultisigValidator"),
+          moduleClassHash(moduleClassNames.MultisigValidator),
           "get_public_keys",
           data
         );
@@ -671,7 +694,7 @@ describe.each([data[1]])(
           old_public_key: conf.accounts[thirdAccountID].publicKey,
         });
         const { transaction_hash } = await smartrAccount.executeOnModule(
-          moduleClassHash("MultisigValidator"),
+          moduleClassHash(moduleClassNames.MultisigValidator),
           "remove_public_key",
           data
         );
@@ -688,7 +711,7 @@ describe.each([data[1]])(
         const calldata = new CallData(MultisigValidatorABI);
         const data = calldata.compile("get_public_keys", {});
         const c = await smartrAccount.callOnModule(
-          moduleClassHash("MultisigValidator"),
+          moduleClassHash(moduleClassNames.MultisigValidator),
           "get_public_keys",
           data
         );

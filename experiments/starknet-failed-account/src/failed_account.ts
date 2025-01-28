@@ -1,7 +1,7 @@
 import { Account, CallData } from "starknet";
 import { ABI as AccountABI } from "./abi/FailedAccount";
 import { accountAddress, deployAccount } from "./contract";
-
+import { classNames } from "./class";
 /**
  * Generates a failed account address based on the provided public key.
  * @param publicKey - The public key associated with the account.
@@ -11,7 +11,7 @@ export const failedAccountAddress = (publicKey: string): string => {
   const calldata = new CallData(AccountABI).compile("constructor", {
     public_key: publicKey,
   });
-  return accountAddress("FailedAccount", publicKey, calldata);
+  return accountAddress(classNames.FailedAccount, publicKey, calldata);
 };
 
 /**
@@ -30,7 +30,7 @@ export const deployFailedAccount = async (
   });
   return await deployAccount(
     deployerAccount,
-    "FailedAccount",
+    classNames.FailedAccount,
     publicKey,
     callData
   );

@@ -1,6 +1,7 @@
 import { Account, CallData, type UniversalDetails } from "starknet";
 import { ABI as SimpleAccountABI } from "./abi/SimpleAccount";
 import { accountAddress, deployAccount } from "./contract";
+import { classNames } from "./class";
 export { SimpleAccountABI };
 
 /**
@@ -18,7 +19,7 @@ export const simpleAccountAddress = (
     public_key: publicKey,
     more: more,
   });
-  return accountAddress("SimpleAccount", publicKey, calldata);
+  return accountAddress(classNames.SimpleAccount, publicKey, calldata);
 };
 
 /**
@@ -41,7 +42,7 @@ export const deploySimpleAccount = async (
   });
   return await deployAccount(
     deployerAccount,
-    "SimpleAccount",
+    classNames.SimpleAccount,
     publicKey,
     callData,
     details

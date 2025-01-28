@@ -14,9 +14,13 @@ import {
   deployAccount,
   accountAddress,
   SmartrAccountABI,
+  classNames as accountClassNames,
 } from "@0xknwn/starknet-modular-account";
 import { RpcProvider, CallData } from "starknet";
-import { StarkValidatorABI, classNames } from "@0xknwn/starknet-modular-account";
+import {
+  StarkValidatorABI,
+  classNames,
+} from "@0xknwn/starknet-modular-account";
 import { data } from "./data.fixture";
 
 describe.each(data)("module management", ({ fees, version, accountID }) => {
@@ -61,12 +65,18 @@ describe.each(data)("module management", ({ fees, version, accountID }) => {
       const p = new RpcProvider({ nodeUrl: conf.providerURL });
       const publicKey = conf.accounts[accountID].publicKey;
       const privateKey = conf.accounts[accountID].privateKey;
-      const starkValidatorClassHash = accountClassHash(classNames.StarkValidator);
+      const starkValidatorClassHash = accountClassHash(
+        classNames.StarkValidator
+      );
       const calldata = new CallData(SmartrAccountABI).compile("constructor", {
         core_validator: starkValidatorClassHash,
         args: [publicKey],
       });
-      const address = accountAddress("SmartrAccount", publicKey, calldata);
+      const address = accountAddress(
+        accountClassNames.SmartrAccount,
+        publicKey,
+        calldata
+      );
       const TOKEN = fees === "WEI" ? ETH : STRK;
       const initial_transfer =
         fees === "WEI" ? initial_EthTransfer : initial_StrkTransfer;
@@ -93,20 +103,22 @@ describe.each(data)("module management", ({ fees, version, accountID }) => {
     async () => {
       const conf = config(env);
       const publicKey = conf.accounts[accountID].publicKey;
-      const starkValidatorClassHash = accountClassHash(classNames.StarkValidator);
+      const starkValidatorClassHash = accountClassHash(
+        classNames.StarkValidator
+      );
       const calldata = new CallData(SmartrAccountABI).compile("constructor", {
         core_validator: starkValidatorClassHash,
         args: [publicKey],
       });
       const address = await deployAccount(
         smartrAccount,
-        "SmartrAccount",
+        accountClassNames.SmartrAccount,
         publicKey,
         calldata,
         { version: version.deploy_account }
       );
       expect(address).toEqual(
-        accountAddress("SmartrAccount", publicKey, calldata)
+        accountAddress(accountClassNames.SmartrAccount, publicKey, calldata)
       );
     },
     default_timeout
@@ -192,7 +204,9 @@ describe.each(data)("module management", ({ fees, version, accountID }) => {
         throw new Error("SmartrAccount is not deployed");
       }
       try {
-        await smartrAccount.addModule(accountClassHash(classNames.SimpleValidator));
+        await smartrAccount.addModule(
+          accountClassHash(classNames.SimpleValidator)
+        );
         expect(true).toBe(false);
       } catch (e) {
         expect(e).toBeDefined();

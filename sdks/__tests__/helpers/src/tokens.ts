@@ -4,6 +4,7 @@ import { ABI as TokenAABI } from "./abi/TokenA";
 import { ABI as TokenBABI } from "./abi/TokenB";
 
 import { contractAddress } from "./contract";
+import { classNames } from "./class";
 
 /**
  * Retrieves the token A address.
@@ -18,7 +19,10 @@ export const tokenAAddress = async (
   recipientAddress: string,
   ownerAddress: string
 ) =>
-  contractAddress("TokenA", deployerAddress, [recipientAddress, ownerAddress]);
+  contractAddress(classNames.TokenA, deployerAddress, [
+    recipientAddress,
+    ownerAddress,
+  ]);
 
 /**
  * Deploys the TokenA contract.
@@ -37,7 +41,13 @@ export const deployTokenA = async (
     recipient: recipientAddress,
     owner: ownerAddress,
   });
-  return deployContract("TokenA", TokenAABI, deployerAccount, _calldata, details);
+  return deployContract(
+    classNames.TokenA,
+    TokenAABI,
+    deployerAccount,
+    _calldata,
+    details
+  );
 };
 
 /**
@@ -53,7 +63,10 @@ export const tokenBAddress = async (
   recipientAddress: string,
   ownerAddress: string
 ) =>
-  contractAddress("TokenB", deployerAddress, [recipientAddress, ownerAddress]);
+  contractAddress(classNames.TokenB, deployerAddress, [
+    recipientAddress,
+    ownerAddress,
+  ]);
 
 /**
  * Deploys the TokenB contract.
@@ -72,5 +85,11 @@ export const deployTokenB = async (
     recipient: recipientAddress,
     owner: ownerAddress,
   });
-  return deployContract("TokenB", TokenBABI, deployerAccount, _calldata, details);
+  return deployContract(
+    classNames.TokenB,
+    TokenBABI,
+    deployerAccount,
+    _calldata,
+    details
+  );
 };

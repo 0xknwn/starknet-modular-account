@@ -38,14 +38,7 @@ export enum classNames {
  * `scarb build` command at the root of the project.
  *
  */
-export const classHash = (
-  className:
-    | classNames
-    | coreClassNames.SimpleValidator = classNames.EthValidator
-) => {
-  if (className === coreClassNames.SimpleValidator) {
-    return coreClassHash(coreClassNames.SimpleValidator);
-  }
+export const classHash = (className: classNames = classNames.EthValidator) => {
   let contract: string = "";
   switch (className) {
     case classNames.GuardedValidator:
@@ -85,12 +78,9 @@ export const classHash = (
  */
 export const declareClass = async (
   account: Account,
-  className: classNames | coreClassNames.SimpleValidator,
+  className: classNames,
   details?: UniversalDetails
 ) => {
-  if (className === coreClassNames.SimpleValidator) {
-    return coreDeclareClass(account, coreClassNames.SimpleValidator, details);
-  }
   const HelperClassHash = classHash(className);
 
   try {

@@ -1,4 +1,4 @@
-import { classHash } from "./class";
+import { classHash, classNames } from "./class";
 import { default_timeout } from "./parameters";
 import { hash } from "starknet";
 import { config } from "./utils";
@@ -21,7 +21,7 @@ describe.each(data)("contract management (helper)", ({fees, version, accountID})
       const conf = config(env);
             
       const publicKey = conf.accounts[accountID].publicKey;
-      const class_hash = classHash("SimpleAccount");
+      const class_hash = classHash(classNames.SimpleAccount);
       expect(class_hash).toBe(
         expected.SimpleAccountClassHash
       );

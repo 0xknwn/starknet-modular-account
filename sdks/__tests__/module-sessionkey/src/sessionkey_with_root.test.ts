@@ -11,6 +11,7 @@ import {
   initial_StrkTransfer,
   ETH,
   STRK,
+  classNames as helperClassNames,
 } from "@0xknwn/starknet-test-helpers";
 import { PolicyManager } from "@0xknwn/starknet-module-sessionkey";
 import {
@@ -21,6 +22,7 @@ import {
   accountAddress,
   hash_auth_message,
   SmartrAccountABI,
+  classNames as accountClassNames,
 } from "@0xknwn/starknet-modular-account";
 import { RpcProvider, CallData } from "starknet";
 import {
@@ -61,10 +63,10 @@ describe.each([data[1]])(
       async () => {
         const conf = config(env);
         const account = testAccounts(conf)[accountID];
-        const c = await declareHelperClass(account, "Counter", {
+        const c = await declareHelperClass(account, helperClassNames.Counter, {
           version: version.declare,
         });
-        expect(c.classHash).toEqual(helperClassHash("Counter"));
+        expect(c.classHash).toEqual(helperClassHash(helperClassNames.Counter));
       },
       default_timeout
     );
@@ -90,10 +92,16 @@ describe.each([data[1]])(
       async () => {
         const conf = config(env);
         const a = testAccounts(conf)[accountID];
-        const c = await declareAccountClass(a, "StarkValidator", {
-          version: version.declare,
-        });
-        expect(c.classHash).toEqual(accountClassHash("StarkValidator"));
+        const c = await declareAccountClass(
+          a,
+          accountClassNames.StarkValidator,
+          {
+            version: version.declare,
+          }
+        );
+        expect(c.classHash).toEqual(
+          accountClassHash(accountClassNames.StarkValidator)
+        );
       },
       default_timeout
     );
@@ -103,10 +111,16 @@ describe.each([data[1]])(
       async () => {
         const conf = config(env);
         const a = testAccounts(conf)[accountID];
-        const c = await declareAccountClass(a, "SmartrAccount", {
-          version: version.declare,
-        });
-        expect(c.classHash).toEqual(accountClassHash("SmartrAccount"));
+        const c = await declareAccountClass(
+          a,
+          accountClassNames.SmartrAccount,
+          {
+            version: version.declare,
+          }
+        );
+        expect(c.classHash).toEqual(
+          accountClassHash(accountClassNames.SmartrAccount)
+        );
       },
       default_timeout
     );
@@ -119,12 +133,18 @@ describe.each([data[1]])(
         const p = new RpcProvider({ nodeUrl: conf.providerURL });
         const publicKey = conf.accounts[accountID].publicKey;
         const privateKey = conf.accounts[accountID].privateKey;
-        const starkValidatorClassHash = accountClassHash("StarkValidator");
+        const starkValidatorClassHash = accountClassHash(
+          accountClassNames.StarkValidator
+        );
         const calldata = new CallData(SmartrAccountABI).compile("constructor", {
           core_validator: starkValidatorClassHash,
           args: [publicKey],
         });
-        const address = accountAddress("SmartrAccount", publicKey, calldata);
+        const address = accountAddress(
+          accountClassNames.SmartrAccount,
+          publicKey,
+          calldata
+        );
         const TOKEN = fees === "WEI" ? ETH : STRK;
         const initial_transfer =
           fees === "WEI" ? initial_EthTransfer : initial_StrkTransfer;
@@ -151,20 +171,22 @@ describe.each([data[1]])(
       async () => {
         const conf = config(env);
         const publicKey = conf.accounts[accountID].publicKey;
-        const starkValidatorClassHash = accountClassHash("StarkValidator");
+        const starkValidatorClassHash = accountClassHash(
+          accountClassNames.StarkValidator
+        );
         const calldata = new CallData(SmartrAccountABI).compile("constructor", {
           core_validator: starkValidatorClassHash,
           args: [publicKey],
         });
         const address = await deployAccount(
           smartrAccount,
-          "SmartrAccount",
+          accountClassNames.SmartrAccount,
           publicKey,
           calldata,
           { version: version.deploy_account }
         );
         expect(address).toEqual(
-          accountAddress("SmartrAccount", publicKey, calldata)
+          accountAddress(accountClassNames.SmartrAccount, publicKey, calldata)
         );
       },
       default_timeout
@@ -177,7 +199,7 @@ describe.each([data[1]])(
         const calldata = new CallData(StarkValidatorABI);
         const data = calldata.compile("get_public_key", {});
         const c = await smartrAccount.callOnModule(
-          accountClassHash("StarkValidator"),
+          accountClassHash(accountClassNames.StarkValidator),
           "get_public_key",
           data
         );
@@ -322,13 +344,13 @@ describe.each([data[1]])(
         );
         const root = policyManager.getRoot();
         const r = await sessionKeyModule.request(
-          accountClassHash("StarkValidator")
+          accountClassHash(accountClassNames.StarkValidator)
         );
         expect(r.hash).toBe(
           hash_auth_message(
             smartrAccount.address,
             sessionkeyClassHash("SessionKeyValidator"),
-            accountClassHash("StarkValidator"),
+            accountClassHash(accountClassNames.StarkValidator),
             conf.accounts[1].publicKey,
             `0x${next_timestamp.toString(16)}`,
             root,
@@ -346,7 +368,7 @@ describe.each([data[1]])(
       }
       const conf = config(env);
       const grantor = new SessionKeyGrantor(
-        accountClassHash("StarkValidator"),
+        accountClassHash(accountClassNames.StarkValidator),
         conf.accounts[accountID].privateKey
       );
       const signature = await grantor.sign(sessionKeyModule);
