@@ -34,7 +34,7 @@ npm run test:scarb
 6. adding the version in the package.json
 
 ```shell
-npm run update-versions -- 0.2.2
+npm run update-versions -- 0.2.3
 ```
 
 7. Merge all the changes to the `develop` branch of the repository
@@ -50,7 +50,7 @@ npm run update-versions -- 0.2.2
 git fetch -p
 git checkout develop
 git pull
-git reset --hard v0.2.2
+git reset --hard v0.2.3
 npm run build
 npm run registry
 ```
