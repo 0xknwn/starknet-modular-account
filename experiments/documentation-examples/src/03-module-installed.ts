@@ -1,6 +1,9 @@
 // file src/03-module-installed.ts
 import { SmartrAccount } from "@0xknwn/starknet-modular-account";
-import { classHash } from "@0xknwn/starknet-module";
+import {
+  classHash,
+  classNames as moduleClassNames,
+} from "@0xknwn/starknet-module";
 import { init } from "./03-init";
 import { RpcProvider } from "starknet";
 
@@ -17,10 +20,12 @@ const main = async () => {
     "1",
     "0x3"
   );
-  const isInstalled = await account.isModule(classHash("MultisigValidator"));
+  const isInstalled = await account.isModule(
+    classHash(moduleClassNames.MultisigValidator)
+  );
   console.log(
     "module",
-    classHash("MultisigValidator"),
+    classHash(moduleClassNames.MultisigValidator),
     "is installed",
     isInstalled
   );

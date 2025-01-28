@@ -6,6 +6,7 @@ import {
 import {
   MultisigValidatorABI,
   classHash as moduleClassHash,
+  classNames as moduleClassNames,
 } from "@0xknwn/starknet-module";
 import { init } from "./03-init";
 import { CallData, RpcProvider, Signer, hash, type Call } from "starknet";
@@ -25,7 +26,7 @@ const main = async () => {
     "1",
     "0x3"
   );
-  const module_class_hash = moduleClassHash("MultisigValidator");
+  const module_class_hash = moduleClassHash(moduleClassNames.MultisigValidator);
   const calls: Call[] = [];
   for (const privateKey of [secondAccountPrivateKey, thirdAccountPrivateKey]) {
     const signer = new Signer(privateKey);

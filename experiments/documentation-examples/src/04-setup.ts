@@ -12,11 +12,13 @@ import {
   SmartrAccount,
   deployAccount,
   SmartrAccountABI,
+  classNames as accountClassNames,
 } from "@0xknwn/starknet-modular-account";
 import { ABI as ERC20ABI } from "./abi/ERC20";
 import {
   declareClass as helperDeclareClass,
   deployCounter,
+  classNames as helperClassNames,
 } from "@0xknwn/starknet-test-helpers";
 
 const ozAccountAddress =
@@ -39,10 +41,10 @@ const main = async () => {
   );
 
   // declare the classes
-  await declareClass(account, "SmartrAccount");
+  await declareClass(account, accountClassNames.SmartrAccount);
   const { classHash: starkValidatorClassHash } = await declareClass(
     account,
-    "StarkValidator"
+    accountClassNames.StarkValidator
   );
 
   // load ETH
@@ -53,7 +55,7 @@ const main = async () => {
     args: [smartrAccountPublicKey],
   });
   const smartrAccountAddress = accountAddress(
-    "SmartrAccount",
+    accountClassNames.SmartrAccount,
     smartrAccountPublicKey,
     calldata
   );
@@ -80,7 +82,7 @@ const main = async () => {
   );
   const address = await deployAccount(
     smartrAccount,
-    "SmartrAccount",
+    accountClassNames.SmartrAccount,
     smartrAccountPublicKey,
     calldata
   );
@@ -93,7 +95,7 @@ const main = async () => {
   // deploy the Counter contract
   const { classHash: counterClassHash } = await helperDeclareClass(
     account,
-    "Counter"
+    helperClassNames.Counter
   );
   const counter = await deployCounter(account, account.address);
   console.log("Account address:", smartrAccountAddress);

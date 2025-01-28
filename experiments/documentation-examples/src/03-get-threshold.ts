@@ -3,6 +3,7 @@ import { SmartrAccount } from "@0xknwn/starknet-modular-account";
 import {
   MultisigValidatorABI,
   classHash as moduleClassHash,
+  classNames as moduleClassNames,
 } from "@0xknwn/starknet-module";
 import { init } from "./03-init";
 import { CallData, RpcProvider } from "starknet";
@@ -23,7 +24,7 @@ const main = async () => {
   const moduleCallData = new CallData(MultisigValidatorABI);
   const calldata = await moduleCallData.compile("get_threshold", {});
   const threshold = await account.callOnModule(
-    moduleClassHash("MultisigValidator"),
+    moduleClassHash(moduleClassNames.MultisigValidator),
     "get_threshold",
     calldata
   );

@@ -11,8 +11,12 @@ import {
   accountAddress,
   deployAccount,
   SmartrAccount,
+  classNames as accountClassName,
 } from "@0xknwn/starknet-modular-account";
-import { classHash as ethClassHash } from "@0xknwn/starknet-module";
+import {
+  classHash as ethClassHash,
+  classNames as moduleClassNames,
+} from "@0xknwn/starknet-module";
 import { init } from "./04-init";
 import { ABI as ERC20ABI } from "./abi/ERC20";
 const strkAddress =
@@ -47,9 +51,9 @@ const main = async () => {
   // Step 2 - Compute the account address
   const publicKeyHash = hash.computeHashOnElements(publicKeyArray);
   const computedAccountAddress = accountAddress(
-    "SmartrAccount",
+    accountClassName.SmartrAccount,
     publicKeyHash,
-    [ethClassHash("EthValidator"), "0x4", ...publicKeyArray]
+    [ethClassHash(moduleClassNames.EthValidator), "0x4", ...publicKeyArray]
   );
 
   // Step 3 - Send STRK to the computed account address
@@ -82,9 +86,9 @@ const main = async () => {
   );
   const address = await deployAccount(
     ethAccount,
-    "SmartrAccount",
+    accountClassName.SmartrAccount,
     publicKeyHash,
-    [ethClassHash("EthValidator"), "0x4", ...publicKeyArray],
+    [ethClassHash(moduleClassNames.EthValidator), "0x4", ...publicKeyArray],
     {
       version: "0x3",
       resourceBounds: {

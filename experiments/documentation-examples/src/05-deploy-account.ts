@@ -4,10 +4,12 @@ import {
   accountAddress,
   deployAccount,
   SmartrAccount,
+  classNames as accountClassNames,
 } from "@0xknwn/starknet-modular-account";
 import {
   classHash as P256ClassHash,
   P256Signer,
+  classNames as moduleClassNames,
 } from "@0xknwn/starknet-module";
 import { init } from "./05-init";
 import { ABI as ERC20ABI } from "./abi/ERC20";
@@ -42,9 +44,9 @@ const main = async () => {
   // Step 2 - Compute the account address
   const publicKeyHash = hash.computeHashOnElements(publicKeyArray);
   const computedAccountAddress = accountAddress(
-    "SmartrAccount",
+    accountClassNames.SmartrAccount,
     publicKeyHash,
-    [P256ClassHash("P256Validator"), "0x4", ...publicKeyArray]
+    [P256ClassHash(moduleClassNames.P256Validator), "0x4", ...publicKeyArray]
   );
 
   // Step 3 - Send STRK to the computed account address
@@ -77,9 +79,9 @@ const main = async () => {
   );
   const address = await deployAccount(
     p256Account,
-    "SmartrAccount",
+    accountClassNames.SmartrAccount,
     publicKeyHash,
-    [P256ClassHash("P256Validator"), "0x4", ...publicKeyArray],
+    [P256ClassHash(moduleClassNames.P256Validator), "0x4", ...publicKeyArray],
     {
       version: "0x3",
       resourceBounds: {

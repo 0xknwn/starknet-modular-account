@@ -1,6 +1,6 @@
 {
   "name": "tests-module",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "",
   "scripts": {
     "test": "jest --runInBand --verbose"
@@ -8,7 +8,7 @@
   "author": "0xknwn",
   "license": "MIT",
   "dependencies": {
-    "@0xknwn/starknet-test-helpers": "^0.2.1",
+    "@0xknwn/starknet-test-helpers": "^0.2.3",
     "@noble/curves": "^1.4.0"
   },
   "devDependencies": {

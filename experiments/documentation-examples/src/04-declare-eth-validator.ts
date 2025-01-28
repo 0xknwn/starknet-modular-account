@@ -1,6 +1,9 @@
 // file src/04-declare-eth-validator.ts
 import { RpcProvider, Account } from "starknet";
-import { declareClass } from "@0xknwn/starknet-module";
+import {
+  declareClass,
+  classNames as moduleClassNames,
+} from "@0xknwn/starknet-module";
 
 // these are the settings for the devnet with --seed=0
 // change them to mee your requirements
@@ -21,7 +24,7 @@ const main = async () => {
 
   const { classHash: ethValidatorClassHash } = await declareClass(
     account,
-    "EthValidator"
+    moduleClassNames.EthValidator
   );
   console.log("EthValidator class hash:", ethValidatorClassHash);
 };

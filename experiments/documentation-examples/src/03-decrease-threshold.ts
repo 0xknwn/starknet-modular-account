@@ -6,6 +6,7 @@ import {
 import {
   MultisigValidatorABI,
   classHash as moduleClassHash,
+  classNames as moduleClassNames,
 } from "@0xknwn/starknet-module";
 import { init } from "./03-init";
 import {
@@ -46,7 +47,7 @@ const main = async () => {
   });
   const accountCallData = new CallData(SmartrAccountABI);
   const calldata = accountCallData.compile("execute_on_module", {
-    class_hash: moduleClassHash("MultisigValidator"),
+    class_hash: moduleClassHash(moduleClassNames.MultisigValidator),
     call: {
       selector: hash.getSelectorFromName("set_threshold"),
       to: accountAddress,

@@ -3,6 +3,7 @@ import { SmartrAccount } from "@0xknwn/starknet-modular-account";
 import {
   EthValidatorABI,
   classHash as ethClassHash,
+  classNames as moduleClassNames,
 } from "@0xknwn/starknet-module";
 import { init } from "./04-init";
 import { CallData, RpcProvider } from "starknet";
@@ -23,7 +24,7 @@ const main = async () => {
   const moduleCallData = new CallData(EthValidatorABI);
   const calldata = moduleCallData.compile("get_public_key", {});
   const public_keys = await account.callOnModule(
-    ethClassHash("EthValidator"),
+    ethClassHash(moduleClassNames.EthValidator),
     "get_public_key",
     calldata
   );

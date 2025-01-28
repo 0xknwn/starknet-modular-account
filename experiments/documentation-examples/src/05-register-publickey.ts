@@ -3,6 +3,7 @@ import { SmartrAccount } from "@0xknwn/starknet-modular-account";
 import {
   classHash as moduleClassHash,
   P256Signer,
+  classNames as moduleClassNames,
 } from "@0xknwn/starknet-module";
 import { cairo } from "starknet";
 import { init } from "./05-init";
@@ -23,7 +24,7 @@ const main = async () => {
     "1",
     "0x3"
   );
-  const module_class_hash = moduleClassHash("P256Validator");
+  const module_class_hash = moduleClassHash(moduleClassNames.P256Validator);
   const signer = new P256Signer(p256PrivateKey);
   const publicKey = await signer.getPubKey();
   const coords = publicKey.slice(2, publicKey.length);

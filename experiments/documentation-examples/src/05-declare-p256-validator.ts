@@ -1,6 +1,9 @@
 // file src/05-declare-p256-validator.ts
 import { RpcProvider, Account } from "starknet";
-import { declareClass } from "@0xknwn/starknet-module";
+import {
+  declareClass,
+  classNames as moduleClassNames,
+} from "@0xknwn/starknet-module";
 
 // these are the settings for the devnet with --seed=0
 // change them to mee your requirements
@@ -11,11 +14,17 @@ const providerURL = "http://127.0.0.1:5050/rpc";
 
 const main = async () => {
   const provider = new RpcProvider({ nodeUrl: providerURL });
-  const account = new Account(provider, ozAccountAddress, ozPrivateKey, "1", "0x3");
+  const account = new Account(
+    provider,
+    ozAccountAddress,
+    ozPrivateKey,
+    "1",
+    "0x3"
+  );
 
   const { classHash: p256ValidatorClassHash } = await declareClass(
     account,
-    "P256Validator",
+    moduleClassNames.P256Validator
   );
   console.log("P256Validator class hash:", p256ValidatorClassHash);
 };

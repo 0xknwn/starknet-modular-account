@@ -1,6 +1,9 @@
 // file src/05-add-module.ts
 import { SmartrAccount } from "@0xknwn/starknet-modular-account";
-import { classHash } from "@0xknwn/starknet-module";
+import {
+  classHash,
+  classNames as moduleClassNames,
+} from "@0xknwn/starknet-module";
 import { init } from "./05-init";
 import { RpcProvider } from "starknet";
 
@@ -21,15 +24,17 @@ const main = async () => {
     "0x3"
   );
   const { transaction_hash } = await account.addModule(
-    classHash("P256Validator")
+    classHash(moduleClassNames.P256Validator)
   );
   const receipt = await account.waitForTransaction(transaction_hash);
   console.log("transaction succeeded", receipt.isSuccess());
 
-  const isInstalled = await account.isModule(classHash("P256Validator"));
+  const isInstalled = await account.isModule(
+    classHash(moduleClassNames.P256Validator)
+  );
   console.log(
     "module",
-    classHash("P256Validator"),
+    classHash(moduleClassNames.P256Validator),
     "is installed:",
     isInstalled
   );

@@ -1,6 +1,9 @@
 // file src/04-add-module.ts
 import { SmartrAccount } from "@0xknwn/starknet-modular-account";
-import { classHash } from "@0xknwn/starknet-module";
+import {
+  classHash,
+  classNames as moduleClassNames,
+} from "@0xknwn/starknet-module";
 import { init } from "./04-init";
 import { RpcProvider } from "starknet";
 
@@ -18,13 +21,20 @@ const main = async () => {
     "0x3"
   );
   const { transaction_hash } = await account.addModule(
-    classHash("EthValidator")
+    classHash(moduleClassNames.EthValidator)
   );
   const receipt = await account.waitForTransaction(transaction_hash);
   console.log("transaction succeeded", receipt.isSuccess());
 
-  const isInstalled = await account.isModule(classHash("EthValidator"));
-  console.log("module", classHash("EthValidator"), "is installed", isInstalled);
+  const isInstalled = await account.isModule(
+    classHash(moduleClassNames.EthValidator)
+  );
+  console.log(
+    "module",
+    classHash(moduleClassNames.EthValidator),
+    "is installed",
+    isInstalled
+  );
 };
 
 main()
