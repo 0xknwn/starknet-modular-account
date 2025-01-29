@@ -3,6 +3,7 @@ import { SmartrAccount } from "@0xknwn/starknet-modular-account";
 import {
   classHash as sessionkeyClassHash,
   SessionKeyValidatorABI,
+  classNames as sessionkeyClassNames,
 } from "@0xknwn/starknet-module-sessionkey";
 import { init } from "./06-init";
 import { CallData, RpcProvider } from "starknet";
@@ -27,7 +28,7 @@ const main = async () => {
     sessionkey: sessionkeyHash,
   });
   const { transaction_hash } = await account.executeOnModule(
-    sessionkeyClassHash("SessionKeyValidator"),
+    sessionkeyClassHash(sessionkeyClassNames.SessionKeyValidator),
     "disable_session_key",
     calldata
   );
