@@ -68,7 +68,7 @@ export const declareClass = async (
 
   let contract: string = "";
   switch (className) {
-    case "SessionKeyValidator":
+    case classNames.SessionKeyValidator:
       contract = SessionKeyValidatorContract;
       break;
     default:
@@ -77,7 +77,7 @@ export const declareClass = async (
 
   let compiled: string = "";
   switch (className) {
-    case "SessionKeyValidator":
+    case classNames.SessionKeyValidator:
       compiled = SessionKeyValidatorCompiled;
       break;
     default:
