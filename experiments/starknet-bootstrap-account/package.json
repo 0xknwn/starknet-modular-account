@@ -1,6 +1,6 @@
 {
   "name": "starknet-bootstrap-account",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -13,8 +13,8 @@
   "author": "0xknwn",
   "license": "MIT",
   "dependencies": {
-    "@0xknwn/starknet-test-helpers": "^0.2.3",
-    "@0xknwn/starknet-modular-account": "^0.2.3"
+    "@0xknwn/starknet-test-helpers": "^0.2.4",
+    "@0xknwn/starknet-modular-account": "^0.2.4"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.20.0",

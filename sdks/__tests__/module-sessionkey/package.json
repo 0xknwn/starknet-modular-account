@@ -1,6 +1,6 @@
 {
   "name": "tests-module-sessionkey",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "",
   "scripts": {
     "test": "jest --runInBand --verbose"
@@ -8,7 +8,7 @@
   "author": "0xknwn",
   "license": "MIT",
   "dependencies": {
-    "@0xknwn/starknet-test-helpers": "^0.2.3"
+    "@0xknwn/starknet-test-helpers": "^0.2.4"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.20.0",
