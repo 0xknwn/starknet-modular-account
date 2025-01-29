@@ -1,6 +1,6 @@
 // file src/06-add-module.ts
 import { SmartrAccount } from "@0xknwn/starknet-modular-account";
-import { classHash } from "@0xknwn/starknet-module-sessionkey";
+import { classHash, classNames as sessionkeyClassNames } from "@0xknwn/starknet-module-sessionkey";
 import { init } from "./06-init";
 import { RpcProvider } from "starknet";
 
@@ -18,15 +18,15 @@ const main = async () => {
     "0x3"
   );
   const { transaction_hash } = await account.addModule(
-    classHash("SessionKeyValidator")
+    classHash(sessionkeyClassNames.SessionKeyValidator)
   );
   const receipt = await account.waitForTransaction(transaction_hash);
   console.log("transaction succeeded", receipt.isSuccess());
 
-  const isInstalled = await account.isModule(classHash("SessionKeyValidator"));
+  const isInstalled = await account.isModule(classHash(sessionkeyClassNames.SessionKeyValidator));
   console.log(
     "module",
-    classHash("SessionKeyValidator"),
+    classHash(sessionkeyClassNames.SessionKeyValidator),
     "is installed",
     isInstalled
   );

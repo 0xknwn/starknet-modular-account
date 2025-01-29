@@ -1,6 +1,9 @@
 // file src/06-declare-class.ts
 import { RpcProvider, Account } from "starknet";
-import { declareClass } from "@0xknwn/starknet-module-sessionkey";
+import {
+  declareClass,
+  classNames as sessionkeyClassNames,
+} from "@0xknwn/starknet-module-sessionkey";
 
 // these are the settings for the devnet with --seed=0
 // change them to mee your requirements
@@ -21,7 +24,7 @@ const main = async () => {
 
   const { classHash: sessionkeyValidatorClassHash } = await declareClass(
     account,
-    "SessionKeyValidator"
+    sessionkeyClassNames.SessionKeyValidator
   );
   console.log("SessionKeyValidator class hash:", sessionkeyValidatorClassHash);
 };

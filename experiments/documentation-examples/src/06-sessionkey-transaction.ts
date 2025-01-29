@@ -9,6 +9,7 @@ import {
   PolicyManager,
   SessionKeyModule,
   SessionKeyGrantor,
+  classNames as sessionkeyClassNames,
 } from "@0xknwn/starknet-module-sessionkey";
 import { init, CounterABI } from "./06-init";
 import { RpcProvider, Signer, Contract } from "starknet";
@@ -41,7 +42,7 @@ const main = async () => {
   const sessionKeyModule = new SessionKeyModule(
     sessionkeyPublicKey,
     accountAddress,
-    sessionkeyClassHash("SessionKeyValidator"),
+    sessionkeyClassHash(sessionkeyClassNames.SessionKeyValidator),
     chain,
     `0x${expires.toString(16)}`,
     policyManager
