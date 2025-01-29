@@ -9,6 +9,9 @@ import { Buffer } from "buffer";
 import { data as SessionKeyValidatorContract } from "./artifacts/SessionKeyValidator-contract";
 import { data as SessionKeyValidatorCompiled } from "./artifacts/SessionKeyValidator-compiled";
 
+export enum classNames {
+  SessionKeyValidator = "SessionKeyValidator",
+}
 /**
  * Computes the hash of the requested class that is part of the
  * 0xknwn/starknet-modular-account project.
@@ -19,11 +22,11 @@ import { data as SessionKeyValidatorCompiled } from "./artifacts/SessionKeyValid
  *
  */
 export const classHash = (
-  className: "SessionKeyValidator" = "SessionKeyValidator"
+  className: classNames = classNames.SessionKeyValidator
 ) => {
   let contract: string = "";
   switch (className) {
-    case "SessionKeyValidator":
+    case classNames.SessionKeyValidator:
       contract = SessionKeyValidatorContract;
       break;
     default:
@@ -51,7 +54,7 @@ export const classHash = (
  */
 export const declareClass = async (
   account: Account,
-  className: "SessionKeyValidator",
+  className: classNames.SessionKeyValidator,
   details?: UniversalDetails
 ) => {
   const HelperClassHash = classHash(className);

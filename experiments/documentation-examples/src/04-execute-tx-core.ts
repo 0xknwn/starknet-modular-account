@@ -2,10 +2,14 @@
 import {
   SmartrAccount,
   accountAddress,
+  classNames as accountClassNames,
 } from "@0xknwn/starknet-modular-account";
 import { init, CounterABI } from "./04-init";
 import { RpcProvider, Contract, EthSigner, cairo, hash } from "starknet";
-import { classHash as ethClassHash } from "@0xknwn/starknet-module";
+import {
+  classHash as ethClassHash,
+  classNames as moduleClassNames,
+} from "@0xknwn/starknet-module";
 const providerURL = "http://127.0.0.1:5050/rpc";
 const ethPrivateKey =
   "0xb28ebb20fb1015da6e6367d1b5dba9b52862a06dbb3a4022e4749b6987ac1bd2";
@@ -28,9 +32,9 @@ const main = async () => {
 
   const publicKeyHash = hash.computeHashOnElements(publicKeyArray);
   const computedAccountAddress = accountAddress(
-    "SmartrAccount",
+    accountClassNames.SmartrAccount,
     publicKeyHash,
-    [ethClassHash("EthValidator"), "0x4", ...publicKeyArray]
+    [ethClassHash(moduleClassNames.EthValidator), "0x4", ...publicKeyArray]
   );
 
   // execute the transaction

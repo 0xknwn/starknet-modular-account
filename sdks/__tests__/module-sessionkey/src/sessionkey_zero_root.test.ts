@@ -27,6 +27,7 @@ import { RpcProvider, CallData } from "starknet";
 import {
   SessionKeyModule,
   SessionKeyGrantor,
+  classNames as sessionkeyClassNames,
 } from "@0xknwn/starknet-module-sessionkey";
 import { StarkValidatorABI } from "@0xknwn/starknet-modular-account";
 import {
@@ -267,10 +268,16 @@ describe.each([data[1]])(
       async () => {
         const conf = config(env);
         const a = testAccounts(conf)[accountID];
-        const c = await declareSessionkeyClass(a, "SessionKeyValidator", {
-          version: version.declare,
-        });
-        expect(c.classHash).toEqual(sessionkeyClassHash("SessionKeyValidator"));
+        const c = await declareSessionkeyClass(
+          a,
+          sessionkeyClassNames.SessionKeyValidator,
+          {
+            version: version.declare,
+          }
+        );
+        expect(c.classHash).toEqual(
+          sessionkeyClassHash(sessionkeyClassNames.SessionKeyValidator)
+        );
       },
       default_timeout
     );
@@ -282,7 +289,7 @@ describe.each([data[1]])(
           throw new Error("SmartrAccount is not deployed");
         }
         const { transaction_hash } = await smartrAccount.addModule(
-          sessionkeyClassHash("SessionKeyValidator")
+          sessionkeyClassHash(sessionkeyClassNames.SessionKeyValidator)
         );
         const receipt =
           await smartrAccount.waitForTransaction(transaction_hash);
@@ -298,7 +305,7 @@ describe.each([data[1]])(
           throw new Error("SmartrAccount is not deployed");
         }
         const output = await smartrAccount.isModule(
-          sessionkeyClassHash("SessionKeyValidator")
+          sessionkeyClassHash(sessionkeyClassNames.SessionKeyValidator)
         );
         expect(output).toBe(true);
       },
@@ -334,7 +341,7 @@ describe.each([data[1]])(
         sessionKeyModule = new SessionKeyModule(
           conf.accounts[1].publicKey,
           smartrAccount.address,
-          sessionkeyClassHash("SessionKeyValidator"),
+          sessionkeyClassHash(sessionkeyClassNames.SessionKeyValidator),
           connectedChain,
           `0x${next_timestamp.toString(16)}`
         );
@@ -344,7 +351,7 @@ describe.each([data[1]])(
         expect(r.hash).toBe(
           hash_auth_message(
             smartrAccount.address,
-            sessionkeyClassHash("SessionKeyValidator"),
+            sessionkeyClassHash(sessionkeyClassNames.SessionKeyValidator),
             accountClassHash(accountClassNames.StarkValidator),
             conf.accounts[1].publicKey,
             `0x${next_timestamp.toString(16)}`,
@@ -439,7 +446,7 @@ describe.each([data[1]])(
           sessionkey,
         });
         const { transaction_hash } = await smartrAccount.executeOnModule(
-          sessionkeyClassHash("SessionKeyValidator"),
+          sessionkeyClassHash(sessionkeyClassNames.SessionKeyValidator),
           "disable_session_key",
           data
         );
@@ -460,7 +467,7 @@ describe.each([data[1]])(
           sessionkey,
         });
         const output = await smartrAccount.callOnModule(
-          sessionkeyClassHash("SessionKeyValidator"),
+          sessionkeyClassHash(sessionkeyClassNames.SessionKeyValidator),
           "is_disabled_session_key",
           data
         );
@@ -513,7 +520,7 @@ describe.each([data[1]])(
           throw new Error("SmartrAccount is not deployed");
         }
         const { transaction_hash } = await smartrAccount.removeModule(
-          sessionkeyClassHash("SessionKeyValidator")
+          sessionkeyClassHash(sessionkeyClassNames.SessionKeyValidator)
         );
         const receipt =
           await smartrAccount.waitForTransaction(transaction_hash);
@@ -529,7 +536,7 @@ describe.each([data[1]])(
           throw new Error("SmartrAccount is not deployed");
         }
         const output = await smartrAccount.isModule(
-          sessionkeyClassHash("SessionKeyValidator")
+          sessionkeyClassHash(sessionkeyClassNames.SessionKeyValidator)
         );
         expect(output).toBe(false);
       },

@@ -11,6 +11,7 @@ import {
   accountAddress,
   classHash,
   SmartrAccountABI,
+  classNames,
 } from "@0xknwn/starknet-modular-account";
 import { ABI as ERC20ABI } from "./abi/ERC20";
 
@@ -35,13 +36,13 @@ const main = async () => {
   );
   const smartrSigner = new Signer(smartrAccountPrivateKey);
   const smartrAccountPublicKey = await smartrSigner.getPubKey();
-  const starkValidatorClassHash = classHash("StarkValidator");
+  const starkValidatorClassHash = classHash(classNames.StarkValidator);
   const calldata = new CallData(SmartrAccountABI).compile("constructor", {
     core_validator: starkValidatorClassHash,
     args: [smartrAccountPublicKey],
   });
   const smartrAccountAddress = accountAddress(
-    "SmartrAccount",
+    classNames.SmartrAccount,
     smartrAccountPublicKey,
     calldata
   );

@@ -1,6 +1,9 @@
 // file src/04-remove-module.ts
 import { SmartrAccount } from "@0xknwn/starknet-modular-account";
-import { classHash } from "@0xknwn/starknet-module";
+import {
+  classHash,
+  classNames as moduleClassNames,
+} from "@0xknwn/starknet-module";
 import { init } from "./04-init";
 import { RpcProvider } from "starknet";
 
@@ -18,15 +21,17 @@ const main = async () => {
     "0x3"
   );
   const { transaction_hash } = await account.removeModule(
-    classHash("EthValidator")
+    classHash(moduleClassNames.EthValidator)
   );
   const receipt = await account.waitForTransaction(transaction_hash);
   console.log("transaction succeeded", receipt.isSuccess());
 
-  const isInstalled = await account.isModule(classHash("EthValidator"));
+  const isInstalled = await account.isModule(
+    classHash(moduleClassNames.EthValidator)
+  );
   console.log(
     "module",
-    classHash("EthValidator"),
+    classHash(moduleClassNames.EthValidator),
     "has been removed",
     isInstalled
   );

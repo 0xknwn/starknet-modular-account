@@ -3,6 +3,7 @@ import { SmartrAccount } from "@0xknwn/starknet-modular-account";
 import {
   classHash as moduleClassHash,
   P256ValidatorABI,
+  classNames as moduleClassNames,
 } from "@0xknwn/starknet-module";
 import { init } from "./05-init";
 import { CallData, RpcProvider } from "starknet";
@@ -23,7 +24,7 @@ const main = async () => {
   const moduleCallData = new CallData(P256ValidatorABI);
   const calldata = moduleCallData.compile("get_public_key", {});
   const public_keys = await account.callOnModule(
-    moduleClassHash("P256Validator"),
+    moduleClassHash(moduleClassNames.P256Validator),
     "get_public_key",
     calldata
   );

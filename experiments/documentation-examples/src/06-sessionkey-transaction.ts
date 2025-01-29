@@ -1,5 +1,9 @@
 // file src/06-sessionkey-transaction.ts
-import { SmartrAccount, classHash } from "@0xknwn/starknet-modular-account";
+import {
+  SmartrAccount,
+  classHash,
+  classNames as accountClassNames,
+} from "@0xknwn/starknet-modular-account";
 import {
   classHash as sessionkeyClassHash,
   PolicyManager,
@@ -46,12 +50,14 @@ const main = async () => {
   // Step 3: Generate the sessionkey grant request
   // that is an important step to request a session key because that is when
   // the core validator class is registered with the session key module
-  const request = await sessionKeyModule.request(classHash("StarkValidator"));
+  const request = await sessionKeyModule.request(
+    classHash(accountClassNames.StarkValidator)
+  );
   console.log("request", request);
 
   // Step 4: Use the SessionKeyGrantor helper class to sign the request
   const grantor = new SessionKeyGrantor(
-    classHash("StarkValidator"),
+    classHash(accountClassNames.StarkValidator),
     smartrAccountPrivateKey
   );
   const signature = await grantor.sign(sessionKeyModule);
@@ -79,9 +85,8 @@ const main = async () => {
   console.log("currentCounter", currentCounter);
   const call = counter.populate("increment");
   const { transaction_hash } = await smartrAccountWithSessionKey.execute(call);
-  const receipt = await smartrAccountWithSessionKey.waitForTransaction(
-    transaction_hash
-  );
+  const receipt =
+    await smartrAccountWithSessionKey.waitForTransaction(transaction_hash);
   console.log("transaction succeeded", receipt.isSuccess());
   currentCounter = await counter.call("get");
   console.log("currentCounter", currentCounter);

@@ -1,6 +1,6 @@
 // file src/01-declare-class.ts
 import { RpcProvider, Account } from "starknet";
-import { declareClass } from "@0xknwn/starknet-modular-account";
+import { declareClass, classNames } from "@0xknwn/starknet-modular-account";
 
 // these are the settings for the devnet with --seed=0
 // change them to mee your requirements
@@ -21,13 +21,13 @@ const main = async () => {
 
   const { classHash: smartrAccountClassHash } = await declareClass(
     account,
-    "SmartrAccount"
+    classNames.SmartrAccount
   );
   console.log("smartrAccount class hash:", smartrAccountClassHash);
 
   const { classHash: starkValidatorClassHash } = await declareClass(
     account,
-    "StarkValidator"
+    classNames.StarkValidator
   );
   console.log("starkValidator class hash:", starkValidatorClassHash);
 };

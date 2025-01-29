@@ -3,6 +3,7 @@ import {
   StarkValidatorABI,
   SmartrAccount,
   classHash,
+  classNames,
 } from "@0xknwn/starknet-modular-account";
 import { init } from "./02-init";
 import { CallData, RpcProvider, Signer } from "starknet";
@@ -29,7 +30,7 @@ const main = async () => {
     new_public_key: newAccountPublicKey,
   });
   const { transaction_hash } = await account.executeOnModule(
-    classHash("StarkValidator"),
+    classHash(classNames.StarkValidator),
     "set_public_key",
     calldata
   );

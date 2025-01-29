@@ -3,6 +3,7 @@ import { SmartrAccount } from "@0xknwn/starknet-modular-account";
 import {
   MultisigValidatorABI,
   classHash as moduleClassHash,
+  classNames as moduleClassNames,
 } from "@0xknwn/starknet-module";
 import { init } from "./03-init";
 import { CallData, RpcProvider } from "starknet";
@@ -25,7 +26,7 @@ const main = async () => {
     new_threshold: 2,
   });
   const { transaction_hash } = await account.executeOnModule(
-    moduleClassHash("MultisigValidator"),
+    moduleClassHash(moduleClassNames.MultisigValidator),
     "set_threshold",
     calldata
   );

@@ -3,6 +3,7 @@ import {
   accountAddress,
   classHash,
   SmartrAccountABI,
+  classNames,
 } from "@0xknwn/starknet-modular-account";
 import {
   counterAddress as helperCounterAddress,
@@ -18,13 +19,13 @@ export const init = async () => {
   // compute the smartrAccount details
   const smartrSigner = new Signer(smartrAccountPrivateKey);
   const smartrAccountPublicKey = await smartrSigner.getPubKey();
-  const starkValidatorClassHash = classHash("StarkValidator");
+  const starkValidatorClassHash = classHash(classNames.StarkValidator);
   const calldata = new CallData(SmartrAccountABI).compile("constructor", {
     core_validator: starkValidatorClassHash,
     args: [smartrAccountPublicKey],
   });
   const smartrAccountAddress = accountAddress(
-    "SmartrAccount",
+    classNames.SmartrAccount,
     smartrAccountPublicKey,
     calldata
   );

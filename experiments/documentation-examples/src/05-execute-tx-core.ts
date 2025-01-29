@@ -2,12 +2,14 @@
 import {
   SmartrAccount,
   accountAddress,
+  classNames as accountlassNames,
 } from "@0xknwn/starknet-modular-account";
 import { init, CounterABI } from "./05-init";
 import { RpcProvider, Contract, cairo, hash } from "starknet";
 import {
   classHash as moduleClassHash,
   P256Signer,
+  classNames as moduleClassNames,
 } from "@0xknwn/starknet-module";
 const providerURL = "http://127.0.0.1:5050/rpc";
 const p256PrivateKey =
@@ -31,9 +33,9 @@ const main = async () => {
 
   const publicKeyHash = hash.computeHashOnElements(publicKeyArray);
   const computedAccountAddress = accountAddress(
-    "SmartrAccount",
+    accountlassNames.SmartrAccount,
     publicKeyHash,
-    [moduleClassHash("P256Validator"), "0x4", ...publicKeyArray]
+    [moduleClassHash(moduleClassNames.P256Validator), "0x4", ...publicKeyArray]
   );
 
   // execute the transaction

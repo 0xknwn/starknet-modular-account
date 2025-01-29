@@ -1,6 +1,9 @@
 // file src/04-register-publickey.ts
 import { SmartrAccount } from "@0xknwn/starknet-modular-account";
-import { classHash as ethClassHash } from "@0xknwn/starknet-module";
+import {
+  classHash as ethClassHash,
+  classNames as moduleClassNames,
+} from "@0xknwn/starknet-module";
 import { EthSigner, cairo } from "starknet";
 import { init } from "./04-init";
 import { RpcProvider } from "starknet";
@@ -20,7 +23,7 @@ const main = async () => {
     "1",
     "0x3"
   );
-  const module_class_hash = ethClassHash("EthValidator");
+  const module_class_hash = ethClassHash(moduleClassNames.EthValidator);
   const signer = new EthSigner(ethPrivateKey);
   const publicKey = await signer.getPubKey();
   const coords = publicKey.slice(2, publicKey.length);
