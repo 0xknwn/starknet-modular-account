@@ -9,7 +9,7 @@ import {
   classNames as moduleClassNames,
 } from "@0xknwn/starknet-module";
 import { init } from "./03-init";
-import { CallData, RpcProvider, Signer, hash, type Call } from "starknet";
+import { CallData, RpcProvider, Signer, hash, Call } from "starknet";
 
 const providerURL = "http://127.0.0.1:5050/rpc";
 const secondAccountPrivateKey = "0x2";

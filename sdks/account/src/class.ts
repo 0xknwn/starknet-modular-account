@@ -75,7 +75,9 @@ export const declareClass = async (
     return {
       classHash: HelperClassHash,
     };
-  } catch (e) {}
+  } catch {
+    // continue with the declare when the class is not declared
+  }
 
   let contract: string = "";
   switch (className) {

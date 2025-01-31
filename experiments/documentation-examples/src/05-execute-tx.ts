@@ -10,8 +10,7 @@ const p256PrivateKey =
 
 const main = async () => {
   const provider = new RpcProvider({ nodeUrl: providerURL });
-  const { accountAddress, counterAddress, smartrAccountPrivateKey } =
-    await init();
+  const { accountAddress, counterAddress } = await init();
   console.log("accountAddress", accountAddress);
   const signer = new P256Signer(p256PrivateKey);
   const p256Module = new P256Module(accountAddress);

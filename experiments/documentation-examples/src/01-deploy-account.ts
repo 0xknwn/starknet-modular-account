@@ -1,5 +1,5 @@
 // file src/01-deploy-account.ts
-import { RpcProvider, Account, Signer, CallData } from "starknet";
+import { RpcProvider, Signer, CallData } from "starknet";
 import {
   accountAddress,
   classHash,

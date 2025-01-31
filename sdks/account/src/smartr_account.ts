@@ -58,7 +58,7 @@ export const signatureToHexArray = (
       `0x${num.toBigInt(r).toString(16)}`,
       `0x${num.toBigInt(s).toString(16)}`,
     ] as ArraySignatureType;
-  } catch (e) {
+  } catch {
     throw new Error(
       "Signature need to be weierstrass.SignatureType or an array for custom"
     );
@@ -129,7 +129,7 @@ export class SmartrAccount extends Account {
         version,
       }
     );
-    let maxFee = `0x${(10n * BigInt(estimate.maxFee)).toString(16)}`;
+    const maxFee = `0x${(10n * BigInt(estimate.maxFee)).toString(16)}`;
 
     return {
       ...stark.v3Details(details),
@@ -197,7 +197,7 @@ export class SmartrAccount extends Account {
     details: InvocationsDetailsWithNonce,
     signature: ArraySignatureType
   ): Promise<InvokeFunctionResponse> {
-    const version = stark.toTransactionVersion(
+    stark.toTransactionVersion(
       this.getPreferredVersion(
         RPC.ETransactionVersion.V1,
         RPC.ETransactionVersion.V3
@@ -280,7 +280,7 @@ export class SmartrAccount extends Account {
         version,
       }
     );
-    let maxFee = `0x${(10n * BigInt(estimate.maxFee)).toString(16)}`;
+    const maxFee = `0x${(10n * BigInt(estimate.maxFee)).toString(16)}`;
 
     const chainId = await this.getChainId();
 
