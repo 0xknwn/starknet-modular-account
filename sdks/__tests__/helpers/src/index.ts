@@ -6,4 +6,4 @@ export * from "./simple_account";
 export * from "./swap_router";
 export * from "./tokens";
 export * from "./utils";
-export { ETH, STRK } from "./natives";
+export { STRK } from "./natives";

@@ -1,4 +1,3 @@
-import { classHash, classNames } from "@0xknwn/starknet-contracts";
 import { testAccounts, config } from "./utils";
 import { deployCounter, counterAddress, CounterABI } from "./counter";
 import { default_timeout } from "./parameters";

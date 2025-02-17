@@ -3,9 +3,7 @@ import {
   default_timeout,
   config,
   SimpleAccountABI,
-  initial_EthTransfer,
   initial_StrkTransfer,
-  ETH,
   STRK,
 } from "@0xknwn/starknet-test-helpers";
 import {

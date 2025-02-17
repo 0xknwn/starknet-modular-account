@@ -2,9 +2,7 @@ import {
   testAccounts,
   default_timeout,
   config,
-  initial_EthTransfer,
   initial_StrkTransfer,
-  ETH,
   STRK,
 } from "@0xknwn/starknet-test-helpers";
 import {
