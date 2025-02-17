@@ -5,9 +5,7 @@ import {
   Counter,
   counterAddress,
   config,
-  initial_EthTransfer,
   initial_StrkTransfer,
-  ETH,
   STRK,
 } from "@0xknwn/starknet-test-helpers";
 import { classHash, classNames } from "@0xknwn/starknet-contracts";
@@ -21,7 +19,7 @@ import { RpcProvider, CallData, EthSigner, UniversalDetails } from "starknet";
 import { EthModule, P256Module } from "../../../module/src";
 import { P256Signer } from "@0xknwn/starknet-module";
 import { StarkValidatorABI } from "@0xknwn/starknet-modular-account";
-import { V1, V2, V3 } from "./data.fixture";
+import { V3 } from "./data.fixture";
 
 const dataset = [
   {

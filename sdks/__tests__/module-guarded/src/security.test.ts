@@ -2,10 +2,8 @@ import {
   testAccounts,
   default_timeout,
   config,
-  ETH,
   STRK,
   initial_StrkTransfer,
-  initial_EthTransfer,
 } from "@0xknwn/starknet-test-helpers";
 import { classHash, classNames } from "@0xknwn/starknet-contracts";
 import {

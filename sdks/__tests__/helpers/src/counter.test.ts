@@ -173,7 +173,7 @@ describe.each(data)(
         redeployCounter(account, { version: version.invoke });
         const transferCall: Call = counter.populate("reset", {});
         try {
-          account = testAccounts(conf)[2];
+          account = testAccounts(conf)[3];
           const { transaction_hash } = await account.execute(transferCall);
           await account.waitForTransaction(transaction_hash);
           expect(true).toBe(false);

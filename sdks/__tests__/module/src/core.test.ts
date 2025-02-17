@@ -5,9 +5,7 @@ import {
   Counter,
   counterAddress,
   config,
-  ETH,
   STRK,
-  initial_EthTransfer,
   initial_StrkTransfer,
 } from "@0xknwn/starknet-test-helpers";
 import { classHash, classNames } from "@0xknwn/starknet-contracts";

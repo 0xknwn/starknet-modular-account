@@ -5,8 +5,6 @@ import {
   Counter,
   counterAddress,
   config,
-  ETH,
-  initial_EthTransfer,
   STRK,
   initial_StrkTransfer,
 } from "@0xknwn/starknet-test-helpers";

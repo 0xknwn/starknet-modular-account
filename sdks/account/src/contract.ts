@@ -102,7 +102,7 @@ export const deployAccount = async (
         constructorCalldata,
         addressSalt: salt,
       },
-      { ...details, version: version === "0x3" ? "0x3" : "0x1" }
+      { ...details, version: "0x3" }
     );
   const receipt = await deployerAccount.waitForTransaction(tx);
   if (!receipt.isSuccess()) {
