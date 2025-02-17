@@ -6,6 +6,7 @@
   },
   "include": ["**/*.ts"],
   "exclude": ["dist"],
+  "references": [{ "path": "../../contracts" }],
   "typedocOptions": {
     "entryPoints": ["src/index.ts"],
     "out": "docs",

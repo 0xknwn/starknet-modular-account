@@ -1,6 +1,7 @@
 import { Account, CallData } from "starknet";
 import { ABI as AccountABI } from "./abi/BootstrapAccount";
 import { accountAddress, deployAccount } from "./contract";
+import { classNames } from "@0xknwn/starknet-contracts";
 
 /**
  * Generates a Bootstrap account address based on the provided public key.
@@ -15,7 +16,7 @@ export const bootstrapAccountAddress = (
     public_key: publicKey,
     target_class: targetClass,
   });
-  return accountAddress("BootstrapAccount", publicKey, calldata);
+  return accountAddress(classNames.BootstrapAccount, publicKey, calldata);
 };
 
 /**
@@ -36,7 +37,7 @@ export const deployBootstrapAccount = async (
   });
   return await deployAccount(
     deployerAccount,
-    "BootstrapAccount",
+    classNames.BootstrapAccount,
     publicKey,
     callData
   );

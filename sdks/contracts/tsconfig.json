@@ -1,14 +1,9 @@
 {
-  "extends": "../../../tsconfig.base.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist"
   },
-  "references": [
-    { "path": "../helpers" },
-    { "path": "../../account" },
-    { "path": "../../contracts" }
-  ],
   "typedocOptions": {
     "entryPoints": ["src/index.ts"],
     "out": "docs",

@@ -1,6 +1,5 @@
 export * from "./parameters";
 export { accountAddress, deployAccount } from "./contract";
-export * from "./class";
 export * from "./counter";
 export * from "./natives";
 export * from "./simple_account";

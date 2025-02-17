@@ -1,4 +1,4 @@
-import { classHash, declareClass, classNames } from "./class";
+import { classHash, classNames } from "@0xknwn/starknet-contracts";
 import { config, testAccounts } from "./utils";
 import { udcAddress } from "./natives";
 import {
@@ -30,19 +30,6 @@ describe.each(data)("swap router", ({ fees, version, accountID }) => {
   });
 
   it(
-    `[${fees}] declares the SwapRouter class`,
-    async () => {
-      const conf = config(env);
-      const a = testAccounts(conf)[accountID];
-      const c = await declareClass(a, classNames.SwapRouter, {
-        version: version.declare,
-      });
-      expect(c.classHash).toEqual(classHash(classNames.SwapRouter));
-    },
-    default_timeout
-  );
-
-  it(
     `[${fees}] deploys the SwapRouter contract`,
     async () => {
       const conf = config(env);
@@ -53,19 +40,6 @@ describe.each(data)("swap router", ({ fees, version, accountID }) => {
       const routerAddress = await swapRouterAddress(a.address, a.address);
       swapRouterContract = new SwapRouter(routerAddress, a);
       expect(c.address).toEqual(routerAddress);
-    },
-    default_timeout
-  );
-
-  it(
-    `[${fees}] declares the TokenA class`,
-    async () => {
-      const conf = config(env);
-      const a = testAccounts(conf)[accountID];
-      const c = await declareClass(a, classNames.TokenA, {
-        version: version.declare,
-      });
-      expect(c.classHash).toEqual(classHash(classNames.TokenA));
     },
     default_timeout
   );
@@ -86,19 +60,6 @@ describe.each(data)("swap router", ({ fees, version, accountID }) => {
       expect(c.address).toEqual(
         await tokenAAddress(a.address, swapRouterContract.address, a.address)
       );
-    },
-    default_timeout
-  );
-
-  it(
-    `[${fees}] declares the TokenB class`,
-    async () => {
-      const conf = config(env);
-      const a = testAccounts(conf)[accountID];
-      const c = await declareClass(a, classNames.TokenB, {
-        version: version.declare,
-      });
-      expect(c.classHash).toEqual(classHash(classNames.TokenB));
     },
     default_timeout
   );

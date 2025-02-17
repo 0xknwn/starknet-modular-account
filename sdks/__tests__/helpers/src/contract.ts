@@ -1,4 +1,4 @@
-import { classHash, classNames } from "./class";
+import { classHash, classNames } from "@0xknwn/starknet-contracts";
 import { Contract, Account, hash, ec } from "starknet";
 import { udcAddress, ETH, STRK } from "./natives";
 import { initial_EthTransfer, initial_StrkTransfer } from "./parameters";

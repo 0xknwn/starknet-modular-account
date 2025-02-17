@@ -1,7 +1,6 @@
 import { Account, hash, num, UniversalDetails } from "starknet";
-import { classHash } from "./class";
+import { classHash, classNames } from "@0xknwn/starknet-contracts";
 import { ETH, STRK } from "./natives";
-import { classNames } from "./class";
 /**
  * Calculates the account address for a given account name, public key, and constructor call data.
  * @param class_hash - The class hash of the contract.

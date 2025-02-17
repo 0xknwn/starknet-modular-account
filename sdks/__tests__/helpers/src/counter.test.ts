@@ -1,4 +1,4 @@
-import { declareClass, classHash, classNames } from "./class";
+import { classHash, classNames } from "@0xknwn/starknet-contracts";
 import { testAccounts, config } from "./utils";
 import { deployCounter, counterAddress, CounterABI } from "./counter";
 import { default_timeout } from "./parameters";
@@ -35,19 +35,6 @@ describe.each(data)(
         altURL = conf.providerURL;
       }
     });
-
-    it(
-      `[${fees}] declare the Counter class`,
-      async () => {
-        const conf = config(env);
-        const account = testAccounts(conf)[accountID];
-        const c = await declareClass(account, classNames.Counter, {
-          version: version.declare,
-        });
-        expect(c.classHash).toEqual(classHash(classNames.Counter));
-      },
-      default_timeout
-    );
 
     it(
       `[${fees}] deploys the Counter contract`,

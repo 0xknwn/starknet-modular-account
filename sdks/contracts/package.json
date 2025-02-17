@@ -1,0 +1,27 @@
+{
+  "name": "@0xknwn/starknet-contracts",
+  "version": "0.2.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --build",
+    "lint": "eslint src",
+    "test": "jest --runInBand --verbose"
+  },
+  "author": "0xknwn",
+  "license": "MIT",
+  "dependencies": {
+    "@noble/curves": "^1.4.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.19.0",
+    "@typescript-eslint/eslint-plugin": "^8.20.0",
+    "@typescript-eslint/parser": "^8.20.0",
+    "eslint": "^9.19.0",
+    "eslint-config-prettier": "^10.0.1",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.22.0"
+  }
+}

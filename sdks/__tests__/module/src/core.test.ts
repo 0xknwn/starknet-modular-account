@@ -1,6 +1,4 @@
 import {
-  declareClass as declareHelperClass,
-  classHash as helperClassHash,
   deployCounter,
   testAccounts,
   default_timeout,
@@ -11,15 +9,12 @@ import {
   STRK,
   initial_EthTransfer,
   initial_StrkTransfer,
-  classNames as helperClassNames,
 } from "@0xknwn/starknet-test-helpers";
+import { classHash, classNames } from "@0xknwn/starknet-contracts";
 import {
-  declareClass as declareAccountClass,
-  classHash as accountClassHash,
   SmartrAccount,
   deployAccount,
   accountAddress,
-  classNames as accountClassNames,
 } from "@0xknwn/starknet-modular-account";
 import {
   RpcProvider,
@@ -33,42 +28,11 @@ import {
   BigNumberish,
 } from "starknet";
 import {
-  declareClass as declareModuleClass,
-  classHash as moduleClassHash,
   EthValidatorABI,
   P256ValidatorABI,
   P256Signer,
-  classNames as moduleClassNames,
 } from "@0xknwn/starknet-module";
 import { V1, V2, V3 } from "./data.fixture";
-
-const declareClass = async (
-  a: Account,
-  className: moduleClassNames | accountClassNames.StarkValidator,
-  version: BigNumberish | undefined
-) => {
-  if (className === accountClassNames.StarkValidator) {
-    const c = await declareAccountClass(a, className, {
-      version,
-    });
-    return c;
-  }
-  const c = await declareModuleClass(a, className, {
-    version,
-  });
-  return c;
-};
-
-const classHash = (
-  className: moduleClassNames | accountClassNames.StarkValidator
-) => {
-  if (className === accountClassNames.StarkValidator) {
-    const c = accountClassHash(className);
-    return c;
-  }
-  const c = moduleClassHash(className);
-  return c;
-};
 
 const dataset = [
   {
@@ -85,9 +49,7 @@ const dataset = [
       publicKeyArray: [
         "0x636891ed7d6a8a4bf0c6c96cf3a1562b03d6fb63909691f9504f2f2b67d43be",
       ],
-      className: accountClassNames.StarkValidator as
-        | moduleClassNames
-        | accountClassNames.StarkValidator,
+      className: classNames.StarkValidator as classNames,
       signer: Signer,
       validatorABI: EthValidatorABI,
     },
@@ -106,9 +68,7 @@ const dataset = [
       publicKeyArray: [
         "0x636891ed7d6a8a4bf0c6c96cf3a1562b03d6fb63909691f9504f2f2b67d43be",
       ],
-      className: accountClassNames.StarkValidator as
-        | moduleClassNames
-        | accountClassNames.StarkValidator,
+      className: classNames.StarkValidator as classNames,
       signer: Signer,
       validatorABI: EthValidatorABI,
     },
@@ -131,9 +91,7 @@ const dataset = [
         "258172356515136873455592221375042794236",
         "69849287226094710129367771214955413606",
       ],
-      className: moduleClassNames.EthValidator as
-        | moduleClassNames
-        | accountClassNames.StarkValidator,
+      className: classNames.EthValidator as classNames,
       signer: EthSigner,
       validatorABI: EthValidatorABI,
     },
@@ -156,9 +114,7 @@ const dataset = [
         "258172356515136873455592221375042794236",
         "69849287226094710129367771214955413606",
       ],
-      className: moduleClassNames.EthValidator as
-        | moduleClassNames
-        | accountClassNames.StarkValidator,
+      className: classNames.EthValidator as classNames,
       signer: EthSigner,
       validatorABI: EthValidatorABI,
     },
@@ -183,9 +139,7 @@ const dataset = [
         "230988565823064299531546210785320445498",
         "202889101106158949967186230758848275236",
       ],
-      className: moduleClassNames.P256Validator as
-        | moduleClassNames
-        | accountClassNames.StarkValidator,
+      className: classNames.P256Validator as classNames,
       signer: P256Signer,
       validatorABI: P256ValidatorABI,
     },
@@ -210,9 +164,7 @@ const dataset = [
         "230988565823064299531546210785320445498",
         "202889101106158949967186230758848275236",
       ],
-      className: moduleClassNames.P256Validator as
-        | moduleClassNames
-        | accountClassNames.StarkValidator,
+      className: classNames.P256Validator as classNames,
       signer: P256Signer,
       validatorABI: P256ValidatorABI,
     },
@@ -241,19 +193,6 @@ describe.each([dataset[3], dataset[5]])(
     );
 
     it(
-      `[${fees}][${name}]: declares the Counter class`,
-      async () => {
-        const conf = config(env);
-        const account = testAccounts(conf)[accountID];
-        const c = await declareHelperClass(account, helperClassNames.Counter, {
-          version: version.declare,
-        });
-        expect(c.classHash).toEqual(helperClassHash(helperClassNames.Counter));
-      },
-      default_timeout
-    );
-
-    it(
       `[${fees}][${name}]: deploys the Counter contract`,
       async () => {
         const conf = config(env);
@@ -265,36 +204,6 @@ describe.each([dataset[3], dataset[5]])(
           await counterAddress(account.address, account.address)
         );
         counterContract = new Counter(c.address, testAccounts(conf)[accountID]);
-      },
-      default_timeout
-    );
-
-    it(
-      `[${fees}][${name}]: declares the ${data.className} class`,
-      async () => {
-        const conf = config(env);
-        const a = testAccounts(conf)[accountID];
-        const c = await declareClass(a, data.className, version.declare);
-        expect(c.classHash).toEqual(classHash(data.className));
-      },
-      default_timeout
-    );
-
-    it(
-      `[${fees}][${name}]: declares the SmartrAccount class`,
-      async () => {
-        const conf = config(env);
-        const a = testAccounts(conf)[accountID];
-        const c = await declareAccountClass(
-          a,
-          accountClassNames.SmartrAccount,
-          {
-            version: version.declare,
-          }
-        );
-        expect(c.classHash).toEqual(
-          accountClassHash(accountClassNames.SmartrAccount)
-        );
       },
       default_timeout
     );
@@ -313,7 +222,7 @@ describe.each([dataset[3], dataset[5]])(
         ];
         const salt = hash.computeHashOnElements(data.publicKeyArray);
         const address = accountAddress(
-          accountClassNames.SmartrAccount,
+          classNames.SmartrAccount,
           salt,
           calldata
         );
@@ -350,7 +259,7 @@ describe.each([dataset[3], dataset[5]])(
         ];
         const salt = hash.computeHashOnElements(data.publicKeyArray);
         const address = accountAddress(
-          accountClassNames.SmartrAccount,
+          classNames.SmartrAccount,
           salt,
           calldata
         );
@@ -391,7 +300,7 @@ describe.each([dataset[3], dataset[5]])(
         const salt = hash.computeHashOnElements(data.publicKeyArray);
         const address = await deployAccount(
           smartrAccountWithModule,
-          accountClassNames.SmartrAccount,
+          classNames.SmartrAccount,
           salt,
           calldata,
           {
@@ -400,7 +309,7 @@ describe.each([dataset[3], dataset[5]])(
           }
         );
         expect(address).toEqual(
-          accountAddress(accountClassNames.SmartrAccount, salt, calldata)
+          accountAddress(classNames.SmartrAccount, salt, calldata)
         );
       },
       default_timeout

@@ -1,6 +1,4 @@
 import {
-  declareClass as declareHelperClass,
-  classHash as helperClassHash,
   deployCounter,
   testAccounts,
   default_timeout,
@@ -9,13 +7,8 @@ import {
   config,
   ETH,
   initial_EthTransfer,
-  classNames as helperClassNames,
 } from "@0xknwn/starknet-test-helpers";
-import {
-  classHash as failedClassHash,
-  declareClass as declareFailedClass,
-  classNames,
-} from "./class";
+import { classHash, classNames } from "@0xknwn/starknet-contracts";
 import { deployAccount } from "./contract";
 import { failedAccountAddress, deployFailedAccount } from "./failed_account";
 import { Account, RpcProvider } from "starknet";
@@ -30,17 +23,6 @@ describe("sessionkey management", () => {
   });
 
   it(
-    "declare the Counter class",
-    async () => {
-      const conf = config(env);
-      const account = testAccounts(conf)[0];
-      const c = await declareHelperClass(account, helperClassNames.Counter);
-      expect(c.classHash).toEqual(helperClassHash(helperClassNames.Counter));
-    },
-    default_timeout
-  );
-
-  it(
     "deploys the Counter contract",
     async () => {
       const conf = config(env);
@@ -50,17 +32,6 @@ describe("sessionkey management", () => {
         await counterAddress(account.address, account.address)
       );
       counter = new Counter(c.address, testAccounts(conf)[0]);
-    },
-    default_timeout
-  );
-
-  it(
-    "declares the FailedAccount class",
-    async () => {
-      const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await declareFailedClass(a, classNames.FailedAccount);
-      expect(c.classHash).toEqual(failedClassHash(classNames.FailedAccount));
     },
     default_timeout
   );

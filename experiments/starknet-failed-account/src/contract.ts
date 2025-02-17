@@ -1,5 +1,5 @@
 import { Account, Contract, hash, num } from "starknet";
-import { classHash, classNames } from "./class";
+import { classHash, classNames } from "@0xknwn/starknet-contracts";
 import { ABI as ERC20ABI } from "./abi/ERC20";
 import { ethAddress } from "./natives";
 /**

@@ -1,6 +1,4 @@
 import {
-  declareClass as declareHelperClass,
-  classHash as helperClassHash,
   deployCounter,
   testAccounts,
   default_timeout,
@@ -11,25 +9,16 @@ import {
   initial_StrkTransfer,
   ETH,
   STRK,
-  classNames as helperClassNames,
 } from "@0xknwn/starknet-test-helpers";
+import { classHash, classNames } from "@0xknwn/starknet-contracts";
 import {
-  declareClass as declareAccountClass,
-  classHash as accountClassHash,
   SmartrAccount,
   deployAccount,
   accountAddress,
   SmartrAccountABI,
-  classNames as accountClassNames,
 } from "@0xknwn/starknet-modular-account";
 import { RpcProvider, CallData, EthSigner, UniversalDetails } from "starknet";
-import {
-  declareClass as declareModuleClass,
-  classHash as moduleClassHash,
-  EthModule,
-  P256Module,
-  classNames as moduleClassNames,
-} from "../../../module/src";
+import { EthModule, P256Module } from "../../../module/src";
 import { P256Signer } from "@0xknwn/starknet-module";
 import { StarkValidatorABI } from "@0xknwn/starknet-modular-account";
 import { V1, V2, V3 } from "./data.fixture";
@@ -53,7 +42,7 @@ const dataset = [
         "258172356515136873455592221375042794236",
         "69849287226094710129367771214955413606",
       ],
-      className: moduleClassNames.EthValidator as moduleClassNames,
+      className: classNames.EthValidator as classNames,
       module: EthModule,
       signer: EthSigner,
     },
@@ -76,7 +65,7 @@ const dataset = [
         "258172356515136873455592221375042794236",
         "69849287226094710129367771214955413606",
       ],
-      className: moduleClassNames.EthValidator as moduleClassNames,
+      className: classNames.EthValidator as classNames,
       module: EthModule,
       signer: EthSigner,
     },
@@ -101,7 +90,7 @@ const dataset = [
         "230988565823064299531546210785320445498",
         "202889101106158949967186230758848275236",
       ],
-      className: moduleClassNames.P256Validator as moduleClassNames,
+      className: classNames.P256Validator as classNames,
       module: P256Module,
       signer: P256Signer,
     },
@@ -126,7 +115,7 @@ const dataset = [
         "230988565823064299531546210785320445498",
         "202889101106158949967186230758848275236",
       ],
-      className: moduleClassNames.P256Validator as moduleClassNames,
+      className: classNames.P256Validator as classNames,
       module: P256Module,
       signer: P256Signer,
     },
@@ -157,19 +146,6 @@ describe.each([dataset[1], dataset[3]])(
     );
 
     it(
-      `[${fees}][${name}]: declares the Counter class`,
-      async () => {
-        const conf = config(env);
-        const account = testAccounts(conf)[accountID];
-        const c = await declareHelperClass(account, helperClassNames.Counter, {
-          version: version.declare,
-        });
-        expect(c.classHash).toEqual(helperClassHash(helperClassNames.Counter));
-      },
-      default_timeout
-    );
-
-    it(
       `[${fees}][${name}]: deploys the Counter contract`,
       async () => {
         const conf = config(env);
@@ -186,44 +162,6 @@ describe.each([dataset[1], dataset[3]])(
     );
 
     it(
-      `[${fees}][${name}]: declares the starkValidator class`,
-      async () => {
-        const conf = config(env);
-        const a = testAccounts(conf)[accountID];
-        const c = await declareAccountClass(
-          a,
-          accountClassNames.StarkValidator,
-          {
-            version: version.declare,
-          }
-        );
-        expect(c.classHash).toEqual(
-          accountClassHash(accountClassNames.StarkValidator)
-        );
-      },
-      default_timeout
-    );
-
-    it(
-      `[${fees}][${name}]: declares the SmartrAccount class`,
-      async () => {
-        const conf = config(env);
-        const a = testAccounts(conf)[accountID];
-        const c = await declareAccountClass(
-          a,
-          accountClassNames.SmartrAccount,
-          {
-            version: version.declare,
-          }
-        );
-        expect(c.classHash).toEqual(
-          accountClassHash(accountClassNames.SmartrAccount)
-        );
-      },
-      default_timeout
-    );
-
-    it(
       `[${fees}][${name}]: sends ${fees === "WEI" ? "$ETH" : "$STRK"} to the account address`,
       async () => {
         const conf = config(env);
@@ -231,15 +169,13 @@ describe.each([dataset[1], dataset[3]])(
         const p = new RpcProvider({ nodeUrl: conf.providerURL });
         const publicKey = conf.accounts[accountID].publicKey;
         const privateKey = conf.accounts[accountID].privateKey;
-        const starkValidatorClassHash = accountClassHash(
-          accountClassNames.StarkValidator
-        );
+        const starkValidatorClassHash = classHash(classNames.StarkValidator);
         const calldata = new CallData(SmartrAccountABI).compile("constructor", {
           core_validator: starkValidatorClassHash,
           args: [publicKey],
         });
         const address = accountAddress(
-          accountClassNames.SmartrAccount,
+          classNames.SmartrAccount,
           publicKey,
           calldata
         );
@@ -269,22 +205,20 @@ describe.each([dataset[1], dataset[3]])(
       async () => {
         const conf = config(env);
         const publicKey = conf.accounts[accountID].publicKey;
-        const starkValidatorClassHash = accountClassHash(
-          accountClassNames.StarkValidator
-        );
+        const starkValidatorClassHash = classHash(classNames.StarkValidator);
         const calldata = new CallData(SmartrAccountABI).compile("constructor", {
           core_validator: starkValidatorClassHash,
           args: [publicKey],
         });
         const address = await deployAccount(
           smartrAccount,
-          accountClassNames.SmartrAccount,
+          classNames.SmartrAccount,
           publicKey,
           calldata,
           { version: version.deploy_account }
         );
         expect(address).toEqual(
-          accountAddress(accountClassNames.SmartrAccount, publicKey, calldata)
+          accountAddress(classNames.SmartrAccount, publicKey, calldata)
         );
       },
       default_timeout
@@ -297,7 +231,7 @@ describe.each([dataset[1], dataset[3]])(
         const calldata = new CallData(StarkValidatorABI);
         const data = calldata.compile("get_public_key", {});
         const c = await smartrAccount.callOnModule(
-          accountClassHash(accountClassNames.StarkValidator),
+          classHash(classNames.StarkValidator),
           "get_public_key",
           data
         );
@@ -359,32 +293,19 @@ describe.each([dataset[1], dataset[3]])(
     );
 
     it(
-      `[${fees}][${name}]: declares the Validator class`,
-      async () => {
-        const conf = config(env);
-        const a = testAccounts(conf)[accountID];
-        const c = await declareModuleClass(a, data.className, {
-          version: version.declare,
-        });
-        expect(c.classHash).toEqual(moduleClassHash(data.className));
-      },
-      default_timeout
-    );
-
-    it(
       `[${fees}][${name}]: adds a module to the account`,
       async () => {
         if (!smartrAccount) {
           throw new Error("SmartrAccount is not deployed");
         }
         const isInstalled = await smartrAccount.isModule(
-          moduleClassHash(data.className)
+          classHash(data.className)
         );
         if (isInstalled) {
           return;
         }
         const { transaction_hash } = await smartrAccount.addModule(
-          moduleClassHash(data.className)
+          classHash(data.className)
         );
         const receipt =
           await smartrAccount.waitForTransaction(transaction_hash);
@@ -399,9 +320,7 @@ describe.each([dataset[1], dataset[3]])(
         if (!smartrAccount) {
           throw new Error("SmartrAccount is not deployed");
         }
-        const output = await smartrAccount.isModule(
-          moduleClassHash(data.className)
-        );
+        const output = await smartrAccount.isModule(classHash(data.className));
         expect(output).toBe(true);
       },
       default_timeout
@@ -414,7 +333,7 @@ describe.each([dataset[1], dataset[3]])(
           throw new Error("Public key array not defined");
         }
         const { transaction_hash } = await smartrAccount.executeOnModule(
-          moduleClassHash(data.className),
+          classHash(data.className),
           "set_public_key",
           data.publicKeyArray
         );
@@ -432,7 +351,7 @@ describe.each([dataset[1], dataset[3]])(
           throw new Error("Public key array not defined");
         }
         const result = await smartrAccount.callOnModule(
-          moduleClassHash(data.className),
+          classHash(data.className),
           "get_public_key",
           []
         );
@@ -574,7 +493,7 @@ describe.each([dataset[1], dataset[3]])(
           throw new Error("SmartrAccount is not deployed");
         }
         const { transaction_hash } = await smartrAccount.removeModule(
-          moduleClassHash(data.className)
+          classHash(data.className)
         );
         const receipt =
           await smartrAccount.waitForTransaction(transaction_hash);
@@ -589,9 +508,7 @@ describe.each([dataset[1], dataset[3]])(
         if (!smartrAccount) {
           throw new Error("SmartrAccount is not deployed");
         }
-        const output = await smartrAccount.isModule(
-          moduleClassHash(data.className)
-        );
+        const output = await smartrAccount.isModule(classHash(data.className));
         expect(output).toBe(false);
       },
       default_timeout

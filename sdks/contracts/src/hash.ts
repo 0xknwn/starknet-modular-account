@@ -1,4 +1,4 @@
-export const classes = {
+export const hash = {
   SwapRouter:
     "0x05701db3f78dbdc600562c7dac99608696201d630490cd351eaa743063bb89e5",
   StarkValidator:
