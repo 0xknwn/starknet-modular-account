@@ -15,9 +15,9 @@ import { RpcProvider, CallData, Signer } from "starknet";
 import { GuardedValidatorABI } from "@0xknwn/starknet-module";
 import { data } from "./data.fixture";
 
-const smartAccountPrivateKey = "0xabcdef";
+const smartAccountPrivateKey = "0x123456";
 
-describe.each(data)(
+describe.each([data[0]])(
   "guarded validator security management",
   ({ fees, version, accountID }) => {
     let env: string;

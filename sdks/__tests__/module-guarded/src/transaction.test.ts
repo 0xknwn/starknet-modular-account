@@ -20,7 +20,7 @@ import { data } from "./data.fixture";
 
 const smartAccountPrivateKey = "0xabcdef";
 
-describe.each(data)(
+describe.each([data[1]])(
   "guarded validator transaction management",
   ({ fees, version, accountID }) => {
     let env: string;

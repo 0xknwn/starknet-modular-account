@@ -28,7 +28,7 @@ import {
 } from "@0xknwn/starknet-module-sessionkey";
 import { data } from "./data.fixture";
 
-describe.each([data[0]])("sessionkey swap", ({ fees, accountID, version }) => {
+describe.each([data[2]])("sessionkey swap", ({ fees, accountID, version }) => {
   let env: string;
   let altProviderURL: string;
   let swapRouterContract: SwapRouter;

@@ -8,6 +8,24 @@ export const data = [
       declare: V3,
       deploy_account: V3,
     },
+    accountID: 0,
+  },
+  {
+    fees: "FRI",
+    version: {
+      invoke: V3,
+      declare: V3,
+      deploy_account: V3,
+    },
     accountID: 1,
+  },
+  {
+    fees: "FRI",
+    version: {
+      invoke: V3,
+      declare: V3,
+      deploy_account: V3,
+    },
+    accountID: 2,
   },
 ];
