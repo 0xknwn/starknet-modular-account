@@ -5,8 +5,8 @@ import {
   Counter,
   counterAddress,
   config,
-  ETH,
-  initial_EthTransfer,
+  STRK,
+  initial_StrkTransfer,
 } from "@0xknwn/starknet-test-helpers";
 import { classHash, classNames } from "@0xknwn/starknet-contracts";
 import { deployAccount } from "./contract";
@@ -45,9 +45,9 @@ describe("sessionkey management", () => {
       const publicKey = conf.accounts[0].publicKey;
       const privateKey = conf.accounts[0].privateKey;
       const address = failedAccountAddress(publicKey);
-      const { transaction_hash } = await ETH(sender).transfer(
+      const { transaction_hash } = await STRK(sender).transfer(
         address,
-        initial_EthTransfer
+        initial_StrkTransfer
       );
       let receipt = await sender.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toEqual(true);

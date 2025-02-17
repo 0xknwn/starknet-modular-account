@@ -2,8 +2,8 @@ import {
   testAccounts,
   default_timeout,
   config,
-  initial_EthTransfer,
-  ETH,
+  initial_StrkTransfer,
+  STRK,
 } from "@0xknwn/starknet-test-helpers";
 import { classNames, classHash } from "@0xknwn/starknet-contracts";
 import { bootstrapAccountAddress } from "./bootstrap_account";
@@ -31,9 +31,9 @@ describe("bootstrapping an account", () => {
         publicKey,
         classHash(classNames.SimpleValidator)
       );
-      const { transaction_hash } = await ETH(sender).transfer(
+      const { transaction_hash } = await STRK(sender).transfer(
         address,
-        initial_EthTransfer
+        initial_StrkTransfer
       );
       let receipt = await sender.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toEqual(true);
