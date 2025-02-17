@@ -5,7 +5,7 @@ import {
   Account,
   UniversalDetails,
 } from "starknet";
-import { Buffer } from "buffer";
+import { b64toascii } from "./b64toascii";
 import { data as GuardedValidatorContract } from "./artifacts/GuardedValidator-contract";
 import { data as GuardedValidatorCompiled } from "./artifacts/GuardedValidator-compiled";
 import { data as EthValidatorContract } from "./artifacts/EthValidator-contract";
@@ -57,7 +57,7 @@ export const classHash = (className: classNames = classNames.EthValidator) => {
       throw new Error("Invalid class name");
   }
   const loadedContract: CompiledContract = json.parse(
-    Buffer.from(contract, "base64").toString("ascii")
+    b64toascii(contract)
   );
   return hash.computeContractClassHash(loadedContract);
 };
@@ -127,10 +127,10 @@ export const declareClass = async (
   }
 
   const compiledTestSierra = json.parse(
-    Buffer.from(contract, "base64").toString("ascii")
+    b64toascii(contract)
   );
   const compiledTestCasm = json.parse(
-    Buffer.from(compiled, "base64").toString("ascii")
+    b64toascii(compiled)
   );
   const declare = await account.declare(
     {

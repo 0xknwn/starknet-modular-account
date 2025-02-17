@@ -5,7 +5,7 @@ import {
   Account,
   UniversalDetails,
 } from "starknet";
-import { Buffer } from "buffer";
+import { b64toascii } from "./b64toascii";
 import { data as SessionKeyValidatorContract } from "./artifacts/SessionKeyValidator-contract";
 import { data as SessionKeyValidatorCompiled } from "./artifacts/SessionKeyValidator-compiled";
 
@@ -32,9 +32,7 @@ export const classHash = (
     default:
       throw new Error("Invalid class name");
   }
-  const loadedContract: CompiledContract = json.parse(
-    Buffer.from(contract, "base64").toString("ascii")
-  );
+  const loadedContract: CompiledContract = json.parse(b64toascii(contract));
   return hash.computeContractClassHash(loadedContract);
 };
 
@@ -84,12 +82,8 @@ export const declareClass = async (
       throw new Error("Invalid class name");
   }
 
-  const compiledTestSierra = json.parse(
-    Buffer.from(contract, "base64").toString("ascii")
-  );
-  const compiledTestCasm = json.parse(
-    Buffer.from(compiled, "base64").toString("ascii")
-  );
+  const compiledTestSierra = json.parse(b64toascii(contract));
+  const compiledTestCasm = json.parse(b64toascii(compiled));
   const declare = await account.declare(
     {
       contract: compiledTestSierra,

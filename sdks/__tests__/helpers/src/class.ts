@@ -1,5 +1,4 @@
 import { hash, json, CompiledContract, Account } from "starknet";
-import { Buffer } from "buffer";
 import { data as CounterContract } from "./artifacts/Counter-contract";
 import { data as CounterCompiled } from "./artifacts/Counter-compiled";
 import { data as SimpleAccountContract } from "./artifacts/SimpleAccount-contract";
@@ -10,6 +9,7 @@ import { data as TokenAContract } from "./artifacts/TokenA-contract";
 import { data as TokenACompiled } from "./artifacts/TokenA-compiled";
 import { data as TokenBContract } from "./artifacts/TokenB-contract";
 import { data as TokenBCompiled } from "./artifacts/TokenB-compiled";
+import { b64toascii } from "./b64toascii";
 import type { UniversalDetails } from "starknet";
 /**
  * Computes the hash of the requested class that is part of the
@@ -50,9 +50,7 @@ export const classHash = (className: classNames = classNames.Counter) => {
       throw new Error("Invalid class name");
   }
 
-  const loadedContract: CompiledContract = json.parse(
-    Buffer.from(contract, "base64").toString("ascii")
-  );
+  const loadedContract: CompiledContract = json.parse(b64toascii(contract));
   const { computeContractClassHash } = hash;
   return computeContractClassHash(loadedContract);
 };
@@ -127,12 +125,8 @@ export const declareClass = async (
       throw new Error("Invalid class name");
   }
 
-  const compiledTestSierra = json.parse(
-    Buffer.from(contract, "base64").toString("ascii")
-  );
-  const compiledTestCasm = json.parse(
-    Buffer.from(compiled, "base64").toString("ascii")
-  );
+  const compiledTestSierra = json.parse(b64toascii(contract));
+  const compiledTestCasm = json.parse(b64toascii(compiled));
   const declare = await account.declare(
     {
       contract: compiledTestSierra,
