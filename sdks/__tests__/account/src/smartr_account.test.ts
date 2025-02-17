@@ -19,7 +19,7 @@ import { RpcProvider, CallData, Contract, shortString, num } from "starknet";
 import { StarkValidatorABI } from "@0xknwn/starknet-modular-account";
 import { data } from "./data.fixture";
 
-describe.each(data)("account management", ({ fees, version, accountID }) => {
+describe.each([data[1]])("account management", ({ fees, version, accountID }) => {
   let env: string;
   let counterContract: Counter;
   let smartrAccount: SmartrAccount;

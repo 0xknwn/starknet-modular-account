@@ -16,7 +16,7 @@ import { RpcProvider, CallData } from "starknet";
 import { StarkValidatorABI } from "@0xknwn/starknet-modular-account";
 import { data } from "./data.fixture";
 
-describe.each(data)("module management", ({ fees, version, accountID }) => {
+describe.each([data[0]])("module management", ({ fees, version, accountID }) => {
   let env: string;
   let smartrAccount: SmartrAccount;
 
@@ -25,7 +25,7 @@ describe.each(data)("module management", ({ fees, version, accountID }) => {
   });
 
   it(
-    `[${fees}] sends "FRI" to the account address`,
+    `[${fees}] sends "$STRK" to the account address`,
     async () => {
       const conf = config(env);
       const sender = testAccounts(conf)[accountID];

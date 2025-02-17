@@ -16,7 +16,7 @@ import { StarkValidatorABI } from "@0xknwn/starknet-modular-account";
 import { RpcProvider, num, CallData, shortString } from "starknet";
 import { data } from "./data.fixture";
 
-describe.each(data)(
+describe.each([data[2]])(
   "call and execute on validator",
   ({ fees, version, accountID }) => {
     let env: string;

@@ -41,7 +41,7 @@ const dataset = [
       declare: V3,
       deploy_account: V3,
     },
-    accountID: 1,
+    accountID: 0,
     data: {
       privateKey: "0xabcdef",
       publicKeyArray: [
@@ -83,7 +83,7 @@ const dataset = [
       declare: V3,
       deploy_account: V3,
     },
-    accountID: 1,
+    accountID: 2,
     data: {
       privateKey:
         "0x1efecf7ee1e25bb87098baf2aaab0406167aae0d5ea9ba0d31404bf01886bd0e",
@@ -102,7 +102,7 @@ const dataset = [
   },
 ];
 
-describe.each([dataset[3], dataset[5]])(
+describe.each([dataset[1], dataset[2]])(
   "core validator management",
   ({ name, fees, accountID, version, data }) => {
     let env: string;

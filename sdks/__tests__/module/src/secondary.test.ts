@@ -72,7 +72,7 @@ const dataset = [
   },
 ];
 
-describe.each([dataset[1], dataset[3]])(
+describe.each([dataset[0], dataset[1]])(
   "secondary validator management",
   ({ name, data, fees, accountID, version }) => {
     let env: string;
