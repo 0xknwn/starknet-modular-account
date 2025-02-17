@@ -1,6 +1,6 @@
 {
   "name": "tests-module",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "",
   "scripts": {
     "lint": "eslint src",
@@ -9,7 +9,6 @@
   "author": "0xknwn",
   "license": "MIT",
   "dependencies": {
-    "@0xknwn/starknet-test-helpers": "^0.2.5",
     "@noble/curves": "^1.4.0"
   },
   "devDependencies": {
