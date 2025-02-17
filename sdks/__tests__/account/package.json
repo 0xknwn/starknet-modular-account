@@ -8,9 +8,6 @@
   },
   "author": "0xknwn",
   "license": "MIT",
-  "dependencies": {
-    "@0xknwn/starknet-test-helpers": "^0.2.5"
-  },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
     "@typescript-eslint/eslint-plugin": "^8.20.0",
