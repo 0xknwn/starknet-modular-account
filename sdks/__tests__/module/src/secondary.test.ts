@@ -26,29 +26,6 @@ import { V1, V2, V3 } from "./data.fixture";
 const dataset = [
   {
     name: "secp256k1",
-    fees: "WEI",
-    version: {
-      invoke: V1,
-      declare: V2,
-      deploy_account: V1,
-    },
-    accountID: 0,
-    data: {
-      privateKey:
-        "0xb28ebb20fb1015da6e6367d1b5dba9b52862a06dbb3a4022e4749b6987ac1bd2",
-      publicKeyArray: [
-        "210289098249831467762502193281061856838",
-        "280617501412351006689952710290844664966",
-        "258172356515136873455592221375042794236",
-        "69849287226094710129367771214955413606",
-      ],
-      className: classNames.EthValidator as classNames,
-      module: EthModule,
-      signer: EthSigner,
-    },
-  },
-  {
-    name: "secp256k1",
     fees: "FRI",
     version: {
       invoke: V3,
@@ -68,31 +45,6 @@ const dataset = [
       className: classNames.EthValidator as classNames,
       module: EthModule,
       signer: EthSigner,
-    },
-  },
-  {
-    name: "p256",
-    fees: "WEI",
-    version: {
-      invoke: V1,
-      declare: V2,
-      deploy_account: V1,
-    },
-    accountID: 0,
-    data: {
-      privateKey:
-        "0x1efecf7ee1e25bb87098baf2aaab0406167aae0d5ea9ba0d31404bf01886bd0e",
-      // let x: u256 = 0x097420e05fbc83afe4d73b31890187d0cacf2c3653e27f434701a91625f916c2_u256;
-      // let y: u256 = 0x98a304ff544db99c864308a9b3432324adc6c792181bae33fe7a4cbd48cf263a_u256;
-      publicKeyArray: [
-        "269579757328574126121444003492591638210",
-        "12566025211498978771503502663570524112",
-        "230988565823064299531546210785320445498",
-        "202889101106158949967186230758848275236",
-      ],
-      className: classNames.P256Validator as classNames,
-      module: P256Module,
-      signer: P256Signer,
     },
   },
   {
@@ -162,7 +114,7 @@ describe.each([dataset[1], dataset[3]])(
     );
 
     it(
-      `[${fees}][${name}]: sends ${fees === "WEI" ? "$ETH" : "$STRK"} to the account address`,
+      `[${fees}][${name}]: sends "$STRK" to the account address`,
       async () => {
         const conf = config(env);
         const sender = testAccounts(conf)[accountID];
@@ -179,9 +131,8 @@ describe.each([dataset[1], dataset[3]])(
           publicKey,
           calldata
         );
-        const TOKEN = fees === "WEI" ? ETH : STRK;
-        const initial_transfer =
-          fees === "WEI" ? initial_EthTransfer : initial_StrkTransfer;
+        const TOKEN = STRK;
+        const initial_transfer = initial_StrkTransfer;
         const { transaction_hash } = await TOKEN(sender).transfer(
           address,
           initial_transfer
@@ -194,7 +145,7 @@ describe.each([dataset[1], dataset[3]])(
           privateKey,
           undefined,
           "1",
-          fees === "WEI" ? "0x2" : "0x3"
+          "0x3"
         );
       },
       default_timeout
@@ -396,7 +347,7 @@ describe.each([dataset[1], dataset[3]])(
         signer,
         m,
         "1",
-        fees === "WEI" ? "0x2" : "0x3"
+        "0x3"
       );
     });
 
@@ -467,7 +418,7 @@ describe.each([dataset[1], dataset[3]])(
           signer,
           m,
           "1",
-          fees === "WEI" ? "0x2" : "0x3"
+          "0x3"
         );
         if (!counterContract) {
           throw new Error("Counter not deployed");

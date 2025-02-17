@@ -8,7 +8,6 @@ const expected = {
   SimpleAccountClassHash:
     "0x1a3f5a334da41fc1eb5940c691f13df75a215967b0ce9b5a78c5cff4e847293",
   SimpleAccountAddress: {
-    WEI: "0x4a3c9f794dfa1b6a63e344720e4806a04160237b8aa9771e6f76ae9326eca5f",
     FRI: "0x660009647f265d0038500552d4563331c2aa25e96f9a69506032ba30c085e4d",
   } as { [id: string]: string },
 };

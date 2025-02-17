@@ -38,11 +38,11 @@ describe.each(data)("native tokens management", ({ fees, accountID }) => {
   });
 
   it(
-    `[${fees}] transfers ${fees === "WEI" ? "$ETH" : "$STRK"}`,
+    `[${fees}] transfers "$STRK"`,
     async () => {
       const conf = config(env);
       const accounts = testAccounts(conf);
-      const TOKEN = fees === "WEI" ? ETH : STRK;
+      const TOKEN = STRK;
       const eth = TOKEN(accounts[accountID]);
       const destAddress = accounts[2].address;
       const initialAmount = (await eth.balance_of(destAddress)) as bigint;

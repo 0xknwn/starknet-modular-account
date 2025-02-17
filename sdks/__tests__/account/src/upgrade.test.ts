@@ -28,7 +28,7 @@ describe.each(data)("upgrade management", ({ fees, version, accountID }) => {
   });
 
   it(
-    `[${fees}] sends ${fees === "WEI" ? "$ETH" : "FRI"} to the account address`,
+    `[${fees}] sends "$STRK" to the account address`,
     async () => {
       const conf = config(env);
       const sender = testAccounts(conf)[accountID];
@@ -45,9 +45,8 @@ describe.each(data)("upgrade management", ({ fees, version, accountID }) => {
         publicKey,
         calldata
       );
-      const TOKEN = fees === "WEI" ? ETH : STRK;
-      const initial_transfer =
-        fees === "WEI" ? initial_EthTransfer : initial_StrkTransfer;
+      const TOKEN = STRK;
+      const initial_transfer = initial_StrkTransfer;
       const { transaction_hash } = await TOKEN(sender).transfer(
         address,
         initial_transfer
@@ -60,7 +59,7 @@ describe.each(data)("upgrade management", ({ fees, version, accountID }) => {
         privateKey,
         undefined,
         "1",
-        fees === "WEI" ? "0x2" : "0x3"
+        "0x3"
       );
     },
     default_timeout
@@ -166,7 +165,7 @@ describe.each(data)("upgrade management", ({ fees, version, accountID }) => {
         smartrAccount.address,
         conf.accounts[accountID].privateKey,
         "1",
-        fees === "WEI" ? "0x2" : "0x3"
+        "0x3"
       );
       const contract = new Contract(
         SimpleAccountABI,

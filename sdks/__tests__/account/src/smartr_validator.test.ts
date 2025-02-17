@@ -29,7 +29,7 @@ describe.each(data)(
     });
 
     it(
-      `[${fees}] sends ${fees === "WEI" ? "$ETH" : "FRI"} to the account address`,
+      `[${fees}] sends "$STRK" to the account address`,
       async () => {
         const conf = config(env);
         const sender = testAccounts(conf)[accountID];
@@ -46,9 +46,8 @@ describe.each(data)(
           publicKey,
           calldata
         );
-        const TOKEN = fees === "WEI" ? ETH : STRK;
-        const initial_transfer =
-          fees === "WEI" ? initial_EthTransfer : initial_StrkTransfer;
+        const TOKEN = STRK;
+        const initial_transfer = initial_StrkTransfer;
         const { transaction_hash } = await TOKEN(sender).transfer(
           address,
           initial_transfer
@@ -61,7 +60,7 @@ describe.each(data)(
           privateKey,
           undefined,
           "1",
-          fees === "WEI" ? "0x2" : "0x3"
+          "0x3"
         );
       },
       default_timeout
