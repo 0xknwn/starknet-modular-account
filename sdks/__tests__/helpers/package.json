@@ -1,6 +1,6 @@
 {
   "name": "@0xknwn/starknet-test-helpers",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,6 +11,7 @@
     "build:abi:TokenA": "npx abi-wan-kanabi --input ../../../target/dev/smartr_TokenA.contract_class.json --output ./src/abi/TokenA.ts",
     "build:abi:TokenB": "npx abi-wan-kanabi --input ../../../target/dev/smartr_TokenB.contract_class.json --output ./src/abi/TokenB.ts",
     "build:abi": "mkdir -p src/abi && npm run build:abi:Counter && npm run build:abi:SimpleAccount && npm run build:abi:SwapRouter && npm run build:abi:TokenA && npm run build:abi:TokenB",
+    "build": "tsc --build",
     "doc": "typedoc && mkdir -p ../../../docs/tests-starknet-helpers && cp -R modules.md docs/classes ../../../docs/tests-starknet-helpers/",
     "lint": "eslint src",
     "registry": "npm publish --access=public",
