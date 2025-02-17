@@ -41,10 +41,7 @@ const main = async () => {
   );
 
   // declare the classes
-  const { classHash: smartrAccountClassHash } = await declareClass(
-    account,
-    classNames.SmartrAccount
-  );
+  await declareClass(account, classNames.SmartrAccount);
   const { classHash: starkValidatorClassHash } = await declareClass(
     account,
     classNames.StarkValidator

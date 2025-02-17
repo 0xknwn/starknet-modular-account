@@ -12,18 +12,21 @@
     "build:abi:TokenB": "npx abi-wan-kanabi --input ../../../target/dev/smartr_TokenB.contract_class.json --output ./src/abi/TokenB.ts",
     "build:abi": "mkdir -p src/abi && npm run build:abi:Counter && npm run build:abi:SimpleAccount && npm run build:abi:SwapRouter && npm run build:abi:TokenA && npm run build:abi:TokenB",
     "doc": "typedoc && mkdir -p ../../../docs/tests-starknet-helpers && cp -R modules.md docs/classes ../../../docs/tests-starknet-helpers/",
+    "lint": "eslint src",
     "registry": "npm publish --access=public",
     "test": "jest --runInBand --verbose"
   },
   "author": "0xknwn",
   "license": "MIT",
   "devDependencies": {
+    "@eslint/js": "^9.19.0",
     "@typescript-eslint/eslint-plugin": "^8.20.0",
     "@typescript-eslint/parser": "^8.20.0",
     "buffer": "^6.0.3",
-    "eslint": "^9.18.0",
+    "eslint": "^9.19.0",
     "eslint-config-prettier": "^10.0.1",
     "prettier": "^3.4.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.22.0"
   }
 }

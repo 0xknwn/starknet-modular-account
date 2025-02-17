@@ -9,18 +9,21 @@
     "build:abi:SmartrAccount": "npx abi-wan-kanabi --input ../../target/dev/smartr_SmartrAccount.contract_class.json --output ./src/abi/SmartrAccount.ts",
     "build:abi": "mkdir -p src/abi && npm run build:abi:SmartrAccount && npm run build:abi:StarkValidator",
     "build": "tsc --build",
+    "lint": "eslint src",
     "registry": "npm publish --access=public",
     "doc": "typedoc && mkdir -p ../../docs/starknet-account && cp -R modules.md docs/classes ./docs/interfaces ../../docs/starknet-account/"
   },
   "author": "0xknwn",
   "license": "MIT",
   "devDependencies": {
+    "@eslint/js": "^9.19.0",
     "@typescript-eslint/eslint-plugin": "^8.20.0",
     "@typescript-eslint/parser": "^8.20.0",
     "buffer": "^6.0.3",
-    "eslint": "^9.18.0",
+    "eslint": "^9.19.0",
     "eslint-config-prettier": "^10.0.1",
     "prettier": "^3.4.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.22.0"
   }
 }

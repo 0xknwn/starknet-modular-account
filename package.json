@@ -55,6 +55,7 @@
     "build:scarb": "scarb build",
     "clean": "tsc --build --clean",
     "doc": "npm run doc -ws --if-present",
+    "lint": "npm run lint -ws --if-present",
     "mdbook": "mdbook serve --open -d book",
     "update-versions": "node scripts/update-versions.js",
     "registry": "npm run registry -ws --if-present",

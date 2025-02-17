@@ -8,21 +8,24 @@
     "build:abi:FailedAccount": "npx abi-wan-kanabi --input ../../target/dev/smartr_FailedAccount.contract_class.json --output ./src/abi/FailedAccount.ts",
     "build:abi": "mkdir -p src/abi && npm run build:abi:FailedAccount",
     "doc": "typedoc",
+    "lint": "eslint src",
     "test": "jest --runInBand"
   },
   "author": "0xknwn",
   "license": "MIT",
   "dependencies": {
-    "@0xknwn/starknet-test-helpers": "^0.2.5",
-    "@0xknwn/starknet-modular-account": "^0.2.5"
+    "@0xknwn/starknet-modular-account": "^0.2.5",
+    "@0xknwn/starknet-test-helpers": "^0.2.5"
   },
   "devDependencies": {
+    "@eslint/js": "^9.19.0",
     "@typescript-eslint/eslint-plugin": "^8.20.0",
     "@typescript-eslint/parser": "^8.20.0",
     "buffer": "^6.0.3",
-    "eslint": "^9.18.0",
+    "eslint": "^9.19.0",
     "eslint-config-prettier": "^10.0.1",
     "prettier": "^3.4.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.22.0"
   }
 }

@@ -1,4 +1,4 @@
-import { Account, Contract, hash, num, UniversalDetails } from "starknet";
+import { Account, hash, num, UniversalDetails } from "starknet";
 import { classHash } from "./class";
 import { ETH, STRK } from "./natives";
 import { classNames } from "./class";
@@ -39,7 +39,7 @@ export const deployAccount = async (
   deployerAccount: Account,
   accountName: classNames.SmartrAccount,
   salt: string,
-  constructorCalldata: any[],
+  constructorCalldata: string[],
   details?: UniversalDetails
 ) => {
   if (!accountName) {
@@ -70,7 +70,9 @@ export const deployAccount = async (
       );
     }
     return computedAccountAddress;
-  } catch (e) {}
+  } catch {
+    // continue with the deployment when the account is not deployed
+  }
 
   // Check if the account has enough eth to deploy the account
   // transfer some eth to the account

@@ -81,7 +81,7 @@ const main = async () => {
     detail,
     [...firstSignature, ...secondSignature]
   );
-  const receipt = await firstAccount.waitForTransaction(transaction_hash);
+  await firstAccount.waitForTransaction(transaction_hash);
 };
 
 main()
