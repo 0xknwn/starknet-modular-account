@@ -20,7 +20,7 @@ import { MultisigValidatorABI } from "@0xknwn/starknet-module";
 import { Contract, RpcProvider, CallData } from "starknet";
 import { data } from "./data.fixture";
 
-describe.each([data[1]])(
+describe.each([data[0]])(
   "multiple signature",
   ({ fees, accountID, altAccountID, thirdAccountID, version }) => {
     let env: string;

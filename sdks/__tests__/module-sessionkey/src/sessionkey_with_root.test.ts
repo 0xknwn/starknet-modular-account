@@ -25,7 +25,7 @@ import {
 import { StarkValidatorABI } from "@0xknwn/starknet-modular-account";
 import { data } from "./data.fixture";
 
-describe.each([data[1]])(
+describe.each([data[0]])(
   "sessionkey management",
   ({ fees, accountID, version }) => {
     let env: string;
