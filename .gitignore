@@ -12,5 +12,6 @@ dist
 /docs/starknet-module-sessionkey
 /.env.*
 /!.env.template.json
+/!.env.template
 wip
 /.vscode
