@@ -1,26 +1,14 @@
 import {
-  declareClass as declareHelperClass,
-  classHash as helperClassHash,
   testAccounts,
   default_timeout,
   config,
-  initial_EthTransfer,
-  ETH,
-  classNames as helperaccountClassNames,
+  initial_StrkTransfer,
+  STRK,
 } from "@0xknwn/starknet-test-helpers";
-import {
-  declareClass as declareAccountClass,
-  classNames as accountClassNames,
-  classHash as accountClassHash,
-} from "@0xknwn/starknet-modular-account";
+import { classNames, classHash } from "@0xknwn/starknet-contracts";
 import { bootstrapAccountAddress } from "./bootstrap_account";
-import {
-  classHash,
-  declareClass as declareBootstrapClass,
-  classNames,
-} from "./class";
 import { deployAccount } from "./contract";
-import { Account, RpcProvider, CallData } from "starknet";
+import { Account, RpcProvider, CallData, num } from "starknet";
 import { ABI as AccountABI } from "./abi/BootstrapAccount";
 
 describe("bootstrapping an account", () => {
@@ -32,31 +20,7 @@ describe("bootstrapping an account", () => {
   });
 
   it(
-    "declares the SimpleValidator class",
-    async () => {
-      const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await declareAccountClass(a, accountClassNames.SimpleValidator);
-      expect(c.classHash).toEqual(
-        accountClassHash(accountClassNames.SimpleValidator)
-      );
-    },
-    default_timeout
-  );
-
-  it(
-    "declares the BootstrapAccount class",
-    async () => {
-      const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await declareBootstrapClass(a, classNames.BootstrapAccount);
-      expect(c.classHash).toEqual(classHash(classNames.BootstrapAccount));
-    },
-    default_timeout
-  );
-
-  it(
-    "sends ETH to the BootstrapAccount address",
+    "sends STRK to the BootstrapAccount address",
     async () => {
       const conf = config(env);
       const sender = testAccounts(conf)[0];
@@ -65,15 +29,15 @@ describe("bootstrapping an account", () => {
       const privateKey = conf.accounts[0].privateKey;
       const address = bootstrapAccountAddress(
         publicKey,
-        accountClassHash(accountClassNames.SimpleValidator)
+        classHash(classNames.SimpleAccount)
       );
-      const { transaction_hash } = await ETH(sender).transfer(
+      const { transaction_hash } = await STRK(sender).transfer(
         address,
-        initial_EthTransfer
+        initial_StrkTransfer
       );
       let receipt = await sender.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toEqual(true);
-      account = new Account(p, address, privateKey);
+      account = new Account(p, address, privateKey, "1", "0x3");
     },
     default_timeout
   );
@@ -86,18 +50,18 @@ describe("bootstrapping an account", () => {
       const publicKey = conf.accounts[0].publicKey;
       const calldata = new CallData(AccountABI).compile("constructor", {
         public_key: publicKey,
-        target_class: accountClassHash(accountClassNames.SimpleValidator),
+        target_class: classHash(classNames.SimpleAccount),
       });
       const address = await deployAccount(
         account,
-        "BootstrapAccount",
+        classNames.BootstrapAccount,
         publicKey,
         calldata
       );
       expect(address).toEqual(
         bootstrapAccountAddress(
           conf.accounts[0].publicKey,
-          accountClassHash(accountClassNames.SimpleValidator)
+          classHash(classNames.SimpleAccount)
         )
       );
     },
@@ -105,18 +69,18 @@ describe("bootstrapping an account", () => {
   );
 
   it(
-    "checks the account class is now SimpleValidator",
+    "checks the account class is now SimpleAccount",
     async () => {
       const conf = config(env);
       const a = testAccounts(conf)[0];
       const accountClass = await a.getClassHashAt(
         bootstrapAccountAddress(
           conf.accounts[0].publicKey,
-          accountClassHash(accountClassNames.SimpleValidator)
+          classHash(classNames.SimpleAccount)
         )
       );
-      expect(accountClass).toEqual(
-        accountClassHash(accountClassNames.SimpleValidator)
+      expect(num.toHexString(num.toBigInt(accountClass))).toEqual(
+        num.toHexString(num.toBigInt(classHash(classNames.SimpleAccount)))
       );
     },
     default_timeout

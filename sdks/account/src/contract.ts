@@ -1,7 +1,6 @@
 import { Account, hash, num, UniversalDetails } from "starknet";
-import { classHash } from "./class";
+import { classHash, classNames } from "@0xknwn/starknet-contracts";
 import { ETH, STRK } from "./natives";
-import { classNames } from "./class";
 /**
  * Calculates the account address for a given account name, public key, and constructor call data.
  * @param class_hash - The class hash of the contract.
@@ -76,15 +75,8 @@ export const deployAccount = async (
 
   // Check if the account has enough eth to deploy the account
   // transfer some eth to the account
-  let version = deployerAccount.transactionVersion;
-  if (details && details.version) {
-    if (details.version === 3) {
-      version = "0x3";
-    } else if (details.version === 2 || details.version === 1) {
-      version = "0x2";
-    }
-  }
-  const TOKEN = version === "0x2" ? ETH : STRK;
+  const version = "0x3";
+  const TOKEN = STRK;
   const result = await TOKEN(deployerAccount).call("balance_of", [
     computedAccountAddress,
   ]);
@@ -103,7 +95,7 @@ export const deployAccount = async (
         constructorCalldata,
         addressSalt: salt,
       },
-      { ...details, version: version === "0x3" ? "0x3" : "0x1" }
+      { ...details, version }
     );
   const receipt = await deployerAccount.waitForTransaction(tx);
   if (!receipt.isSuccess()) {

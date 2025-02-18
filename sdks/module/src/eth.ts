@@ -1,7 +1,7 @@
 import { Call } from "starknet";
 
 import { AccountModuleInterface } from "@0xknwn/starknet-modular-account";
-import { classHash, classNames } from "./class";
+import { classHash, classNames } from "@0xknwn/starknet-contracts";
 
 export class EthModule implements AccountModuleInterface {
   protected accountAddress: string;

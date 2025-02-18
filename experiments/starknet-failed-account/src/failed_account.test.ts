@@ -1,21 +1,14 @@
 import {
-  declareClass as declareHelperClass,
-  classHash as helperClassHash,
   deployCounter,
   testAccounts,
   default_timeout,
   Counter,
   counterAddress,
   config,
-  ETH,
-  initial_EthTransfer,
-  classNames as helperClassNames,
+  STRK,
+  initial_StrkTransfer,
 } from "@0xknwn/starknet-test-helpers";
-import {
-  classHash as failedClassHash,
-  declareClass as declareFailedClass,
-  classNames,
-} from "./class";
+import { classHash, classNames } from "@0xknwn/starknet-contracts";
 import { deployAccount } from "./contract";
 import { failedAccountAddress, deployFailedAccount } from "./failed_account";
 import { Account, RpcProvider } from "starknet";
@@ -28,17 +21,6 @@ describe("sessionkey management", () => {
   beforeAll(() => {
     env = "devnet";
   });
-
-  it(
-    "declare the Counter class",
-    async () => {
-      const conf = config(env);
-      const account = testAccounts(conf)[0];
-      const c = await declareHelperClass(account, helperClassNames.Counter);
-      expect(c.classHash).toEqual(helperClassHash(helperClassNames.Counter));
-    },
-    default_timeout
-  );
 
   it(
     "deploys the Counter contract",
@@ -55,18 +37,7 @@ describe("sessionkey management", () => {
   );
 
   it(
-    "declares the FailedAccount class",
-    async () => {
-      const conf = config(env);
-      const a = testAccounts(conf)[0];
-      const c = await declareFailedClass(a, classNames.FailedAccount);
-      expect(c.classHash).toEqual(failedClassHash(classNames.FailedAccount));
-    },
-    default_timeout
-  );
-
-  it(
-    "sends ETH to the FailedAccount address",
+    "sends STRK to the FailedAccount address",
     async () => {
       const conf = config(env);
       const sender = testAccounts(conf)[0];
@@ -74,13 +45,13 @@ describe("sessionkey management", () => {
       const publicKey = conf.accounts[0].publicKey;
       const privateKey = conf.accounts[0].privateKey;
       const address = failedAccountAddress(publicKey);
-      const { transaction_hash } = await ETH(sender).transfer(
+      const { transaction_hash } = await STRK(sender).transfer(
         address,
-        initial_EthTransfer
+        initial_StrkTransfer
       );
       let receipt = await sender.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toEqual(true);
-      failedAccount = new Account(p, address, privateKey);
+      failedAccount = new Account(p, address, privateKey, "1", "0x3");
     },
     default_timeout
   );

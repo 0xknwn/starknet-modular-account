@@ -1,7 +1,7 @@
 import { Account, CallData } from "starknet";
 import { ABI as AccountABI } from "./abi/FailedAccount";
 import { accountAddress, deployAccount } from "./contract";
-import { classNames } from "./class";
+import { classNames } from "@0xknwn/starknet-contracts";
 /**
  * Generates a failed account address based on the provided public key.
  * @param publicKey - The public key associated with the account.

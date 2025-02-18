@@ -4,7 +4,7 @@ import { ABI as TokenAABI } from "./abi/TokenA";
 import { ABI as TokenBABI } from "./abi/TokenB";
 
 import { contractAddress } from "./contract";
-import { classNames } from "./class";
+import { classNames } from "@0xknwn/starknet-contracts";
 
 /**
  * Retrieves the token A address.

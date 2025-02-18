@@ -1,7 +1,7 @@
-import { classHash, classNames } from "./class";
+import { classHash, classNames } from "@0xknwn/starknet-contracts";
 import { Contract, Account, hash, ec } from "starknet";
-import { udcAddress, ETH, STRK } from "./natives";
-import { initial_EthTransfer, initial_StrkTransfer } from "./parameters";
+import { udcAddress, STRK } from "./natives";
+import { initial_StrkTransfer } from "./parameters";
 import type { Abi, UniversalDetails } from "starknet";
 
 /**
@@ -133,17 +133,9 @@ export const deployAccount = async (
   } catch (e) {}
 
   // transfer some eth to the account
-  let version = deployerAccount.transactionVersion;
-  if (details && details.version) {
-    if (details.version === 3) {
-      version = "0x3";
-    } else if (details.version === 2 || details.version === 1) {
-      version = "0x2";
-    }
-  }
-  const TOKEN = version === "0x2" ? ETH : STRK;
-  const initial_Transfer =
-    version === "0x2" ? initial_EthTransfer : initial_StrkTransfer;
+  const version = "0x3";
+  const TOKEN = STRK;
+  const initial_Transfer = initial_StrkTransfer;
   const { transaction_hash } = await TOKEN(deployerAccount).transfer(
     computedAccountAddress,
     initial_Transfer
@@ -163,7 +155,7 @@ export const deployAccount = async (
         constructorCalldata,
         addressSalt: publicKey,
       },
-      { version: version === "0x3" ? "0x3" : "0x1" }
+      { version: "0x3" }
     );
   receipt = await deployerAccount.waitForTransaction(tx);
   if (!receipt.isSuccess()) {

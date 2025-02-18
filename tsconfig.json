@@ -8,6 +8,7 @@
     { "path": "sdks/__tests__/module" },
     { "path": "sdks/__tests__/module-guarded" },
     { "path": "sdks/__tests__/module-sessionkey" },
+    { "path": "sdks/contracts" },
     { "path": "sdks/account" },
     { "path": "sdks/module" },
     { "path": "sdks/module-sessionkey" }

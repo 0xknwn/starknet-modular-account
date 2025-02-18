@@ -1,4 +1,3 @@
-import { declareClass, classHash, classNames } from "./class";
 import { deploySimpleAccount, simpleAccountAddress } from "./simple_account";
 import { config, testAccounts } from "./utils";
 import { Account, RpcProvider } from "starknet";
@@ -19,19 +18,6 @@ describe.each(data)(
         conf.accounts[0].privateKey
       );
     });
-
-    it(
-      `[${fees}] deploys the Account class`,
-      async () => {
-        const conf = config(env);
-        const a = testAccounts(conf)[accountID];
-        const c = await declareClass(a, classNames.SimpleAccount, {
-          version: version.declare,
-        });
-        expect(c.classHash).toEqual(classHash(classNames.SimpleAccount));
-      },
-      default_timeout
-    );
 
     it(
       `[${fees}] deploys the account contract`,

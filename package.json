@@ -73,6 +73,7 @@
     "sdks/__tests__/module-guarded",
     "sdks/__tests__/module-sessionkey",
     "sdks/account",
+    "sdks/contracts",
     "sdks/module",
     "sdks/module-sessionkey"
   ],

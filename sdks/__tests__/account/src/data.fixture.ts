@@ -1,12 +1,12 @@
-const { V1, V2, V3 } = { V1: 1, V2: 2, V3: 3 };
+const { V3 } = { V3: 3 };
 
 export const data = [
   {
-    fees: "WEI",
+    fees: "FRI",
     version: {
-      invoke: V1,
-      declare: V2,
-      deploy_account: V1,
+      invoke: V3,
+      declare: V3,
+      deploy_account: V3,
     },
     accountID: 0,
   },
@@ -18,5 +18,23 @@ export const data = [
       deploy_account: V3,
     },
     accountID: 1,
+  },
+  {
+    fees: "FRI",
+    version: {
+      invoke: V3,
+      declare: V3,
+      deploy_account: V3,
+    },
+    accountID: 2,
+  },
+  {
+    fees: "FRI",
+    version: {
+      invoke: V3,
+      declare: V3,
+      deploy_account: V3,
+    },
+    accountID: 3,
   },
 ];

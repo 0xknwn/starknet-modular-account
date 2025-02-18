@@ -6,7 +6,8 @@
   },
   "references": [
     { "path": "../helpers" },
-    { "path": "../../account" }
+    { "path": "../../account" },
+    { "path": "../../contracts" }
   ],
   "typedocOptions": {
     "entryPoints": ["src/index.ts"],

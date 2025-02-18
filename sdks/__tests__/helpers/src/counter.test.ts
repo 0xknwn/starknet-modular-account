@@ -1,4 +1,3 @@
-import { declareClass, classHash, classNames } from "./class";
 import { testAccounts, config } from "./utils";
 import { deployCounter, counterAddress, CounterABI } from "./counter";
 import { default_timeout } from "./parameters";
@@ -35,19 +34,6 @@ describe.each(data)(
         altURL = conf.providerURL;
       }
     });
-
-    it(
-      `[${fees}] declare the Counter class`,
-      async () => {
-        const conf = config(env);
-        const account = testAccounts(conf)[accountID];
-        const c = await declareClass(account, classNames.Counter, {
-          version: version.declare,
-        });
-        expect(c.classHash).toEqual(classHash(classNames.Counter));
-      },
-      default_timeout
-    );
 
     it(
       `[${fees}] deploys the Counter contract`,
@@ -187,7 +173,7 @@ describe.each(data)(
         redeployCounter(account, { version: version.invoke });
         const transferCall: Call = counter.populate("reset", {});
         try {
-          account = testAccounts(conf)[2];
+          account = testAccounts(conf)[3];
           const { transaction_hash } = await account.execute(transferCall);
           await account.waitForTransaction(transaction_hash);
           expect(true).toBe(false);

@@ -1,10 +1,7 @@
 import { Call } from "starknet";
 
-import {
-  AccountModuleInterface,
-  classHash,
-  classNames,
-} from "@0xknwn/starknet-modular-account";
+import { AccountModuleInterface } from "@0xknwn/starknet-modular-account";
+import { classHash, classNames } from "@0xknwn/starknet-contracts";
 
 export class StarkModule implements AccountModuleInterface {
   protected accountAddress: string;

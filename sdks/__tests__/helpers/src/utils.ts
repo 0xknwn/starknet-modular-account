@@ -14,7 +14,7 @@ export type AccountConfig = {
   // The public key.
   publicKey: string;
   // The public key.
-  defaultTransactionVersion: "0x2" | "0x3";
+  defaultTransactionVersion: "0x3";
 };
 
 /**

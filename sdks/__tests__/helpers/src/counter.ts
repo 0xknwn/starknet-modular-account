@@ -1,7 +1,7 @@
 import { Contract, Call, Account, CallData, UniversalDetails } from "starknet";
 import { ABI as CounterABI } from "./abi/Counter";
 import { contractAddress, deployContract } from "./contract";
-import { classNames } from "./class";
+import { classNames } from "@0xknwn/starknet-contracts";
 
 /**
  * Retrieves the address of the Counter contract.

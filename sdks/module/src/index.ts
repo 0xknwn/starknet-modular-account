@@ -1,4 +1,3 @@
-export * from "./class";
 export * from "./eth";
 export * from "./multisig";
 export * from "./p256";

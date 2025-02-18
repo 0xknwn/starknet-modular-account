@@ -1,0 +1,29 @@
+export const hash = {
+  SwapRouter:
+    "0x0627173ab1bbc5f5d45fb9a8f91905bd6ece5f506f6143b740ef392b0c4c8062",
+  StarkValidator:
+    "0x02765b1785423bdef6d974510dd05841608b647719020f408ce3c5f07e55d1de",
+  SessionKeyValidator:
+    "0x0042357f77a01d29fa96aadad7e2b19104fb5c96f86396b2ad0cc7c141acbbbe",
+  P256Validator:
+    "0x06d4868ed2f702135c1149367db540edd8968e3ce26ea3ced5ee55678bf55aac",
+  SmartrAccount:
+    "0x05ad6e28541a774eb4d9de62a51ef215158685cebe476714b2ad6eaa4cf6af32",
+  GuardedValidator:
+    "0x0438d3b5319b459d4e2b8718a00486021b537c76371f8d9797e19a7c29d00bea",
+  FailedAccount:
+    "0x002f1c12b255c1f814f955b4e21f364d6dd544b6afa6ea0168b6756b8c0dec3c",
+  TokenB: "0x014225c310ea1fabe50ab98664846307ace2471e563f2e7b3f50606dc5a813c0",
+  SimpleValidator:
+    "0x008f1d0d3d1a54619acb09a1e960177d5b3db7862962aebd38b1600c5f487fa6",
+  EthValidator:
+    "0x052abf003aa17b0732b40120e80ef0cbd0900b674a1495d404ada116d4d92d8e",
+  TokenA: "0x0139b13a21c91e77bce01e389ef674e3b2ad699f712084944495f8c926b4bcf2",
+  BootstrapAccount:
+    "0x01abd361fdd475aa4aa49097e18922e11af46e31fda7d9ca4018ba4a17cf3255",
+  SimpleAccount:
+    "0x03b71253f02ac9f81b93d2aa1beeae16ed3a035f57ea7ad0a3cacb8804a09a25",
+  Counter: "0x073f9f2a090affa17f67a4b698c1753ddcbe3747325d9c43685d7cda75aa5a7e",
+  MultisigValidator:
+    "0x019a44e923ffbb514005dabc52cf6e4b91de525044d0da773f1436ef1a3ab1a7",
+};

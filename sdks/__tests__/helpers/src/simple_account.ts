@@ -1,7 +1,7 @@
 import { Account, CallData, type UniversalDetails } from "starknet";
 import { ABI as SimpleAccountABI } from "./abi/SimpleAccount";
 import { accountAddress, deployAccount } from "./contract";
-import { classNames } from "./class";
+import { classNames } from "@0xknwn/starknet-contracts";
 export { SimpleAccountABI };
 
 /**

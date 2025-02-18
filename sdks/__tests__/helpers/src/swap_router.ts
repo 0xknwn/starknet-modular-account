@@ -3,7 +3,7 @@ import { ABI as SwapRouterABI } from "./abi/SwapRouter";
 import { contractAddress, deployContract } from "./contract";
 import type { Uint256, UniversalDetails } from "starknet";
 import { ABI as TokenAABI } from "./abi/TokenA";
-import { classNames } from "./class";
+import { classNames } from "@0xknwn/starknet-contracts";
 
 /**
  * Retrieves the swap router address from its deployer and owner.
