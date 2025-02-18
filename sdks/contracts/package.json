@@ -8,6 +8,7 @@
   "scripts": {
     "build": "tsc --build",
     "lint": "eslint src",
+    "registry": "npm publish --access=public",
     "test": "jest --runInBand --verbose"
   },
   "author": "0xknwn",
