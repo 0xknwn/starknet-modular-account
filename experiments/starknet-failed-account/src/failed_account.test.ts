@@ -37,7 +37,7 @@ describe("sessionkey management", () => {
   );
 
   it(
-    "sends ETH to the FailedAccount address",
+    "sends STRK to the FailedAccount address",
     async () => {
       const conf = config(env);
       const sender = testAccounts(conf)[0];
@@ -51,7 +51,7 @@ describe("sessionkey management", () => {
       );
       let receipt = await sender.waitForTransaction(transaction_hash);
       expect(receipt.isSuccess()).toEqual(true);
-      failedAccount = new Account(p, address, privateKey);
+      failedAccount = new Account(p, address, privateKey, "1", "0x3");
     },
     default_timeout
   );

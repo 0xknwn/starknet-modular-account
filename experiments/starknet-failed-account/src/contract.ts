@@ -1,7 +1,7 @@
 import { Account, Contract, hash, num } from "starknet";
 import { classHash, classNames } from "@0xknwn/starknet-contracts";
 import { ABI as ERC20ABI } from "./abi/ERC20";
-import { ethAddress } from "./natives";
+import { strkAddress } from "./natives";
 /**
  * Calculates the account address for a given account name, public key, and constructor call data.
  * @param class_hash - The class hash of the contract.
@@ -68,9 +68,9 @@ export const deployAccount = async (
     return computedAccountAddress;
   } catch (e) {}
 
-  // Check if the account has enough eth to deploy the account
-  const eth = new Contract(ERC20ABI, ethAddress, deployerAccount);
-  const result = await eth.call("balance_of", [computedAccountAddress]);
+  // Check if the account has enough strk to deploy the account
+  const strk = new Contract(ERC20ABI, strkAddress, deployerAccount);
+  const result = await strk.call("balance_of", [computedAccountAddress]);
   let balance = num.toBigInt(result.toString());
   if (balance <= 10n ** 15n) {
     throw new Error(
