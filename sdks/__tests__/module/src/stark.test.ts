@@ -294,7 +294,9 @@ describe.each([data[0]])(
           p,
           smartrAccount.address,
           signer,
-          m
+          m,
+          "1",
+          "0x3"
         );
         if (!counterContract) {
           throw new Error("Counter not deployed");
