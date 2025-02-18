@@ -34,6 +34,7 @@ jobs:
         uses: software-mansion/setup-scarb@22f50f68eb6ffacfc173786dab19aa7d49b43441 # v1
         with:
           scarb-lock: ./starknet-modular-account/Scarb.lock
+          scarb-version: "2.9.3"
 
       - name: Run tests
         run: scarb test
