@@ -64,7 +64,6 @@ describe.each([data[1]])(
         const conf = config(env);
         const sender = testAccounts(conf)[accountID];
         const p = new RpcProvider({ nodeUrl: conf.providerURL });
-        const privateKey = conf.accounts[accountID].privateKey;
         const moduleValidatorClassHash = classHash(classNames.GuardedValidator);
         const calldata = [
           moduleValidatorClassHash,
@@ -84,14 +83,6 @@ describe.each([data[1]])(
         );
         const receipt = await sender.waitForTransaction(transaction_hash);
         expect(receipt.isSuccess()).toEqual(true);
-        smartrAccount = new SmartrAccount(
-          p,
-          address,
-          privateKey,
-          undefined,
-          "1",
-          "0x3"
-        );
       },
       default_timeout
     );
@@ -100,11 +91,25 @@ describe.each([data[1]])(
       `[${fees}][guarded]: configures the SmartrAccount with the signer`,
       async () => {
         const conf = config(env);
+        const moduleValidatorClassHash = classHash(classNames.GuardedValidator);
+        const calldata = [
+          moduleValidatorClassHash,
+          "0x1",
+          smartAccountPublicKey,
+        ];
+        const address = accountAddress(
+          classNames.SmartrAccount,
+          smartAccountPublicKey,
+          calldata
+        );
         const p = new RpcProvider({ nodeUrl: conf.providerURL });
         smartrAccount = new SmartrAccount(
           p,
-          smartrAccount.address,
-          smartAccountPrivateKey
+          address,
+          smartAccountPrivateKey,
+          undefined,
+          "1",
+          "0x3"
         );
       },
       default_timeout
