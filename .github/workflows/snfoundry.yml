@@ -2,15 +2,15 @@ name: snfoundry
 on:
   pull_request:
     branches:
-      - '**'
+      - "**"
     paths:
-      - '**'
-      - '!docs/*'
+      - "**"
+      - "!docs/*"
   push:
     branches:
-      - 'develop'
+      - "develop"
     paths:
-      - '**'
+      - "**"
 
 permissions:
   contents: read
@@ -25,15 +25,16 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22.x'
-          cache: 'npm'
+          node-version: "22.x"
+          cache: "npm"
       - name: Setup Starknet Foundry
-        uses: foundry-rs/setup-snfoundry@bd5fc266ba0ce7e352b01dd7eaacc0fbb6145d17 # v3
+        uses: foundry-rs/setup-snfoundry@ee00ea3f026379008ca40a54448d4059233d06cc # v4
 
       - name: Setup Scarb
         uses: software-mansion/setup-scarb@22f50f68eb6ffacfc173786dab19aa7d49b43441 # v1
         with:
           scarb-lock: ./starknet-modular-account/Scarb.lock
+          scarb-version: "2.9.3"
 
       - name: Run tests
         run: scarb test
